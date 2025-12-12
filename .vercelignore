@@ -1,0 +1,22 @@
+# Ignore WordPress backup files
+extracted_wordpress/
+*.wpress
+
+# Ignore local files
+nul
+extract-wpress.js
+*.sqlite
+*.db
+database.sqlite
+
+# Ignore node_modules (will be installed during build)
+node_modules/
+geauxplans-backend/node_modules/
+geauxplans-react/node_modules/
+
+# Ignore git
+.git/
+
+# Ignore local env files
+.env
+.env.local
