@@ -1,0 +1,250 @@
+/* POA Form Styles */
+
+.poa-form-page {
+  min-height: 80vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+}
+
+.poa-header h1 {
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.poa-form-container {
+  border: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.poa-form-container .card-header {
+  border-radius: 0;
+  padding: 20px 25px;
+}
+
+.poa-form-container .card-header h4 {
+  font-weight: 600;
+}
+
+.poa-form-container .card-body {
+  background: #fff;
+}
+
+.poa-form-container .card-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+  padding: 20px 25px;
+}
+
+/* Progress Steps */
+.poa-progress {
+  padding: 0 20px;
+}
+
+.poa-progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.poa-progress-step .step-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-bottom: 5px;
+  transition: all 0.3s ease;
+}
+
+.poa-progress-step .step-label,
+.poa-progress-step .step-name {
+  font-size: 0.7rem;
+  color: #666;
+  max-width: 80px;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.poa-progress-step.active .step-number {
+  background: #007bff;
+  color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.poa-progress-step.active .step-label,
+.poa-progress-step.active .step-name {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.poa-progress-step.completed .step-number {
+  background: #28a745;
+  color: #fff;
+}
+
+.poa-progress-step.completed .step-label,
+.poa-progress-step.completed .step-name {
+  color: #28a745;
+}
+
+.poa-progress-step:hover:not(.active) .step-number {
+  background: #ccc;
+  transform: scale(1.05);
+}
+
+/* Form Fields */
+.poa-form-container .form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.poa-form-container .form-control,
+.poa-form-container .form-select {
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.poa-form-container .form-control:focus,
+.poa-form-container .form-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+}
+
+.poa-form-container .form-check {
+  padding: 15px 15px 15px 40px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.poa-form-container .form-check:hover {
+  background: #e9ecef;
+  border-color: #007bff;
+}
+
+.poa-form-container .form-check-input {
+  margin-top: 0.25rem;
+  width: 20px;
+  height: 20px;
+}
+
+.poa-form-container .form-check-input:checked {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.poa-form-container .form-check-label {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Text Area */
+.poa-form-container textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Help Section */
+.poa-help {
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.poa-help a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.poa-help a:hover {
+  text-decoration: underline;
+}
+
+/* Buttons */
+.poa-form-container .btn {
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.poa-form-container .btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+}
+
+.poa-form-container .btn-success:hover {
+  background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Required Field Indicator */
+.text-danger {
+  margin-left: 2px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .poa-progress-step .step-name {
+    font-size: 0.6rem;
+    max-width: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .poa-progress-step {
+    padding: 5px;
+  }
+
+  .poa-progress-step .step-number {
+    width: 30px;
+    height: 30px;
+    font-size: 0.875rem;
+  }
+
+  .poa-progress-step .step-name {
+    font-size: 0.55rem;
+    max-width: 50px;
+  }
+
+  .poa-form-container .card-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .poa-form-container .card-footer > div {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+  }
+
+  .poa-form-container .card-footer .btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 576px) {
+  .poa-progress-step .step-name {
+    display: none;
+  }
+}

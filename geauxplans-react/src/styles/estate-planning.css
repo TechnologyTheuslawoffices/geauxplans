@@ -1,0 +1,199 @@
+/* Estate Planning Questionnaire Styles */
+
+.estate-planning-page {
+  min-height: 80vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+}
+
+.ep-header h1 {
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.ep-form-container {
+  border: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ep-step {
+  padding: 20px;
+}
+
+.ep-step h2 {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.ep-step p {
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.ep-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ep-option-btn {
+  display: flex;
+  align-items: center;
+  padding: 20px 25px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ep-option-btn:hover {
+  border-color: #28a745;
+  background: #f8fff9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.15);
+}
+
+.ep-option-btn.selected {
+  border-color: #28a745;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: #fff;
+}
+
+.ep-option-btn.selected i {
+  color: #fff;
+}
+
+.ep-option-btn i {
+  font-size: 1.5rem;
+  color: #28a745;
+  min-width: 40px;
+}
+
+.ep-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.ep-buttons .btn {
+  min-width: 140px;
+}
+
+/* Result/Product Card */
+.ep-result {
+  text-align: center;
+}
+
+.ep-product-card {
+  background: #fff;
+  border: 2px solid #28a745;
+  border-radius: 16px;
+  padding: 30px;
+  margin: 20px auto;
+  max-width: 500px;
+  box-shadow: 0 10px 40px rgba(40, 167, 69, 0.15);
+}
+
+.ep-product-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.ep-product-icon i {
+  color: #fff;
+}
+
+.ep-product-card h3 {
+  color: #2c3e50;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.ep-product-price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #28a745;
+  margin-bottom: 20px;
+}
+
+.ep-product-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 25px;
+  text-align: left;
+}
+
+.ep-product-features li {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  color: #555;
+}
+
+.ep-product-features li:last-child {
+  border-bottom: none;
+}
+
+.ep-product-features i {
+  color: #28a745;
+}
+
+/* Progress */
+.ep-progress {
+  text-align: center;
+}
+
+.ep-progress .progress {
+  border-radius: 10px;
+  background: #e0e0e0;
+}
+
+.ep-progress .progress-bar {
+  border-radius: 10px;
+}
+
+/* State Select */
+.estate-planning-page .form-select-lg {
+  padding: 15px 20px;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  border: 2px solid #e0e0e0;
+}
+
+.estate-planning-page .form-select-lg:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ep-option-btn {
+    padding: 15px 20px;
+    font-size: 1rem;
+  }
+
+  .ep-buttons {
+    flex-direction: column;
+  }
+
+  .ep-buttons .btn {
+    width: 100%;
+  }
+
+  .ep-product-price {
+    font-size: 2rem;
+  }
+}

@@ -1,0 +1,187 @@
+/* ViewPlans.css - WordPress 1:1 Styling */
+
+.view-plans-page {
+  font-family: inherit;
+}
+
+/* Highlight styling */
+.gpx_highlight {
+  background-color: #004d71;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.gpx_highlight.gpx_warning {
+  background-color: #ff9900;
+  color: #fff;
+}
+
+/* Secondary link styling */
+.a_secondary {
+  color: #666;
+  text-decoration: none;
+}
+
+.a_secondary:hover {
+  color: #004d71;
+  text-decoration: underline;
+}
+
+/* Plan not purchased link */
+.plan_not_purchased {
+  color: #004d71;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.plan_not_purchased:hover {
+  text-decoration: underline;
+}
+
+/* Starting at price */
+.ma_starting_at {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Documents list */
+.gpx_ep_documents_ul {
+  list-style: decimal;
+  padding-left: 20px;
+  margin: 5px 0 0 0;
+}
+
+.gpx_ep_documents_ul li {
+  margin-bottom: 5px;
+}
+
+.gpx_ep_documents_ul li a {
+  color: #0000ff;
+  text-decoration: none;
+}
+
+.gpx_ep_documents_ul li a:hover {
+  text-decoration: underline;
+}
+
+/* POA Edit Icon */
+.poa-edit-icon {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.poa-edit-icon:hover {
+  transform: scale(1.1);
+}
+
+.poa-edit-icon svg {
+  vertical-align: middle;
+}
+
+/* Plan row styling */
+.view-plans-page h5 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.view-plans-page h6 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.view-plans-page h6 a {
+  color: #004d71;
+  text-decoration: none;
+}
+
+.view-plans-page h6 a:hover {
+  text-decoration: underline;
+}
+
+/* Status badge colors */
+.status-not-started {
+  color: #999;
+}
+
+.status-in-progress {
+  color: #ff9900;
+}
+
+.status-submitted {
+  color: #666;
+}
+
+.status-processing {
+  color: #ff9900;
+}
+
+.status-complete {
+  color: #0000ff;
+}
+
+/* POA Status Badges */
+.poa-status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.poa-status-sent {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.poa-status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.poa-status-failed {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .view-plans-page .text-sm-end {
+    text-align: left !important;
+  }
+
+  .view-plans-page .mt-sm-0 {
+    margin-top: 0.5rem !important;
+  }
+
+  .view-plans-page .mb-sm-0 {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .gpx_ep_documents_ul {
+    text-align: left;
+  }
+}
+
+/* HR styling */
+.view-plans-page hr {
+  border: 0;
+  border-top: 1px solid #e0e0e0;
+  margin: 25px 0;
+}
+
+/* Processing message animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.view-plans-page .processing-message {
+  animation: pulse 2s infinite;
+}

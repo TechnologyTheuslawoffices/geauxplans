@@ -1,0 +1,505 @@
+/* GeauxPlans Main Styles */
+:root {
+  --primary-color: #004d71;
+  --secondary-color: #707070;
+  --white: #ffffff;
+  --light-gray: #f5f5f5;
+  --border-color: #eaeaea;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: var(--secondary-color);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #003a56;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Header Styles */
+.site-header {
+  background: var(--white);
+  padding: 15px 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  height: 50px;
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 30px;
+}
+
+.nav-menu li a {
+  color: var(--secondary-color);
+  font-weight: 600;
+  padding: 10px 0;
+  display: block;
+}
+
+.nav-menu li a:hover {
+  color: var(--primary-color);
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background: #003a56;
+  color: var(--white);
+}
+
+.btn-white {
+  background: var(--white);
+  color: var(--primary-color);
+}
+
+.btn-white:hover {
+  background: var(--light-gray);
+}
+
+.btn-lg {
+  padding: 15px 30px;
+  font-size: 1.1rem;
+}
+
+/* Mobile menu toggle */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.mobile-menu-toggle img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Hero Section */
+.hero-section {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 150px 0 80px;
+  text-align: center;
+  position: relative;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 77, 113, 0.4);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-section h1 {
+  color: var(--white);
+  font-size: 40px;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.hero-section h2 {
+  color: var(--white);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.4;
+  margin-bottom: 40px;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* Plan Cards Section */
+.plans-section {
+  padding: 80px 0;
+}
+
+.plans-section h2.section-title {
+  text-align: center;
+  font-size: 26px;
+  margin-bottom: 50px;
+}
+
+.plan-row {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 50px;
+  padding-bottom: 50px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.plan-row:last-child {
+  border-bottom: none;
+}
+
+.plan-row.reverse {
+  flex-direction: row-reverse;
+}
+
+.plan-content {
+  flex: 1;
+}
+
+.plan-image {
+  flex: 1;
+  text-align: center;
+}
+
+.plan-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+.plan-content h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.plan-price {
+  color: var(--secondary-color);
+  margin-bottom: 15px;
+}
+
+.plan-description {
+  margin-bottom: 20px;
+}
+
+.learn-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+.learn-more:hover {
+  color: var(--primary-color);
+}
+
+/* Louisiana Banner */
+.louisiana-banner {
+  background: var(--primary-color);
+  padding: 20px 0;
+  text-align: center;
+}
+
+.louisiana-banner p {
+  color: var(--white);
+  margin: 0;
+  font-style: italic;
+}
+
+/* Our Process Section */
+.process-hero {
+  background-size: cover;
+  background-position: center;
+  padding: 140px 0;
+  position: relative;
+}
+
+.process-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 77, 113, 0.7);
+}
+
+.process-hero .hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.process-hero h2 {
+  color: var(--white);
+  font-size: 30px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.process-hero-text {
+  background: rgba(0, 77, 113, 0.7);
+  padding: 15px 50px 50px;
+  text-align: center;
+}
+
+.process-hero-text p {
+  color: var(--white);
+  font-size: 24px;
+  margin: 0;
+}
+
+/* Documents Section */
+.documents-section {
+  padding: 80px 0;
+}
+
+.documents-section h3.section-title {
+  font-size: 26px;
+  color: var(--secondary-color);
+  padding: 30px 0 100px;
+}
+
+.document-item {
+  max-width: 800px;
+  margin: 0 auto 40px;
+  padding: 0 100px;
+}
+
+.document-item h4 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.document-item p {
+  font-size: 16px;
+}
+
+/* Process Steps Section */
+.process-steps {
+  background: var(--primary-color);
+  padding: 50px 20px;
+  color: var(--white);
+}
+
+.process-steps h2 {
+  color: var(--white);
+  font-size: 26px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.process-steps ul {
+  max-width: 900px;
+  margin: 0 auto 40px;
+  padding-left: 20px;
+}
+
+.process-steps li {
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+/* Footer */
+.site-footer {
+  background: var(--primary-color);
+  color: var(--white);
+  padding: 20px 0;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-brand strong {
+  display: block;
+}
+
+.footer-brand small {
+  opacity: 0.8;
+}
+
+.footer-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 20px;
+}
+
+.footer-nav a {
+  color: var(--white);
+  opacity: 0.8;
+}
+
+.footer-nav a:hover {
+  opacity: 1;
+}
+
+.footer-contact strong {
+  display: block;
+}
+
+.social-links a {
+  color: var(--white);
+  font-size: 24px;
+}
+
+/* Responsive Styles */
+@media (max-width: 991px) {
+  .nav-menu {
+    display: none;
+  }
+
+  .mobile-menu-toggle {
+    display: block;
+  }
+
+  .plan-row,
+  .plan-row.reverse {
+    flex-direction: column;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 80px 0 50px;
+  }
+
+  .hero-section h1 {
+    font-size: 28px;
+  }
+
+  .hero-section h2 {
+    font-size: 18px;
+  }
+
+  .document-item {
+    padding: 0 20px;
+  }
+}
+
+/* Sidenav Mobile Menu */
+.sidenav {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 300px;
+  height: 100%;
+  background: var(--white);
+  z-index: 1100;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+}
+
+.sidenav.open {
+  left: 0;
+}
+
+.sidenav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.close-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.mobile-nav {
+  padding: 20px;
+}
+
+.mobile-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mobile-nav li {
+  margin-bottom: 15px;
+}
+
+.mobile-nav a {
+  color: var(--secondary-color);
+  font-size: 18px;
+  display: block;
+}
+
+.site-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  display: none;
+}
+
+.site-overlay.open {
+  display: block;
+}

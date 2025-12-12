@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "buildCommand": "cd geauxplans-react && npm install && npm run build",
+  "outputDirectory": "geauxplans-react/build",
+  "installCommand": "npm install && cd geauxplans-react && npm install",
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "@vercel/node@3.0.0"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/auth/login", "destination": "/api/auth/login" },
+    { "source": "/api/auth/register", "destination": "/api/auth/register" },
+    { "source": "/api/auth/me", "destination": "/api/auth/me" },
+    { "source": "/api/submissions", "destination": "/api/submissions/index" },
+    { "source": "/api/submissions/by-type/:formType", "destination": "/api/submissions/by-type/[formType]" },
+    { "source": "/api/submissions/:id/refresh-documents", "destination": "/api/submissions/[id]/refresh-documents" },
+    { "source": "/api/submissions/:id/download/:docIndex", "destination": "/api/submissions/[id]/download/[docIndex]" },
+    { "source": "/api/submissions/:id", "destination": "/api/submissions/[id]" },
+    { "source": "/((?!api).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization" }
+      ]
+    }
+  ]
+}
