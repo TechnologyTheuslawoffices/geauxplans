@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"cd geauxplans-backend && npm run dev\" \"cd geauxplans-react && npm start\"",
-    "build": "cd geauxplans-react && npm install && npm run build",
-    "vercel-build": "cd geauxplans-react && npm install && npm run build"
+    "build": "cd geauxplans-react && npm run build",
+    "vercel-build": "cd geauxplans-react && npm run build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0"

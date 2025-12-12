@@ -56,3 +56,5 @@ coverage/
 # Misc
 *.pem
 *.key
+
+.vercel
