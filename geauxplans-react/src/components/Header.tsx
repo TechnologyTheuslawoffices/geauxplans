@@ -34,7 +34,7 @@ const Header: React.FC = () => {
               </nav>
             </div>
             <div>
-              <Link to="/my-account" className="btn btn-primary">
+              <Link to="/my-account" className="btn btn_geaux">
                 My Account
               </Link>
             </div>
