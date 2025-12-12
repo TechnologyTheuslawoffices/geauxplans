@@ -1,9 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "cd geauxplans-react && CI=false npm run build",
   "outputDirectory": "geauxplans-react/build",
-  "installCommand": "npm install --prefix geauxplans-react",
-  "rootDirectory": ".",
+  "installCommand": "npm install && cd geauxplans-react && npm install",
   "functions": {
     "api/**/*.js": {
       "runtime": "@vercel/node@3.0.0"
