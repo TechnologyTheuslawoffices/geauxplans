@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": "24.x"
-  },
   "scripts": {
     "dev": "concurrently \"cd geauxplans-backend && npm run dev\" \"cd geauxplans-react && npm start\"",
     "build": "cd geauxplans-react && npm run build",
