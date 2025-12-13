@@ -31,7 +31,7 @@ const Home: React.FC = () => {
               <div className="hero-image-wrapper">
                 <img src="/img/welcome.svg" alt="" className="hero-swoosh" />
                 <img
-                  src="https://images.unsplash.com/photo-1609220136736-443140cffec6?w=600&h=600&fit=crop"
+                  src="/img/field-family.jpg"
                   alt="Happy family"
                   className="hero-family"
                 />

@@ -5,31 +5,32 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="site-footer">
+    <div className="bottom_line">
       <div className="container">
-        <div className="footer-content">
-          <div className="footer-brand">
-            <strong>GeauxPlans&trade;</strong>
+        <div className="d-flex align-items-center justify-content-between bottom_line_holder flex-wrap">
+          <div>
+            <strong>GeauxPlans&trade;</strong><br />
             <small>&copy; COPYRIGHT 2020 - {currentYear}</small>
           </div>
-          <nav>
-            <ul className="footer-nav">
+          <div>
+            <ul className="footer-menu list-reset d-lg-block">
               <li><Link to="/privacy-policy">Privacy Policy</Link></li>
               <li><Link to="/terms">Terms of Service</Link></li>
               <li><Link to="/faq">FAQ</Link></li>
             </ul>
-          </nav>
-          <div className="footer-contact">
-            <strong>Support team:</strong> M-F, 8am-5pm CST | <strong>Call us:</strong> +1 (855) 213-6300
           </div>
-          <div className="social-links">
-            <a href="https://www.facebook.com/GeauxPlans" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-facebook"></i>
+          <div>
+            <strong>Support team:</strong> M-F, 8am-5pm CST <span className="d-none d-sm-inline">|</span>
+            <span className="d-block d-sm-none"></span> <strong>Call us:</strong> +1 (855) 213-6300
+          </div>
+          <div>
+            <a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/GeauxPlans">
+              <span className="icon-facebook">f</span>
             </a>
           </div>
         </div>
       </div>
-    </footer>
+    </div>
   );
 };
 
