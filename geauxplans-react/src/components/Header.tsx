@@ -35,8 +35,8 @@ const Header: React.FC = () => {
               <span id="show_mobile_menu" className="mobile_menu_toggle" onClick={toggleMobileMenu}>
                 <img src="/img/mobile_menu.svg" alt="Menu" />
               </span>
-              <Link to="/" className="site-logo">
-                <img src="/img/logo.svg" alt="GeauxPlans" style={{ height: '40px' }} />
+              <Link to="/" className="site-logo" style={{ marginRight: '30px' }}>
+                <img src="/img/logo.svg" alt="GeauxPlans" style={{ height: '32px' }} />
               </Link>
               <div id="place_for_menu">
                 <nav id="header_navigation" className="header_navigation">
