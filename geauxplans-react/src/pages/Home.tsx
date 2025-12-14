@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import '../styles/estate-planning.css';
 
 const Home: React.FC = () => {
   return (
@@ -51,6 +52,28 @@ const Home: React.FC = () => {
             <div className="hello-description">
               <p><em>Business is complex, and we've made it easier for business owners to manage risk, taxes, and relations with other owners, customers, and employees to get more work done while facing fewer roadblocks.</em></p>
               <Link to="/about" className="read-more">Read more →</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Easy & Affordable Estate Planning Section */}
+      <section className="estate-planning-section">
+        <div className="container">
+          <div className="ep-landing-grid">
+            <div className="ep-landing-content">
+              <h2>Easy &amp; Affordable<br /><span className="text-blue">Estate Planning</span></h2>
+              <p className="ep-landing-subtitle">Not sure where to start?</p>
+              <p>Tell us about yourself and we'll match you with the right plan!</p>
+              <Link to="/estate-planning" className="btn btn-solid btn-lg">Take the quiz</Link>
+            </div>
+            <div className="ep-landing-plans">
+              <ul className="plan-list">
+                <li><Link to="/minor-child-centered-estate-plan">Minor Child-Centered Estate Plan</Link></li>
+                <li><Link to="/power-of-attorney-plan">Power of Attorney Supplement Plan</Link></li>
+                <li><Link to="/will-based-estate-plan">Will-Based Estate Plan</Link></li>
+                <li><Link to="/trust-based-estate-plan">Trust-Based Estate Plan</Link></li>
+              </ul>
             </div>
           </div>
         </div>
