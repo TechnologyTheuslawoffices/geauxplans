@@ -27,7 +27,7 @@ export default async function handler(req, res) {
           first_name: userFirstName,
           last_name: userLastName
         },
-        emailRedirectTo: `${process.env.FRONTEND_URL || 'https://geauxplans.com'}/verify-email`
+        emailRedirectTo: 'https://geauxplans.com/verify-email'
       }
     });
 

@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       }
 
       // Redirect to frontend with success
-      return res.redirect(302, `${process.env.FRONTEND_URL || 'https://geauxplans.com'}/my-account?verified=true`);
+      return res.redirect(302, 'https://geauxplans.com/my-account?verified=true');
     } catch (error) {
       console.error('Email verification error:', error);
       return res.status(500).json({ success: false, error: 'Verification failed' });
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
         type: 'signup',
         email: email,
         options: {
-          emailRedirectTo: `${process.env.FRONTEND_URL || 'https://geauxplans.com'}/verify-email`
+          emailRedirectTo: 'https://geauxplans.com/verify-email'
         }
       });
 
