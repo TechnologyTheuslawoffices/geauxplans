@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Routes, Route, useLocation } from 'react-router-dom';
+import { Link, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Dashboard from './account/Dashboard';
 import ViewPlans from './account/ViewPlans';
@@ -15,6 +15,7 @@ const MyAccount: React.FC = () => {
   });
   const [loginError, setLoginError] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,13 +31,18 @@ const MyAccount: React.FC = () => {
     e.preventDefault();
     setLoginError('');
 
-    const success = await login({
+    const result = await login({
       email: formData.email,
       password: formData.password,
     });
 
-    if (!success) {
-      setLoginError(error || 'Invalid email or password');
+    if (!result.success) {
+      if (result.requiresVerification) {
+        // Redirect to verification page
+        navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+      } else {
+        setLoginError(error || 'Invalid email or password');
+      }
     }
   };
 

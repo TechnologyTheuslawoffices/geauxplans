@@ -10,22 +10,24 @@ export default async function handler(req, res) {
 
   const { email, password, firstName, lastName, first_name, last_name } = req.body;
   // Support both camelCase and snake_case
-  const userFirstName = firstName || first_name;
-  const userLastName = lastName || last_name;
+  const userFirstName = firstName || first_name || '';
+  const userLastName = lastName || last_name || '';
 
   if (!email || !password) {
     return res.status(400).json({ success: false, error: 'Email and password are required' });
   }
 
   try {
-    // Create user in Supabase Auth
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    // Use signUp to automatically send verification email
+    const { data, error } = await supabaseAdmin.auth.signUp({
       email,
       password,
-      email_confirm: true,
-      user_metadata: {
-        first_name: userFirstName,
-        last_name: userLastName
+      options: {
+        data: {
+          first_name: userFirstName,
+          last_name: userLastName
+        },
+        emailRedirectTo: `${process.env.FRONTEND_URL || 'https://geauxplans.com'}/verify-email`
       }
     });
 
@@ -33,27 +35,26 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: error.message });
     }
 
-    // Sign in to get tokens
-    const { data: signInData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (signInError) {
-      return res.status(400).json({ success: false, error: signInError.message });
+    // Check if user already exists (Supabase returns user with identities: [] for existing users)
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'A user with this email address has already been registered'
+      });
     }
 
+    // Return success - user needs to verify email
     res.status(201).json({
       success: true,
+      message: 'Registration successful! Please check your email to verify your account.',
+      requiresVerification: true,
       user: {
-        id: data.user.id,
-        email: data.user.email,
+        id: data.user?.id,
+        email: data.user?.email,
         firstName: userFirstName,
         lastName: userLastName,
-        displayName: userFirstName || email.split('@')[0]
-      },
-      token: signInData.session.access_token,
-      refreshToken: signInData.session.refresh_token
+        emailVerified: false
+      }
     });
   } catch (error) {
     console.error('Registration error:', error);

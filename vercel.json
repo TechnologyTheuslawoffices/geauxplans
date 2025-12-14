@@ -6,6 +6,7 @@
   "rewrites": [
     { "source": "/api/auth/login", "destination": "/api/auth/login" },
     { "source": "/api/auth/register", "destination": "/api/auth/register" },
+    { "source": "/api/auth/verify-email", "destination": "/api/auth/verify-email" },
     { "source": "/api/auth/me", "destination": "/api/auth/me" },
     { "source": "/api/submissions", "destination": "/api/submissions/index" },
     { "source": "/api/submissions/by-type/:formType", "destination": "/api/submissions/by-type/[formType]" },

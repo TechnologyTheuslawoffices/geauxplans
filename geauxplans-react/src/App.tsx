@@ -16,6 +16,7 @@ import FAQ from './pages/FAQ';
 import LegalEdgePlan from './pages/LegalEdgePlan';
 import EstatePlanning from './pages/EstatePlanning';
 import POAForm from './pages/POAForm';
+import VerifyEmail from './pages/VerifyEmail';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -41,6 +42,7 @@ function App() {
             <Route path="/legal-edge-plan" element={<LegalEdgePlan />} />
             <Route path="/estate-planning" element={<EstatePlanning />} />
             <Route path="/poa-form" element={<POAForm />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
           </Routes>
           <Footer />
         </div>

@@ -58,3 +58,4 @@ coverage/
 *.key
 
 .vercel
+.env.vercel

@@ -22,7 +22,26 @@ export default async function handler(req, res) {
     });
 
     if (error) {
+      // Check if it's an unverified email error
+      if (error.message.includes('Email not confirmed')) {
+        return res.status(401).json({
+          success: false,
+          error: 'Please verify your email address before logging in.',
+          requiresVerification: true,
+          email: email
+        });
+      }
       return res.status(401).json({ success: false, error: 'Invalid email or password' });
+    }
+
+    // Check if email is verified
+    if (!data.user.email_confirmed_at) {
+      return res.status(401).json({
+        success: false,
+        error: 'Please verify your email address before logging in.',
+        requiresVerification: true,
+        email: email
+      });
     }
 
     // Get user profile

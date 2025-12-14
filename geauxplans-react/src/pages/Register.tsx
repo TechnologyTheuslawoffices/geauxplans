@@ -38,15 +38,20 @@ const Register: React.FC = () => {
       return;
     }
 
-    const success = await register({
+    const result = await register({
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
       password: formData.password,
     });
 
-    if (success) {
-      navigate('/my-account');
+    if (result.success) {
+      if (result.requiresVerification) {
+        // Redirect to verify email page
+        navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+      } else {
+        navigate('/my-account');
+      }
     } else {
       setRegisterError(error || 'Registration failed. Please try again.');
     }
