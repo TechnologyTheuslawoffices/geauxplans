@@ -22,8 +22,9 @@ export default async function handler(req, res) {
     });
 
     if (error) {
+      console.log('Supabase login error:', error.message);
       // Check if it's an unverified email error
-      if (error.message.includes('Email not confirmed')) {
+      if (error.message.includes('Email not confirmed') || error.message.includes('not confirmed')) {
         return res.status(401).json({
           success: false,
           error: 'Please verify your email address before logging in.',
@@ -31,7 +32,8 @@ export default async function handler(req, res) {
           email: email
         });
       }
-      return res.status(401).json({ success: false, error: 'Invalid email or password' });
+      // Return actual error for debugging
+      return res.status(401).json({ success: false, error: error.message || 'Invalid email or password' });
     }
 
     // Check if email is verified
