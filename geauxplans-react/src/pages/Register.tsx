@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
 const Register: React.FC = () => {
   const { register, error, clearError, isLoading } = useAuth();
@@ -15,6 +16,24 @@ const Register: React.FC = () => {
   const [registerError, setRegisterError] = useState('');
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
+  const [isResending, setIsResending] = useState(false);
+  const [resendStatus, setResendStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleResendEmail = async () => {
+    setIsResending(true);
+    setResendStatus('idle');
+    try {
+      const response = await api.post('/auth/verify-email', { email: registeredEmail });
+      if (response.success) {
+        setResendStatus('success');
+      } else {
+        setResendStatus('error');
+      }
+    } catch {
+      setResendStatus('error');
+    }
+    setIsResending(false);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -260,17 +279,39 @@ const Register: React.FC = () => {
                 backgroundColor: '#f8f9fa',
                 padding: '15px',
                 borderRadius: '8px',
-                marginBottom: '25px',
+                marginBottom: '20px',
                 fontSize: '14px',
                 color: '#707070',
               }}
             >
-              <strong>Didn't receive the email?</strong>
-              <br />
-              Check your spam folder or{' '}
-              <Link to={`/verify-email?email=${encodeURIComponent(registeredEmail)}`} style={{ color: '#004d71' }}>
-                click here to resend
-              </Link>
+              <p style={{ marginBottom: '10px' }}>
+                <strong>Didn't receive the email?</strong> Check your spam folder.
+              </p>
+              <button
+                onClick={handleResendEmail}
+                disabled={isResending}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#004d71',
+                  textDecoration: 'underline',
+                  cursor: isResending ? 'wait' : 'pointer',
+                  padding: 0,
+                  fontSize: '14px',
+                }}
+              >
+                {isResending ? 'Sending...' : 'Resend verification email'}
+              </button>
+              {resendStatus === 'success' && (
+                <p style={{ color: '#28a745', marginTop: '10px', marginBottom: 0 }}>
+                  Email sent! Check your inbox.
+                </p>
+              )}
+              {resendStatus === 'error' && (
+                <p style={{ color: '#dc3545', marginTop: '10px', marginBottom: 0 }}>
+                  Failed to send. Please try again.
+                </p>
+              )}
             </div>
             <button
               onClick={() => navigate('/my-account')}
