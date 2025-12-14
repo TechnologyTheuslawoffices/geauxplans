@@ -205,7 +205,14 @@ const MyAccount: React.FC = () => {
             <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>My Account</h1>
 
             {(loginError || error) && (
-              <div className="alert alert-danger mb-3">
+              <div style={{
+                backgroundColor: '#f8d7da',
+                color: '#721c24',
+                padding: '12px 15px',
+                borderRadius: '4px',
+                marginBottom: '20px',
+                border: '1px solid #f5c6cb'
+              }}>
                 {loginError || error}
               </div>
             )}
@@ -251,8 +258,13 @@ const MyAccount: React.FC = () => {
                 />
               </div>
 
-              <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%' }}>
-                Log In
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg"
+                style={{ width: '100%' }}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Logging in...' : 'Log In'}
               </button>
             </form>
 
