@@ -8,7 +8,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  const { email, password, first_name, last_name } = req.body;
+  const { email, password, firstName, lastName, first_name, last_name } = req.body;
+  // Support both camelCase and snake_case
+  const userFirstName = firstName || first_name;
+  const userLastName = lastName || last_name;
 
   if (!email || !password) {
     return res.status(400).json({ success: false, error: 'Email and password are required' });
@@ -21,8 +24,8 @@ export default async function handler(req, res) {
       password,
       email_confirm: true,
       user_metadata: {
-        first_name,
-        last_name
+        first_name: userFirstName,
+        last_name: userLastName
       }
     });
 
@@ -45,9 +48,9 @@ export default async function handler(req, res) {
       user: {
         id: data.user.id,
         email: data.user.email,
-        firstName: first_name,
-        lastName: last_name,
-        displayName: first_name || email.split('@')[0]
+        firstName: userFirstName,
+        lastName: userLastName,
+        displayName: userFirstName || email.split('@')[0]
       },
       token: signInData.session.access_token,
       refreshToken: signInData.session.refresh_token
