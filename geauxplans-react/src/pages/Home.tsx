@@ -28,14 +28,11 @@ const Home: React.FC = () => {
               </div>
             </div>
             <div className="hero-image">
-              <div className="hero-image-wrapper">
-                <img src="/img/welcome.svg" alt="" className="hero-swoosh" />
-                <img
-                  src="/img/field-family.jpg"
-                  alt="Happy family"
-                  className="hero-family"
-                />
-              </div>
+              <img
+                src="/img/Estate-and-Business-Planning-Louisiana.png"
+                alt="Estate and Business Planning Louisiana"
+                style={{ maxWidth: '100%', height: 'auto' }}
+              />
             </div>
           </div>
         </div>
