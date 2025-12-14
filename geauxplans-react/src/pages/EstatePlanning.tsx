@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/estate-planning.css';
 
 interface FormData {
@@ -65,7 +65,6 @@ const US_STATES = [
   { value: 'WY', label: 'Wyoming' },
 ];
 
-// Product mappings matching WordPress WooCommerce products
 const PRODUCTS = {
   MINOR_CHILD: { id: 606, name: 'Minor Child-Centered Estate Plan', price: 599 },
   POA_SUPPLEMENT: { id: 614, name: 'Power of Attorney Supplement', price: 299 },
@@ -75,6 +74,7 @@ const PRODUCTS = {
 
 const EstatePlanning: React.FC = () => {
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     state: 'LA',
@@ -86,6 +86,17 @@ const EstatePlanning: React.FC = () => {
     wantsIncapacityPlanning: null,
   });
   const [recommendedProduct, setRecommendedProduct] = useState<typeof PRODUCTS.MINOR_CHILD | null>(null);
+
+  const openModal = () => {
+    setShowModal(true);
+    setCurrentStep(1);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    document.body.style.overflow = 'auto';
+  };
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFormData({ ...formData, state: e.target.value });
@@ -104,7 +115,6 @@ const EstatePlanning: React.FC = () => {
   };
 
   const determineProduct = () => {
-    // Logic based on WordPress form flow
     if (formData.planForDeath) {
       if (formData.ownsRealEstate) {
         if (formData.assetsOver125k) {
@@ -126,8 +136,8 @@ const EstatePlanning: React.FC = () => {
   };
 
   const handleGetStarted = (product: typeof PRODUCTS.MINOR_CHILD) => {
-    // Navigate to the appropriate form based on product and marital status
     const formType = formData.isMarried ? '2person' : 'solo';
+    closeModal();
     navigate(`/poa-form?product=${product.id}&type=${formType}`);
   };
 
@@ -153,7 +163,6 @@ const EstatePlanning: React.FC = () => {
               <div className="alert alert-warning mt-3">
                 <i className="fas fa-exclamation-triangle me-2"></i>
                 Currently, our estate planning services are only available for Louisiana residents.
-                We're working on expanding to other states soon!
               </div>
             )}
             <div className="ep-buttons mt-4">
@@ -277,7 +286,6 @@ const EstatePlanning: React.FC = () => {
             </div>
           );
         } else {
-          // Incapacity planning path
           return (
             <div className="ep-step">
               <h2>Step 4: Incapacity Planning</h2>
@@ -414,48 +422,8 @@ const EstatePlanning: React.FC = () => {
           <div className="ep-step ep-result">
             <h2>Your Recommended Plan</h2>
             <div className="ep-product-card">
-              <div className="ep-product-icon">
-                <i className="fas fa-file-contract fa-3x"></i>
-              </div>
               <h3>{product.name}</h3>
               <p className="ep-product-price">${product.price}</p>
-              <ul className="ep-product-features">
-                {product.id === PRODUCTS.TRUST_BASED.id && (
-                  <>
-                    <li><i className="fas fa-check me-2"></i>Revocable Living Trust</li>
-                    <li><i className="fas fa-check me-2"></i>Pour-Over Will</li>
-                    <li><i className="fas fa-check me-2"></i>Financial Power of Attorney</li>
-                    <li><i className="fas fa-check me-2"></i>Healthcare Power of Attorney</li>
-                    <li><i className="fas fa-check me-2"></i>Living Will</li>
-                    <li><i className="fas fa-check me-2"></i>Avoids Probate</li>
-                  </>
-                )}
-                {product.id === PRODUCTS.WILL_BASED.id && (
-                  <>
-                    <li><i className="fas fa-check me-2"></i>Last Will and Testament</li>
-                    <li><i className="fas fa-check me-2"></i>Financial Power of Attorney</li>
-                    <li><i className="fas fa-check me-2"></i>Healthcare Power of Attorney</li>
-                    <li><i className="fas fa-check me-2"></i>Living Will</li>
-                  </>
-                )}
-                {product.id === PRODUCTS.MINOR_CHILD.id && (
-                  <>
-                    <li><i className="fas fa-check me-2"></i>Last Will with Guardian Nominations</li>
-                    <li><i className="fas fa-check me-2"></i>Children's Trust Provisions</li>
-                    <li><i className="fas fa-check me-2"></i>Financial Power of Attorney</li>
-                    <li><i className="fas fa-check me-2"></i>Healthcare Power of Attorney</li>
-                    <li><i className="fas fa-check me-2"></i>Living Will</li>
-                  </>
-                )}
-                {product.id === PRODUCTS.POA_SUPPLEMENT.id && (
-                  <>
-                    <li><i className="fas fa-check me-2"></i>Financial Power of Attorney</li>
-                    <li><i className="fas fa-check me-2"></i>Healthcare Power of Attorney</li>
-                    <li><i className="fas fa-check me-2"></i>Advance Healthcare Directive</li>
-                    <li><i className="fas fa-check me-2"></i>Living Will</li>
-                  </>
-                )}
-              </ul>
               <button
                 className="btn btn-success btn-lg w-100"
                 onClick={() => handleGetStarted(product)}
@@ -481,17 +449,188 @@ const EstatePlanning: React.FC = () => {
   const progressPercent = (currentStep / totalSteps) * 100;
 
   return (
-    <div className="estate-planning-page">
-      <div className="container py-5">
-        <div className="row justify-content-center">
-          <div className="col-lg-8">
-            <div className="ep-header text-center mb-4">
-              <h1>Estate Planning Questionnaire</h1>
-              <p className="lead">
-                Answer a few questions to find the right estate plan for your needs.
+    <main>
+      {/* Hero Section */}
+      <section className="hero-home">
+        <div className="container">
+          <div className="hero-grid">
+            <div className="hero-text">
+              <p className="hero-subtitle">Complete solutions for</p>
+              <h1 className="hero-title">
+                Estate <span className="text-blue">&amp;</span> Business Planning
+              </h1>
+              <p className="hero-local">
+                <em>Geaux</em> Local <span className="fleur-de-lis">⚜</span>
               </p>
+              <p className="hero-description">
+                <em>Whether planning your estate, your business, or your future, we are here
+                to make your experience simple, smooth, and affordable, so you can rest
+                easy knowing that all will be right in the world — </em>
+                <strong>and you can get back to that gumbo.</strong> <em>Let's Geaux!</em>
+              </p>
+              <div className="hero-buttons pill-group">
+                <button onClick={openModal} className="btn btn-pill-left">Estate Plans</button>
+                <Link to="/start-business-llc" className="btn btn-pill-right">Business Planning</Link>
+              </div>
             </div>
+            <div className="hero-image">
+              <div className="hero-image-wrapper">
+                <img src="/img/welcome.svg" alt="" className="hero-swoosh" />
+                <img
+                  src="/img/field-family.jpg"
+                  alt="Happy family"
+                  className="hero-family"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
+      {/* Hello Section */}
+      <section className="hello-section">
+        <div className="container">
+          <div className="hello-grid">
+            <div className="hello-title">
+              <h2><span className="text-blue">hello</span>.</h2>
+            </div>
+            <div className="hello-content">
+              <h3>Legal Help for Businesses and Families in Louisiana</h3>
+            </div>
+            <div className="hello-description">
+              <p><em>Business is complex, and we've made it easier for business owners to manage risk, taxes, and relations with other owners, customers, and employees to get more work done while facing fewer roadblocks.</em></p>
+              <Link to="/about" className="read-more">Read more →</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Easy & Affordable Estate Planning Section */}
+      <section className="estate-planning-section">
+        <div className="container">
+          <div className="ep-landing-grid">
+            <div className="ep-landing-content">
+              <h2>Easy &amp; Affordable<br /><span className="text-blue">Estate Planning</span></h2>
+              <p className="ep-landing-subtitle">Not sure where to start?</p>
+              <p>Tell us about yourself and we'll match you with the right plan!</p>
+              <button onClick={openModal} className="btn btn-solid btn-lg">Take the quiz</button>
+            </div>
+            <div className="ep-landing-plans">
+              <ul className="plan-list">
+                <li><Link to="/minor-child-centered-estate-plan">Minor Child-Centered Estate Plan</Link></li>
+                <li><Link to="/power-of-attorney-plan">Power of Attorney Supplement Plan</Link></li>
+                <li><Link to="/will-based-estate-plan">Will-Based Estate Plan</Link></li>
+                <li><Link to="/trust-based-estate-plan">Trust-Based Estate Plan</Link></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* GeauxPlans in Numbers Section */}
+      <section className="numbers-section">
+        <div className="container">
+          <h3>GeauxPlans in numbers</h3>
+          <p className="numbers-subtitle">In the course of our work</p>
+          <div className="numbers-grid">
+            <div className="number-card">
+              <span className="number">140</span>
+              <p>Years total experience of our specialists in the field of law</p>
+            </div>
+            <div className="number-card">
+              <span className="number">#1</span>
+              <p>Online Estate and Business planning company in Louisiana</p>
+            </div>
+            <div className="number-card">
+              <span className="number">5k</span>
+              <p>Happy clients across the United States</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Louisiana Business Section */}
+      <section className="louisiana-business-section">
+        <div className="container">
+          <div className="louisiana-grid">
+            <div className="louisiana-content">
+              <h2>Your Louisiana Business is in good hands</h2>
+              <p><em>Unlike other online sources, GeauxPlans is owned, administered, and supported by a Louisiana law firm.</em></p>
+              <div className="louisiana-buttons">
+                <Link to="/start-business-llc" className="btn btn-solid">Start brand new LLC</Link>
+                <Link to="/operating-agreement-llc" className="btn btn_geaux">Get Operating Agreement</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Learning Center Section */}
+      <section className="learning-section">
+        <div className="container">
+          <h3>The Learning Center</h3>
+          <p className="learning-subtitle"><em>Made in Louisiana for Louisiana</em></p>
+          <div className="learning-grid">
+            <div className="learning-column">
+              <h4>#1 Business Planning</h4>
+              <p>Find out how to start your Limited Liability Company.</p>
+              <ul className="article-list">
+                <li>
+                  <span className="article-date">March 29, 2023</span>
+                  <Link to="/learn">The Ultimate Guide to Starting a Business</Link>
+                </li>
+                <li>
+                  <span className="article-date">January 27, 2023</span>
+                  <Link to="/learn">Do I Need an LLC?</Link>
+                </li>
+                <li>
+                  <span className="article-date">September 16, 2022</span>
+                  <Link to="/learn">How Does an LLC Provide Asset Protection and Why Do I Need One?</Link>
+                </li>
+              </ul>
+            </div>
+            <div className="learning-column">
+              <h4>#2 Estate Planning</h4>
+              <p>Learn everything you need to know about estate planning.</p>
+              <ul className="article-list">
+                <li>
+                  <span className="article-date">February 8, 2023</span>
+                  <Link to="/learn">Make a Will Online in 3 Easy Steps</Link>
+                </li>
+                <li>
+                  <span className="article-date">January 26, 2023</span>
+                  <Link to="/learn">Five of the Most Useful Limited Powers of Attorney</Link>
+                </li>
+                <li>
+                  <span className="article-date">January 23, 2023</span>
+                  <Link to="/learn">The Difference Between a General, Limited, Durable, and Springing Power of Attorney</Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="contact-section">
+        <div className="container">
+          <h3>Do you have any questions?</h3>
+          <p><strong>Support team:</strong> M-F, 8am-5pm CST</p>
+          <p><strong>Call us:</strong> +1 (855) 213-6300</p>
+        </div>
+      </section>
+
+      {/* Quiz Modal */}
+      {showModal && (
+        <div className="quiz-modal-overlay" onClick={closeModal}>
+          <div className="quiz-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="quiz-modal-close" onClick={closeModal}>
+              <i className="fas fa-times"></i>
+            </button>
+            <div className="quiz-modal-header">
+              <h2>Estate Planning Questionnaire</h2>
+              <p>Answer a few questions to find the right estate plan for your needs.</p>
+            </div>
             <div className="ep-progress mb-4">
               <div className="progress" style={{ height: '8px' }}>
                 <div
@@ -503,14 +642,13 @@ const EstatePlanning: React.FC = () => {
                 Step {currentStep} of {totalSteps}
               </small>
             </div>
-
-            <div className="ep-form-container card">
-              <div className="card-body p-4">{renderStep()}</div>
+            <div className="quiz-modal-body">
+              {renderStep()}
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </main>
   );
 };
 

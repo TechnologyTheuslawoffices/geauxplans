@@ -14,9 +14,10 @@ const Footer: React.FC = () => {
           </div>
           <div>
             <ul className="footer-menu list-reset d-lg-block">
+              <li><Link to="/learn">Learn</Link></li>
+              <li><Link to="/about">About &amp; Contacts</Link></li>
               <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-              <li><Link to="/terms">Terms of Service</Link></li>
-              <li><Link to="/faq">FAQ</Link></li>
+              <li><Link to="/terms-of-use">Terms of Use</Link></li>
             </ul>
           </div>
           <div>

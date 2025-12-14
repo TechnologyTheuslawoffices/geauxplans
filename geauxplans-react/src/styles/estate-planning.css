@@ -178,6 +178,277 @@
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
 
+/* Quiz Modal */
+.quiz-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.quiz-modal {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.quiz-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #666;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.quiz-modal-close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.quiz-modal-header {
+  padding: 30px 30px 0;
+  text-align: center;
+}
+
+.quiz-modal-header h2 {
+  color: #2c3e50;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.quiz-modal-header p {
+  color: #666;
+}
+
+.quiz-modal-body {
+  padding: 20px 30px 30px;
+}
+
+.quiz-modal .ep-progress {
+  padding: 0 30px;
+}
+
+/* Estate Planning Landing Page Sections */
+.estate-planning-section {
+  padding: 80px 0;
+  background: #f9f9f9;
+}
+
+.ep-landing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.ep-landing-content h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.ep-landing-subtitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.plan-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.plan-list li {
+  padding: 15px 0;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.plan-list li:last-child {
+  border-bottom: none;
+}
+
+.plan-list a {
+  color: #0000ff;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+.plan-list a:hover {
+  text-decoration: underline;
+}
+
+/* Numbers Section */
+.numbers-section {
+  padding: 80px 0;
+  text-align: center;
+}
+
+.numbers-section h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.numbers-subtitle {
+  color: #666;
+  font-style: italic;
+  margin-bottom: 50px;
+}
+
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.number-card {
+  text-align: center;
+}
+
+.number-card .number {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #0000ff;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.number-card p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* Louisiana Business Section */
+.louisiana-business-section {
+  padding: 80px 0;
+  background: #f0f4ff;
+}
+
+.louisiana-content h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.louisiana-content p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.louisiana-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+/* Learning Section */
+.learning-section {
+  padding: 80px 0;
+}
+
+.learning-section h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.learning-subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 50px;
+}
+
+.learning-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+}
+
+.learning-column h4 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0000ff;
+  margin-bottom: 10px;
+}
+
+.learning-column > p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.article-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.article-list li {
+  padding: 15px 0;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.article-list li:last-child {
+  border-bottom: none;
+}
+
+.article-date {
+  display: block;
+  font-size: 0.8rem;
+  color: #999;
+  margin-bottom: 5px;
+}
+
+.article-list a {
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.article-list a:hover {
+  color: #0000ff;
+}
+
+/* Contact Section */
+.contact-section {
+  padding: 60px 0;
+  background: #f9f9f9;
+  text-align: center;
+}
+
+.contact-section h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.contact-section p {
+  margin-bottom: 10px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .ep-option-btn {
@@ -195,5 +466,28 @@
 
   .ep-product-price {
     font-size: 2rem;
+  }
+
+  .ep-landing-grid,
+  .numbers-grid,
+  .learning-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .ep-landing-content h2 {
+    font-size: 1.8rem;
+  }
+
+  .number-card .number {
+    font-size: 3rem;
+  }
+
+  .louisiana-buttons {
+    flex-direction: column;
+  }
+
+  .quiz-modal {
+    margin: 10px;
   }
 }

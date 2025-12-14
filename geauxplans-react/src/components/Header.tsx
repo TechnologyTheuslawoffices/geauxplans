@@ -35,52 +35,73 @@ const Header: React.FC = () => {
               <span id="show_mobile_menu" className="mobile_menu_toggle" onClick={toggleMobileMenu}>
                 <img src="/img/mobile_menu.svg" alt="Menu" />
               </span>
+              <Link to="/" className="site-logo">
+                <img src="/img/logo.svg" alt="GeauxPlans" style={{ height: '40px' }} />
+              </Link>
               <div id="place_for_menu">
                 <nav id="header_navigation" className="header_navigation">
                   <ul className="primary-menu list-reset d-none d-lg-block">
+                    {/* Estate Planning Mega Menu */}
                     <li className="menu-item menu-item-has-children gp_mega_menu">
                       <Link to="/estate-planning">Estate Planning</Link>
                       <ul className="sub-menu">
-                        <li>
-                          <Link to="/estate-planning/will-based">Will-Based Estate Plan</Link>
-                          <p className="description">Simple estate planning with a Last Will and Testament</p>
+                        <li className="menu-item menu-item-has-children">
+                          <Link to="#">Overview</Link>
+                          <ul className="sub-menu">
+                            <li>
+                              <Link to="/estate-planning">Easy &amp; Affordable Estate Planning</Link>
+                              <p className="description">Take the quiz and find out which Estate Plan is best for you. <span className="gpx_more">Take the quiz &rarr;</span></p>
+                            </li>
+                          </ul>
                         </li>
-                        <li>
-                          <Link to="/estate-planning/trust-based">Trust-Based Estate Plan</Link>
-                          <p className="description">Comprehensive planning with a Living Trust to avoid probate</p>
-                        </li>
-                        <li>
-                          <Link to="/estate-planning/minor-child">Minor Child-Centered Plan</Link>
-                          <p className="description">Planning focused on providing for minor children</p>
-                        </li>
-                        <li>
-                          <Link to="/estate-planning/power-of-attorney">Power of Attorney Supplement</Link>
-                          <p className="description">Healthcare and financial powers of attorney</p>
+                        <li className="menu-item menu-item-has-children">
+                          <Link to="#">Plans</Link>
+                          <ul className="sub-menu">
+                            <li>
+                              <Link to="/minor-child-centered-estate-plan">Minor Child-Centered Estate Plan</Link>
+                              <p className="description">For families with young children <span>From $199</span></p>
+                            </li>
+                            <li>
+                              <Link to="/power-of-attorney-plan">Power of Attorney Plan</Link>
+                              <p className="description">For your college student or aging parent <span>From $99</span></p>
+                            </li>
+                            <li>
+                              <Link to="/will-based-estate-plan">Will-Based Estate Plan</Link>
+                              <p className="description">To control your legacy <span>From $199</span></p>
+                            </li>
+                            <li>
+                              <Link to="/trust-based-estate-plan">Trust-Based Estate Plan</Link>
+                              <p className="description">To avoid probate and transfer assets <span>From $399</span></p>
+                            </li>
+                            <li>
+                              <Link to="/legal-edge-plan">Legal Edge Plan</Link>
+                              <p className="description">Premium membership with benefits <span>$9.99/month</span></p>
+                            </li>
+                          </ul>
                         </li>
                       </ul>
                     </li>
-                    <li className="menu-item menu-item-has-children gp_mega_menu">
-                      <Link to="/business-planning">Business Planning</Link>
+                    {/* Business Planning Mega Menu */}
+                    <li className="menu-item menu-item-has-children gp_mega_menu gpx_mega_menu_one_line">
+                      <Link to="/start-business-llc">Business Planning</Link>
                       <ul className="sub-menu">
                         <li>
-                          <Link to="/business-planning/llc-formation">LLC Formation</Link>
-                          <p className="description">Form your Louisiana LLC online</p>
+                          <Link to="/start-business-llc">Start an LLC</Link>
+                          <p className="description">Find out if an LLC is right for you – enter your preferred business name to get started <span>From $89</span></p>
                         </li>
                         <li>
-                          <Link to="/business-planning/operating-agreement">Operating Agreement</Link>
-                          <p className="description">Create a custom operating agreement</p>
-                        </li>
-                        <li>
-                          <Link to="/business-planning/ein-registration">EIN Registration</Link>
-                          <p className="description">Get your Employer Identification Number</p>
+                          <Link to="/operating-agreement-llc">Operating Agreement for LLC</Link>
+                          <p className="description">Document that outlines the ownership and member duties of your LLC <span>From $149</span></p>
                         </li>
                       </ul>
                     </li>
-                    <li className="menu-item">
-                      <Link to="/pricing">Pricing</Link>
-                    </li>
-                    <li className="menu-item">
-                      <Link to="/faq">FAQ</Link>
+                    {/* Learn Dropdown */}
+                    <li className="menu-item menu-item-has-children">
+                      <Link to="/learn">Learn</Link>
+                      <ul className="sub-menu">
+                        <li><Link to="/category/estate-planning-articles">Estate Planning</Link></li>
+                        <li><Link to="/category/business-planning-articles">Business Planning</Link></li>
+                      </ul>
                     </li>
                   </ul>
                 </nav>
@@ -143,22 +164,27 @@ const Header: React.FC = () => {
               <li className="menu-item menu-item-has-children">
                 <Link to="/estate-planning" onClick={closeMobileMenu}>Estate Planning</Link>
                 <ul className="sub-menu">
-                  <li><Link to="/estate-planning/will-based" onClick={closeMobileMenu}>Will-Based Estate Plan</Link></li>
-                  <li><Link to="/estate-planning/trust-based" onClick={closeMobileMenu}>Trust-Based Estate Plan</Link></li>
-                  <li><Link to="/estate-planning/minor-child" onClick={closeMobileMenu}>Minor Child-Centered Plan</Link></li>
-                  <li><Link to="/estate-planning/power-of-attorney" onClick={closeMobileMenu}>Power of Attorney Supplement</Link></li>
+                  <li><Link to="/minor-child-centered-estate-plan" onClick={closeMobileMenu}>Minor Child-Centered Estate Plan</Link></li>
+                  <li><Link to="/power-of-attorney-plan" onClick={closeMobileMenu}>Power of Attorney Plan</Link></li>
+                  <li><Link to="/will-based-estate-plan" onClick={closeMobileMenu}>Will-Based Estate Plan</Link></li>
+                  <li><Link to="/trust-based-estate-plan" onClick={closeMobileMenu}>Trust-Based Estate Plan</Link></li>
+                  <li><Link to="/legal-edge-plan" onClick={closeMobileMenu}>Legal Edge Plan</Link></li>
                 </ul>
               </li>
               <li className="menu-item menu-item-has-children">
-                <Link to="/business-planning" onClick={closeMobileMenu}>Business Planning</Link>
+                <Link to="/start-business-llc" onClick={closeMobileMenu}>Business Planning</Link>
                 <ul className="sub-menu">
-                  <li><Link to="/business-planning/llc-formation" onClick={closeMobileMenu}>LLC Formation</Link></li>
-                  <li><Link to="/business-planning/operating-agreement" onClick={closeMobileMenu}>Operating Agreement</Link></li>
-                  <li><Link to="/business-planning/ein-registration" onClick={closeMobileMenu}>EIN Registration</Link></li>
+                  <li><Link to="/start-business-llc" onClick={closeMobileMenu}>Start an LLC</Link></li>
+                  <li><Link to="/operating-agreement-llc" onClick={closeMobileMenu}>Operating Agreement for LLC</Link></li>
                 </ul>
               </li>
-              <li><Link to="/pricing" onClick={closeMobileMenu}>Pricing</Link></li>
-              <li><Link to="/faq" onClick={closeMobileMenu}>FAQ</Link></li>
+              <li className="menu-item menu-item-has-children">
+                <Link to="/learn" onClick={closeMobileMenu}>Learn</Link>
+                <ul className="sub-menu">
+                  <li><Link to="/category/estate-planning-articles" onClick={closeMobileMenu}>Estate Planning</Link></li>
+                  <li><Link to="/category/business-planning-articles" onClick={closeMobileMenu}>Business Planning</Link></li>
+                </ul>
+              </li>
               <li><Link to="/my-account" onClick={closeMobileMenu}>My Account</Link></li>
             </ul>
           </div>
