@@ -16,6 +16,7 @@ interface ApiResponse<T = any> {
   data?: T;
   error?: string;
   message?: string;
+  requiresVerification?: boolean;
 }
 
 interface RequestOptions {
@@ -106,13 +107,14 @@ async function apiRequest<T = any>(
       };
     }
 
-    // Handle backend response format: { success, data, error, message }
+    // Handle backend response format: { success, data, error, message, requiresVerification }
     if (responseData.success !== undefined) {
       return {
         success: responseData.success,
-        data: responseData.data,
+        data: responseData.data || responseData.user,
         error: responseData.error,
         message: responseData.message,
+        requiresVerification: responseData.requiresVerification,
       };
     }
 
