@@ -13,6 +13,8 @@ const Register: React.FC = () => {
     confirmPassword: '',
   });
   const [registerError, setRegisterError] = useState('');
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -47,8 +49,9 @@ const Register: React.FC = () => {
 
     if (result.success) {
       if (result.requiresVerification) {
-        // Redirect to verify email page
-        navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+        // Show verification modal
+        setRegisteredEmail(formData.email);
+        setShowVerificationModal(true);
       } else {
         navigate('/my-account');
       }
@@ -213,6 +216,72 @@ const Register: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Email Verification Modal */}
+      {showVerificationModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: '12px',
+              padding: '40px',
+              maxWidth: '450px',
+              width: '90%',
+              textAlign: 'center',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+            }}
+          >
+            <div style={{ fontSize: '60px', marginBottom: '20px' }}>✉️</div>
+            <h2 style={{ marginBottom: '15px', color: '#004d71' }}>Check Your Email!</h2>
+            <p style={{ color: '#707070', marginBottom: '10px' }}>
+              We've sent a verification link to:
+            </p>
+            <p style={{ fontWeight: '600', marginBottom: '20px', color: '#000' }}>
+              {registeredEmail}
+            </p>
+            <p style={{ color: '#707070', marginBottom: '25px', fontSize: '14px' }}>
+              Please click the link in the email to verify your account and complete your registration.
+            </p>
+            <div
+              style={{
+                backgroundColor: '#f8f9fa',
+                padding: '15px',
+                borderRadius: '8px',
+                marginBottom: '25px',
+                fontSize: '14px',
+                color: '#707070',
+              }}
+            >
+              <strong>Didn't receive the email?</strong>
+              <br />
+              Check your spam folder or{' '}
+              <Link to={`/verify-email?email=${encodeURIComponent(registeredEmail)}`} style={{ color: '#004d71' }}>
+                click here to resend
+              </Link>
+            </div>
+            <button
+              onClick={() => navigate('/my-account')}
+              className="btn btn-primary"
+              style={{ width: '100%' }}
+            >
+              Go to Login
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
