@@ -320,11 +320,16 @@ a:hover {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: block !important;
+  position: relative !important;
+  border: none !important;
+  min-width: auto !important;
 }
 
 .estate-planning-mega .plans-list > li {
   margin-bottom: 18px;
   position: relative;
+  display: block !important;
 }
 
 .estate-planning-mega .plans-list > li:last-child {
