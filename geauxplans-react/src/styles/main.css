@@ -164,6 +164,12 @@ a:hover {
   border-bottom: 1px solid #eaeaea;
 }
 
+/* Remove borders from links inside mega menus */
+.gp_mega_menu a,
+.estate-planning-mega a {
+  border: none !important;
+}
+
 .primary-menu > li > ul > li > a:hover,
 .sub-menu li a:hover {
   color: var(--primary-color);
@@ -174,8 +180,9 @@ a:hover {
   line-height: 1.4;
   color: #999;
   font-style: italic;
-  margin-top: 5px;
-  padding-top: 5px;
+  margin-top: 3px;
+  padding-top: 0;
+  border: none;
 }
 
 /* Mega Menu - Compact Size (50% smaller) */
@@ -365,6 +372,8 @@ a:hover {
   font-weight: 600 !important;
   color: #000 !important;
   display: block;
+  border: none !important;
+  padding: 0 !important;
 }
 
 .estate-planning-mega .plan-name:hover {
@@ -377,6 +386,7 @@ a:hover {
   font-style: italic;
   margin: 2px 0 0 0;
   line-height: 1.4;
+  border: none !important;
 }
 
 .estate-planning-mega .view-all-plans {
