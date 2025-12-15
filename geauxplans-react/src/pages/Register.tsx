@@ -220,7 +220,7 @@ const Register: React.FC = () => {
               Already have an account?
             </p>
             <Link
-              to="/my-account"
+              to="/login"
               className="btn btn-white"
               style={{
                 width: '100%',
@@ -314,7 +314,7 @@ const Register: React.FC = () => {
               )}
             </div>
             <button
-              onClick={() => navigate('/my-account')}
+              onClick={() => navigate('/login')}
               className="btn btn-primary"
               style={{ width: '100%' }}
             >
