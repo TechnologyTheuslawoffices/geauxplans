@@ -41,7 +41,7 @@ const MyAccount: React.FC = () => {
         // Redirect to verification page
         navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
       } else {
-        setLoginError(error || 'Invalid email or password');
+        setLoginError(result.error || 'Invalid email or password');
       }
     }
   };

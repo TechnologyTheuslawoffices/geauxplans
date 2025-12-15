@@ -20,6 +20,7 @@ interface LoginResult {
   success: boolean;
   requiresVerification?: boolean;
   email?: string;
+  error?: string;
 }
 
 interface AuthContextType {
@@ -83,18 +84,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         // Check if verification is required
         const requiresVerification = (response as any).requiresVerification;
+        const errorMsg = response.error || 'Login failed';
         if (requiresVerification) {
-          setError(response.error || 'Please verify your email address.');
+          setError('Please verify your email address.');
           setIsLoading(false);
           return {
             success: false,
             requiresVerification: true,
-            email: credentials.email
+            email: credentials.email,
+            error: 'Please verify your email address.'
           };
         }
-        setError(response.error || 'Login failed');
+        setError(errorMsg);
         setIsLoading(false);
-        return { success: false };
+        return { success: false, error: errorMsg };
       }
     } catch (err) {
       setError('An unexpected error occurred');
