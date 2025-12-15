@@ -76,6 +76,7 @@ const EstatePlanning: React.FC = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [expandedPlan, setExpandedPlan] = useState<string | null>('minor-child');
   const [formData, setFormData] = useState<FormData>({
     state: 'LA',
     isMarried: null,
@@ -510,18 +511,77 @@ const EstatePlanning: React.FC = () => {
         <div className="container">
           <div className="ep-landing-grid">
             <div className="ep-landing-content">
-              <h2>Easy &amp; Affordable<br /><span className="text-blue">Estate Planning</span></h2>
-              <p className="ep-landing-subtitle">Not sure where to start?</p>
-              <p>Tell us about yourself and we'll match you with the right plan!</p>
+              <div className="ep-icon">
+                <img src="/img/document-icon.svg" alt="" />
+              </div>
+              <h2>Easy <span className="text-blue">&amp;</span> Affordable<br />Estate Planning</h2>
+              <p className="ep-landing-subtitle"><em>Not sure where to start?</em></p>
+              <p><em>Tell us about yourself and we'll match you with the right plan!</em></p>
               <button onClick={openModal} className="btn btn-solid btn-lg">Take the quiz</button>
             </div>
             <div className="ep-landing-plans">
-              <ul className="plan-list">
-                <li><Link to="/minor-child-centered-estate-plan">Minor Child-Centered Estate Plan</Link></li>
-                <li><Link to="/power-of-attorney-plan">Power of Attorney Supplement Plan</Link></li>
-                <li><Link to="/will-based-estate-plan">Will-Based Estate Plan</Link></li>
-                <li><Link to="/trust-based-estate-plan">Trust-Based Estate Plan</Link></li>
-              </ul>
+              <div className="plans-accordion">
+                <div className={`plan-accordion-item ${expandedPlan === 'minor-child' ? 'expanded' : ''}`}>
+                  <button
+                    className="plan-accordion-header"
+                    onClick={() => setExpandedPlan(expandedPlan === 'minor-child' ? null : 'minor-child')}
+                  >
+                    <span>Minor Child-Centered Estate Plan</span>
+                    <span className="accordion-icon">{expandedPlan === 'minor-child' ? '−' : '+'}</span>
+                  </button>
+                  {expandedPlan === 'minor-child' && (
+                    <div className="plan-accordion-content">
+                      <p>Create a will-based plan to appoint a Tutor for a minor child to act as surrogate parent for you if something should ever happen to you.</p>
+                      <Link to="/minor-child-centered-estate-plan" className="btn btn-details">Details →</Link>
+                    </div>
+                  )}
+                </div>
+                <div className={`plan-accordion-item ${expandedPlan === 'poa' ? 'expanded' : ''}`}>
+                  <button
+                    className="plan-accordion-header"
+                    onClick={() => setExpandedPlan(expandedPlan === 'poa' ? null : 'poa')}
+                  >
+                    <span>Power of Attorney Supplement Plan</span>
+                    <span className="accordion-icon">{expandedPlan === 'poa' ? '−' : '+'}</span>
+                  </button>
+                  {expandedPlan === 'poa' && (
+                    <div className="plan-accordion-content">
+                      <p>Legal documents for your college student or aging family members to handle financial and healthcare decisions.</p>
+                      <Link to="/power-of-attorney-plan" className="btn btn-details">Details →</Link>
+                    </div>
+                  )}
+                </div>
+                <div className={`plan-accordion-item ${expandedPlan === 'will' ? 'expanded' : ''}`}>
+                  <button
+                    className="plan-accordion-header"
+                    onClick={() => setExpandedPlan(expandedPlan === 'will' ? null : 'will')}
+                  >
+                    <span>Will-Based Estate Plan</span>
+                    <span className="accordion-icon">{expandedPlan === 'will' ? '−' : '+'}</span>
+                  </button>
+                  {expandedPlan === 'will' && (
+                    <div className="plan-accordion-content">
+                      <p>Control your legacy with a comprehensive will-based estate plan.</p>
+                      <Link to="/will-based-estate-plan" className="btn btn-details">Details →</Link>
+                    </div>
+                  )}
+                </div>
+                <div className={`plan-accordion-item ${expandedPlan === 'trust' ? 'expanded' : ''}`}>
+                  <button
+                    className="plan-accordion-header"
+                    onClick={() => setExpandedPlan(expandedPlan === 'trust' ? null : 'trust')}
+                  >
+                    <span>Trust-Based Estate Plan</span>
+                    <span className="accordion-icon">{expandedPlan === 'trust' ? '−' : '+'}</span>
+                  </button>
+                  {expandedPlan === 'trust' && (
+                    <div className="plan-accordion-content">
+                      <p>Avoid probate and transfer assets smoothly with a trust-based estate plan.</p>
+                      <Link to="/trust-based-estate-plan" className="btn btn-details">Details →</Link>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
