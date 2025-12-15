@@ -529,12 +529,10 @@ const EstatePlanning: React.FC = () => {
                     <span>Minor Child-Centered Estate Plan</span>
                     <span className="accordion-icon">{expandedPlan === 'minor-child' ? '−' : '+'}</span>
                   </button>
-                  {expandedPlan === 'minor-child' && (
-                    <div className="plan-accordion-content">
-                      <p>Create a will-based plan to appoint a Tutor for a minor child to act as surrogate parent for you if something should ever happen to you.</p>
-                      <Link to="/minor-child-centered-estate-plan" className="btn btn-details">Details →</Link>
-                    </div>
-                  )}
+                  <div className="plan-accordion-content">
+                    <p>Create a will-based plan to appoint a Tutor for a minor child to act as surrogate parent for you if something should ever happen to you.</p>
+                    <Link to="/minor-child-centered-estate-plan" className="btn btn-details">Details →</Link>
+                  </div>
                 </div>
                 <div className={`plan-accordion-item ${expandedPlan === 'poa' ? 'expanded' : ''}`}>
                   <button
@@ -544,12 +542,10 @@ const EstatePlanning: React.FC = () => {
                     <span>Power of Attorney Supplement Plan</span>
                     <span className="accordion-icon">{expandedPlan === 'poa' ? '−' : '+'}</span>
                   </button>
-                  {expandedPlan === 'poa' && (
-                    <div className="plan-accordion-content">
-                      <p>Legal documents for your college student or aging family members to handle financial and healthcare decisions.</p>
-                      <Link to="/power-of-attorney-plan" className="btn btn-details">Details →</Link>
-                    </div>
-                  )}
+                  <div className="plan-accordion-content">
+                    <p>Legal documents for your college student or aging family members to handle financial and healthcare decisions.</p>
+                    <Link to="/power-of-attorney-plan" className="btn btn-details">Details →</Link>
+                  </div>
                 </div>
                 <div className={`plan-accordion-item ${expandedPlan === 'will' ? 'expanded' : ''}`}>
                   <button
@@ -559,12 +555,10 @@ const EstatePlanning: React.FC = () => {
                     <span>Will-Based Estate Plan</span>
                     <span className="accordion-icon">{expandedPlan === 'will' ? '−' : '+'}</span>
                   </button>
-                  {expandedPlan === 'will' && (
-                    <div className="plan-accordion-content">
-                      <p>Control your legacy with a comprehensive will-based estate plan.</p>
-                      <Link to="/will-based-estate-plan" className="btn btn-details">Details →</Link>
-                    </div>
-                  )}
+                  <div className="plan-accordion-content">
+                    <p>Control your legacy with a comprehensive will-based estate plan.</p>
+                    <Link to="/will-based-estate-plan" className="btn btn-details">Details →</Link>
+                  </div>
                 </div>
                 <div className={`plan-accordion-item ${expandedPlan === 'trust' ? 'expanded' : ''}`}>
                   <button
@@ -574,12 +568,10 @@ const EstatePlanning: React.FC = () => {
                     <span>Trust-Based Estate Plan</span>
                     <span className="accordion-icon">{expandedPlan === 'trust' ? '−' : '+'}</span>
                   </button>
-                  {expandedPlan === 'trust' && (
-                    <div className="plan-accordion-content">
-                      <p>Avoid probate and transfer assets smoothly with a trust-based estate plan.</p>
-                      <Link to="/trust-based-estate-plan" className="btn btn-details">Details →</Link>
-                    </div>
-                  )}
+                  <div className="plan-accordion-content">
+                    <p>Avoid probate and transfer assets smoothly with a trust-based estate plan.</p>
+                    <Link to="/trust-based-estate-plan" className="btn btn-details">Details →</Link>
+                  </div>
                 </div>
               </div>
             </div>
