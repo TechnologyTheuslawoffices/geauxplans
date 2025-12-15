@@ -44,7 +44,7 @@ const Home: React.FC = () => {
         <div className="container">
           <div className="hello-grid">
             <div className="hello-title">
-              <h2>hello<span className="text-blue">.</span></h2>
+              <h2><span className="text-blue">hello</span>.</h2>
             </div>
             <div className="hello-content">
               <h3>Legal Help for Businesses and Families in Louisiana</h3>
