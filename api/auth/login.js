@@ -15,6 +15,20 @@ export default async function handler(req, res) {
   }
 
   try {
+    // First check if user exists and their verification status
+    const { data: users } = await supabaseAdmin.auth.admin.listUsers();
+    const existingUser = users?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
+
+    if (existingUser && !existingUser.email_confirmed_at) {
+      // User exists but email not verified
+      return res.status(401).json({
+        success: false,
+        error: 'Please verify your email address before logging in. Check your inbox for a verification link.',
+        requiresVerification: true,
+        email: email
+      });
+    }
+
     // Sign in with Supabase Auth
     const { data, error } = await supabaseAdmin.auth.signInWithPassword({
       email,
