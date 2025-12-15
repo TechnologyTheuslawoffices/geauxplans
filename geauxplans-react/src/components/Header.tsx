@@ -44,40 +44,41 @@ const Header: React.FC = () => {
                     {/* Estate Planning Mega Menu */}
                     <li className="menu-item menu-item-has-children gp_mega_menu">
                       <Link to="/estate-planning">Estate Planning</Link>
-                      <ul className="sub-menu">
-                        <li className="menu-item menu-item-has-children">
-                          <Link to="#">Overview</Link>
-                          <ul className="sub-menu">
-                            <li>
-                              <Link to="/estate-planning">Easy &amp; Affordable Estate Planning</Link>
-                              <p className="description">Take the quiz and find out which Estate Plan is best for you. <span className="gpx_more">Take the quiz &rarr;</span></p>
-                            </li>
-                          </ul>
+                      <ul className="sub-menu estate-planning-mega">
+                        <li className="mega-col mega-col-left">
+                          <Link to="/estate-planning" className="mega-title">Easy &amp; Affordable Estate Planning</Link>
+                          <p className="mega-description">Take the quiz and find out which Estate Plan is best for you.</p>
+                          <Link to="/estate-planning" className="mega-cta">Take the quiz &rarr;</Link>
                         </li>
-                        <li className="menu-item menu-item-has-children">
-                          <Link to="#">Plans</Link>
-                          <ul className="sub-menu">
+                        <li className="mega-col mega-col-right">
+                          <ul className="plans-list">
                             <li>
-                              <Link to="/minor-child-centered-estate-plan">Minor Child-Centered Estate Plan</Link>
-                              <p className="description">For families with young children <span>From $199</span></p>
+                              <span className="plan-price">From $199</span>
+                              <Link to="/minor-child-centered-estate-plan" className="plan-name">Minor Child-Centered Estate Plan</Link>
+                              <p className="plan-desc">For families with young children</p>
                             </li>
                             <li>
-                              <Link to="/power-of-attorney-plan">Power of Attorney Plan</Link>
-                              <p className="description">For your college student or aging parent <span>From $99</span></p>
+                              <span className="plan-price">From $99</span>
+                              <Link to="/power-of-attorney-plan" className="plan-name">Power of Attorney Plan</Link>
+                              <p className="plan-desc">For your college student or aging parent</p>
                             </li>
                             <li>
-                              <Link to="/will-based-estate-plan">Will-Based Estate Plan</Link>
-                              <p className="description">To control your legacy <span>From $199</span></p>
+                              <span className="plan-price">From $199</span>
+                              <Link to="/will-based-estate-plan" className="plan-name">Will-Based Estate Plan</Link>
+                              <p className="plan-desc">To control your legacy</p>
                             </li>
                             <li>
-                              <Link to="/trust-based-estate-plan">Trust-Based Estate Plan</Link>
-                              <p className="description">To avoid probate and transfer assets <span>From $399</span></p>
+                              <span className="plan-price">From $399</span>
+                              <Link to="/trust-based-estate-plan" className="plan-name">Trust-Based Estate Plan</Link>
+                              <p className="plan-desc">To avoid probate and transfer assets</p>
                             </li>
                             <li>
-                              <Link to="/legal-edge-plan">Legal Edge Plan</Link>
-                              <p className="description">Premium membership with benefits <span>$9.99/month</span></p>
+                              <span className="plan-price">$9.99/month</span>
+                              <Link to="/legal-edge-plan" className="plan-name">Legal Edge Plan</Link>
+                              <p className="plan-desc">Premium membership with benefits</p>
                             </li>
                           </ul>
+                          <Link to="/estate-planning" className="view-all-plans">View All Plans <span>&#9662;</span></Link>
                         </li>
                       </ul>
                     </li>

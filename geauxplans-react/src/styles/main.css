@@ -264,6 +264,117 @@ a:hover {
   font-size: 0.65rem;
 }
 
+/* Estate Planning Mega Menu - Two Column Layout */
+.estate-planning-mega {
+  min-width: 650px !important;
+}
+
+.gp_mega_menu:hover > .estate-planning-mega {
+  display: flex !important;
+  flex-direction: row;
+  padding: 30px !important;
+  gap: 40px;
+}
+
+.estate-planning-mega .mega-col {
+  display: block !important;
+  width: auto;
+  min-width: auto;
+}
+
+.estate-planning-mega .mega-col-left {
+  flex: 0 0 200px;
+  border-right: 1px solid #eaeaea;
+  padding-right: 30px;
+}
+
+.estate-planning-mega .mega-col-right {
+  flex: 1;
+}
+
+.estate-planning-mega .mega-title {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: var(--primary-color) !important;
+  display: block;
+  margin-bottom: 10px;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.estate-planning-mega .mega-description {
+  font-size: 0.8rem;
+  color: #666;
+  font-style: italic;
+  line-height: 1.5;
+  margin: 0 0 15px 0;
+}
+
+.estate-planning-mega .mega-cta {
+  font-size: 0.85rem !important;
+  color: var(--primary-color) !important;
+  font-weight: 500;
+}
+
+.estate-planning-mega .plans-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.estate-planning-mega .plans-list > li {
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.estate-planning-mega .plans-list > li:last-child {
+  margin-bottom: 0;
+}
+
+.estate-planning-mega .plan-price {
+  display: block;
+  font-size: 0.7rem;
+  color: #8B0000;
+  font-style: italic;
+  margin-bottom: 2px;
+}
+
+.estate-planning-mega .plan-name {
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  color: #000 !important;
+  display: block;
+}
+
+.estate-planning-mega .plan-name:hover {
+  color: var(--primary-color) !important;
+}
+
+.estate-planning-mega .plan-desc {
+  font-size: 0.75rem;
+  color: #888;
+  font-style: italic;
+  margin: 2px 0 0 0;
+  line-height: 1.4;
+}
+
+.estate-planning-mega .view-all-plans {
+  display: block;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eaeaea;
+  font-size: 0.85rem;
+  color: #666 !important;
+}
+
+.estate-planning-mega .view-all-plans:hover {
+  color: var(--primary-color) !important;
+}
+
+.estate-planning-mega .view-all-plans span {
+  margin-left: 5px;
+}
+
 /* Single-line Mega Menu for Business Planning */
 .gpx_mega_menu_one_line > .sub-menu {
   min-width: 320px;
