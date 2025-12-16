@@ -3,6 +3,9 @@
   "buildCommand": "cd geauxplans-react && CI=false npm run build",
   "outputDirectory": "geauxplans-react/build",
   "installCommand": "npm install && cd geauxplans-react && npm install",
+  "redirects": [
+    { "source": "/:path*", "has": [{ "type": "host", "value": "www.geauxplans.com" }], "destination": "https://geauxplans.com/:path*", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/api/auth/login", "destination": "/api/auth/login" },
     { "source": "/api/auth/register", "destination": "/api/auth/register" },
