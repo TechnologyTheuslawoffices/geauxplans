@@ -69,16 +69,18 @@ export default async function handler(req, res) {
 
     res.json({
       success: true,
-      user: {
-        id: data.user.id,
-        email: data.user.email,
-        firstName: profile?.first_name || '',
-        lastName: profile?.last_name || '',
-        displayName: profile?.display_name || email.split('@')[0],
-        role: profile?.role || 'customer'
-      },
-      token: data.session.access_token,
-      refreshToken: data.session.refresh_token
+      data: {
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          firstName: profile?.first_name || '',
+          lastName: profile?.last_name || '',
+          displayName: profile?.display_name || email.split('@')[0],
+          role: profile?.role || 'customer'
+        },
+        token: data.session.access_token,
+        refreshToken: data.session.refresh_token
+      }
     });
   } catch (error) {
     console.error('Login error:', error);

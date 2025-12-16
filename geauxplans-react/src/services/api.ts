@@ -5,8 +5,8 @@
  * Configure the API_BASE_URL to point to your backend server.
  */
 
-// API Base URL - Update this when deploying
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// API Base URL - Uses /api for Vercel serverless functions
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 // WordPress AJAX endpoint (for legacy integration during migration)
 const WP_AJAX_URL = process.env.REACT_APP_WP_URL || 'https://geauxplans.com/wp-admin/admin-ajax.php';
