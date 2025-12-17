@@ -7,23 +7,21 @@ const Header: React.FC = () => {
   const [isSticky, setIsSticky] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
 
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    const header = document.getElementById('site-header');
+    if (header) {
+      setHeaderHeight(header.offsetHeight);
+    }
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
-      const header = document.getElementById('site-header');
-      const shouldBeSticky = window.scrollY > 100;
-      setIsSticky(shouldBeSticky);
-
-      // Add padding to body to prevent content jump when header becomes fixed
-      if (header) {
-        const headerHeight = header.offsetHeight;
-        document.body.style.paddingTop = shouldBeSticky ? `${headerHeight}px` : '0';
-      }
+      setIsSticky(window.scrollY > 100);
     };
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      document.body.style.paddingTop = '0';
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const toggleMobileMenu = () => {
@@ -39,6 +37,8 @@ const Header: React.FC = () => {
 
   return (
     <>
+      {/* Spacer to prevent content jump when header becomes fixed */}
+      {isSticky && <div style={{ height: headerHeight }} />}
       <header id="site-header" className={`site-header header py-2 py-md-3 ${isSticky ? 'sticky' : ''}`}>
         <div className="container">
           <div id="logo_and_menu" className="d-flex justify-content-between align-items-center">
