@@ -146,9 +146,12 @@ async function handlePost(req, res, user) {
         })
         .eq('id', existing.id);
 
-      // Trigger Knackly if newly completed
+      // Trigger Knackly if completed and not already sent successfully
       let knacklyResult = null;
-      if (submission_status === 'completed' && existing.submission_status !== 'completed') {
+      const shouldTriggerKnackly = submission_status === 'completed' &&
+        (existing.submission_status !== 'completed' || !existing.knackly_record_id);
+
+      if (shouldTriggerKnackly) {
         const { data: fullSubmission } = await supabaseAdmin
           .from('poa_submissions')
           .select('*')
