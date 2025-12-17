@@ -9,10 +9,21 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsSticky(window.scrollY > 100);
+      const header = document.getElementById('site-header');
+      const shouldBeSticky = window.scrollY > 100;
+      setIsSticky(shouldBeSticky);
+
+      // Add padding to body to prevent content jump when header becomes fixed
+      if (header) {
+        const headerHeight = header.offsetHeight;
+        document.body.style.paddingTop = shouldBeSticky ? `${headerHeight}px` : '0';
+      }
     };
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.body.style.paddingTop = '0';
+    };
   }, []);
 
   const toggleMobileMenu = () => {
