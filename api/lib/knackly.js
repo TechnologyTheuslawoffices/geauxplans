@@ -164,11 +164,20 @@ export function transformFormDataToKnackly(formData) {
     return d.toISOString().split('T')[0];
   };
 
-  const getAgentName = (name) => {
-    if (!name) return '';
+  const getAgentName = (idOrName) => {
+    if (!idOrName) return '';
     for (const party of allParties) {
+      // Check by party ID first (form stores party.id)
+      if (party.id === idOrName) {
+        if ((party.type_of_party || '') === 'An entity') {
+          return party.entity_name || '';
+        } else {
+          return `${party.first_name || ''} ${party.surname || ''}`.trim();
+        }
+      }
+      // Also check by name for backwards compatibility
       if ((party.type_of_party || '') === 'An entity') {
-        if ((party.entity_name || '').trim() === name.trim()) {
+        if ((party.entity_name || '').trim() === idOrName.trim()) {
           return party.entity_name;
         }
       } else {
@@ -176,12 +185,12 @@ export function transformFormDataToKnackly(formData) {
           `${party.first_name || ''} ${party.middle_name || ''} ${party.surname || ''}`.trim(),
           `${party.first_name || ''} ${party.surname || ''}`.trim()
         ];
-        if (possible.includes(name.trim())) {
+        if (possible.includes(idOrName.trim())) {
           return `${party.first_name || ''} ${party.surname || ''}`.trim();
         }
       }
     }
-    return name;
+    return idOrName;
   };
 
   // Map OtherParties
