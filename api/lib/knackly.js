@@ -131,6 +131,7 @@ export async function processSubmission(submission) {
       ? JSON.parse(submission.form_data)
       : submission.form_data;
 
+    console.log('Knackly: Attempting to create record item...');
     const result = await createRecordItem(formData, submission.form_type);
 
     console.log(`Knackly: Record created with ID ${result.id || result._id}`);
@@ -143,9 +144,13 @@ export async function processSubmission(submission) {
     };
   } catch (error) {
     console.error('Knackly: Failed to process submission:', error);
+    const errorMessage = error.error || error.message || JSON.stringify(error);
+    console.error('Knackly: Error details:', errorMessage);
     return {
       success: false,
-      error: error.message || error.error || 'Unknown error',
+      error: errorMessage,
+      errorStatus: error.status,
+      errorDetails: typeof error === 'object' ? error : null,
     };
   }
 }
