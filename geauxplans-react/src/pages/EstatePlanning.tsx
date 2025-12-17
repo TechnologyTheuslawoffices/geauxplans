@@ -475,14 +475,11 @@ const EstatePlanning: React.FC = () => {
               </div>
             </div>
             <div className="hero-image">
-              <div className="hero-image-wrapper">
-                <img src="/img/welcome.svg" alt="" className="hero-swoosh" />
-                <img
-                  src="/img/field-family.jpg"
-                  alt="Happy family"
-                  className="hero-family"
-                />
-              </div>
+              <img
+                src="/img/Estate-and-Business-Planning-Louisiana.png"
+                alt="Estate and Business Planning Louisiana"
+                style={{ maxWidth: '100%', height: 'auto' }}
+              />
             </div>
           </div>
         </div>
@@ -606,12 +603,19 @@ const EstatePlanning: React.FC = () => {
         <div className="container">
           <div className="louisiana-grid">
             <div className="louisiana-content">
-              <h2>Your Louisiana Business is in good hands</h2>
+              <div className="louisiana-icon">
+                <img src="/img/store-icon.svg" alt="" />
+              </div>
+              <h2>Your <em className="text-blue">Louisiana Business</em> is<br />in good hands</h2>
               <p><em>Unlike other online sources, GeauxPlans is owned, administered, and supported by a Louisiana law firm.</em></p>
               <div className="louisiana-buttons">
                 <Link to="/start-business-llc" className="btn btn-solid">Start brand new LLC</Link>
                 <Link to="/operating-agreement-llc" className="btn btn_geaux">Get Operating Agreement</Link>
               </div>
+            </div>
+            <div className="louisiana-image">
+              <div className="blue-rectangle"></div>
+              <img src="/wp-content/uploads/2021/12/bp-2.jpg" alt="Business professionals" />
             </div>
           </div>
         </div>

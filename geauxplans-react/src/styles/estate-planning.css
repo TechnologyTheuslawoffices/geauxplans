@@ -477,10 +477,28 @@
   width: fit-content;
 }
 
+.louisiana-image {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+
+.louisiana-image .blue-rectangle {
+  position: absolute;
+  right: 0;
+  top: 20px;
+  width: 80px;
+  height: 100%;
+  background: #0000ff;
+  z-index: 0;
+}
+
 .louisiana-image img {
-  max-width: 100%;
+  position: relative;
+  max-width: calc(100% - 40px);
   height: auto;
   display: block;
+  z-index: 1;
 }
 
 /* Learning Section */
