@@ -10,6 +10,7 @@ const Login: React.FC = () => {
     password: '',
   });
   const [loginError, setLoginError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -99,21 +100,42 @@ const Login: React.FC = () => {
                 <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
                   Password *
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  autoComplete="current-password"
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #eaeaea',
-                    borderRadius: '4px',
-                    fontSize: '16px',
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    autoComplete="current-password"
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      paddingRight: '50px',
+                      border: '1px solid #eaeaea',
+                      borderRadius: '4px',
+                      fontSize: '16px',
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '0',
+                      color: '#707070',
+                      fontSize: '14px',
+                    }}
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
               </div>
 
               <button

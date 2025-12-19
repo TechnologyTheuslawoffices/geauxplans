@@ -139,7 +139,7 @@ const EstatePlanning: React.FC = () => {
   const handleGetStarted = (product: typeof PRODUCTS.MINOR_CHILD) => {
     const formType = formData.isMarried ? '2person' : 'solo';
     closeModal();
-    navigate(`/poa-form?product=${product.id}&type=${formType}`);
+    navigate(`/checkout?product=${product.id}&type=${formType}`);
   };
 
   const renderStep = () => {

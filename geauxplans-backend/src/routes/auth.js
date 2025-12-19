@@ -27,8 +27,11 @@ function generateToken(userId) {
 router.post(
   '/register',
   [
-    body('email').isEmail().normalizeEmail(),
-    body('password').isLength({ min: 8 }),
+    body('email')
+      .isEmail().withMessage('Please enter a valid email address')
+      .normalizeEmail({ gmail_remove_subaddress: false, outlookdotcom_remove_subaddress: false, yahoo_remove_subaddress: false }),
+    body('password')
+      .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
     body('firstName').optional().trim(),
     body('lastName').optional().trim(),
   ],
@@ -90,7 +93,7 @@ router.post(
 router.post(
   '/login',
   [
-    body('email').isEmail().normalizeEmail(),
+    body('email').isEmail().normalizeEmail({ gmail_remove_subaddress: false, outlookdotcom_remove_subaddress: false, yahoo_remove_subaddress: false }),
     body('password').notEmpty(),
   ],
   async (req, res) => {
@@ -166,7 +169,7 @@ router.post('/logout', authenticate, (req, res) => {
  */
 router.post(
   '/forgot-password',
-  body('email').isEmail().normalizeEmail(),
+  body('email').isEmail().normalizeEmail({ gmail_remove_subaddress: false, outlookdotcom_remove_subaddress: false, yahoo_remove_subaddress: false }),
   (req, res) => {
     const { email } = req.body;
 

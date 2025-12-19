@@ -32,6 +32,10 @@ app.use(cors({
   },
   credentials: true,
 }));
+
+// Stripe webhook needs raw body - must be before express.json()
+app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -55,6 +59,7 @@ async function startServer() {
     const businessRoutes = require('./routes/business');
     const submissionsRoutes = require('./routes/submissions');
     const knacklyRoutes = require('./routes/knackly');
+    const stripeRoutes = require('./routes/stripe');
 
     // API Routes
     app.use('/api/auth', authRoutes);
@@ -65,6 +70,7 @@ async function startServer() {
     app.use('/api/business', businessRoutes);
     app.use('/api/submissions', submissionsRoutes);
     app.use('/api/knackly', knacklyRoutes);
+    app.use('/api/stripe', stripeRoutes);
 
     // Error handling middleware
     app.use((err, req, res, next) => {

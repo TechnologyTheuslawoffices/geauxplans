@@ -1,0 +1,413 @@
+/* Estate Plan Page Styles */
+
+.estate-plan-page {
+  background: #fff;
+}
+
+/* Hero Section */
+.ep-hero {
+  background: linear-gradient(90deg, #f6f6f6 62%, #fff 62%);
+  padding: 60px 0;
+}
+
+.ep-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.ep-hero-subtitle {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.ep-hero-content h1 {
+  font-size: 2.8rem;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.ep-hero-description {
+  color: #333;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.ep-hero-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.ep-hero-buttons.pill-group {
+  display: inline-flex;
+  gap: 0;
+}
+
+.ep-hero-buttons.pill-group .btn-pill-left {
+  margin: 0;
+}
+
+.ep-hero-buttons.pill-group .btn-pill-right {
+  margin: 0;
+}
+
+.ep-hero-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Process Section */
+.ep-process {
+  padding: 60px 0;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.section-subtitle {
+  color: #666;
+  margin-bottom: 40px;
+}
+
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.process-step {
+  padding: 20px;
+}
+
+.process-step h3 {
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.process-step p {
+  color: #333;
+}
+
+/* Build Plan Section */
+.ep-build-section {
+  background: linear-gradient(90deg, #0000ff 29%, #fff 29%);
+  padding: 60px 0;
+}
+
+.ep-build-grid {
+  display: grid;
+  grid-template-columns: 42% 1fr;
+  gap: 50px;
+  align-items: center;
+}
+
+.ep-build-card {
+  background: #fff;
+  border: 3px solid #0000ff;
+  padding: 40px;
+  text-align: center;
+}
+
+.ep-build-card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 25px;
+}
+
+.ep-build-card .btn {
+  margin-bottom: 20px;
+}
+
+.guarantee-text {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.ep-documents {
+  background: #fff;
+  padding: 20px 0;
+}
+
+.documents-header h2 {
+  margin-bottom: 5px;
+}
+
+.documents-header p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.documents-accordion {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.doc-item {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.doc-item:last-child {
+  border-bottom: none;
+}
+
+.doc-item button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.doc-item button:hover {
+  background: #f9f9f9;
+}
+
+.toggle-icon {
+  color: #0000ff;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.doc-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0 20px;
+}
+
+.doc-item.expanded .doc-content {
+  max-height: 150px;
+  padding: 0 20px 15px;
+}
+
+.doc-content p {
+  color: #666;
+}
+
+/* Benefits Section */
+.ep-benefits {
+  padding: 60px 0;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.benefits-content h2 {
+  margin-bottom: 5px;
+}
+
+.benefits-subtitle {
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.benefits-list li {
+  padding: 10px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.benefits-list i {
+  color: #00d084;
+  margin-top: 3px;
+}
+
+.benefits-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.benefits-images img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* FAQ and Contact Section */
+.ep-faq-contact {
+  padding: 60px 0;
+}
+
+.faq-contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.contact-card {
+  background: #f1f1f1;
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.contact-card h2 {
+  margin-bottom: 20px;
+}
+
+.contact-card p {
+  margin-bottom: 20px;
+}
+
+.faq-content h2 {
+  margin-bottom: 5px;
+}
+
+.faq-subtitle {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.faq-accordion {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.faq-item {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-item button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.faq-item button:hover {
+  background: #f9f9f9;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0 20px;
+}
+
+.faq-item.expanded .faq-answer {
+  max-height: 400px;
+  padding: 0 20px 20px;
+}
+
+.faq-answer p {
+  margin-bottom: 15px;
+}
+
+/* Button Styles */
+.btn-outline-blue {
+  background: #f1f1f1;
+  color: #0000ff !important;
+  border: none;
+}
+
+.btn-outline-blue:hover {
+  background: #e0e0e0;
+}
+
+.btn-secondary {
+  background: #9ca3af;
+  color: #000 !important;
+}
+
+.btn-secondary:hover {
+  background: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .ep-hero {
+    background: #f6f6f6;
+  }
+
+  .ep-hero-grid,
+  .ep-build-grid,
+  .benefits-grid,
+  .faq-contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ep-hero-content {
+    text-align: center;
+  }
+
+  .ep-hero-buttons {
+    justify-content: center;
+  }
+
+  .ep-build-section {
+    background: #f6f6f6;
+  }
+
+  .process-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .benefits-images {
+    order: -1;
+  }
+
+  .contact-card {
+    order: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .ep-hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .ep-hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ep-hero-buttons.pill-group {
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .ep-hero-buttons.pill-group .btn-pill-left,
+  .ep-hero-buttons.pill-group .btn-pill-right {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
+  .benefits-images {
+    grid-template-columns: 1fr;
+  }
+}

@@ -159,7 +159,7 @@ async function initializeDatabase() {
   db.run(`
     CREATE TABLE IF NOT EXISTS orders (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
+      user_id INTEGER,
       order_number TEXT UNIQUE NOT NULL,
       status TEXT DEFAULT 'pending',
       subtotal REAL NOT NULL,
@@ -168,12 +168,20 @@ async function initializeDatabase() {
       billing_address TEXT,
       shipping_address TEXT,
       payment_method TEXT,
+      stripe_session_id TEXT,
       notes TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
+
+  // Add stripe_session_id column if it doesn't exist (migration)
+  try {
+    db.run(`ALTER TABLE orders ADD COLUMN stripe_session_id TEXT`);
+  } catch (e) {
+    // Column already exists
+  }
 
   // Order items table
   db.run(`

@@ -1,214 +1,159 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import '../styles/legal-edge-plan.css';
 
 const LegalEdgePlan: React.FC = () => {
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+
+  const toggleItem = (id: string) => {
+    setExpandedItem(expandedItem === id ? null : id);
+  };
+
   return (
-    <main>
-      <section className="plans-section">
+    <main className="legal-edge-page">
+      {/* Main Content Section */}
+      <section className="lep-main-section">
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <h1 style={{ marginBottom: '20px' }}>Legal Edge Plan</h1>
-            <p style={{ color: '#707070', fontSize: '18px' }}>
-              Premium Membership with Benefits
-            </p>
-          </div>
+          <div className="lep-grid">
+            {/* Left Card - Legal Edge Plan Details */}
+            <div className="lep-card">
+              <h1><strong><em>Legal Edge Plan</em></strong></h1>
+              <p className="lep-subtitle">Protect your GeauxPlan for life just for $9.99/month</p>
 
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            {/* Pricing Card */}
-            <div
-              style={{
-                backgroundColor: '#fff',
-                border: '2px solid #004d71',
-                borderRadius: '12px',
-                padding: '40px',
-                textAlign: 'center',
-                marginBottom: '50px',
-                boxShadow: '0 4px 15px rgba(0, 77, 113, 0.1)',
-              }}
-            >
-              <h2 style={{ color: '#004d71', marginBottom: '10px' }}>Monthly Membership</h2>
-              <div style={{ marginBottom: '30px' }}>
-                <span style={{ fontSize: '24px', color: '#707070' }}>$</span>
-                <span style={{ fontSize: '64px', fontWeight: 'bold', color: '#004d71' }}>29</span>
-                <span style={{ fontSize: '24px', color: '#707070' }}>/month</span>
+              <div className="lep-icon">
+                <img src="/wp-content/uploads/2022/02/Legal-Edge-Plan-Icon.jpg" alt="Legal Edge Plan" />
               </div>
 
-              <div style={{ textAlign: 'left', maxWidth: '500px', margin: '0 auto 30px' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    marginBottom: '20px',
-                    padding: '15px',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '8px',
-                  }}
-                >
-                  <i className="fas fa-check-circle" style={{ color: '#28a745', fontSize: '24px', marginRight: '15px', marginTop: '3px' }}></i>
-                  <div>
-                    <strong style={{ fontSize: '16px' }}>Unlimited Revisions</strong>
-                    <p style={{ color: '#707070', margin: '5px 0 0', fontSize: '14px' }}>
-                      Make unlimited changes to your GeauxPlans documents at no additional cost
-                    </p>
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    marginBottom: '20px',
-                    padding: '15px',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '8px',
-                  }}
-                >
-                  <i className="fas fa-check-circle" style={{ color: '#28a745', fontSize: '24px', marginRight: '15px', marginTop: '3px' }}></i>
-                  <div>
-                    <strong style={{ fontSize: '16px' }}>100% Credit Toward Future Services</strong>
-                    <p style={{ color: '#707070', margin: '5px 0 0', fontSize: '14px' }}>
-                      Your base GeauxPlans fee is fully credited toward any future legal services
-                    </p>
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    padding: '15px',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '8px',
-                  }}
-                >
-                  <i className="fas fa-check-circle" style={{ color: '#28a745', fontSize: '24px', marginRight: '15px', marginTop: '3px' }}></i>
-                  <div>
-                    <strong style={{ fontSize: '16px' }}>Annual Check-Up Meeting</strong>
-                    <p style={{ color: '#707070', margin: '5px 0 0', fontSize: '14px' }}>
-                      Yearly consultation to review your estate plan and ensure it still meets your needs
-                    </p>
-                  </div>
-                </div>
+              <div className="lep-features">
+                <p>
+                  <strong><em className="text-blue">Forever Revisions</em></strong><br />
+                  Unlimited revisions to your GeauxPlan at any time and for any reason!
+                </p>
+                <p>
+                  <strong><em className="text-blue">Anytime Upgrade to an Advanced Estate Plan</em></strong><br />
+                  Upgrade your GeauxPlan to an Advanced Estate Plan <em>at any time and for any reason</em> with an affiliated estate planning law firm and receive a 100% credit of your original GeauxPlans Fee!
+                </p>
+                <p>
+                  <strong><em className="text-blue">Maintenance for Life</em></strong><br />
+                  Any estate plan needs to be maintained, or eventually it may not work. Legal Edge Plan entitles you to an annual meeting with an affiliated estate planning law firm to review your GeauxPlan to make sure it still works for you - so you are "all set"!
+                </p>
               </div>
 
-              <Link to="/my-account" className="btn btn-primary btn-lg" style={{ padding: '15px 50px' }}>
-                Become a Member
-              </Link>
+              <Link to="/shop" className="btn btn-solid btn-lg">Subscribe Now - $9.99/month</Link>
+              <p className="cancel-text"><em>You may cancel anytime.</em></p>
             </div>
 
-            {/* Why Join Section */}
-            <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Why Join the Legal Edge Plan?</h2>
+            {/* Right Column - Life Happens */}
+            <div className="lep-content">
+              <h2><strong className="text-blue">Life happens!</strong></h2>
+              <h3><em>Circumstances change and so do estate planning needs.</em></h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '30px', marginBottom: '50px' }}>
-              <div style={{ textAlign: 'center', padding: '30px' }}>
-                <div
-                  style={{
-                    width: '80px',
-                    height: '80px',
-                    borderRadius: '50%',
-                    backgroundColor: '#e8f4f8',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 20px',
-                  }}
-                >
-                  <i className="fas fa-sync-alt" style={{ fontSize: '32px', color: '#004d71' }}></i>
-                </div>
-                <h3 style={{ marginBottom: '15px' }}>Life Changes</h3>
-                <p style={{ color: '#707070' }}>
-                  Marriage, divorce, births, deaths, and other life events may require updates to your estate plan.
-                  With Legal Edge, you're always covered.
-                </p>
-              </div>
-
-              <div style={{ textAlign: 'center', padding: '30px' }}>
-                <div
-                  style={{
-                    width: '80px',
-                    height: '80px',
-                    borderRadius: '50%',
-                    backgroundColor: '#e8f4f8',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 20px',
-                  }}
-                >
-                  <i className="fas fa-balance-scale" style={{ fontSize: '32px', color: '#004d71' }}></i>
-                </div>
-                <h3 style={{ marginBottom: '15px' }}>Law Changes</h3>
-                <p style={{ color: '#707070' }}>
-                  Tax laws and estate planning regulations change. Stay protected with documents that reflect
-                  current legal requirements.
-                </p>
-              </div>
-
-              <div style={{ textAlign: 'center', padding: '30px' }}>
-                <div
-                  style={{
-                    width: '80px',
-                    height: '80px',
-                    borderRadius: '50%',
-                    backgroundColor: '#e8f4f8',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 20px',
-                  }}
-                >
-                  <i className="fas fa-piggy-bank" style={{ fontSize: '32px', color: '#004d71' }}></i>
-                </div>
-                <h3 style={{ marginBottom: '15px' }}>Save Money</h3>
-                <p style={{ color: '#707070' }}>
-                  Individual revisions can be costly. Legal Edge membership provides unlimited revisions
-                  for one low monthly fee.
-                </p>
-              </div>
-            </div>
-
-            {/* FAQ Section */}
-            <div style={{ backgroundColor: '#f8f9fa', padding: '40px', borderRadius: '12px', marginBottom: '50px' }}>
-              <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Common Questions</h2>
-
-              <div style={{ marginBottom: '25px' }}>
-                <h4 style={{ marginBottom: '10px' }}>Who is eligible for the Legal Edge Plan?</h4>
-                <p style={{ color: '#707070' }}>
-                  Any GeauxPlans customer who has purchased an estate plan is eligible to join the Legal Edge Plan.
-                  The offer is available at checkout or can be added later through your account dashboard.
-                </p>
-              </div>
-
-              <div style={{ marginBottom: '25px' }}>
-                <h4 style={{ marginBottom: '10px' }}>Can I cancel my membership?</h4>
-                <p style={{ color: '#707070' }}>
-                  Yes, you can cancel your Legal Edge membership at any time. There are no long-term commitments
-                  or cancellation fees.
-                </p>
-              </div>
-
-              <div>
-                <h4 style={{ marginBottom: '10px' }}>What counts as a revision?</h4>
-                <p style={{ color: '#707070' }}>
-                  Revisions include any changes to your existing estate planning documents, such as updating
-                  beneficiaries, changing executors, or modifying trust terms. New document types may require
-                  separate purchase.
-                </p>
-              </div>
-            </div>
-
-            {/* CTA Section */}
-            <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-              <h2 style={{ marginBottom: '20px' }}>Ready to Get Started?</h2>
-              <p style={{ color: '#707070', marginBottom: '30px' }}>
-                Join the Legal Edge Plan today and enjoy peace of mind knowing your estate plan is always up to date.
+              <p className="lep-description">
+                The Legal Edge Plan allows upgrading to an Advanced Estate Plan and applies a full (100%) credit of your original GeauxPlan fee toward the upgrade with an affiliated estate planning law firm!
               </p>
-              <Link to="/shop" className="btn btn-primary btn-lg" style={{ marginRight: '15px' }}>
-                Start Your Estate Plan
-              </Link>
-              <Link to="/contact" className="btn btn-white btn-lg" style={{ border: '1px solid #004d71' }}>
-                Contact Us
-              </Link>
+              <p className="lep-description">
+                Protect your investment with the Legal Edge Plan!
+              </p>
+              <p className="lep-description">
+                The following are some instances that may warrant upgrading to an Advanced Estate Plan:
+              </p>
+
+              <div className="lep-accordion">
+                <div className={`lep-item ${expandedItem === 'asset' ? 'expanded' : ''}`}>
+                  <button onClick={() => toggleItem('asset')}>
+                    <span>Lifetime Asset Protection</span>
+                    <span className="toggle-icon">{expandedItem === 'asset' ? '−' : '+'}</span>
+                  </button>
+                  <div className="lep-answer">
+                    <p>You seek lifetime asset protection from future creditors, lawsuits, unforeseeable liabilities, or nursing home poverty.</p>
+                  </div>
+                </div>
+
+                <div className={`lep-item ${expandedItem === 'nursing' ? 'expanded' : ''}`}>
+                  <button onClick={() => toggleItem('nursing')}>
+                    <span>Nursing Home Poverty</span>
+                    <span className="toggle-icon">{expandedItem === 'nursing' ? '−' : '+'}</span>
+                  </button>
+                  <div className="lep-answer">
+                    <p>You or a loved one is likely to need assisted living or long-term care, or you may lose a spouse soon due to a terminal illness.</p>
+                  </div>
+                </div>
+
+                <div className={`lep-item ${expandedItem === 'spouse' ? 'expanded' : ''}`}>
+                  <button onClick={() => toggleItem('spouse')}>
+                    <span>Disagreement with Spouse</span>
+                    <span className="toggle-icon">{expandedItem === 'spouse' ? '−' : '+'}</span>
+                  </button>
+                  <div className="lep-answer">
+                    <p>You do not agree with your spouse on the plans he or she wants.</p>
+                  </div>
+                </div>
+
+                <div className={`lep-item ${expandedItem === 'remarriage' ? 'expanded' : ''}`}>
+                  <button onClick={() => toggleItem('remarriage')}>
+                    <span>Restrictions Upon Remarriage or Co-Habitation</span>
+                    <span className="toggle-icon">{expandedItem === 'remarriage' ? '−' : '+'}</span>
+                  </button>
+                  <div className="lep-answer">
+                    <p>You have concerns about your spouse remarrying or partnering up after you die and diverting your assets to someone you do not wish to include in your estate plan, such as a future spouse or life-partner.</p>
+                  </div>
+                </div>
+
+                <div className={`lep-item ${expandedItem === 'special' ? 'expanded' : ''}`}>
+                  <button onClick={() => toggleItem('special')}>
+                    <span>Special Needs Beneficiary</span>
+                    <span className="toggle-icon">{expandedItem === 'special' ? '−' : '+'}</span>
+                  </button>
+                  <div className="lep-answer">
+                    <p>You have a beneficiary that is disabled or has special needs.</p>
+                  </div>
+                </div>
+
+                <div className={`lep-item ${expandedItem === 'problem' ? 'expanded' : ''}`}>
+                  <button onClick={() => toggleItem('problem')}>
+                    <span>Problem Child</span>
+                    <span className="toggle-icon">{expandedItem === 'problem' ? '−' : '+'}</span>
+                  </button>
+                  <div className="lep-answer">
+                    <p>You have a beneficiary who is unable to manage money, has a high risk of being sued, is in a bad marriage, has creditor issues, abuses drugs or alcohol, is likely to need long-term care in the future, is currently receiving need-based governmental benefits such as Medicaid.</p>
+                  </div>
+                </div>
+
+                <div className={`lep-item ${expandedItem === 'tax' ? 'expanded' : ''}`}>
+                  <button onClick={() => toggleItem('tax')}>
+                    <span>Federal Estate Tax Planning</span>
+                    <span className="toggle-icon">{expandedItem === 'tax' ? '−' : '+'}</span>
+                  </button>
+                  <div className="lep-answer">
+                    <p>Your assets exceed the current Federal estate tax exemption, which is $12.06 million per person (as of January 1, 2022), subject to any future amendments, modifications, or indexing after January 1, 2022.</p>
+                  </div>
+                </div>
+
+                <div className={`lep-item ${expandedItem === 'nextgen' ? 'expanded' : ''}`}>
+                  <button onClick={() => toggleItem('nextgen')}>
+                    <span>Next Generation Asset Protection</span>
+                    <span className="toggle-icon">{expandedItem === 'nextgen' ? '−' : '+'}</span>
+                  </button>
+                  <div className="lep-answer">
+                    <p>You need a protective trust for your spouse, children, grandchildren, or other heirs to provide continuing asset protection rather than staged outright distributions.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="lep-contact-section">
+        <div className="container">
+          <h2><strong>Do you have </strong><em className="text-blue">any</em><strong> questions?</strong></h2>
+          <div className="lep-contact-grid">
+            <div className="lep-contact-info">
+              <p><strong>Support team:</strong> M-F, 8am-5pm CST<br /><strong>Call us:</strong> +1 (855) 213-6300</p>
+            </div>
+            <div className="lep-contact-btn">
+              <Link to="/contact" className="btn btn-solid">Drop us a message</Link>
             </div>
           </div>
         </div>

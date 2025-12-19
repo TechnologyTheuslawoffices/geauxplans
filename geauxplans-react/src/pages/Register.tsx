@@ -18,6 +18,8 @@ const Register: React.FC = () => {
   const [registeredEmail, setRegisteredEmail] = useState('');
   const [isResending, setIsResending] = useState(false);
   const [resendStatus, setResendStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleResendEmail = async () => {
     setIsResending(true);
@@ -49,13 +51,22 @@ const Register: React.FC = () => {
     e.preventDefault();
     setRegisterError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setRegisterError('Passwords do not match');
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setRegisterError('Please enter a valid email address');
       return;
     }
 
-    if (formData.password.length < 6) {
-      setRegisterError('Password must be at least 6 characters');
+    // Validate password length (must match backend requirement of 8 chars)
+    if (formData.password.length < 8) {
+      setRegisterError('Password must be at least 8 characters long');
+      return;
+    }
+
+    // Validate password match
+    if (formData.password !== formData.confirmPassword) {
+      setRegisterError('Passwords do not match');
       return;
     }
 
@@ -75,7 +86,8 @@ const Register: React.FC = () => {
         navigate('/my-account');
       }
     } else {
-      setRegisterError(error || 'Registration failed. Please try again.');
+      // Show the specific error from the server
+      setRegisterError(result.error || 'Registration failed. Please check your information and try again.');
     }
   };
 
@@ -166,42 +178,84 @@ const Register: React.FC = () => {
                 <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
                   Password *
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  minLength={6}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #eaeaea',
-                    borderRadius: '4px',
-                    fontSize: '16px',
-                  }}
-                />
-                <small style={{ color: '#707070' }}>Minimum 6 characters</small>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    minLength={8}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      paddingRight: '50px',
+                      border: '1px solid #eaeaea',
+                      borderRadius: '4px',
+                      fontSize: '16px',
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '0',
+                      color: '#707070',
+                      fontSize: '14px',
+                    }}
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+                <small style={{ color: '#707070' }}>Minimum 8 characters</small>
               </div>
 
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
                   Confirm Password *
                 </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #eaeaea',
-                    borderRadius: '4px',
-                    fontSize: '16px',
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      paddingRight: '50px',
+                      border: '1px solid #eaeaea',
+                      borderRadius: '4px',
+                      fontSize: '16px',
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '0',
+                      color: '#707070',
+                      fontSize: '14px',
+                    }}
+                  >
+                    {showConfirmPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
               </div>
 
               <button

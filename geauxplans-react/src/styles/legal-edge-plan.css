@@ -1,0 +1,197 @@
+/* Legal Edge Plan Page Styles */
+
+.legal-edge-page {
+  background: #fff;
+}
+
+/* Main Section */
+.lep-main-section {
+  padding: 60px 0;
+}
+
+.lep-grid {
+  display: grid;
+  grid-template-columns: 42% 1fr;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+/* Left Card */
+.lep-card {
+  background: #fff;
+  border: 3px solid #0000ff;
+  padding: 40px;
+  text-align: center;
+}
+
+.lep-card h1 {
+  margin-bottom: 0;
+  font-size: 2rem;
+}
+
+.lep-subtitle {
+  color: #666;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.lep-icon {
+  margin: 20px 0;
+}
+
+.lep-icon img {
+  max-width: 250px;
+  height: auto;
+}
+
+.lep-features {
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.lep-features p {
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.lep-card .btn {
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+.cancel-text {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Right Content */
+.lep-content h2 {
+  font-size: 2.5rem;
+  margin-bottom: 0;
+}
+
+.lep-content h3 {
+  font-weight: normal;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+.lep-description {
+  color: #909288;
+  margin-bottom: 20px;
+}
+
+/* Accordion */
+.lep-accordion {
+  border: none;
+}
+
+.lep-item {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.lep-item:last-child {
+  border-bottom: none;
+}
+
+.lep-item button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.lep-item button:hover {
+  color: #0000ff;
+}
+
+.lep-item .toggle-icon {
+  color: #0000ff;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.lep-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0;
+}
+
+.lep-item.expanded .lep-answer {
+  max-height: 200px;
+  padding: 0 0 15px;
+}
+
+.lep-answer p {
+  color: #666;
+  margin: 0;
+}
+
+/* Contact Section */
+.lep-contact-section {
+  background: #f1f1f1;
+  padding: 60px 0;
+  text-align: center;
+}
+
+.lep-contact-section h2 {
+  margin-bottom: 30px;
+}
+
+.lep-contact-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.lep-contact-info p {
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .lep-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lep-card {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .lep-content h2 {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .lep-content h3 {
+    text-align: center;
+  }
+
+  .lep-description {
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .lep-card {
+    padding: 30px 20px;
+  }
+
+  .lep-contact-grid {
+    flex-direction: column;
+    gap: 20px;
+  }
+}

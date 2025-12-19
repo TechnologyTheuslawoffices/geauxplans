@@ -14,6 +14,7 @@ interface RegisterResult {
   requiresVerification?: boolean;
   email?: string;
   message?: string;
+  error?: string;
 }
 
 interface LoginResult {
@@ -132,14 +133,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoading(false);
         return { success: true };
       } else {
-        setError(response.error || 'Registration failed');
+        const errorMsg = response.error || 'Registration failed';
+        setError(errorMsg);
         setIsLoading(false);
-        return { success: false };
+        return { success: false, error: errorMsg };
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      const errorMsg = 'An unexpected error occurred. Please try again.';
+      setError(errorMsg);
       setIsLoading(false);
-      return { success: false };
+      return { success: false, error: errorMsg };
     }
   }, []);
 
