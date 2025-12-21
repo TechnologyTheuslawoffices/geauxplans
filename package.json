@@ -9,7 +9,8 @@
     "vercel-build": "cd geauxplans-react && CI=false npm run build"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0"
+    "@supabase/supabase-js": "^2.39.0",
+    "stripe": "^14.0.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

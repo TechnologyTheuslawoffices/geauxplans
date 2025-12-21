@@ -11,6 +11,8 @@
     { "source": "/api/auth/register", "destination": "/api/auth/register" },
     { "source": "/api/auth/verify-email", "destination": "/api/auth/verify-email" },
     { "source": "/api/auth/me", "destination": "/api/auth/me" },
+    { "source": "/api/stripe/create-checkout-session", "destination": "/api/stripe/create-checkout-session" },
+    { "source": "/api/stripe/session/:sessionId", "destination": "/api/stripe/session/[sessionId]" },
     { "source": "/api/submissions", "destination": "/api/submissions/index" },
     { "source": "/api/submissions/by-type/:formType", "destination": "/api/submissions/by-type/[formType]" },
     { "source": "/api/submissions/:id/refresh-documents", "destination": "/api/submissions/[id]/refresh-documents" },
