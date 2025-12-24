@@ -3,13 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
-interface DebugLog {
-  timestamp: string;
-  type: 'info' | 'request' | 'response' | 'error' | 'success';
-  message: string;
-  data?: any;
-}
-
 const Register: React.FC = () => {
   const { register, error, clearError, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -27,27 +20,6 @@ const Register: React.FC = () => {
   const [resendStatus, setResendStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // Debug state
-  const [showDebug, setShowDebug] = useState(true);
-  const [debugLogs, setDebugLogs] = useState<DebugLog[]>([]);
-  const [rawResponse, setRawResponse] = useState<any>(null);
-
-  const addDebugLog = (type: DebugLog['type'], message: string, data?: any) => {
-    const log: DebugLog = {
-      timestamp: new Date().toISOString(),
-      type,
-      message,
-      data,
-    };
-    setDebugLogs(prev => [...prev, log]);
-    console.log(`[${type.toUpperCase()}] ${message}`, data || '');
-  };
-
-  const clearDebugLogs = () => {
-    setDebugLogs([]);
-    setRawResponse(null);
-  };
 
   const handleResendEmail = async () => {
     setIsResending(true);
@@ -78,149 +50,44 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegisterError('');
-    clearDebugLogs();
-
-    addDebugLog('info', 'Registration form submitted');
-    addDebugLog('info', 'Form data validation starting', {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      passwordLength: formData.password.length,
-    });
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      addDebugLog('error', 'Email validation failed', { email: formData.email });
       setRegisterError('Please enter a valid email address');
       return;
     }
-    addDebugLog('success', 'Email format valid');
 
     // Validate password length (must match backend requirement of 8 chars)
     if (formData.password.length < 8) {
-      addDebugLog('error', 'Password too short', { length: formData.password.length, required: 8 });
       setRegisterError('Password must be at least 8 characters long');
       return;
     }
-    addDebugLog('success', 'Password length valid');
 
     // Validate password match
     if (formData.password !== formData.confirmPassword) {
-      addDebugLog('error', 'Passwords do not match');
       setRegisterError('Passwords do not match');
       return;
     }
-    addDebugLog('success', 'Passwords match');
 
-    // Make direct API call with full debugging
-    const apiUrl = '/api/auth/register';
-    const requestBody = {
+    const result = await register({
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
       password: formData.password,
-    };
-
-    addDebugLog('request', `Making POST request to ${apiUrl}`, {
-      url: apiUrl,
-      fullUrl: `${window.location.origin}${apiUrl}`,
-      method: 'POST',
-      body: { ...requestBody, password: '[HIDDEN]' },
-      headers: {
-        'Content-Type': 'application/json',
-      },
     });
 
-    const startTime = Date.now();
-
-    try {
-      // Direct fetch for debugging
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-        credentials: 'include',
-      });
-
-      const duration = Date.now() - startTime;
-      addDebugLog('info', `Response received in ${duration}ms`, {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-        headers: Object.fromEntries(response.headers.entries()),
-      });
-
-      let responseData: any;
-      const responseText = await response.text();
-
-      addDebugLog('info', 'Raw response text', {
-        length: responseText.length,
-        preview: responseText.substring(0, 500),
-      });
-
-      try {
-        responseData = JSON.parse(responseText);
-        addDebugLog('response', 'Parsed JSON response', responseData);
-        setRawResponse(responseData);
-      } catch (parseError) {
-        addDebugLog('error', 'Failed to parse response as JSON', {
-          error: parseError instanceof Error ? parseError.message : 'Unknown parse error',
-          responseText: responseText.substring(0, 1000),
-        });
-        setRegisterError(`Server returned invalid response (Status: ${response.status})`);
-        return;
-      }
-
-      if (!response.ok) {
-        addDebugLog('error', `HTTP error ${response.status}`, {
-          status: response.status,
-          error: responseData?.error || responseData?.message || 'Unknown error',
-          fullResponse: responseData,
-        });
-        setRegisterError(responseData?.error || responseData?.message || `Server error: ${response.status}`);
-        return;
-      }
-
-      if (responseData.success) {
-        addDebugLog('success', 'Registration successful', responseData);
-
-        if (responseData.requiresVerification) {
-          addDebugLog('info', 'Email verification required');
-          setRegisteredEmail(formData.email);
-          setShowVerificationModal(true);
-        } else if (responseData.data?.token) {
-          addDebugLog('info', 'Token received, storing and redirecting');
-          localStorage.setItem('gpx_auth_token', responseData.data.token);
-          navigate('/my-account');
-        } else {
-          addDebugLog('info', 'Registration complete, redirecting to login');
-          navigate('/login');
-        }
+    if (result.success) {
+      if (result.requiresVerification) {
+        // Show verification modal
+        setRegisteredEmail(formData.email);
+        setShowVerificationModal(true);
       } else {
-        addDebugLog('error', 'Registration failed', {
-          error: responseData.error,
-          message: responseData.message,
-          fullResponse: responseData,
-        });
-        setRegisterError(responseData.error || responseData.message || 'Registration failed');
+        navigate('/my-account');
       }
-    } catch (fetchError) {
-      const duration = Date.now() - startTime;
-      addDebugLog('error', `Network error after ${duration}ms`, {
-        error: fetchError instanceof Error ? {
-          name: fetchError.name,
-          message: fetchError.message,
-          stack: fetchError.stack,
-        } : 'Unknown error',
-      });
-      setRegisterError(
-        fetchError instanceof Error
-          ? `Network error: ${fetchError.message}`
-          : 'Network error occurred'
-      );
+    } else {
+      // Show the specific error from the server
+      setRegisterError(result.error || 'Registration failed. Please check your information and try again.');
     }
   };
 
@@ -419,271 +286,6 @@ const Register: React.FC = () => {
             >
               Log In
             </Link>
-          </div>
-
-          {/* Debug Panel */}
-          <div
-            style={{
-              maxWidth: '800px',
-              margin: '30px auto 0',
-              border: '2px solid #dc3545',
-              borderRadius: '8px',
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              style={{
-                background: '#dc3545',
-                color: '#fff',
-                padding: '10px 15px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <span style={{ fontWeight: 'bold' }}>Debug Panel (Registration)</span>
-              <div>
-                <button
-                  onClick={clearDebugLogs}
-                  style={{
-                    background: '#fff',
-                    color: '#dc3545',
-                    border: 'none',
-                    padding: '5px 10px',
-                    borderRadius: '4px',
-                    marginRight: '10px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                  }}
-                >
-                  Clear Logs
-                </button>
-                <button
-                  onClick={() => setShowDebug(!showDebug)}
-                  style={{
-                    background: '#fff',
-                    color: '#dc3545',
-                    border: 'none',
-                    padding: '5px 10px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                  }}
-                >
-                  {showDebug ? 'Hide' : 'Show'}
-                </button>
-              </div>
-            </div>
-
-            {showDebug && (
-              <div style={{ padding: '15px', background: '#1e1e1e', color: '#fff' }}>
-                {/* Environment Info */}
-                <div style={{ marginBottom: '15px', padding: '10px', background: '#2d2d2d', borderRadius: '4px' }}>
-                  <h4 style={{ margin: '0 0 10px', color: '#ffc107' }}>Environment</h4>
-                  <pre style={{ margin: 0, fontSize: '12px', whiteSpace: 'pre-wrap' }}>
-{JSON.stringify({
-  origin: window.location.origin,
-  pathname: window.location.pathname,
-  apiEndpoint: '/api/auth/register',
-  fullApiUrl: `${window.location.origin}/api/auth/register`,
-  userAgent: navigator.userAgent.substring(0, 100),
-  timestamp: new Date().toISOString(),
-}, null, 2)}
-                  </pre>
-                </div>
-
-                {/* Debug Logs */}
-                <div style={{ marginBottom: '15px' }}>
-                  <h4 style={{ margin: '0 0 10px', color: '#ffc107' }}>
-                    Request/Response Logs ({debugLogs.length})
-                  </h4>
-                  <div
-                    style={{
-                      maxHeight: '300px',
-                      overflow: 'auto',
-                      background: '#2d2d2d',
-                      borderRadius: '4px',
-                      padding: '10px',
-                    }}
-                  >
-                    {debugLogs.length === 0 ? (
-                      <p style={{ color: '#888', margin: 0, fontStyle: 'italic' }}>
-                        No logs yet. Submit the form to see debug information.
-                      </p>
-                    ) : (
-                      debugLogs.map((log, index) => (
-                        <div
-                          key={index}
-                          style={{
-                            marginBottom: '10px',
-                            padding: '8px',
-                            borderRadius: '4px',
-                            background:
-                              log.type === 'error' ? 'rgba(220, 53, 69, 0.2)' :
-                              log.type === 'success' ? 'rgba(40, 167, 69, 0.2)' :
-                              log.type === 'request' ? 'rgba(0, 123, 255, 0.2)' :
-                              log.type === 'response' ? 'rgba(111, 66, 193, 0.2)' :
-                              'rgba(108, 117, 125, 0.2)',
-                            borderLeft: `3px solid ${
-                              log.type === 'error' ? '#dc3545' :
-                              log.type === 'success' ? '#28a745' :
-                              log.type === 'request' ? '#007bff' :
-                              log.type === 'response' ? '#6f42c1' :
-                              '#6c757d'
-                            }`,
-                          }}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                            <span
-                              style={{
-                                fontWeight: 'bold',
-                                textTransform: 'uppercase',
-                                fontSize: '10px',
-                                color:
-                                  log.type === 'error' ? '#dc3545' :
-                                  log.type === 'success' ? '#28a745' :
-                                  log.type === 'request' ? '#007bff' :
-                                  log.type === 'response' ? '#6f42c1' :
-                                  '#6c757d',
-                              }}
-                            >
-                              {log.type}
-                            </span>
-                            <span style={{ fontSize: '10px', color: '#888' }}>
-                              {new Date(log.timestamp).toLocaleTimeString()}
-                            </span>
-                          </div>
-                          <div style={{ fontSize: '13px', marginBottom: log.data ? '5px' : 0 }}>
-                            {log.message}
-                          </div>
-                          {log.data && (
-                            <pre
-                              style={{
-                                margin: 0,
-                                fontSize: '11px',
-                                color: '#aaa',
-                                whiteSpace: 'pre-wrap',
-                                wordBreak: 'break-all',
-                              }}
-                            >
-                              {JSON.stringify(log.data, null, 2)}
-                            </pre>
-                          )}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Raw Response */}
-                {rawResponse && (
-                  <div>
-                    <h4 style={{ margin: '0 0 10px', color: '#ffc107' }}>Raw API Response</h4>
-                    <pre
-                      style={{
-                        margin: 0,
-                        padding: '10px',
-                        background: '#2d2d2d',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-all',
-                        maxHeight: '200px',
-                        overflow: 'auto',
-                      }}
-                    >
-                      {JSON.stringify(rawResponse, null, 2)}
-                    </pre>
-                  </div>
-                )}
-
-                {/* Current State */}
-                <div style={{ marginTop: '15px' }}>
-                  <h4 style={{ margin: '0 0 10px', color: '#ffc107' }}>Current State</h4>
-                  <pre
-                    style={{
-                      margin: 0,
-                      padding: '10px',
-                      background: '#2d2d2d',
-                      borderRadius: '4px',
-                      fontSize: '12px',
-                      whiteSpace: 'pre-wrap',
-                    }}
-                  >
-{JSON.stringify({
-  isLoading,
-  registerError: registerError || null,
-  contextError: error || null,
-  formData: {
-    firstName: formData.firstName,
-    lastName: formData.lastName,
-    email: formData.email,
-    passwordLength: formData.password.length,
-  },
-}, null, 2)}
-                  </pre>
-                </div>
-
-                {/* Quick Test */}
-                <div style={{ marginTop: '15px' }}>
-                  <h4 style={{ margin: '0 0 10px', color: '#ffc107' }}>Quick API Test</h4>
-                  <button
-                    onClick={async () => {
-                      addDebugLog('info', 'Running quick API health check...');
-                      try {
-                        const healthRes = await fetch('/api/health');
-                        const healthData = await healthRes.text();
-                        addDebugLog('response', 'Health check response', {
-                          status: healthRes.status,
-                          data: healthData,
-                        });
-                      } catch (err) {
-                        addDebugLog('error', 'Health check failed', {
-                          error: err instanceof Error ? err.message : 'Unknown',
-                        });
-                      }
-                    }}
-                    style={{
-                      background: '#ffc107',
-                      color: '#000',
-                      border: 'none',
-                      padding: '8px 15px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      marginRight: '10px',
-                    }}
-                  >
-                    Test /api/health
-                  </button>
-                  <button
-                    onClick={async () => {
-                      addDebugLog('info', 'Testing OPTIONS preflight to /api/auth/register...');
-                      try {
-                        const optRes = await fetch('/api/auth/register', { method: 'OPTIONS' });
-                        addDebugLog('response', 'OPTIONS preflight response', {
-                          status: optRes.status,
-                          headers: Object.fromEntries(optRes.headers.entries()),
-                        });
-                      } catch (err) {
-                        addDebugLog('error', 'OPTIONS request failed', {
-                          error: err instanceof Error ? err.message : 'Unknown',
-                        });
-                      }
-                    }}
-                    style={{
-                      background: '#17a2b8',
-                      color: '#fff',
-                      border: 'none',
-                      padding: '8px 15px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Test OPTIONS /api/auth/register
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </section>
