@@ -4,10 +4,10 @@ import api from '../services/api';
 
 // Product configuration - must match backend
 const PRODUCTS: Record<string, { name: string; price: number; description: string }> = {
-  '606': { name: 'Minor Child-Centered Estate Plan', price: 599, description: 'Create a will-based plan to appoint a Tutor for minor children.' },
-  '614': { name: 'Power of Attorney Supplement', price: 299, description: 'Financial and Healthcare Power of Attorney documents.' },
-  '673': { name: 'Will-Based Estate Plan', price: 399, description: 'Control your legacy with a comprehensive will-based estate plan.' },
-  '676': { name: 'Trust-Based Estate Plan', price: 899, description: 'Avoid probate and transfer assets smoothly with a trust.' },
+  '606': { name: 'Minor Child-Centered Estate Plan', price: 199, description: 'Create a will-based plan to appoint a Tutor for minor children.' },
+  '614': { name: 'Power of Attorney Supplement', price: 99, description: 'Financial and Healthcare Power of Attorney documents.' },
+  '673': { name: 'Will-Based Estate Plan', price: 199, description: 'Control your legacy with a comprehensive will-based estate plan.' },
+  '676': { name: 'Trust-Based Estate Plan', price: 399, description: 'Avoid probate and transfer assets smoothly with a trust.' },
 };
 
 const Checkout: React.FC = () => {

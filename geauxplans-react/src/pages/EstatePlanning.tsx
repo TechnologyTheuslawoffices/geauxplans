@@ -66,10 +66,10 @@ const US_STATES = [
 ];
 
 const PRODUCTS = {
-  MINOR_CHILD: { id: 606, name: 'Minor Child-Centered Estate Plan', price: 599 },
-  POA_SUPPLEMENT: { id: 614, name: 'Power of Attorney Supplement', price: 299 },
-  WILL_BASED: { id: 673, name: 'Will-Based Estate Plan', price: 399 },
-  TRUST_BASED: { id: 676, name: 'Trust-Based Estate Plan', price: 899 },
+  MINOR_CHILD: { id: 606, name: 'Minor Child-Centered Estate Plan', price: 199 },
+  POA_SUPPLEMENT: { id: 614, name: 'Power of Attorney Supplement', price: 99 },
+  WILL_BASED: { id: 673, name: 'Will-Based Estate Plan', price: 199 },
+  TRUST_BASED: { id: 676, name: 'Trust-Based Estate Plan', price: 399 },
 };
 
 const EstatePlanning: React.FC = () => {

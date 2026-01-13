@@ -99,6 +99,14 @@ export async function createRecordItem(formData, formType = 'powerOfAttorneyForm
   const token = await getAccessToken();
   const knacklyData = transformFormDataToKnackly(formData);
   const endpoint = getAppEndpoint(formType);
+
+  console.log('=== KNACKLY CREATE RECORD ===');
+  console.log('Form Type:', formType);
+  console.log('Endpoint:', endpoint);
+  console.log('Original Form Data:', JSON.stringify(formData, null, 2));
+  console.log('Transformed Knackly Data:', JSON.stringify(knacklyData, null, 2));
+  console.log('=============================');
+
   return makeRequest('POST', endpoint, knacklyData, token);
 }
 
@@ -117,7 +125,17 @@ export async function getDocuments(recordId, formType = 'powerOfAttorneyForm') {
   const appName = appNames[formType] || appNames.powerOfAttorneyForm;
 
   const path = `/catalogs/GeauxPlans/items/${recordId}/apps/${appName}`;
-  return makeRequest('GET', path, null, token);
+  console.log('=== KNACKLY GET DOCUMENTS ===');
+  console.log('Record ID:', recordId);
+  console.log('Form Type:', formType);
+  console.log('Path:', path);
+
+  const result = await makeRequest('GET', path, null, token);
+
+  console.log('Documents response:', JSON.stringify(result, null, 2));
+  console.log('=============================');
+
+  return result;
 }
 
 /**
@@ -161,6 +179,36 @@ export async function processSubmission(submission) {
 export function transformFormDataToKnackly(formData) {
   const knacklyData = {};
   const allParties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
+
+  // === TOP-LEVEL FIELDS (Required by Knackly) ===
+
+  // StateLawSelect - Governing law state (use client's state as default)
+  const stateLaw = formData.governing_law ||
+                   formData.state_law ||
+                   formData.personal_info?.state ||
+                   'Louisiana';
+  knacklyData.StateLawSelect = stateLaw;
+
+  // ESignTF - Electronic signature checkbox
+  const esign = formData.esign ??
+                formData.electronic_signature ??
+                formData.start?.esign ??
+                false;
+  knacklyData.ESignTF = esign === true || esign === 'true' || esign === 'Yes';
+
+  // MarriedTF - Is principal married or have life partner?
+  const married = formData.married ??
+                  formData.personal_info?.married ??
+                  formData.personal_info?.has_spouse ??
+                  formData.start?.married ??
+                  false;
+  knacklyData.MarriedTF = married === true || married === 'true' || married === 'Yes';
+
+  // ChildrenTF - Will any children serve as agents?
+  const childrenAsAgents = formData.children_as_agents ??
+                           formData.agents?.children_as_agents ??
+                           false;
+  knacklyData.ChildrenTF = childrenAsAgents === true || childrenAsAgents === 'true' || childrenAsAgents === 'Yes';
 
   const formatDate = (date) => {
     if (!date) return '';
@@ -243,6 +291,14 @@ export function transformFormDataToKnackly(formData) {
         if (party.zip) mappedParty.Zip = party.zip;
         if (party.parish) mappedParty.Parish = party.parish;
       }
+
+      // RequireAddressTF - Whether address is required for this party
+      const requireAddress = party.require_address ?? party.requireAddress ?? false;
+      mappedParty.RequireAddressTF = requireAddress === true || requireAddress === 'true' || requireAddress === 'Yes';
+
+      // DeceasedTF - Whether this person is deceased
+      const deceased = party.deceased ?? party.is_deceased ?? false;
+      mappedParty.DeceasedTF = deceased === true || deceased === 'true' || deceased === 'Yes';
 
       return mappedParty;
     });

@@ -47,7 +47,7 @@ const Header: React.FC = () => {
                 <img src="/img/mobile_menu.svg" alt="Menu" />
               </span>
               <Link to="/" className="site-logo" style={{ marginRight: '30px' }}>
-                <img src="/img/logo.svg" alt="GeauxPlans" style={{ height: '32px' }} />
+                <img src="/img/logo-black-shield.png" alt="GeauxPlans" style={{ height: '40px' }} />
               </Link>
               <div id="place_for_menu">
                 <nav id="header_navigation" className="header_navigation">
@@ -113,6 +113,7 @@ const Header: React.FC = () => {
                       <ul className="sub-menu">
                         <li><Link to="/category/estate-planning-articles">Estate Planning</Link></li>
                         <li><Link to="/category/business-planning-articles">Business Planning</Link></li>
+                        <li><Link to="/register-for-webinar">Free Webinar</Link></li>
                       </ul>
                     </li>
                   </ul>
@@ -165,7 +166,7 @@ const Header: React.FC = () => {
         <div style={{ position: 'relative' }}>
           <div className="p-2 px-3 canvas_brand d-flex justify-content-between align-items-center" style={{ background: '#fff', top: 0, left: 0, position: 'sticky', borderBottom: '1px solid #eaeaea' }}>
             <Link to="/" onClick={closeMobileMenu}>
-              <img src="/img/logo.svg" alt="GeauxPlans" style={{ height: '40px' }} />
+              <img src="/img/logo-black-shield.png" alt="GeauxPlans" style={{ height: '40px' }} />
             </Link>
             <div className="close_mobile_menu" onClick={closeMobileMenu}>
               <img src="/img/mobile_menu_close.svg" alt="Close" />
@@ -195,6 +196,7 @@ const Header: React.FC = () => {
                 <ul className="sub-menu">
                   <li><Link to="/category/estate-planning-articles" onClick={closeMobileMenu}>Estate Planning</Link></li>
                   <li><Link to="/category/business-planning-articles" onClick={closeMobileMenu}>Business Planning</Link></li>
+                  <li><Link to="/register-for-webinar" onClick={closeMobileMenu}>Free Webinar</Link></li>
                 </ul>
               </li>
               <li><Link to="/my-account" onClick={closeMobileMenu}>My Account</Link></li>

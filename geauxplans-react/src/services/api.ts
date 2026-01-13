@@ -5,6 +5,8 @@
  * Configure the API_BASE_URL to point to your backend server.
  */
 
+import { supabase } from '../lib/supabase';
+
 // API Base URL - Uses /api for Vercel serverless functions
 const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
@@ -27,10 +29,11 @@ interface RequestOptions {
 }
 
 /**
- * Get stored auth token
+ * Get Supabase auth token
  */
-const getAuthToken = (): string | null => {
-  return localStorage.getItem('gpx_auth_token');
+const getAuthToken = async (): Promise<string | null> => {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token || null;
 };
 
 /**
@@ -64,14 +67,15 @@ async function apiRequest<T = any>(
   const baseUrl = useWpAjax ? WP_AJAX_URL : API_BASE_URL;
   const url = useWpAjax ? baseUrl : `${baseUrl}${endpoint}`;
 
-  const authToken = getAuthToken();
+  const authToken = await getAuthToken();
 
   const requestHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     ...headers,
   };
 
-  if (authToken && !useWpAjax) {
+  // Only set auth token if not already provided in headers
+  if (!requestHeaders['Authorization'] && authToken && !useWpAjax) {
     requestHeaders['Authorization'] = `Bearer ${authToken}`;
   }
 

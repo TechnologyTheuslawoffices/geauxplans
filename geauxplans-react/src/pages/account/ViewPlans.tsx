@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import './ViewPlans.css';
 
@@ -65,20 +66,74 @@ const allProducts: AllProducts[] = [
 ];
 
 const ViewPlans: React.FC = () => {
+  const { session } = useAuth();
   const [submissions, setSubmissions] = useState<ApiSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState<number | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
 
   useEffect(() => {
-    fetchSubmissions();
-  }, []);
+    if (session) {
+      fetchSubmissions();
+    }
+  }, [session]);
+
+  // Auto-refresh documents that are still processing
+  useEffect(() => {
+    const autoRefreshPending = async () => {
+      for (const sub of submissions) {
+        // Skip if not completed submission
+        if (sub.submissionStatus !== 'completed') continue;
+
+        // If has knacklyRecordId but not complete, or has documents missing storedUrl
+        const needsRefresh =
+          (sub.knacklyRecordId && sub.knacklyStatus !== 'complete') ||
+          (sub.knacklyStatus === 'complete' && sub.knacklyDocuments?.some((doc: any) => !doc.storedUrl));
+
+        if (needsRefresh && refreshing !== sub.id) {
+          console.log(`Auto-refreshing documents for submission ${sub.id}...`);
+          await refreshDocuments(sub.id);
+        }
+      }
+    };
+
+    // Run immediately if we have submissions
+    if (submissions.length > 0 && !loading) {
+      autoRefreshPending();
+    }
+  }, [submissions, loading]);
+
+  // Poll every 10 seconds if any submission is still processing
+  useEffect(() => {
+    const hasProcessing = submissions.some(sub =>
+      sub.submissionStatus === 'completed' &&
+      ((sub.knacklyRecordId && sub.knacklyStatus !== 'complete') ||
+       (sub.knacklyStatus === 'complete' && sub.knacklyDocuments?.some((doc: any) => !doc.storedUrl)))
+    );
+
+    if (hasProcessing && !refreshing) {
+      const intervalId = setInterval(() => {
+        console.log('Polling for document updates...');
+        fetchSubmissions();
+      }, 10000); // Poll every 10 seconds
+
+      return () => clearInterval(intervalId);
+    }
+  }, [submissions, refreshing]);
+
+  // Get auth headers using the session token from context
+  const getAuthHeaders = (): Record<string, string> => {
+    if (session?.access_token) {
+      return { 'Authorization': `Bearer ${session.access_token}` };
+    }
+    return {};
+  };
 
   const fetchSubmissions = async () => {
     setLoading(true);
     try {
-      // The backend will automatically check for document updates
-      const response = await api.get('/submissions');
+      // Pass token from context directly in headers
+      const response = await api.get('/submissions', getAuthHeaders());
       if (response.success && response.data) {
         setSubmissions(response.data);
       }
@@ -93,15 +148,119 @@ const ViewPlans: React.FC = () => {
   const refreshDocuments = async (submissionId: number) => {
     setRefreshing(submissionId);
     try {
-      const response = await api.post(`/submissions/${submissionId}/refresh-documents`);
+      // Pass token from context directly in headers
+      const response = await api.post(`/submissions/${submissionId}/refresh-documents`, {}, getAuthHeaders());
+      console.log('Refresh response:', response);
+
       if (response.success) {
+        // Show debug info
+        const data = response.data as any;
+        if (data?.debug) {
+          console.log('Debug info:', data.debug);
+        }
         // Re-fetch all submissions to get updated data
         await fetchSubmissions();
+
+        // Log the message but don't show an alert (too disruptive for auto-refresh)
+        if (response.message) {
+          console.log('Refresh result:', response.message);
+        }
+      } else {
+        console.error('Refresh documents failed:', response.error);
+        // Only show alert for manual refresh errors
       }
     } catch (error) {
       console.error('Failed to refresh documents:', error);
     } finally {
       setRefreshing(null);
+    }
+  };
+
+  // Download document with authentication
+  const downloadDocument = async (submissionId: number, docIndex: number, filename: string) => {
+    const headers = getAuthHeaders();
+    console.log('Download - Session:', session?.access_token ? 'exists' : 'missing');
+    console.log('Download - Headers:', headers);
+
+    try {
+      const API_BASE = process.env.REACT_APP_API_URL || '/api';
+      const url = `${API_BASE}/submissions/${submissionId}/download/${docIndex}`;
+      console.log('Download URL:', url);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: headers,
+      });
+
+      console.log('Download response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Download error response:', errorText);
+        try {
+          const error = JSON.parse(errorText);
+          alert(error.error || 'Failed to download document');
+        } catch {
+          alert('Failed to download document: ' + response.status);
+        }
+        return;
+      }
+
+      // Create blob and trigger download
+      const blob = await response.blob();
+      console.log('Blob size:', blob.size, 'type:', blob.type);
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Failed to download document: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
+  };
+
+  // View document in new tab with authentication
+  const viewDocument = async (submissionId: number, docIndex: number) => {
+    const headers = getAuthHeaders();
+    console.log('View - Session:', session?.access_token ? 'exists' : 'missing');
+    console.log('View - Headers:', headers);
+
+    try {
+      const API_BASE = process.env.REACT_APP_API_URL || '/api';
+      const url = `${API_BASE}/submissions/${submissionId}/download/${docIndex}`;
+      console.log('View URL:', url);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: headers,
+      });
+
+      console.log('View response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('View error response:', errorText);
+        try {
+          const error = JSON.parse(errorText);
+          alert(error.error || 'Failed to load document');
+        } catch {
+          alert('Failed to load document: ' + response.status);
+        }
+        return;
+      }
+
+      // Create blob URL and open in new tab
+      const blob = await response.blob();
+      console.log('Blob size:', blob.size, 'type:', blob.type);
+      const blobUrl = window.URL.createObjectURL(blob);
+      window.open(blobUrl, '_blank');
+    } catch (error) {
+      console.error('View error:', error);
+      alert('Failed to load document: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   };
 
@@ -155,48 +314,47 @@ const ViewPlans: React.FC = () => {
       const documents = submission.knacklyDocuments || [];
 
       if (documents.length > 0) {
-        // Documents ready from Knackly - use proxy download endpoint
-        const API_BASE = process.env.REACT_APP_API_URL || '/api';
-        const token = localStorage.getItem('gpx_auth_token');
-
         return (
           <>
             <p className="mb-0" style={{ lineHeight: '14px' }}>
               <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
             </p>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '8px 0 0 0' }}>
-              {documents.map((doc, index) => (
-                <li key={doc.id || index} style={{ marginBottom: '4px' }}>
-                  <a
-                    href={`${API_BASE}/submissions/${submission.id}/download/${index}?token=${token}`}
-                    style={{ textDecoration: 'underline', textDecorationStyle: 'dashed', cursor: 'pointer' }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      // Use fetch to download with auth header
-                      fetch(`${API_BASE}/submissions/${submission.id}/download/${index}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                      })
-                        .then(res => res.blob())
-                        .then(blob => {
-                          const url = window.URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          // Convert .docx to .pdf in filename
-                          const filename = (doc.name || `document-${index + 1}`).replace(/\.docx$/i, '.pdf');
-                          a.download = filename;
-                          document.body.appendChild(a);
-                          a.click();
-                          window.URL.revokeObjectURL(url);
-                          a.remove();
-                        })
-                        .catch(err => console.error('Download failed:', err));
-                    }}
-                  >
-                    {(doc.name || `Document ${index + 1}`).replace(/\.docx$/i, '.pdf')}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <ol className="gpx_ep_documents_ul" style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
+              {documents.map((doc: any, index: number) => {
+                const pdfName = (doc.name || `Document ${index + 1}`).replace(/\.docx$/i, '.pdf');
+                // Use storedUrl (public Supabase URL) - just like WordPress used wp_get_attachment_url()
+                const downloadUrl = doc.storedUrl;
+
+                if (downloadUrl) {
+                  return (
+                    <li key={doc.id || index}>
+                      <a
+                        href={downloadUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {pdfName}
+                      </a>
+                    </li>
+                  );
+                }
+
+                // No storedUrl yet - documents still processing
+                return (
+                  <li key={doc.id || index} style={{ color: '#999' }}>
+                    {pdfName} <em>(converting to PDF...)</em>
+                  </li>
+                );
+              })}
+            </ol>
+            <button
+              onClick={() => refreshDocuments(submission.id)}
+              disabled={refreshing === submission.id}
+              className="btn btn-sm btn-outline-warning mt-2"
+              style={{ fontSize: '12px' }}
+            >
+              {refreshing === submission.id ? 'Converting...' : '🔄 Retry PDF Conversion'}
+            </button>
           </>
         );
       } else {

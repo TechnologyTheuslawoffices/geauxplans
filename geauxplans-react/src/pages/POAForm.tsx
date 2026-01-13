@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import '../styles/poa-form.css';
 
@@ -66,6 +67,11 @@ interface Party {
 }
 
 interface FormData {
+  // Top-level Knackly fields
+  esign: boolean;
+  married: boolean;
+  children_as_agents: boolean;
+  governing_law: string;
   personal_info: {
     first_name: string;
     middle_name: string;
@@ -140,6 +146,11 @@ interface FormData {
 }
 
 const initialFormData: FormData = {
+  // Top-level Knackly fields
+  esign: false,
+  married: false,
+  children_as_agents: false,
+  governing_law: 'Louisiana',
   personal_info: {
     first_name: '',
     middle_name: '',
@@ -233,6 +244,7 @@ const createEmptyParty = (): Party => ({
 const POAForm: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { isAuthenticated, session } = useAuth();
   const formType = searchParams.get('type') || 'powerOfAttorneyForm';
   const submissionId = searchParams.get('submission');
 
@@ -262,11 +274,10 @@ const POAForm: React.FC = () => {
       }
     };
 
-    const token = localStorage.getItem('gpx_auth_token');
-    if (token) {
+    if (isAuthenticated) {
       loadSubmission();
     }
-  }, [formType]);
+  }, [formType, isAuthenticated]);
 
   const updateFormData = useCallback((section: string, field: string, value: any) => {
     setFormData(prev => ({
@@ -387,8 +398,7 @@ const POAForm: React.FC = () => {
   };
 
   const handleSave = async (status: 'inprogress' | 'completed' = 'inprogress') => {
-    const token = localStorage.getItem('gpx_auth_token');
-    if (!token) {
+    if (!isAuthenticated) {
       setSaveMessage('Please log in to save your progress');
       return;
     }
@@ -507,6 +517,138 @@ const POAForm: React.FC = () => {
           <li>Your preferences for healthcare decisions</li>
         </ul>
         <p><strong>Your progress is saved automatically.</strong> You can return and complete this form at any time.</p>
+      </div>
+
+      {/* Governing Law */}
+      <div className="mb-4">
+        <label className="form-label"><strong>Governing Law</strong></label>
+        <p className="text-muted small">Select the state whose laws will govern your Power of Attorney documents.</p>
+        <select
+          className="form-select"
+          value={formData.governing_law}
+          onChange={(e) => setFormData(prev => ({ ...prev, governing_law: e.target.value }))}
+        >
+          <option value="Louisiana">Louisiana</option>
+          <option value="Alabama">Alabama</option>
+          <option value="Alaska">Alaska</option>
+          <option value="Arizona">Arizona</option>
+          <option value="Arkansas">Arkansas</option>
+          <option value="California">California</option>
+          <option value="Colorado">Colorado</option>
+          <option value="Connecticut">Connecticut</option>
+          <option value="Delaware">Delaware</option>
+          <option value="Florida">Florida</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Hawaii">Hawaii</option>
+          <option value="Idaho">Idaho</option>
+          <option value="Illinois">Illinois</option>
+          <option value="Indiana">Indiana</option>
+          <option value="Iowa">Iowa</option>
+          <option value="Kansas">Kansas</option>
+          <option value="Kentucky">Kentucky</option>
+          <option value="Maine">Maine</option>
+          <option value="Maryland">Maryland</option>
+          <option value="Massachusetts">Massachusetts</option>
+          <option value="Michigan">Michigan</option>
+          <option value="Minnesota">Minnesota</option>
+          <option value="Mississippi">Mississippi</option>
+          <option value="Missouri">Missouri</option>
+          <option value="Montana">Montana</option>
+          <option value="Nebraska">Nebraska</option>
+          <option value="Nevada">Nevada</option>
+          <option value="New Hampshire">New Hampshire</option>
+          <option value="New Jersey">New Jersey</option>
+          <option value="New Mexico">New Mexico</option>
+          <option value="New York">New York</option>
+          <option value="North Carolina">North Carolina</option>
+          <option value="North Dakota">North Dakota</option>
+          <option value="Ohio">Ohio</option>
+          <option value="Oklahoma">Oklahoma</option>
+          <option value="Oregon">Oregon</option>
+          <option value="Pennsylvania">Pennsylvania</option>
+          <option value="Rhode Island">Rhode Island</option>
+          <option value="South Carolina">South Carolina</option>
+          <option value="South Dakota">South Dakota</option>
+          <option value="Tennessee">Tennessee</option>
+          <option value="Texas">Texas</option>
+          <option value="Utah">Utah</option>
+          <option value="Vermont">Vermont</option>
+          <option value="Virginia">Virginia</option>
+          <option value="Washington">Washington</option>
+          <option value="West Virginia">West Virginia</option>
+          <option value="Wisconsin">Wisconsin</option>
+          <option value="Wyoming">Wyoming</option>
+        </select>
+      </div>
+
+      {/* Electronic Signature */}
+      <div className="mb-4">
+        <div className="form-check">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            id="esign"
+            checked={formData.esign}
+            onChange={(e) => setFormData(prev => ({ ...prev, esign: e.target.checked }))}
+          />
+          <label className="form-check-label" htmlFor="esign">
+            <strong>Include digital signature language</strong> in documents that may be executed by electronic signature.
+          </label>
+        </div>
+      </div>
+
+      {/* Married / Life Partner */}
+      <div className="mb-4">
+        <label className="form-label"><strong>Is the person granting the power of attorney married or do they have a life partner?</strong></label>
+        <div className="form-check">
+          <input
+            type="radio"
+            className="form-check-input"
+            id="married-yes"
+            name="married"
+            checked={formData.married === true}
+            onChange={() => setFormData(prev => ({ ...prev, married: true }))}
+          />
+          <label className="form-check-label" htmlFor="married-yes">Yes</label>
+        </div>
+        <div className="form-check">
+          <input
+            type="radio"
+            className="form-check-input"
+            id="married-no"
+            name="married"
+            checked={formData.married === false}
+            onChange={() => setFormData(prev => ({ ...prev, married: false }))}
+          />
+          <label className="form-check-label" htmlFor="married-no">No</label>
+        </div>
+      </div>
+
+      {/* Children as Agents */}
+      <div className="mb-4">
+        <label className="form-label"><strong>Will you name any children as a Healthcare Agent or Financial Agent?</strong></label>
+        <div className="form-check">
+          <input
+            type="radio"
+            className="form-check-input"
+            id="children-yes"
+            name="children_as_agents"
+            checked={formData.children_as_agents === true}
+            onChange={() => setFormData(prev => ({ ...prev, children_as_agents: true }))}
+          />
+          <label className="form-check-label" htmlFor="children-yes">Yes</label>
+        </div>
+        <div className="form-check">
+          <input
+            type="radio"
+            className="form-check-input"
+            id="children-no"
+            name="children_as_agents"
+            checked={formData.children_as_agents === false}
+            onChange={() => setFormData(prev => ({ ...prev, children_as_agents: false }))}
+          />
+          <label className="form-check-label" htmlFor="children-no">No</label>
+        </div>
       </div>
     </div>
   );

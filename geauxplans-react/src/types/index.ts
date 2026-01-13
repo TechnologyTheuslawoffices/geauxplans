@@ -4,7 +4,7 @@
 
 // User types
 export interface User {
-  id: number;
+  id: string | number;
   email: string;
   firstName: string;
   lastName: string;
@@ -170,6 +170,8 @@ export interface CartItem {
   price: number;
   quantity: number;
   image?: string;
+  type?: string;
+  metadata?: Record<string, unknown>;
 }
 
 // Form builder types

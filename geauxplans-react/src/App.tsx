@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Learn from './pages/Learn';
@@ -29,16 +30,64 @@ import VerifyEmail from './pages/VerifyEmail';
 import Checkout from './pages/Checkout';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import CheckoutCancelled from './pages/CheckoutCancelled';
+import RegisterForWebinar from './pages/RegisterForWebinar';
+import GuidedDesignConfirmation from './pages/GuidedDesignConfirmation';
+import ThankYouReservation from './pages/ThankYouReservation';
+import ThankYouResources from './pages/ThankYouResources';
+import LegalEdgePlanContract from './pages/LegalEdgePlanContract';
+import Article from './pages/Article';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './styles/main.css';
 
+// Development Banner Component
+const DevBanner: React.FC = () => {
+  const [dismissed, setDismissed] = React.useState(false);
+
+  if (dismissed) return null;
+
+  return (
+    <div
+      style={{
+        background: 'linear-gradient(90deg, #f59e0b, #d97706)',
+        color: '#000',
+        padding: '10px 20px',
+        textAlign: 'center',
+        fontSize: '14px',
+        fontWeight: '500',
+        position: 'relative',
+        zIndex: 9999,
+      }}
+    >
+      <span style={{ marginRight: '8px' }}>&#9888;</span>
+      <strong>Beta Version:</strong> This website is under active development. Some features may not work as expected.
+      <button
+        onClick={() => setDismissed(true)}
+        style={{
+          background: 'rgba(0,0,0,0.2)',
+          border: 'none',
+          color: '#000',
+          marginLeft: '15px',
+          padding: '2px 10px',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          fontSize: '12px',
+        }}
+      >
+        Dismiss
+      </button>
+    </div>
+  );
+};
+
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="App">
+      <CartProvider>
+        <Router>
+          <div className="App">
+          <DevBanner />
           <Header />
           <Routes>
             <Route path="/" element={<EstatePlanning />} />
@@ -67,10 +116,18 @@ function App() {
             <Route path="/operating-agreement-llc" element={<OperatingAgreementLLC />} />
             <Route path="/category/estate-planning-articles" element={<EstatePlanningArticles />} />
             <Route path="/category/business-planning-articles" element={<BusinessPlanningArticles />} />
+            <Route path="/register-for-webinar" element={<RegisterForWebinar />} />
+            <Route path="/guided-design-appointment-confirmation" element={<GuidedDesignConfirmation />} />
+            <Route path="/thank-you-for-your-reservation" element={<ThankYouReservation />} />
+            <Route path="/thank-you-complimentary-resources" element={<ThankYouResources />} />
+            <Route path="/legal-edge-plan-contract" element={<LegalEdgePlanContract />} />
+            <Route path="/estate-planning-articles/:slug" element={<Article />} />
+            <Route path="/business-planning-articles/:slug" element={<Article />} />
           </Routes>
           <Footer />
-        </div>
-      </Router>
+          </div>
+        </Router>
+      </CartProvider>
     </AuthProvider>
   );
 }

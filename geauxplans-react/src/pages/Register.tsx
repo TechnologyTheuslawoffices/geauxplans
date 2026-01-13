@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
+import { supabase } from '../lib/supabase';
+
+interface DebugInfo {
+  timestamp: string;
+  action: string;
+  details: any;
+}
 
 const Register: React.FC = () => {
   const { register, error, clearError, isLoading } = useAuth();
@@ -21,17 +27,59 @@ const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Debug state
+  const [showDebug, setShowDebug] = useState(false);
+  const [debugLogs, setDebugLogs] = useState<DebugInfo[]>([]);
+  const [supabaseStatus, setSupabaseStatus] = useState<{
+    urlConfigured: boolean;
+    keyConfigured: boolean;
+    url: string;
+  }>({ urlConfigured: false, keyConfigured: false, url: '' });
+
+  const addDebugLog = (action: string, details: any) => {
+    setDebugLogs(prev => [...prev, {
+      timestamp: new Date().toISOString(),
+      action,
+      details,
+    }]);
+  };
+
+  // Check Supabase configuration on mount
+  useEffect(() => {
+    const url = process.env.REACT_APP_SUPABASE_URL || '';
+    const key = process.env.REACT_APP_SUPABASE_ANON_KEY || '';
+    setSupabaseStatus({
+      urlConfigured: !!url,
+      keyConfigured: !!key,
+      url: url ? url.substring(0, 30) + '...' : 'NOT SET',
+    });
+    addDebugLog('init', {
+      supabaseUrl: url ? 'configured' : 'NOT SET',
+      supabaseKey: key ? 'configured (length: ' + key.length + ')' : 'NOT SET',
+    });
+  }, []);
+
   const handleResendEmail = async () => {
     setIsResending(true);
     setResendStatus('idle');
+    addDebugLog('resend_email_start', { email: registeredEmail });
     try {
-      const response = await api.post('/auth/verify-email', { email: registeredEmail });
-      if (response.success) {
-        setResendStatus('success');
-      } else {
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email: registeredEmail,
+        options: {
+          emailRedirectTo: `${window.location.origin}/verify-email`,
+        },
+      });
+      if (resendError) {
+        addDebugLog('resend_email_error', { error: resendError });
         setResendStatus('error');
+      } else {
+        addDebugLog('resend_email_success', { email: registeredEmail });
+        setResendStatus('success');
       }
-    } catch {
+    } catch (err) {
+      addDebugLog('resend_email_exception', { error: String(err) });
       setResendStatus('error');
     }
     setIsResending(false);
@@ -50,25 +98,36 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegisterError('');
+    addDebugLog('submit_start', {
+      email: formData.email,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      passwordLength: formData.password.length
+    });
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
+      addDebugLog('validation_error', { type: 'email_format', email: formData.email });
       setRegisterError('Please enter a valid email address');
       return;
     }
 
-    // Validate password length (must match backend requirement of 8 chars)
+    // Validate password length
     if (formData.password.length < 8) {
+      addDebugLog('validation_error', { type: 'password_length', length: formData.password.length });
       setRegisterError('Password must be at least 8 characters long');
       return;
     }
 
     // Validate password match
     if (formData.password !== formData.confirmPassword) {
+      addDebugLog('validation_error', { type: 'password_mismatch' });
       setRegisterError('Passwords do not match');
       return;
     }
+
+    addDebugLog('calling_register', { email: formData.email });
 
     const result = await register({
       firstName: formData.firstName,
@@ -77,17 +136,19 @@ const Register: React.FC = () => {
       password: formData.password,
     });
 
+    addDebugLog('register_result', result);
+
     if (result.success) {
+      addDebugLog('register_success', { requiresVerification: result.requiresVerification });
       if (result.requiresVerification) {
-        // Show verification modal
         setRegisteredEmail(formData.email);
         setShowVerificationModal(true);
       } else {
         navigate('/my-account');
       }
     } else {
-      // Show the specific error from the server
-      setRegisterError(result.error || 'Registration failed. Please check your information and try again.');
+      addDebugLog('register_failed', { error: result.error });
+      setRegisterError(result.error || 'Registration failed');
     }
   };
 
@@ -317,7 +378,7 @@ const Register: React.FC = () => {
               boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
             }}
           >
-            <div style={{ fontSize: '60px', marginBottom: '20px' }}>✉️</div>
+            <div style={{ fontSize: '60px', marginBottom: '20px' }}>&#9993;</div>
             <h2 style={{ marginBottom: '15px', color: '#004d71' }}>Check Your Email!</h2>
             <p style={{ color: '#707070', marginBottom: '10px' }}>
               We've sent a verification link to:
@@ -377,6 +438,157 @@ const Register: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Debug Panel */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: '#1a1a2e',
+          color: '#eee',
+          fontSize: '12px',
+          fontFamily: 'monospace',
+          zIndex: 10000,
+          maxHeight: showDebug ? '50vh' : '40px',
+          overflow: 'hidden',
+          transition: 'max-height 0.3s ease',
+        }}
+      >
+        <div
+          onClick={() => setShowDebug(!showDebug)}
+          style={{
+            padding: '10px 15px',
+            backgroundColor: '#16213e',
+            cursor: 'pointer',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderTop: '2px solid #e94560',
+          }}
+        >
+          <span style={{ fontWeight: 'bold', color: '#e94560' }}>
+            DEBUG PANEL {showDebug ? '▼' : '▲'}
+          </span>
+          <span>
+            Supabase: {supabaseStatus.urlConfigured && supabaseStatus.keyConfigured ? (
+              <span style={{ color: '#4ecca3' }}>Connected</span>
+            ) : (
+              <span style={{ color: '#e94560' }}>Not Configured</span>
+            )}
+            {' | '}
+            Logs: {debugLogs.length}
+            {(registerError || error) && (
+              <span style={{ color: '#e94560', marginLeft: '10px' }}>
+                ERROR ACTIVE
+              </span>
+            )}
+          </span>
+        </div>
+        {showDebug && (
+          <div style={{ padding: '15px', overflowY: 'auto', maxHeight: 'calc(50vh - 40px)' }}>
+            {/* Configuration Status */}
+            <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#0f3460', borderRadius: '4px' }}>
+              <strong style={{ color: '#4ecca3' }}>Configuration Status:</strong>
+              <div style={{ marginTop: '5px' }}>
+                <div>
+                  SUPABASE_URL: {supabaseStatus.urlConfigured ? (
+                    <span style={{ color: '#4ecca3' }}>{supabaseStatus.url}</span>
+                  ) : (
+                    <span style={{ color: '#e94560' }}>NOT SET</span>
+                  )}
+                </div>
+                <div>
+                  SUPABASE_ANON_KEY: {supabaseStatus.keyConfigured ? (
+                    <span style={{ color: '#4ecca3' }}>Configured</span>
+                  ) : (
+                    <span style={{ color: '#e94560' }}>NOT SET</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Current Error */}
+            {(registerError || error) && (
+              <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#5c1a1a', borderRadius: '4px', border: '1px solid #e94560' }}>
+                <strong style={{ color: '#e94560' }}>Current Error:</strong>
+                <div style={{ marginTop: '5px', wordBreak: 'break-word' }}>
+                  {registerError || error}
+                </div>
+              </div>
+            )}
+
+            {/* Auth Context State */}
+            <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#0f3460', borderRadius: '4px' }}>
+              <strong style={{ color: '#4ecca3' }}>Auth Context State:</strong>
+              <div style={{ marginTop: '5px' }}>
+                <div>isLoading: {isLoading ? 'true' : 'false'}</div>
+                <div>error: {error || 'null'}</div>
+              </div>
+            </div>
+
+            {/* Debug Logs */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <strong style={{ color: '#4ecca3' }}>Event Log:</strong>
+                <button
+                  onClick={() => setDebugLogs([])}
+                  style={{
+                    background: '#e94560',
+                    border: 'none',
+                    color: '#fff',
+                    padding: '3px 8px',
+                    borderRadius: '3px',
+                    cursor: 'pointer',
+                    fontSize: '11px',
+                  }}
+                >
+                  Clear
+                </button>
+              </div>
+              {debugLogs.length === 0 ? (
+                <div style={{ color: '#666' }}>No events logged yet</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column-reverse' }}>
+                  {debugLogs.map((log, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        marginBottom: '8px',
+                        padding: '8px',
+                        backgroundColor: log.action.includes('error') || log.action.includes('failed')
+                          ? '#5c1a1a'
+                          : log.action.includes('success')
+                          ? '#1a5c3a'
+                          : '#16213e',
+                        borderRadius: '4px',
+                        borderLeft: `3px solid ${
+                          log.action.includes('error') || log.action.includes('failed')
+                            ? '#e94560'
+                            : log.action.includes('success')
+                            ? '#4ecca3'
+                            : '#4a90a4'
+                        }`,
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                        <span style={{ color: '#4ecca3' }}>{log.action}</span>
+                        <span style={{ color: '#666', fontSize: '10px' }}>
+                          {new Date(log.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#ccc' }}>
+                        {JSON.stringify(log.details, null, 2)}
+                      </pre>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </main>
   );
 };

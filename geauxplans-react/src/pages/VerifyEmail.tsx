@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
-import api from '../services/api';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 const VerifyEmail: React.FC = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  const { refreshUser } = useAuth();
   const [status, setStatus] = useState<'loading' | 'pending' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
@@ -19,6 +21,8 @@ const VerifyEmail: React.FC = () => {
       // Supabase sends tokens in the hash like #access_token=xxx&type=signup
       if (hash && hash.includes('access_token')) {
         // Token verification successful - Supabase already verified it
+        // Try to refresh user session
+        await refreshUser();
         setStatus('success');
         setMessage('Your email has been verified successfully! You can now log in.');
         return;
@@ -44,16 +48,21 @@ const VerifyEmail: React.FC = () => {
         setEmail(emailParam);
       }
 
-      // If we have token_hash and type, verify via API
+      // If we have token_hash and type, verify via Supabase
       if (tokenHash && type === 'email') {
         try {
-          const response = await api.get(`/auth/verify-email?token_hash=${tokenHash}&type=${type}`);
-          if (response.success) {
+          const { error: verifyError } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: 'email',
+          });
+
+          if (verifyError) {
+            setStatus('error');
+            setMessage(verifyError.message || 'Verification failed. Please try again.');
+          } else {
+            await refreshUser();
             setStatus('success');
             setMessage('Your email has been verified successfully! You can now log in.');
-          } else {
-            setStatus('error');
-            setMessage(response.error || 'Verification failed. Please try again.');
           }
         } catch {
           setStatus('error');
@@ -80,7 +89,7 @@ const VerifyEmail: React.FC = () => {
     };
 
     verifyToken();
-  }, [searchParams, location.hash]);
+  }, [searchParams, location.hash, refreshUser]);
 
   const handleResendVerification = async () => {
     if (!email) {
@@ -92,11 +101,18 @@ const VerifyEmail: React.FC = () => {
     setResendMessage('');
 
     try {
-      const response = await api.post('/auth/verify-email', { email });
-      if (response.success) {
-        setResendMessage('Verification email sent! Please check your inbox.');
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/verify-email`,
+        },
+      });
+
+      if (resendError) {
+        setResendMessage(resendError.message || 'Failed to send verification email.');
       } else {
-        setResendMessage(response.error || 'Failed to send verification email.');
+        setResendMessage('Verification email sent! Please check your inbox.');
       }
     } catch (err) {
       setResendMessage('Failed to send verification email. Please try again.');
@@ -138,7 +154,7 @@ const VerifyEmail: React.FC = () => {
           >
             {status === 'success' ? (
               <>
-                <div style={{ fontSize: '60px', marginBottom: '20px', color: '#28a745' }}>✓</div>
+                <div style={{ fontSize: '60px', marginBottom: '20px', color: '#28a745' }}>&#10003;</div>
                 <h1 style={{ color: '#28a745', marginBottom: '20px' }}>Email Verified!</h1>
                 <p style={{ color: '#707070', marginBottom: '30px' }}>{message}</p>
                 <Link
@@ -146,12 +162,12 @@ const VerifyEmail: React.FC = () => {
                   className="btn btn-primary btn-lg"
                   style={{ width: '100%' }}
                 >
-                  Log In to Your Account
+                  Go to Your Account
                 </Link>
               </>
             ) : status === 'error' ? (
               <>
-                <div style={{ fontSize: '60px', marginBottom: '20px' }}>✗</div>
+                <div style={{ fontSize: '60px', marginBottom: '20px' }}>&#10007;</div>
                 <h1 style={{ color: '#dc3545', marginBottom: '20px' }}>Verification Failed</h1>
                 <p style={{ color: '#707070', marginBottom: '30px' }}>{message}</p>
 
@@ -186,13 +202,13 @@ const VerifyEmail: React.FC = () => {
                   </p>
                 )}
 
-                <Link to="/my-account" style={{ color: '#004d71' }}>
+                <Link to="/login" style={{ color: '#004d71' }}>
                   Back to Login
                 </Link>
               </>
             ) : (
               <>
-                <div style={{ fontSize: '60px', marginBottom: '20px' }}>✉️</div>
+                <div style={{ fontSize: '60px', marginBottom: '20px' }}>&#9993;</div>
                 <h1 style={{ marginBottom: '20px' }}>Check Your Email</h1>
                 <p style={{ color: '#707070', marginBottom: '30px' }}>
                   We sent a verification link to <strong>{email || 'your email'}</strong>.
@@ -267,7 +283,7 @@ const VerifyEmail: React.FC = () => {
                 </div>
 
                 <Link
-                  to="/my-account"
+                  to="/login"
                   className="btn btn-primary"
                   style={{ width: '100%' }}
                 >

@@ -47,6 +47,31 @@ a:hover {
   color: #0000cc;
 }
 
+/* Prevent hover color change on buttons - buttons should maintain their own text colors */
+a.btn:hover,
+a.btn-solid:hover,
+a.btn-pill-left:hover,
+a.btn-pill-right:hover,
+a.btn_geaux:hover,
+a.btn-primary:hover,
+a.btn-details:hover,
+a.btn-white:hover,
+button:hover {
+  color: inherit;
+}
+
+/* Ensure button text colors are preserved on hover */
+.btn:hover,
+.btn-solid:hover,
+.btn-pill-left:hover,
+.btn-pill-right:hover {
+  color: #fff !important;
+}
+
+.btn_geaux:hover {
+  color: #fff !important;
+}
+
 .container {
   max-width: 1320px;
   margin: 0 auto;
@@ -362,7 +387,7 @@ a:hover {
 .estate-planning-mega .plan-price {
   display: block;
   font-size: 0.7rem;
-  color: #8B0000;
+  color: #0000ff;
   font-style: italic;
   margin-bottom: 2px;
 }

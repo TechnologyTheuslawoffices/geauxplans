@@ -8,11 +8,21 @@ import React, { createContext, useContext, useState, useEffect, useCallback, Rea
 import cartService from '../services/cartService';
 import type { Cart, CartItem } from '../types';
 
+interface CustomCartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  type?: string;
+  metadata?: Record<string, unknown>;
+}
+
 interface CartContextType {
   cart: Cart;
   isLoading: boolean;
   error: string | null;
   addItem: (productId: number, quantity?: number, variationId?: number) => Promise<boolean>;
+  addToCart: (item: CustomCartItem) => void;
   updateItem: (itemId: string, quantity: number) => Promise<boolean>;
   removeItem: (itemId: string) => Promise<boolean>;
   clearCart: () => Promise<boolean>;
@@ -202,6 +212,52 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   }, []);
 
+  // Add custom item to cart (for LLC wizard and custom products)
+  const addToCart = useCallback((item: CustomCartItem): void => {
+    setCart(prevCart => {
+      // Check if item already exists
+      const existingIndex = prevCart.items.findIndex(i => i.id === item.id);
+
+      let newItems: CartItem[];
+      if (existingIndex >= 0) {
+        // Update existing item quantity
+        newItems = prevCart.items.map((i, index) =>
+          index === existingIndex
+            ? { ...i, quantity: i.quantity + item.quantity }
+            : i
+        );
+      } else {
+        // Add new item
+        const newItem: CartItem = {
+          id: item.id,
+          productId: 0, // Custom item, no product ID
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: '',
+          type: item.type,
+          metadata: item.metadata,
+        };
+        newItems = [...prevCart.items, newItem];
+      }
+
+      // Recalculate totals
+      const subtotal = newItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+      const tax = 0; // Tax calculated at checkout
+      const total = subtotal + tax;
+      const itemCount = newItems.reduce((sum, i) => sum + i.quantity, 0);
+
+      return {
+        ...prevCart,
+        items: newItems,
+        subtotal,
+        tax,
+        total,
+        itemCount,
+      };
+    });
+  }, []);
+
   const clearError = useCallback(() => {
     setError(null);
   }, []);
@@ -211,6 +267,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     isLoading,
     error,
     addItem,
+    addToCart,
     updateItem,
     removeItem,
     clearCart: clearCartItems,

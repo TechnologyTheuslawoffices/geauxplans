@@ -1,0 +1,429 @@
+/* Confirmation Pages Styles */
+
+.confirmation-page {
+  padding: 60px 20px;
+  background: linear-gradient(180deg, #f9f9f9 0%, #fff 100%);
+  min-height: 80vh;
+}
+
+.confirmation-page .container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.confirmation-content {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.shield-icon {
+  margin-bottom: 30px;
+}
+
+.shield-icon img {
+  max-width: 150px;
+  height: auto;
+}
+
+.confirmation-page h1 {
+  color: #004d71;
+  font-size: 2.2rem;
+  margin-bottom: 15px;
+}
+
+.confirmation-page h2 {
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.confirmation-page h3 {
+  color: #0000ff;
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.confirmation-details {
+  text-align: left;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+.confirmation-details p {
+  color: #555;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 15px;
+}
+
+.confirmation-details p:last-child {
+  margin-bottom: 0;
+}
+
+.action-buttons {
+  margin: 30px 0;
+}
+
+.action-buttons .btn {
+  display: inline-block;
+  padding: 15px 40px;
+  font-size: 1.1rem;
+  background: #0000ff;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.action-buttons .btn:hover {
+  background: #0000cc;
+}
+
+.arrows-decoration {
+  margin: 30px 0;
+}
+
+.arrows-decoration img {
+  max-width: 120px;
+  opacity: 0.6;
+}
+
+.gift-section {
+  margin: 30px 0;
+  padding: 20px;
+  background: #fff8e1;
+  border-radius: 12px;
+}
+
+.gift-section .gift-image {
+  max-width: 150px;
+  margin-bottom: 15px;
+}
+
+.gift-section p {
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.connect-section {
+  margin-top: 40px;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.connect-section h2 {
+  color: #004d71;
+  margin-bottom: 10px;
+}
+
+.connect-section p {
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.social-link {
+  display: inline-block;
+  padding: 12px 25px;
+  background: #1877f2;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.social-link:hover {
+  background: #166fe5;
+  color: white;
+}
+
+.social-link i {
+  margin-right: 8px;
+}
+
+.confirmation-footer {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 1px solid #eee;
+}
+
+.confirmation-footer .footer-logo {
+  max-width: 200px;
+  margin-bottom: 15px;
+}
+
+.confirmation-footer p {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+/* Thank You Resources Page Specific Styles */
+.thank-you-resources h1.text-blue {
+  color: #0000ff;
+  font-size: 2.5rem;
+}
+
+.thank-you-resources .wave-emoji {
+  font-size: 2rem;
+}
+
+.thank-you-resources .subtitle {
+  color: #666;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+.thank-you-resources .intro-text {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 700px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+
+.hello-section {
+  background: linear-gradient(90deg, #fff 73%, #0000ff 73%);
+  padding: 60px 40px;
+  margin: 40px 0;
+  border-radius: 12px;
+}
+
+@media (max-width: 992px) {
+  .hello-section {
+    background: #fff;
+  }
+}
+
+.hello-section .hello-content {
+  max-width: 600px;
+}
+
+.hello-section h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.hello-section h3 {
+  color: #666;
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+}
+
+.hello-section p {
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 15px;
+}
+
+.stats-section {
+  padding: 40px 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  background: #f9f9f9;
+  padding: 30px 20px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.stat-card.featured {
+  border: 2px solid #0000ff;
+}
+
+.stat-number {
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+
+.stat-card p {
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.process-section {
+  padding: 60px 0;
+  text-align: center;
+}
+
+.process-section h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.steps {
+  text-align: left;
+  max-width: 700px;
+  margin: 40px auto;
+}
+
+.step {
+  padding: 20px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.step-number {
+  color: #999;
+  font-style: italic;
+  font-size: 1.2rem;
+  margin-right: 15px;
+}
+
+.step p {
+  color: #555;
+  line-height: 1.7;
+}
+
+.alert-note {
+  background: #d4edda;
+  color: #155724;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.plans-section {
+  padding: 60px 0;
+}
+
+.plans-section h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin: 40px 0;
+}
+
+@media (max-width: 768px) {
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.plan-card {
+  background: #f1f1f1;
+  padding: 30px;
+  text-align: center;
+  border-radius: 12px;
+}
+
+.plan-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-bottom: 15px;
+}
+
+.plan-card h5 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.plan-card p {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.plan-card .btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #0000ff;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.plan-card .btn:hover {
+  background: #0000cc;
+}
+
+.plan-card .learn-more {
+  display: block;
+  color: #0000ff;
+  font-size: 0.85rem;
+}
+
+.quiz-section {
+  text-align: center;
+  padding: 40px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  margin-top: 40px;
+}
+
+.quiz-section h5 {
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.quiz-section p {
+  color: #555;
+  margin-bottom: 15px;
+}
+
+/* Utility Classes */
+.text-blue {
+  color: #0000ff !important;
+}
+
+.text-gray {
+  color: #666 !important;
+}
+
+.btn-secondary {
+  background: #eaeaea !important;
+  color: #333 !important;
+}
+
+.btn-secondary:hover {
+  background: #ddd !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .confirmation-page h1 {
+    font-size: 1.8rem;
+  }
+
+  .confirmation-page h2 {
+    font-size: 1.3rem;
+  }
+
+  .confirmation-details {
+    padding: 20px;
+  }
+
+  .thank-you-resources h1.text-blue {
+    font-size: 1.8rem;
+  }
+}

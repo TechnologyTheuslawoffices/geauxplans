@@ -41,6 +41,7 @@ const LegalEdgePlan: React.FC = () => {
 
               <Link to="/shop" className="btn btn-solid btn-lg">Subscribe Now - $9.99/month</Link>
               <p className="cancel-text"><em>You may cancel anytime.</em></p>
+              <p className="contract-link"><Link to="/legal-edge-plan-contract">View Legal Edge Plan Contract</Link></p>
             </div>
 
             {/* Right Column - Life Happens */}

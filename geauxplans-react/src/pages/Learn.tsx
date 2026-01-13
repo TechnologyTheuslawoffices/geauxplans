@@ -153,6 +153,19 @@ const Learn: React.FC = () => {
         </div>
       </section>
 
+      {/* Webinar Section */}
+      <section className="learn-webinar-section">
+        <div className="container">
+          <div className="webinar-promo">
+            <div className="webinar-content">
+              <h2><strong>Free Estate Planning Webinar</strong></h2>
+              <p><em>Join us for a complimentary webinar and discover basic must-know estate planning concepts that will enable you to create your own estate plan.</em></p>
+              <Link to="/register-for-webinar" className="btn btn-solid">Register for Webinar</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="learn-cta-section">
         <div className="container">
