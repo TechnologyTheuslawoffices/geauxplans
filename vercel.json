@@ -18,6 +18,7 @@
     { "source": "/api/submissions/:id/refresh-documents", "destination": "/api/submissions/[id]/refresh-documents" },
     { "source": "/api/submissions/:id/download/:docIndex", "destination": "/api/submissions/[id]/download/[docIndex]" },
     { "source": "/api/submissions/:id", "destination": "/api/submissions/[id]" },
+    { "source": "/api/stripe/webhook", "destination": "/api/stripe/webhook" },
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ],
   "headers": [
