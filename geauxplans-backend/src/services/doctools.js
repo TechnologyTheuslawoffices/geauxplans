@@ -7,7 +7,7 @@ const https = require('https');
 
 // Your private DocTools deployment
 const DOCTOOLS_CONFIG = {
-  baseUrl: process.env.DOCTOOLS_URL || 'doc-tools-95mp.vercel.app',
+  baseUrl: process.env.DOCTOOLS_URL || 'doc-tools-khaki.vercel.app',
   apiKey: process.env.DOCTOOLS_API_KEY || '', // Optional: add API key for security
 };
 
@@ -83,8 +83,8 @@ async function getDocuments(recordId) {
  * Generate documents for a record
  */
 async function generateDocuments(recordId, templates) {
-  // Default templates for POA
-  const defaultTemplates = ['ClientFPOA', 'ClientHPOA', 'ClientHCD'];
+  // Default templates for POA (including HIPAA)
+  const defaultTemplates = ['ClientFPOA', 'ClientHPOA', 'ClientHCD', 'ClientHipaa'];
 
   return makeRequest('POST', '/api/poa/generate', {
     recordId,
@@ -110,8 +110,8 @@ async function processSubmission(submission) {
     // Determine which templates to generate based on form type
     const isTwoPerson = submission.form_type?.includes('2Person');
     const templates = isTwoPerson
-      ? ['ClientFPOA', 'SpouseFPOA', 'ClientHPOA', 'SpouseHPOA', 'ClientHCD', 'SpouseHCD']
-      : ['ClientFPOA', 'ClientHPOA', 'ClientHCD'];
+      ? ['ClientFPOA', 'SpouseFPOA', 'ClientHPOA', 'SpouseHPOA', 'ClientHCD', 'SpouseHCD', 'ClientHipaa', 'SpouseHipaa']
+      : ['ClientFPOA', 'ClientHPOA', 'ClientHCD', 'ClientHipaa'];
 
     // Generate documents
     console.log(`DocTools: Generating documents for record ${result.id}...`);

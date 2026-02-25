@@ -76,6 +76,7 @@ interface FormData {
     first_name: string;
     middle_name: string;
     surname: string;
+    suffix: string;
     date_of_birth: string;
     gender: string;
     street_address: string;
@@ -91,6 +92,7 @@ interface FormData {
     first_name: string;
     middle_name: string;
     surname: string;
+    suffix: string;
     date_of_birth: string;
     gender: string;
     phone_number: string;
@@ -107,32 +109,87 @@ interface FormData {
     parties: Party[];
   };
   fpoa: {
+    springing_poa: string;  // 'Yes' = springing (on incapacity), 'No' = immediate
+    revoke_prior_poa: string;  // 'Yes' or 'No'
     fpoa_initial_agents: {
       person_to_serve: string;
       second_coagent_person_to_serve: string;
+      agents_serve_alone: string;  // 'Yes' or 'No' - can each agent act independently
     };
     has_appointer_successor_agents: string;
     successor_agents: Array<{
       successor_agent_to_serve: string;
       second_successor_coagent_to_serve: string;
+      agents_serve_alone: string;
+    }>;
+  };
+  // Spouse FPOA (for 2-person forms)
+  spouse_fpoa: {
+    springing_poa: string;
+    revoke_prior_poa: string;
+    fpoa_initial_agents: {
+      person_to_serve: string;
+      second_coagent_person_to_serve: string;
+      agents_serve_alone: string;
+    };
+    has_appointer_successor_agents: string;
+    successor_agents: Array<{
+      successor_agent_to_serve: string;
+      second_successor_coagent_to_serve: string;
+      agents_serve_alone: string;
     }>;
   };
   hcpoa: {
+    springing_poa: string;  // 'Yes' = springing (on incapacity), 'No' = immediate
+    revoke_prior_poa: string;  // 'Yes' or 'No'
     wish_to_be_organ_donor: string;
     wish_to_donate_body_to_science: string;
+    no_blood_transfusion: string;  // 'Yes' or 'No'
     hcpoa_initial_agents: {
       person_to_serve: string;
       second_coagent_person_to_serve: string;
+      agents_serve_alone: string;
     };
     has_appointed_successor_agents: string;
     successor_agents: Array<{
       successor_agent_to_serve: string;
       second_successor_coagent_to_serve: string;
+      agents_serve_alone: string;
+    }>;
+  };
+  // Spouse HCPOA (for 2-person forms)
+  spouse_hcpoa: {
+    springing_poa: string;
+    revoke_prior_poa: string;
+    wish_to_be_organ_donor: string;
+    wish_to_donate_body_to_science: string;
+    no_blood_transfusion: string;
+    hcpoa_initial_agents: {
+      person_to_serve: string;
+      second_coagent_person_to_serve: string;
+      agents_serve_alone: string;
+    };
+    has_appointed_successor_agents: string;
+    successor_agents: Array<{
+      successor_agent_to_serve: string;
+      second_successor_coagent_to_serve: string;
+      agents_serve_alone: string;
     }>;
   };
   hcd: {
     life_support_option: string;
     client_hcds: string[];
+    extend_hcd: string;  // 'Yes' or 'No' - extend beyond default period
+    hcd_days: number;  // Number of days if extended
+    hcd_sooner_longer: string;  // 'sooner' or 'longer'
+  };
+  // Spouse HCD (for 2-person forms)
+  spouse_hcd: {
+    life_support_option: string;
+    spouse_hcds: string[];
+    extend_hcd: string;
+    hcd_days: number;
+    hcd_sooner_longer: string;
   };
   trust_info: {
     trust_name: string;
@@ -155,6 +212,7 @@ const initialFormData: FormData = {
     first_name: '',
     middle_name: '',
     surname: '',
+    suffix: '',
     date_of_birth: '',
     gender: '',
     street_address: '',
@@ -170,6 +228,7 @@ const initialFormData: FormData = {
     first_name: '',
     middle_name: '',
     surname: '',
+    suffix: '',
     date_of_birth: '',
     gender: '',
     phone_number: '',
@@ -186,19 +245,51 @@ const initialFormData: FormData = {
     parties: [],
   },
   fpoa: {
+    springing_poa: 'No',  // Default to immediate POA
+    revoke_prior_poa: 'No',
     fpoa_initial_agents: {
       person_to_serve: '',
       second_coagent_person_to_serve: '',
+      agents_serve_alone: 'Yes',  // Default to agents can act independently
+    },
+    has_appointer_successor_agents: '',
+    successor_agents: [],
+  },
+  spouse_fpoa: {
+    springing_poa: 'No',
+    revoke_prior_poa: 'No',
+    fpoa_initial_agents: {
+      person_to_serve: '',
+      second_coagent_person_to_serve: '',
+      agents_serve_alone: 'Yes',
     },
     has_appointer_successor_agents: '',
     successor_agents: [],
   },
   hcpoa: {
+    springing_poa: 'No',
+    revoke_prior_poa: 'No',
     wish_to_be_organ_donor: '',
     wish_to_donate_body_to_science: '',
+    no_blood_transfusion: 'No',
     hcpoa_initial_agents: {
       person_to_serve: '',
       second_coagent_person_to_serve: '',
+      agents_serve_alone: 'Yes',
+    },
+    has_appointed_successor_agents: '',
+    successor_agents: [],
+  },
+  spouse_hcpoa: {
+    springing_poa: 'No',
+    revoke_prior_poa: 'No',
+    wish_to_be_organ_donor: '',
+    wish_to_donate_body_to_science: '',
+    no_blood_transfusion: 'No',
+    hcpoa_initial_agents: {
+      person_to_serve: '',
+      second_coagent_person_to_serve: '',
+      agents_serve_alone: 'Yes',
     },
     has_appointed_successor_agents: '',
     successor_agents: [],
@@ -206,6 +297,16 @@ const initialFormData: FormData = {
   hcd: {
     life_support_option: '',
     client_hcds: [],
+    extend_hcd: 'No',
+    hcd_days: 7,
+    hcd_sooner_longer: '',
+  },
+  spouse_hcd: {
+    life_support_option: '',
+    spouse_hcds: [],
+    extend_hcd: 'No',
+    hcd_days: 7,
+    hcd_sooner_longer: '',
   },
   trust_info: {
     trust_name: '',
@@ -244,8 +345,9 @@ const createEmptyParty = (): Party => ({
 const POAForm: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { isAuthenticated, session } = useAuth();
+  const { isAuthenticated } = useAuth();
   const formType = searchParams.get('type') || 'powerOfAttorneyForm';
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const submissionId = searchParams.get('submission');
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -659,7 +761,7 @@ const POAForm: React.FC = () => {
       <p className="text-muted">Enter your personal information below.</p>
 
       <div className="row mb-3">
-        <div className="col-md-4">
+        <div className="col-md-3">
           <label className="form-label">First Name <span className="text-danger">*</span></label>
           <input
             type="text"
@@ -669,7 +771,7 @@ const POAForm: React.FC = () => {
           />
           {errors['personal_info.first_name'] && <div className="invalid-feedback">{errors['personal_info.first_name']}</div>}
         </div>
-        <div className="col-md-4">
+        <div className="col-md-3">
           <label className="form-label">Middle Name</label>
           <input
             type="text"
@@ -678,7 +780,7 @@ const POAForm: React.FC = () => {
             onChange={(e) => updateFormData('personal_info', 'middle_name', e.target.value)}
           />
         </div>
-        <div className="col-md-4">
+        <div className="col-md-3">
           <label className="form-label">Last Name <span className="text-danger">*</span></label>
           <input
             type="text"
@@ -687,6 +789,21 @@ const POAForm: React.FC = () => {
             onChange={(e) => updateFormData('personal_info', 'surname', e.target.value)}
           />
           {errors['personal_info.surname'] && <div className="invalid-feedback">{errors['personal_info.surname']}</div>}
+        </div>
+        <div className="col-md-3">
+          <label className="form-label">Suffix</label>
+          <select
+            className="form-select"
+            value={formData.personal_info.suffix}
+            onChange={(e) => updateFormData('personal_info', 'suffix', e.target.value)}
+          >
+            <option value="">None</option>
+            <option value="Jr.">Jr.</option>
+            <option value="Sr.">Sr.</option>
+            <option value="II">II</option>
+            <option value="III">III</option>
+            <option value="IV">IV</option>
+          </select>
         </div>
       </div>
 
@@ -1067,11 +1184,79 @@ const POAForm: React.FC = () => {
 
   const renderFPOAPage = () => {
     const parties = formData.people_or_entities_who_will_serve_as_agents.parties;
+    const isTwoPerson = formType.includes('2Person');
 
     return (
       <div className="poa-page">
         <h2>5. Financial Power of Attorney for {getPrincipalFullName()}</h2>
         <p className="text-muted">Select who will serve as your agents for financial matters.</p>
+
+        {/* POA Type Options */}
+        <div className="card mb-3">
+          <div className="card-header">Power of Attorney Options</div>
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label className="form-label">When should this POA take effect?</label>
+                <div>
+                  <div className="form-check">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      name="fpoa_springing"
+                      value="No"
+                      checked={formData.fpoa.springing_poa === 'No'}
+                      onChange={(e) => updateNestedFormData('fpoa.springing_poa', e.target.value)}
+                    />
+                    <label className="form-check-label">
+                      <strong>Immediate</strong> - Takes effect when signed
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      name="fpoa_springing"
+                      value="Yes"
+                      checked={formData.fpoa.springing_poa === 'Yes'}
+                      onChange={(e) => updateNestedFormData('fpoa.springing_poa', e.target.value)}
+                    />
+                    <label className="form-check-label">
+                      <strong>Springing</strong> - Takes effect only upon incapacity
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Do you have a prior Financial POA to revoke?</label>
+                <div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      name="fpoa_revoke"
+                      value="Yes"
+                      checked={formData.fpoa.revoke_prior_poa === 'Yes'}
+                      onChange={(e) => updateNestedFormData('fpoa.revoke_prior_poa', e.target.value)}
+                    />
+                    <label className="form-check-label">Yes</label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      name="fpoa_revoke"
+                      value="No"
+                      checked={formData.fpoa.revoke_prior_poa === 'No'}
+                      onChange={(e) => updateNestedFormData('fpoa.revoke_prior_poa', e.target.value)}
+                    />
+                    <label className="form-check-label">No</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="card mb-3">
           <div className="card-header">Initial Agents</div>
@@ -1085,8 +1270,11 @@ const POAForm: React.FC = () => {
                   onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
                 >
                   <option value="">Select Initial Agent...</option>
-                  {parties.map((party, idx) => (
-                    <option key={party.id} value={party.id}>{getPartyDisplayName(party)}</option>
+                  {isTwoPerson && (
+                    <option value="spouse">My Spouse</option>
+                  )}
+                  {parties.map((party) => (
+                    <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
               </div>
@@ -1098,12 +1286,41 @@ const POAForm: React.FC = () => {
                   onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                 >
                   <option value="">None</option>
-                  {parties.map((party, idx) => (
-                    <option key={party.id} value={party.id}>{getPartyDisplayName(party)}</option>
+                  {parties.map((party) => (
+                    <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
               </div>
             </div>
+            {formData.fpoa.fpoa_initial_agents.second_coagent_person_to_serve && (
+              <div className="mb-3">
+                <label className="form-label">Can each agent act independently?</label>
+                <div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      name="fpoa_serve_alone"
+                      value="Yes"
+                      checked={formData.fpoa.fpoa_initial_agents.agents_serve_alone === 'Yes'}
+                      onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.agents_serve_alone', e.target.value)}
+                    />
+                    <label className="form-check-label">Yes - Each agent can act alone</label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      name="fpoa_serve_alone"
+                      value="No"
+                      checked={formData.fpoa.fpoa_initial_agents.agents_serve_alone === 'No'}
+                      onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.agents_serve_alone', e.target.value)}
+                    />
+                    <label className="form-check-label">No - Agents must act together</label>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -1134,12 +1351,119 @@ const POAForm: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Spouse FPOA Section for 2-person forms */}
+        {isTwoPerson && (
+          <>
+            <hr className="my-4" />
+            <h3>Financial Power of Attorney for {formData.spouse_info.first_name || 'Spouse'}</h3>
+
+            <div className="card mb-3">
+              <div className="card-header">Spouse's POA Options</div>
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">When should this POA take effect?</label>
+                    <div>
+                      <div className="form-check">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_fpoa_springing"
+                          value="No"
+                          checked={formData.spouse_fpoa.springing_poa === 'No'}
+                          onChange={(e) => updateNestedFormData('spouse_fpoa.springing_poa', e.target.value)}
+                        />
+                        <label className="form-check-label">Immediate</label>
+                      </div>
+                      <div className="form-check">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_fpoa_springing"
+                          value="Yes"
+                          checked={formData.spouse_fpoa.springing_poa === 'Yes'}
+                          onChange={(e) => updateNestedFormData('spouse_fpoa.springing_poa', e.target.value)}
+                        />
+                        <label className="form-check-label">Springing</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="card mb-3">
+              <div className="card-header">Spouse's Initial Agents</div>
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Initial Agent <span className="text-danger">*</span></label>
+                    <select
+                      className="form-select"
+                      value={formData.spouse_fpoa.fpoa_initial_agents.person_to_serve}
+                      onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
+                    >
+                      <option value="">Select Initial Agent...</option>
+                      <option value="client">My Spouse ({formData.personal_info.first_name || 'Client'})</option>
+                      {parties.map((party) => (
+                        <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Initial Co-Agent (if any)</label>
+                    <select
+                      className="form-select"
+                      value={formData.spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve}
+                      onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
+                    >
+                      <option value="">None</option>
+                      {parties.map((party) => (
+                        <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Does spouse want successor agents?</label>
+              <div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="spouse_fpoa_successors"
+                    value="Yes"
+                    checked={formData.spouse_fpoa.has_appointer_successor_agents === 'Yes'}
+                    onChange={(e) => updateNestedFormData('spouse_fpoa.has_appointer_successor_agents', e.target.value)}
+                  />
+                  <label className="form-check-label">Yes</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="spouse_fpoa_successors"
+                    value="No"
+                    checked={formData.spouse_fpoa.has_appointer_successor_agents === 'No'}
+                    onChange={(e) => updateNestedFormData('spouse_fpoa.has_appointer_successor_agents', e.target.value)}
+                  />
+                  <label className="form-check-label">No</label>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     );
   };
 
   const renderHCPOAPage = () => {
     const parties = formData.people_or_entities_who_will_serve_as_agents.parties;
+    const isTwoPerson = formType.includes('2Person');
 
     return (
       <div className="poa-page">
@@ -1147,10 +1471,10 @@ const POAForm: React.FC = () => {
         <p className="text-muted">Select who will serve as your agents for healthcare decisions.</p>
 
         <div className="card mb-3">
-          <div className="card-header">Organ Donation Preferences</div>
+          <div className="card-header">Healthcare Preferences</div>
           <div className="card-body">
             <div className="row">
-              <div className="col-md-6 mb-3">
+              <div className="col-md-4 mb-3">
                 <label className="form-label">Do you wish to be an organ donor? <span className="text-danger">*</span></label>
                 <div>
                   <div className="form-check">
@@ -1177,8 +1501,8 @@ const POAForm: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-md-6 mb-3">
-                <label className="form-label">Do you wish to donate your body to science? <span className="text-danger">*</span></label>
+              <div className="col-md-4 mb-3">
+                <label className="form-label">Donate body to science? <span className="text-danger">*</span></label>
                 <div>
                   <div className="form-check">
                     <input
@@ -1204,6 +1528,33 @@ const POAForm: React.FC = () => {
                   </div>
                 </div>
               </div>
+              <div className="col-md-4 mb-3">
+                <label className="form-label">Refuse blood transfusions?</label>
+                <div>
+                  <div className="form-check">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      name="no_blood"
+                      value="Yes"
+                      checked={formData.hcpoa.no_blood_transfusion === 'Yes'}
+                      onChange={(e) => updateNestedFormData('hcpoa.no_blood_transfusion', e.target.value)}
+                    />
+                    <label className="form-check-label">Yes - I refuse blood transfusions</label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      name="no_blood"
+                      value="No"
+                      checked={formData.hcpoa.no_blood_transfusion === 'No'}
+                      onChange={(e) => updateNestedFormData('hcpoa.no_blood_transfusion', e.target.value)}
+                    />
+                    <label className="form-check-label">No - Allow transfusions</label>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1220,8 +1571,11 @@ const POAForm: React.FC = () => {
                   onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
                 >
                   <option value="">Select Initial Agent...</option>
+                  {isTwoPerson && (
+                    <option value="spouse">My Spouse</option>
+                  )}
                   {parties.map((party) => (
-                    <option key={party.id} value={party.id}>{getPartyDisplayName(party)}</option>
+                    <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
               </div>
@@ -1234,11 +1588,40 @@ const POAForm: React.FC = () => {
                 >
                   <option value="">None</option>
                   {parties.map((party) => (
-                    <option key={party.id} value={party.id}>{getPartyDisplayName(party)}</option>
+                    <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
               </div>
             </div>
+            {formData.hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve && (
+              <div className="mb-3">
+                <label className="form-label">Can each agent act independently?</label>
+                <div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      name="hcpoa_serve_alone"
+                      value="Yes"
+                      checked={formData.hcpoa.hcpoa_initial_agents.agents_serve_alone === 'Yes'}
+                      onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.agents_serve_alone', e.target.value)}
+                    />
+                    <label className="form-check-label">Yes - Each can act alone</label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      name="hcpoa_serve_alone"
+                      value="No"
+                      checked={formData.hcpoa.hcpoa_initial_agents.agents_serve_alone === 'No'}
+                      onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.agents_serve_alone', e.target.value)}
+                    />
+                    <label className="form-check-label">No - Must act together</label>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -1269,75 +1652,417 @@ const POAForm: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Spouse HCPOA Section for 2-person forms */}
+        {isTwoPerson && (
+          <>
+            <hr className="my-4" />
+            <h3>Healthcare Power of Attorney for {formData.spouse_info.first_name || 'Spouse'}</h3>
+
+            <div className="card mb-3">
+              <div className="card-header">Spouse's Healthcare Preferences</div>
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-4 mb-3">
+                    <label className="form-label">Organ donor?</label>
+                    <div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_organ_donor"
+                          value="Yes"
+                          checked={formData.spouse_hcpoa.wish_to_be_organ_donor === 'Yes'}
+                          onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_be_organ_donor', e.target.value)}
+                        />
+                        <label className="form-check-label">Yes</label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_organ_donor"
+                          value="No"
+                          checked={formData.spouse_hcpoa.wish_to_be_organ_donor === 'No'}
+                          onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_be_organ_donor', e.target.value)}
+                        />
+                        <label className="form-check-label">No</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label className="form-label">Donate to science?</label>
+                    <div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_donate_science"
+                          value="Yes"
+                          checked={formData.spouse_hcpoa.wish_to_donate_body_to_science === 'Yes'}
+                          onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_donate_body_to_science', e.target.value)}
+                        />
+                        <label className="form-check-label">Yes</label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_donate_science"
+                          value="No"
+                          checked={formData.spouse_hcpoa.wish_to_donate_body_to_science === 'No'}
+                          onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_donate_body_to_science', e.target.value)}
+                        />
+                        <label className="form-check-label">No</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label className="form-label">Refuse blood transfusions?</label>
+                    <div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_no_blood"
+                          value="Yes"
+                          checked={formData.spouse_hcpoa.no_blood_transfusion === 'Yes'}
+                          onChange={(e) => updateNestedFormData('spouse_hcpoa.no_blood_transfusion', e.target.value)}
+                        />
+                        <label className="form-check-label">Yes</label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_no_blood"
+                          value="No"
+                          checked={formData.spouse_hcpoa.no_blood_transfusion === 'No'}
+                          onChange={(e) => updateNestedFormData('spouse_hcpoa.no_blood_transfusion', e.target.value)}
+                        />
+                        <label className="form-check-label">No</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="card mb-3">
+              <div className="card-header">Spouse's Healthcare Agents</div>
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Initial Agent</label>
+                    <select
+                      className="form-select"
+                      value={formData.spouse_hcpoa.hcpoa_initial_agents.person_to_serve}
+                      onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
+                    >
+                      <option value="">Select Initial Agent...</option>
+                      <option value="client">{formData.personal_info.first_name || 'Client'} (My Spouse)</option>
+                      {parties.map((party) => (
+                        <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Initial Co-Agent (if any)</label>
+                    <select
+                      className="form-select"
+                      value={formData.spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve}
+                      onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
+                    >
+                      <option value="">None</option>
+                      {parties.map((party) => (
+                        <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Does spouse want successor agents?</label>
+              <div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="spouse_hcpoa_successors"
+                    value="Yes"
+                    checked={formData.spouse_hcpoa.has_appointed_successor_agents === 'Yes'}
+                    onChange={(e) => updateNestedFormData('spouse_hcpoa.has_appointed_successor_agents', e.target.value)}
+                  />
+                  <label className="form-check-label">Yes</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="spouse_hcpoa_successors"
+                    value="No"
+                    checked={formData.spouse_hcpoa.has_appointed_successor_agents === 'No'}
+                    onChange={(e) => updateNestedFormData('spouse_hcpoa.has_appointed_successor_agents', e.target.value)}
+                  />
+                  <label className="form-check-label">No</label>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     );
   };
 
-  const renderHCDPage = () => (
-    <div className="poa-page">
-      <h2>7. Healthcare Directive</h2>
-      <p className="text-muted">Enter your preferences for end-of-life care.</p>
+  const renderHCDPage = () => {
+    const isTwoPerson = formType.includes('2Person');
 
-      <div className="mb-3">
-        <label className="form-label">Life Support Preference <span className="text-danger">*</span></label>
-        <select
-          className="form-select"
-          value={formData.hcd.life_support_option}
-          onChange={(e) => updateNestedFormData('hcd.life_support_option', e.target.value)}
-        >
-          <option value="">Select your preference...</option>
-          <option value="WITHDRAW">WITHDRAW - withhold and remove all life support</option>
-          <option value="CHOOSE">Choose specific options below</option>
-        </select>
-      </div>
+    return (
+      <div className="poa-page">
+        <h2>7. Healthcare Directive for {getPrincipalFullName()}</h2>
+        <p className="text-muted">Enter your preferences for end-of-life care.</p>
 
-      {formData.hcd.life_support_option === 'CHOOSE' && (
-        <div className="card mb-3">
-          <div className="card-header">Specific Preferences</div>
-          <div className="card-body">
-            <div className="form-check mb-2">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                checked={formData.hcd.client_hcds.includes('Nutr')}
-                onChange={(e) => {
-                  const newHcds = e.target.checked
-                    ? [...formData.hcd.client_hcds, 'Nutr']
-                    : formData.hcd.client_hcds.filter(h => h !== 'Nutr');
-                  updateNestedFormData('hcd.client_hcds', newHcds);
-                }}
-              />
-              <label className="form-check-label">
-                <strong>Nutrition</strong> - I want to receive artificial nutrition (feeding tube)
-              </label>
-            </div>
-            <div className="form-check mb-2">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                checked={formData.hcd.client_hcds.includes('Hydr')}
-                onChange={(e) => {
-                  const newHcds = e.target.checked
-                    ? [...formData.hcd.client_hcds, 'Hydr']
-                    : formData.hcd.client_hcds.filter(h => h !== 'Hydr');
-                  updateNestedFormData('hcd.client_hcds', newHcds);
-                }}
-              />
-              <label className="form-check-label">
-                <strong>Hydration</strong> - I want to receive artificial hydration (IV fluids)
-              </label>
+        <div className="mb-3">
+          <label className="form-label">Life Support Preference <span className="text-danger">*</span></label>
+          <select
+            className="form-select"
+            value={formData.hcd.life_support_option}
+            onChange={(e) => updateNestedFormData('hcd.life_support_option', e.target.value)}
+          >
+            <option value="">Select your preference...</option>
+            <option value="WITHDRAW">WITHDRAW - withhold and remove all life support</option>
+            <option value="CHOOSE">Choose specific options below</option>
+          </select>
+        </div>
+
+        {formData.hcd.life_support_option === 'CHOOSE' && (
+          <div className="card mb-3">
+            <div className="card-header">Specific Preferences</div>
+            <div className="card-body">
+              <div className="form-check mb-2">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={formData.hcd.client_hcds.includes('Nutr')}
+                  onChange={(e) => {
+                    const newHcds = e.target.checked
+                      ? [...formData.hcd.client_hcds, 'Nutr']
+                      : formData.hcd.client_hcds.filter(h => h !== 'Nutr');
+                    updateNestedFormData('hcd.client_hcds', newHcds);
+                  }}
+                />
+                <label className="form-check-label">
+                  <strong>Nutrition</strong> - I want to receive artificial nutrition (feeding tube)
+                </label>
+              </div>
+              <div className="form-check mb-2">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={formData.hcd.client_hcds.includes('Hydr')}
+                  onChange={(e) => {
+                    const newHcds = e.target.checked
+                      ? [...formData.hcd.client_hcds, 'Hydr']
+                      : formData.hcd.client_hcds.filter(h => h !== 'Hydr');
+                    updateNestedFormData('hcd.client_hcds', newHcds);
+                  }}
+                />
+                <label className="form-check-label">
+                  <strong>Hydration</strong> - I want to receive artificial hydration (IV fluids)
+                </label>
+              </div>
+              <div className="form-check mb-2">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={formData.hcd.client_hcds.includes('Vent')}
+                  onChange={(e) => {
+                    const newHcds = e.target.checked
+                      ? [...formData.hcd.client_hcds, 'Vent']
+                      : formData.hcd.client_hcds.filter(h => h !== 'Vent');
+                    updateNestedFormData('hcd.client_hcds', newHcds);
+                  }}
+                />
+                <label className="form-check-label">
+                  <strong>Ventilator</strong> - I want to receive mechanical ventilation
+                </label>
+              </div>
+              <div className="form-check mb-2">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={formData.hcd.client_hcds.includes('CPR')}
+                  onChange={(e) => {
+                    const newHcds = e.target.checked
+                      ? [...formData.hcd.client_hcds, 'CPR']
+                      : formData.hcd.client_hcds.filter(h => h !== 'CPR');
+                    updateNestedFormData('hcd.client_hcds', newHcds);
+                  }}
+                />
+                <label className="form-check-label">
+                  <strong>CPR</strong> - I want cardiopulmonary resuscitation attempted
+                </label>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="alert alert-success mt-4">
-        <h5><i className="fas fa-check-circle me-2"></i>Review and Submit</h5>
-        <p>You have completed all sections of the form. Please review your information and click "Submit Form" when ready.</p>
-        <p className="mb-0"><strong>After submission, your documents will be generated and available for download.</strong></p>
+        <div className="card mb-3">
+          <div className="card-header">Extended Period Option</div>
+          <div className="card-body">
+            <div className="mb-3">
+              <label className="form-label">Do you want to extend the waiting period before withdrawal of life support?</label>
+              <div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="extend_hcd"
+                    value="No"
+                    checked={formData.hcd.extend_hcd === 'No'}
+                    onChange={(e) => updateNestedFormData('hcd.extend_hcd', e.target.value)}
+                  />
+                  <label className="form-check-label">No - Use standard period</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="extend_hcd"
+                    value="Yes"
+                    checked={formData.hcd.extend_hcd === 'Yes'}
+                    onChange={(e) => updateNestedFormData('hcd.extend_hcd', e.target.value)}
+                  />
+                  <label className="form-check-label">Yes - Specify custom period</label>
+                </div>
+              </div>
+            </div>
+
+            {formData.hcd.extend_hcd === 'Yes' && (
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Number of days</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={formData.hcd.hcd_days}
+                    min={1}
+                    max={365}
+                    onChange={(e) => updateNestedFormData('hcd.hcd_days', parseInt(e.target.value) || 7)}
+                  />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Timing preference</label>
+                  <select
+                    className="form-select"
+                    value={formData.hcd.hcd_sooner_longer}
+                    onChange={(e) => updateNestedFormData('hcd.hcd_sooner_longer', e.target.value)}
+                  >
+                    <option value="">Select...</option>
+                    <option value="sooner">Sooner - err on the side of earlier withdrawal</option>
+                    <option value="longer">Longer - err on the side of extended care</option>
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Spouse HCD Section for 2-person forms */}
+        {isTwoPerson && (
+          <>
+            <hr className="my-4" />
+            <h3>Healthcare Directive for {formData.spouse_info.first_name || 'Spouse'}</h3>
+
+            <div className="mb-3">
+              <label className="form-label">Life Support Preference</label>
+              <select
+                className="form-select"
+                value={formData.spouse_hcd.life_support_option}
+                onChange={(e) => updateNestedFormData('spouse_hcd.life_support_option', e.target.value)}
+              >
+                <option value="">Select preference...</option>
+                <option value="WITHDRAW">WITHDRAW - withhold and remove all life support</option>
+                <option value="CHOOSE">Choose specific options below</option>
+              </select>
+            </div>
+
+            {formData.spouse_hcd.life_support_option === 'CHOOSE' && (
+              <div className="card mb-3">
+                <div className="card-header">Spouse's Specific Preferences</div>
+                <div className="card-body">
+                  <div className="form-check mb-2">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={formData.spouse_hcd.spouse_hcds.includes('Nutr')}
+                      onChange={(e) => {
+                        const newHcds = e.target.checked
+                          ? [...formData.spouse_hcd.spouse_hcds, 'Nutr']
+                          : formData.spouse_hcd.spouse_hcds.filter(h => h !== 'Nutr');
+                        updateNestedFormData('spouse_hcd.spouse_hcds', newHcds);
+                      }}
+                    />
+                    <label className="form-check-label"><strong>Nutrition</strong></label>
+                  </div>
+                  <div className="form-check mb-2">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={formData.spouse_hcd.spouse_hcds.includes('Hydr')}
+                      onChange={(e) => {
+                        const newHcds = e.target.checked
+                          ? [...formData.spouse_hcd.spouse_hcds, 'Hydr']
+                          : formData.spouse_hcd.spouse_hcds.filter(h => h !== 'Hydr');
+                        updateNestedFormData('spouse_hcd.spouse_hcds', newHcds);
+                      }}
+                    />
+                    <label className="form-check-label"><strong>Hydration</strong></label>
+                  </div>
+                  <div className="form-check mb-2">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={formData.spouse_hcd.spouse_hcds.includes('Vent')}
+                      onChange={(e) => {
+                        const newHcds = e.target.checked
+                          ? [...formData.spouse_hcd.spouse_hcds, 'Vent']
+                          : formData.spouse_hcd.spouse_hcds.filter(h => h !== 'Vent');
+                        updateNestedFormData('spouse_hcd.spouse_hcds', newHcds);
+                      }}
+                    />
+                    <label className="form-check-label"><strong>Ventilator</strong></label>
+                  </div>
+                  <div className="form-check mb-2">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={formData.spouse_hcd.spouse_hcds.includes('CPR')}
+                      onChange={(e) => {
+                        const newHcds = e.target.checked
+                          ? [...formData.spouse_hcd.spouse_hcds, 'CPR']
+                          : formData.spouse_hcd.spouse_hcds.filter(h => h !== 'CPR');
+                        updateNestedFormData('spouse_hcd.spouse_hcds', newHcds);
+                      }}
+                    />
+                    <label className="form-check-label"><strong>CPR</strong></label>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        <div className="alert alert-success mt-4">
+          <h5><i className="fas fa-check-circle me-2"></i>Review and Submit</h5>
+          <p>You have completed all sections of the form. Please review your information and click "Submit Form" when ready.</p>
+          <p className="mb-0"><strong>After submission, your documents will be generated and available for download.</strong></p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderOtherPartiesPage = () => (
     <div className="poa-page">

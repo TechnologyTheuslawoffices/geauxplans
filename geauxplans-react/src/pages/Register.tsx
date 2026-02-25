@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
@@ -12,6 +12,8 @@ interface DebugInfo {
 const Register: React.FC = () => {
   const { register, error, clearError, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/my-account';
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -144,7 +146,7 @@ const Register: React.FC = () => {
         setRegisteredEmail(formData.email);
         setShowVerificationModal(true);
       } else {
-        navigate('/my-account');
+        navigate(redirectUrl);
       }
     } else {
       addDebugLog('register_failed', { error: result.error });
@@ -335,7 +337,7 @@ const Register: React.FC = () => {
               Already have an account?
             </p>
             <Link
-              to="/login"
+              to={redirectUrl !== '/my-account' ? `/login?redirect=${encodeURIComponent(redirectUrl)}` : '/login'}
               className="btn btn-white"
               style={{
                 width: '100%',
@@ -429,7 +431,7 @@ const Register: React.FC = () => {
               )}
             </div>
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => navigate(redirectUrl !== '/my-account' ? `/login?redirect=${encodeURIComponent(redirectUrl)}` : '/login')}
               className="btn btn-primary"
               style={{ width: '100%' }}
             >

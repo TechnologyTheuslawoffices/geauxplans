@@ -54,6 +54,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // Load cart on mount
   useEffect(() => {
     refreshCart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const refreshCart = useCallback(async (): Promise<void> => {

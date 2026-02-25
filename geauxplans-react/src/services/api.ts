@@ -29,11 +29,29 @@ interface RequestOptions {
 }
 
 /**
- * Get Supabase auth token
+ * Get Supabase auth token - refreshes if expired
  */
 const getAuthToken = async (): Promise<string | null> => {
   const { data: { session } } = await supabase.auth.getSession();
-  return session?.access_token || null;
+
+  if (!session) return null;
+
+  // Check if token is expired or about to expire (within 60 seconds)
+  const expiresAt = session.expires_at ? session.expires_at * 1000 : 0;
+  const now = Date.now();
+  const isExpired = expiresAt < now + 60000; // 60 second buffer
+
+  if (isExpired) {
+    // Refresh the session
+    const { data: { session: refreshedSession }, error } = await supabase.auth.refreshSession();
+    if (error || !refreshedSession) {
+      console.error('Failed to refresh session:', error);
+      return null;
+    }
+    return refreshedSession.access_token;
+  }
+
+  return session.access_token;
 };
 
 /**

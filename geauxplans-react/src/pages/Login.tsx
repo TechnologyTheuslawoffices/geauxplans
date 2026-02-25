@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Login: React.FC = () => {
   const { login, error, clearError, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/my-account';
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -33,7 +35,7 @@ const Login: React.FC = () => {
       });
 
       if (result.success) {
-        navigate('/my-account');
+        navigate(redirectUrl);
       } else {
         if (result.requiresVerification) {
           navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
@@ -158,7 +160,7 @@ const Login: React.FC = () => {
               Don't have an account yet?
             </p>
             <Link
-              to="/register"
+              to={redirectUrl !== '/my-account' ? `/register?redirect=${encodeURIComponent(redirectUrl)}` : '/register'}
               className="btn btn-white"
               style={{
                 width: '100%',

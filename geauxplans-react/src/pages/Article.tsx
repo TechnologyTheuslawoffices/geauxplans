@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useParams, Navigate, useLocation } from 'react-router-dom';
-import { articles, Article as ArticleType } from '../data/articles';
+import { articles } from '../data/articles';
 import '../styles/article.css';
 
 const Article: React.FC = () => {

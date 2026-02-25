@@ -48,70 +48,6 @@ const Dashboard: React.FC = () => {
         From your account dashboard you can view your active plans, access your documents, and manage your account.
       </p>
 
-      {/* Active Plans Section */}
-      <div style={{ marginBottom: '40px' }}>
-        <h3 style={{
-          fontSize: '20px',
-          marginBottom: '20px',
-          paddingBottom: '10px',
-          borderBottom: '2px solid #004d71'
-        }}>
-          Active Plans
-        </h3>
-
-        {loading ? (
-          <p style={{ color: '#707070' }}>Loading your plans...</p>
-        ) : plans.length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            {plans.map((plan) => (
-              <div
-                key={plan.id}
-                style={{
-                  padding: '20px',
-                  border: '1px solid #eaeaea',
-                  borderRadius: '8px',
-                  backgroundColor: '#fff',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <h4 style={{ margin: '0 0 5px 0', color: '#004d71' }}>{plan.name || plan.type}</h4>
-                    <p style={{ margin: 0, color: '#707070', fontSize: '14px' }}>
-                      Status: <span style={{
-                        color: plan.status === 'completed' ? '#28a745' : '#ffc107',
-                        fontWeight: '600'
-                      }}>
-                        {plan.status === 'completed' ? 'Completed' : 'In Progress'}
-                      </span>
-                    </p>
-                  </div>
-                  <Link
-                    to={`/my-account/my-estate-planning`}
-                    className="btn btn-primary"
-                    style={{ fontSize: '14px', padding: '8px 16px' }}
-                  >
-                    View Details
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div style={{
-            padding: '30px',
-            border: '1px dashed #ccc',
-            borderRadius: '8px',
-            textAlign: 'center',
-            backgroundColor: '#f9f9f9'
-          }}>
-            <p style={{ color: '#707070', marginBottom: '15px' }}>You don't have any active plans yet.</p>
-            <Link to="/estate-planning" className="btn btn-primary">
-              Start Your Estate Plan
-            </Link>
-          </div>
-        )}
-      </div>
-
       {/* Your Documents Section */}
       <div style={{ marginBottom: '40px' }}>
         <h3 style={{
@@ -177,6 +113,115 @@ const Dashboard: React.FC = () => {
             </p>
           </div>
         )}
+      </div>
+
+      {/* Start New Plan Section */}
+      <div style={{ marginBottom: '40px' }}>
+        <h3 style={{
+          fontSize: '20px',
+          marginBottom: '20px',
+          paddingBottom: '10px',
+          borderBottom: '2px solid #004d71'
+        }}>
+          Start a New Plan
+        </h3>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '20px',
+        }}>
+          {/* Single Person POA */}
+          <div style={{
+            padding: '25px',
+            border: '1px solid #eaeaea',
+            borderRadius: '8px',
+            backgroundColor: '#fff',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
+              <i className="fas fa-user" style={{ fontSize: '28px', color: '#004d71' }}></i>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '18px' }}>Power of Attorney</h4>
+                <span style={{ fontSize: '14px', color: '#707070' }}>Individual Plan</span>
+              </div>
+            </div>
+            <p style={{ color: '#555', fontSize: '14px', marginBottom: '15px' }}>
+              Create Financial & Healthcare Power of Attorney documents for one person.
+            </p>
+            <Link
+              to="/checkout?product=614&type=solo"
+              className="btn btn_geaux"
+              style={{ width: '100%', textAlign: 'center' }}
+            >
+              Start Plan - $99
+            </Link>
+          </div>
+
+          {/* Two Person POA */}
+          <div style={{
+            padding: '25px',
+            border: '2px solid #004d71',
+            borderRadius: '8px',
+            backgroundColor: '#f8fbfc',
+            position: 'relative',
+          }}>
+            <span style={{
+              position: 'absolute',
+              top: '-12px',
+              left: '20px',
+              backgroundColor: '#004d71',
+              color: '#fff',
+              padding: '4px 12px',
+              borderRadius: '4px',
+              fontSize: '12px',
+              fontWeight: '600',
+            }}>
+              POPULAR
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
+              <i className="fas fa-users" style={{ fontSize: '28px', color: '#004d71' }}></i>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '18px' }}>Power of Attorney</h4>
+                <span style={{ fontSize: '14px', color: '#707070' }}>Married / Couple Plan</span>
+              </div>
+            </div>
+            <p style={{ color: '#555', fontSize: '14px', marginBottom: '15px' }}>
+              Create POA documents for both spouses/partners with separate agents and directives.
+            </p>
+            <Link
+              to="/checkout?product=614&type=2person"
+              className="btn btn_geaux"
+              style={{ width: '100%', textAlign: 'center' }}
+            >
+              Start Plan - $99
+            </Link>
+          </div>
+
+          {/* Other Plans Link */}
+          <div style={{
+            padding: '25px',
+            border: '1px solid #eaeaea',
+            borderRadius: '8px',
+            backgroundColor: '#fff',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            <i className="fas fa-th-large" style={{ fontSize: '28px', color: '#004d71', marginBottom: '15px' }}></i>
+            <h4 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>More Estate Plans</h4>
+            <p style={{ color: '#555', fontSize: '14px', marginBottom: '15px', textAlign: 'center' }}>
+              Will-based, Trust-based, and Minor Child plans available.
+            </p>
+            <Link
+              to="/estate-planning"
+              className="btn btn-outline-primary"
+              style={{ width: '100%', textAlign: 'center' }}
+            >
+              View All Plans
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Quick Actions */}

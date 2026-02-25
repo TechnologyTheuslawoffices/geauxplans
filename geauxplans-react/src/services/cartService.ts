@@ -193,7 +193,7 @@ export const cartUtils = {
   },
 };
 
-export default {
+const cartService = {
   getCart,
   addToCart,
   updateCartItem,
@@ -209,3 +209,5 @@ export default {
   wpCart,
   cartUtils,
 };
+
+export default cartService;

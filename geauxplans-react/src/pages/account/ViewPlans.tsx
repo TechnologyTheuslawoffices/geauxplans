@@ -23,12 +23,6 @@ const STATUS_COLORS: Record<string, string> = {
   'Complete': '#0000ff',
 };
 
-interface Document {
-  id: number;
-  name: string;
-  downloadUrl: string;
-}
-
 interface KnacklyDocument {
   id: string;
   name: string;
@@ -58,11 +52,12 @@ interface AllProducts {
 }
 
 const allProducts: AllProducts[] = [
-  { id: 614, name: 'Power of Attorney Plan', price: 299, shortDescription: 'Financial and healthcare POA documents', url: '/estate-planning', formType: 'powerOfAttorneyForm' },
-  { id: 676, name: 'Trust-Based Estate Plan', price: 899, shortDescription: 'Comprehensive trust-based planning for individuals', url: '/estate-planning', formType: 'trustBasedEstatePlanSolo' },
-  { id: 677, name: 'Trust-Based Estate Plan for 2 Persons', price: 1299, shortDescription: 'Comprehensive trust-based planning for couples', url: '/estate-planning', formType: 'trustBasedEstatePlan2Person' },
-  { id: 673, name: 'Will-Based Estate Plan', price: 399, shortDescription: 'Essential will and POA documents', url: '/estate-planning', formType: 'willBasedEstatePlan' },
-  { id: 606, name: 'Minor Child-Centered Estate Plan', price: 599, shortDescription: 'Guardian nominations and children\'s trusts', url: '/estate-planning', formType: 'minorChildEstatePlan' },
+  { id: 614, name: 'Power of Attorney Plan', price: 99, shortDescription: 'Financial and healthcare POA documents for individuals', url: '/checkout?product=614&type=solo', formType: 'powerOfAttorneyForm' },
+  { id: 614, name: 'Power of Attorney Plan for 2 Persons', price: 99, shortDescription: 'Financial and healthcare POA documents for couples', url: '/checkout?product=614&type=2person', formType: 'powerOfAttorneyForm2Person' },
+  { id: 676, name: 'Trust-Based Estate Plan', price: 399, shortDescription: 'Comprehensive trust-based planning for individuals', url: '/checkout?product=676&type=solo', formType: 'trustBasedEstatePlanSolo' },
+  { id: 677, name: 'Trust-Based Estate Plan for 2 Persons', price: 399, shortDescription: 'Comprehensive trust-based planning for couples', url: '/checkout?product=676&type=2person', formType: 'trustBasedEstatePlan2Person' },
+  { id: 673, name: 'Will-Based Estate Plan', price: 199, shortDescription: 'Essential will and POA documents', url: '/checkout?product=673&type=solo', formType: 'willBasedEstatePlan' },
+  { id: 606, name: 'Minor Child-Centered Estate Plan', price: 199, shortDescription: 'Guardian nominations and children\'s trusts', url: '/checkout?product=606&type=solo', formType: 'minorChildEstatePlan' },
 ];
 
 const ViewPlans: React.FC = () => {
@@ -76,6 +71,7 @@ const ViewPlans: React.FC = () => {
     if (session) {
       fetchSubmissions();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   // Auto-refresh documents that are still processing
@@ -85,10 +81,9 @@ const ViewPlans: React.FC = () => {
         // Skip if not completed submission
         if (sub.submissionStatus !== 'completed') continue;
 
-        // If has knacklyRecordId but not complete, or has documents missing storedUrl
-        const needsRefresh =
-          (sub.knacklyRecordId && sub.knacklyStatus !== 'complete') ||
-          (sub.knacklyStatus === 'complete' && sub.knacklyDocuments?.some((doc: any) => !doc.storedUrl));
+        // If has knacklyRecordId but not complete, and no documents yet
+        const hasDocuments = sub.knacklyDocuments && sub.knacklyDocuments.length > 0;
+        const needsRefresh = sub.knacklyRecordId && sub.knacklyStatus !== 'completed' && !hasDocuments;
 
         if (needsRefresh && refreshing !== sub.id) {
           console.log(`Auto-refreshing documents for submission ${sub.id}...`);
@@ -101,15 +96,16 @@ const ViewPlans: React.FC = () => {
     if (submissions.length > 0 && !loading) {
       autoRefreshPending();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submissions, loading]);
 
   // Poll every 10 seconds if any submission is still processing
   useEffect(() => {
-    const hasProcessing = submissions.some(sub =>
-      sub.submissionStatus === 'completed' &&
-      ((sub.knacklyRecordId && sub.knacklyStatus !== 'complete') ||
-       (sub.knacklyStatus === 'complete' && sub.knacklyDocuments?.some((doc: any) => !doc.storedUrl)))
-    );
+    const hasProcessing = submissions.some(sub => {
+      const hasDocuments = sub.knacklyDocuments && sub.knacklyDocuments.length > 0;
+      return sub.submissionStatus === 'completed' &&
+        sub.knacklyRecordId && sub.knacklyStatus !== 'completed' && !hasDocuments;
+    });
 
     if (hasProcessing && !refreshing) {
       const intervalId = setInterval(() => {
@@ -119,6 +115,7 @@ const ViewPlans: React.FC = () => {
 
       return () => clearInterval(intervalId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submissions, refreshing]);
 
   // Get auth headers using the session token from context
@@ -135,10 +132,14 @@ const ViewPlans: React.FC = () => {
       // Pass token from context directly in headers
       const response = await api.get('/submissions', getAuthHeaders());
       if (response.success && response.data) {
-        setSubmissions(response.data);
+        // Ensure data is an array
+        const data = Array.isArray(response.data) ? response.data :
+                     (response.data.submissions ? response.data.submissions : []);
+        setSubmissions(data);
       }
     } catch (error) {
       console.error('Failed to fetch submissions:', error);
+      setSubmissions([]); // Reset to empty array on error
     } finally {
       setLoading(false);
       setLastRefreshed(new Date());
@@ -176,105 +177,13 @@ const ViewPlans: React.FC = () => {
     }
   };
 
-  // Download document with authentication
-  const downloadDocument = async (submissionId: number, docIndex: number, filename: string) => {
-    const headers = getAuthHeaders();
-    console.log('Download - Session:', session?.access_token ? 'exists' : 'missing');
-    console.log('Download - Headers:', headers);
-
-    try {
-      const API_BASE = process.env.REACT_APP_API_URL || '/api';
-      const url = `${API_BASE}/submissions/${submissionId}/download/${docIndex}`;
-      console.log('Download URL:', url);
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: headers,
-      });
-
-      console.log('Download response status:', response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Download error response:', errorText);
-        try {
-          const error = JSON.parse(errorText);
-          alert(error.error || 'Failed to download document');
-        } catch {
-          alert('Failed to download document: ' + response.status);
-        }
-        return;
-      }
-
-      // Create blob and trigger download
-      const blob = await response.blob();
-      console.log('Blob size:', blob.size, 'type:', blob.type);
-      const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error('Download error:', error);
-      alert('Failed to download document: ' + (error instanceof Error ? error.message : 'Unknown error'));
-    }
-  };
-
-  // View document in new tab with authentication
-  const viewDocument = async (submissionId: number, docIndex: number) => {
-    const headers = getAuthHeaders();
-    console.log('View - Session:', session?.access_token ? 'exists' : 'missing');
-    console.log('View - Headers:', headers);
-
-    try {
-      const API_BASE = process.env.REACT_APP_API_URL || '/api';
-      const url = `${API_BASE}/submissions/${submissionId}/download/${docIndex}`;
-      console.log('View URL:', url);
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: headers,
-      });
-
-      console.log('View response status:', response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('View error response:', errorText);
-        try {
-          const error = JSON.parse(errorText);
-          alert(error.error || 'Failed to load document');
-        } catch {
-          alert('Failed to load document: ' + response.status);
-        }
-        return;
-      }
-
-      // Create blob URL and open in new tab
-      const blob = await response.blob();
-      console.log('Blob size:', blob.size, 'type:', blob.type);
-      const blobUrl = window.URL.createObjectURL(blob);
-      window.open(blobUrl, '_blank');
-    } catch (error) {
-      console.error('View error:', error);
-      alert('Failed to load document: ' + (error instanceof Error ? error.message : 'Unknown error'));
-    }
-  };
-
-  const getSubmissionForFormType = (formType: string): ApiSubmission | undefined => {
-    return submissions.find(s => s.formType === formType);
-  };
-
   const getStatus = (submission: ApiSubmission | undefined): { text: string; color: string } => {
     if (!submission) {
       return { text: 'Not Started', color: STATUS_COLORS['Not Started'] };
     }
 
     if (submission.submissionStatus === 'completed') {
-      if (submission.knacklyStatus === 'complete') {
+      if (submission.knacklyStatus === 'completed') {
         return { text: 'Complete', color: STATUS_COLORS['Complete'] };
       } else if (submission.knacklyRecordId) {
         return { text: 'Processing', color: STATUS_COLORS['Processing'] };
@@ -310,7 +219,7 @@ const ViewPlans: React.FC = () => {
     }
 
     // Completed submission - show documents or processing message
-    if (submission.knacklyStatus === 'complete') {
+    if (submission.knacklyStatus === 'completed') {
       const documents = submission.knacklyDocuments || [];
 
       if (documents.length > 0) {
@@ -321,28 +230,67 @@ const ViewPlans: React.FC = () => {
             </p>
             <ol className="gpx_ep_documents_ul" style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
               {documents.map((doc: any, index: number) => {
-                const pdfName = (doc.name || `Document ${index + 1}`).replace(/\.docx$/i, '.pdf');
-                // Use storedUrl (public Supabase URL) - just like WordPress used wp_get_attachment_url()
-                const downloadUrl = doc.storedUrl;
+                const docName = doc.name || `Document ${index + 1}.docx`;
 
-                if (downloadUrl) {
+                // Handle base64 documents (from doc-tools)
+                if (doc.base64) {
+                  const handleDownload = () => {
+                    const byteCharacters = atob(doc.base64);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                      byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = docName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  };
+
+                  return (
+                    <li key={doc.id || index}>
+                      <button
+                        onClick={handleDownload}
+                        style={{
+                          cursor: 'pointer',
+                          background: 'none',
+                          border: 'none',
+                          padding: 0,
+                          color: '#0000ff',
+                          textDecoration: 'underline',
+                          font: 'inherit'
+                        }}
+                      >
+                        {docName}
+                      </button>
+                    </li>
+                  );
+                }
+
+                // Use storedUrl (public Supabase URL) if available
+                if (doc.storedUrl) {
                   return (
                     <li key={doc.id || index}>
                       <a
-                        href={downloadUrl}
+                        href={doc.storedUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {pdfName}
+                        {docName}
                       </a>
                     </li>
                   );
                 }
 
-                // No storedUrl yet - documents still processing
+                // No data yet - documents still processing
                 return (
                   <li key={doc.id || index} style={{ color: '#999' }}>
-                    {pdfName} <em>(converting to PDF...)</em>
+                    {docName} <em>(processing...)</em>
                   </li>
                 );
               })}
@@ -353,7 +301,7 @@ const ViewPlans: React.FC = () => {
               className="btn btn-sm btn-outline-warning mt-2"
               style={{ fontSize: '12px' }}
             >
-              {refreshing === submission.id ? 'Converting...' : '🔄 Retry PDF Conversion'}
+              {refreshing === submission.id ? 'Refreshing...' : '🔄 Refresh Documents'}
             </button>
           </>
         );
@@ -523,8 +471,8 @@ const ViewPlans: React.FC = () => {
       ) : (
         <div className="mb-4 p-4" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
           <p className="text-muted mb-0">You haven't started any estate plans yet.</p>
-          <Link to="/poa-form" className="btn btn-primary mt-3">
-            Start Your First Plan
+          <Link to="/estate-planning" className="btn btn-primary mt-3">
+            Browse Estate Plans
           </Link>
         </div>
       )}
@@ -537,9 +485,9 @@ const ViewPlans: React.FC = () => {
             <p><span className="gpx_highlight gpx_warning">Not purchased yet:</span></p>
           </div>
 
-          {notPurchasedProducts.map((product) => (
-            <div key={product.id} className="mb-2">
-              <Link className="plan_not_purchased" to={`/poa-form?type=${product.formType}`}>
+          {notPurchasedProducts.map((product, index) => (
+            <div key={`${product.formType}-${index}`} className="mb-2">
+              <Link className="plan_not_purchased" to={product.url}>
                 {product.name}
               </Link>
               <span className="ma_starting_at"> from ${product.price}</span>
