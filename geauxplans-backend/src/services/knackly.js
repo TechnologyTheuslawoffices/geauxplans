@@ -438,15 +438,15 @@ async function processSubmission(submission, catalogId, appId) {
       ? JSON.parse(submission.form_data)
       : submission.form_data;
 
-    // Create record using form type to determine endpoint (matching WordPress)
+    // Create record using form type to determine endpoint
     const result = await createRecordItem(formData, submission.form_type);
     const recordId = result.id || result._id;
 
     console.log(`Knackly: Record created with ID ${recordId}`);
 
-    // Wait for documents to be ready (poll Knackly)
-    console.log(`Knackly: Waiting for documents...`);
-    const maxAttempts = 30;
+    // Quick poll - only wait 15 seconds max (5 attempts * 3 sec) to stay under Vercel timeout
+    console.log(`Knackly: Quick polling for documents...`);
+    const maxAttempts = 5;
     const intervalMs = 3000;
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -454,19 +454,17 @@ async function processSubmission(submission, catalogId, appId) {
 
       try {
         const docResult = await getDocuments(recordId, submission.form_type);
-        console.log(`Knackly: Poll attempt ${attempt + 1} - status: ${docResult.status}, files: ${docResult.files?.length || 0}`);
+        console.log(`Knackly: Poll ${attempt + 1}/${maxAttempts} - status: ${docResult.status}, files: ${docResult.files?.length || 0}`);
 
         if (docResult.status === 'Ok' && docResult.files && docResult.files.length > 0) {
-          // Map Knackly files to our document format
-          const documents = docResult.files.map((file, index) => ({
+          const documents = docResult.files.map((file) => ({
             name: file.name,
-            base64: null, // Knackly returns URLs, not base64
+            base64: null,
             publicUrl: file.publicUrl,
             url: file.url,
           }));
 
           console.log(`Knackly: Documents ready! Found ${documents.length} documents`);
-
           return {
             success: true,
             recordId: recordId,
@@ -474,17 +472,13 @@ async function processSubmission(submission, catalogId, appId) {
             documents: documents,
           };
         }
-
-        if (docResult.status === 'Error' || docResult.error) {
-          throw new Error(docResult.error || 'Document generation failed');
-        }
       } catch (pollError) {
-        console.log(`Knackly: Poll attempt ${attempt + 1} error:`, pollError.message);
+        console.log(`Knackly: Poll error:`, pollError.message);
       }
     }
 
-    // Timeout - return what we have
-    console.log(`Knackly: Timeout waiting for documents`);
+    // Not ready yet - return recordId so frontend can poll later
+    console.log(`Knackly: Documents not ready yet, returning for later polling`);
     return {
       success: true,
       recordId: recordId,
