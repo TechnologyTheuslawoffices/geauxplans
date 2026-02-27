@@ -84,49 +84,24 @@ const ViewPlans: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
-  // Auto-refresh documents that are still processing
-  useEffect(() => {
-    const autoRefreshPending = async () => {
-      for (const sub of submissions) {
-        // Skip if not completed submission
-        if (sub.submissionStatus !== 'completed') continue;
-
-        // If has knacklyRecordId but no documents yet (even if status says completed)
-        const hasDocuments = sub.knacklyDocuments && sub.knacklyDocuments.length > 0;
-        const needsRefresh = sub.knacklyRecordId && !hasDocuments;
-
-        if (needsRefresh && refreshing !== sub.id) {
-          console.log(`Auto-refreshing documents for submission ${sub.id}...`);
-          await refreshDocuments(sub.id);
-        }
-      }
-    };
-
-    // Run immediately if we have submissions
-    if (submissions.length > 0 && !loading) {
-      autoRefreshPending();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submissions, loading]);
-
-  // Poll every 10 seconds if any submission is still processing
+  // No auto-refresh - let user click the button to avoid flickering
+  // Poll every 30 seconds ONLY if there are submissions with knacklyStatus === 'processing'
   useEffect(() => {
     const hasProcessing = submissions.some(sub => {
-      const hasDocuments = sub.knacklyDocuments && sub.knacklyDocuments.length > 0;
       return sub.submissionStatus === 'completed' &&
-        sub.knacklyRecordId && sub.knacklyStatus !== 'completed' && !hasDocuments;
+        sub.knacklyRecordId && sub.knacklyStatus === 'processing';
     });
 
-    if (hasProcessing && !refreshing) {
+    if (hasProcessing && !refreshing && !loading) {
       const intervalId = setInterval(() => {
         console.log('Polling for document updates...');
         fetchSubmissions();
-      }, 10000); // Poll every 10 seconds
+      }, 30000); // Poll every 30 seconds
 
       return () => clearInterval(intervalId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submissions, refreshing]);
+  }, [submissions, refreshing, loading]);
 
   // Get auth headers using the session token from context
   const getAuthHeaders = (): Record<string, string> => {
