@@ -546,6 +546,187 @@ function transformFormDataToKnackly(formData) {
     }
   }
 
+  // ============================================================================
+  // TRUST-BASED ESTATE PLAN DATA
+  // ============================================================================
+  if (formData.trust_info) {
+    const ti = formData.trust_info;
+
+    // Trust Type (RevApt) - Revocable, APT, or IDGT
+    if (ti.trust_type) {
+      const trustTypeMap = {
+        'revocable': 'Revocable',
+        'apt': 'APT',
+        'idgt': 'IDGT',
+      };
+      knacklyData.RevApt = trustTypeMap[ti.trust_type.toLowerCase()] || 'Revocable';
+    }
+
+    // Is this an amendment?
+    if (ti.is_amendment !== undefined) {
+      knacklyData.AmendRestateTrustTF = ti.is_amendment === true;
+    }
+
+    // Settlor as Trustee
+    if (ti.settlor_as_trustee !== undefined) {
+      knacklyData.SettlorTrusteeTF = ti.settlor_as_trustee === true;
+    }
+
+    // Marital Trust Type
+    if (ti.marital_trust_type) {
+      knacklyData.MaritalTrustType = ti.marital_trust_type;
+    }
+
+    // Successor Trustees
+    if (ti.successor_trustees && Array.isArray(ti.successor_trustees) && ti.successor_trustees.length > 0) {
+      knacklyData.SuccGenTrustees = ti.successor_trustees.map(name => ({
+        'id$': getAgentName(name),
+        NameCO: getAgentName(name),
+      }));
+    } else if (ti.successor_trustee) {
+      // Single successor trustee
+      knacklyData.SuccGenTrustees = [{
+        'id$': getAgentName(ti.successor_trustee),
+        NameCO: getAgentName(ti.successor_trustee),
+      }];
+    }
+
+    // Residuary Distribution info
+    if (ti.residuary_distribution) {
+      knacklyData.ResiduaryDistribution = ti.residuary_distribution;
+    }
+
+    // Special Instructions
+    if (ti.special_instructions) {
+      knacklyData.SpecialInstructions = ti.special_instructions;
+    }
+  }
+
+  // ============================================================================
+  // WILL-BASED ESTATE PLAN DATA
+  // ============================================================================
+  if (formData.will_info) {
+    const wi = formData.will_info;
+
+    // Primary Executor
+    if (wi.primary_executor) {
+      knacklyData.Executor = {
+        'id$': getAgentName(wi.primary_executor),
+        NameCO: getAgentName(wi.primary_executor),
+      };
+    }
+
+    // Successor Executor
+    if (wi.successor_executor) {
+      knacklyData.SuccessorExecutor = {
+        'id$': getAgentName(wi.successor_executor),
+        NameCO: getAgentName(wi.successor_executor),
+      };
+    }
+
+    // Primary Guardian (for minor children)
+    if (wi.primary_guardian) {
+      knacklyData.Guardian = {
+        'id$': getAgentName(wi.primary_guardian),
+        NameCO: getAgentName(wi.primary_guardian),
+      };
+    }
+
+    // Backup Guardian
+    if (wi.backup_guardian) {
+      knacklyData.SuccessorGuardian = {
+        'id$': getAgentName(wi.backup_guardian),
+        NameCO: getAgentName(wi.backup_guardian),
+      };
+    }
+
+    // Distribution Age
+    if (wi.distribution_age) {
+      knacklyData.DistributionAge = parseInt(wi.distribution_age, 10) || 25;
+    }
+
+    // Children's Trust Trustee
+    if (wi.children_trustee) {
+      knacklyData.ChildrenTrustee = {
+        'id$': getAgentName(wi.children_trustee),
+        NameCO: getAgentName(wi.children_trustee),
+      };
+    }
+
+    // Allow Education Distributions
+    if (wi.allow_education_distributions !== undefined) {
+      knacklyData.AllowEducationDistributionsTF = wi.allow_education_distributions === true;
+    }
+
+    // Residuary Distribution
+    if (wi.residuary_distribution) {
+      knacklyData.ResiduaryDistribution = wi.residuary_distribution;
+    }
+
+    // Has Specific Bequests
+    if (wi.has_specific_bequests !== undefined) {
+      knacklyData.HasSpecificBequestsTF = wi.has_specific_bequests === true;
+    }
+  }
+
+  // ============================================================================
+  // CHILDREN DATA (for Trust, Will, Minor Child forms)
+  // ============================================================================
+  // Extract children from parties based on relationship
+  const childRelationships = ['child', 'son', 'daughter', 'stepchild', 'stepson', 'stepdaughter'];
+  const childParties = allParties.filter(party => {
+    const rel = (party.relationship_with_person || '').toLowerCase();
+    return childRelationships.some(r => rel.includes(r));
+  });
+
+  if (childParties.length > 0) {
+    knacklyData.Children = childParties.map(party => {
+      const first = party.first_name || '';
+      const last = party.surname || '';
+      const nameCO = `${first} ${last}`.trim();
+
+      // Determine parentage
+      let parentage = 'Joint';
+      const rel = (party.relationship_with_person || '').toLowerCase();
+      if (rel.includes('step')) {
+        parentage = 'Client'; // Stepchildren are typically from one parent
+      }
+
+      return {
+        'id$': nameCO,
+        NameCO: nameCO,
+        First: first,
+        Last: last,
+        Gender: (party.gender || '').toLowerCase(),
+        Parentage: parentage,
+        DeceasedTF: false,
+        DisinheritTF: false,
+      };
+    });
+
+    // Set has children flag
+    knacklyData.HasChildrenTF = true;
+  } else if (formData.children_as_agents === true) {
+    // User indicated they have children but haven't added them yet
+    knacklyData.HasChildrenTF = true;
+  } else {
+    knacklyData.HasChildrenTF = false;
+  }
+
+  // ============================================================================
+  // STATE LAW SELECTION
+  // ============================================================================
+  if (formData.governing_law) {
+    knacklyData.StateLawSelect = formData.governing_law;
+  } else if (formData.personal_info?.state) {
+    knacklyData.StateLawSelect = formData.personal_info.state;
+  }
+
+  // E-Sign option
+  if (formData.esign !== undefined) {
+    knacklyData.ESignTF = formData.esign === true;
+  }
+
   console.log('Knackly: Transformed data:', JSON.stringify(knacklyData, null, 2));
   return knacklyData;
 }
