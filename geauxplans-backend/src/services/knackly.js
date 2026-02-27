@@ -334,11 +334,25 @@ function transformFormDataToKnackly(formData) {
   // Map Client data
   if (formData.personal_info) {
     const pi = formData.personal_info;
+    const clientFirst = pi.first_name || '';
+    const clientMiddle = pi.middle_name || '';
+    const clientLast = pi.surname || '';
+    const clientSuffix = pi.suffix || '';
+
+    // Build NameCO (computed full name)
+    let clientNameCO = clientFirst;
+    if (clientMiddle) clientNameCO += ' ' + clientMiddle;
+    clientNameCO += ' ' + clientLast;
+    if (clientSuffix) clientNameCO += ' ' + clientSuffix;
+    clientNameCO = clientNameCO.trim();
+
     const client = {
-      First: pi.first_name || '',
-      Middle: pi.middle_name || '',
-      Last: pi.surname || '',
-      Suffix: pi.suffix || '',
+      First: clientFirst,
+      Middle: clientMiddle,
+      Last: clientLast,
+      Suffix: clientSuffix,
+      NameCO: clientNameCO,
+      'id$': `${clientFirst} ${clientLast}`.trim(),
       Gender: (pi.gender || '').toLowerCase(),
       Birthdate: formatDate(pi.date_of_birth),
       StreetAddress1: pi.street_address || '',
@@ -354,6 +368,52 @@ function transformFormDataToKnackly(formData) {
     knacklyData.Client = Object.fromEntries(
       Object.entries(client).filter(([_, v]) => v !== '' && v !== null && v !== undefined)
     );
+  }
+
+  // Map Spouse data (for 2-person forms)
+  if (formData.spouse_info) {
+    const si = formData.spouse_info;
+    const spouseFirst = si.first_name || '';
+    const spouseMiddle = si.middle_name || '';
+    const spouseLast = si.surname || '';
+    const spouseSuffix = si.suffix || '';
+
+    // Build NameCO (computed full name)
+    let spouseNameCO = spouseFirst;
+    if (spouseMiddle) spouseNameCO += ' ' + spouseMiddle;
+    spouseNameCO += ' ' + spouseLast;
+    if (spouseSuffix) spouseNameCO += ' ' + spouseSuffix;
+    spouseNameCO = spouseNameCO.trim();
+
+    // Use client's address if same_address_as_primary is true
+    const useClientAddress = si.same_address_as_primary === true || si.same_address_as_primary === 'true';
+    const clientInfo = formData.personal_info || {};
+
+    const spouse = {
+      First: spouseFirst,
+      Middle: spouseMiddle,
+      Last: spouseLast,
+      Suffix: spouseSuffix,
+      NameCO: spouseNameCO,
+      'id$': `${spouseFirst} ${spouseLast}`.trim(),
+      Gender: (si.gender || '').toLowerCase(),
+      Birthdate: formatDate(si.date_of_birth),
+      StreetAddress1: useClientAddress ? (clientInfo.street_address || '') : (si.street_address || ''),
+      StreetAddress2: useClientAddress ? (clientInfo.street_address_2 || '') : (si.street_address_2 || ''),
+      City: useClientAddress ? (clientInfo.city || '') : (si.city || ''),
+      State: useClientAddress ? (clientInfo.state || '') : (si.state || ''),
+      Zip: useClientAddress ? (clientInfo.zip || '') : (si.zip || ''),
+      Parish: useClientAddress ? (clientInfo.parish || '') : (si.parish || ''),
+      GeauxSSN: si.last_4_ssn_digits || '',
+      Phone: si.phone || si.phone_number || '',
+    };
+    // Filter out empty values
+    knacklyData.Spouse = Object.fromEntries(
+      Object.entries(spouse).filter(([_, v]) => v !== '' && v !== null && v !== undefined)
+    );
+
+    // Set MarriedTF to true when we have spouse info
+    knacklyData.MarriedTF = true;
   }
 
   // Map FPOA data
@@ -416,6 +476,70 @@ function transformFormDataToKnackly(formData) {
       knacklyData.GeauxHCDClientNone = 'Choose';
       if (hcd.client_hcds && Array.isArray(hcd.client_hcds)) {
         knacklyData.GeauxClientHCDs = hcd.client_hcds;
+      }
+    }
+  }
+
+  // Map Spouse FPOA data (for 2-person forms)
+  if (formData.spouse_fpoa?.fpoa_initial_agents) {
+    const fpoaAgents = formData.spouse_fpoa.fpoa_initial_agents;
+    knacklyData.SpouseAgentsFPOA = {
+      AgentSelect: getAgentName(fpoaAgents.person_to_serve || ''),
+      CoAgentSelect: getAgentName(fpoaAgents.second_coagent_person_to_serve || '')
+    };
+
+    const hasSuccessors = (formData.spouse_fpoa.has_appointer_successor_agents || '') === 'Yes';
+    knacklyData.SpouseFPOASuccessors = hasSuccessors;
+
+    if (hasSuccessors && formData.spouse_fpoa.successor_agents && Array.isArray(formData.spouse_fpoa.successor_agents)) {
+      knacklyData.SpouseFPOASuccAgents = formData.spouse_fpoa.successor_agents.map(successor => ({
+        AgentSelect: getAgentName(successor.successor_agent_to_serve || ''),
+        CoAgentSelect: getAgentName(successor.second_successor_coagent_to_serve || '')
+      }));
+    }
+  }
+
+  // Map Spouse HCPOA data (for 2-person forms)
+  if (formData.spouse_hcpoa) {
+    const hcpoa = formData.spouse_hcpoa;
+
+    if (hcpoa.wish_to_be_organ_donor !== undefined) {
+      knacklyData.SpouseOrganTF = hcpoa.wish_to_be_organ_donor === 'Yes';
+    }
+    if (hcpoa.wish_to_donate_body_to_science !== undefined) {
+      knacklyData.SpouseDonateScienceTF = hcpoa.wish_to_donate_body_to_science === 'Yes';
+    }
+
+    if (hcpoa.hcpoa_initial_agents) {
+      const agents = hcpoa.hcpoa_initial_agents;
+      knacklyData.SpouseAgentsHPOA = {
+        AgentSelect: getAgentName(agents.person_to_serve || ''),
+        CoAgentSelect: getAgentName(agents.second_coagent_person_to_serve || '')
+      };
+
+      const hasSuccessors = (agents.has_appointed_successor_agents || '') === 'Yes';
+      knacklyData.SpouseHPOASuccessors = hasSuccessors;
+
+      if (hasSuccessors && agents.successor_agents && Array.isArray(agents.successor_agents)) {
+        knacklyData.SpouseHPOASuccAgents = agents.successor_agents.map(successor => ({
+          AgentSelect: getAgentName(successor.successor_agent_to_serve || ''),
+          CoAgentSelect: getAgentName(successor.second_successor_coagent_to_serve || '')
+        }));
+      }
+    }
+  }
+
+  // Map Spouse Healthcare Directive data (for 2-person forms)
+  if (formData.spouse_hcd) {
+    const hcd = formData.spouse_hcd;
+    const option = hcd.life_support_option || '';
+
+    if (option === 'WITHDRAW - withhold and remove all life support' || option === 'WITHDRAW' || option === '' || option === null) {
+      knacklyData.GeauxHCDSpouseNone = 'None';
+    } else if (option === 'Choose all that apply from the options below:' || option === 'CHOOSE' || option === 'Choose') {
+      knacklyData.GeauxHCDSpouseNone = 'Choose';
+      if (hcd.spouse_hcds && Array.isArray(hcd.spouse_hcds)) {
+        knacklyData.GeauxSpouseHCDs = hcd.spouse_hcds;
       }
     }
   }
