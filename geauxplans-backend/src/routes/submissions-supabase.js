@@ -187,7 +187,7 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
         const docResult = await documentService.getDocuments(submission.knackly_record_id, submission.form_type);
         console.log('Document check result:', JSON.stringify(docResult));
 
-        if (docResult.status === 'Ok' && docResult.files && docResult.files.length > 0) {
+        if ((docResult.status === 'Ok' || docResult.status === 'Completed') && docResult.files && docResult.files.length > 0) {
           const documents = docResult.files.map((file) => ({
             name: file.name,
             base64: null,

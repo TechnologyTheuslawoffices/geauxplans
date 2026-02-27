@@ -456,7 +456,7 @@ async function processSubmission(submission, catalogId, appId) {
         const docResult = await getDocuments(recordId, submission.form_type);
         console.log(`Knackly: Poll ${attempt + 1}/${maxAttempts} - status: ${docResult.status}, files: ${docResult.files?.length || 0}`);
 
-        if (docResult.status === 'Ok' && docResult.files && docResult.files.length > 0) {
+        if ((docResult.status === 'Ok' || docResult.status === 'Completed') && docResult.files && docResult.files.length > 0) {
           const documents = docResult.files.map((file) => ({
             name: file.name,
             base64: null,
