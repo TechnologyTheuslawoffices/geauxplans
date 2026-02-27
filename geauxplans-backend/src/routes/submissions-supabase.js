@@ -98,6 +98,7 @@ router.get('/', authenticate, async (req, res) => {
         knacklyRecordId: s.knackly_record_id,
         knacklyStatus: s.knackly_status,
         knacklyDocuments: s.knackly_documents,
+        knacklyZipUrl: s.knackly_zip_url,
         createdAt: s.created_at,
         updatedAt: s.updated_at,
       })),
@@ -195,12 +196,16 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
             url: file.url,
           }));
 
+          // Include zipUrl for "Download All" functionality
+          const zipUrl = docResult.zipUrl || null;
+
           // Update database with completed documents
           await supabase
             .from('poa_submissions')
             .update({
               knackly_status: 'completed',
               knackly_documents: documents,
+              knackly_zip_url: zipUrl,
               updated_at: new Date().toISOString(),
             })
             .eq('id', id);
@@ -212,6 +217,7 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
               id: submission.id,
               knacklyStatus: 'completed',
               knacklyDocuments: documents,
+              knacklyZipUrl: zipUrl,
             },
           });
         }
