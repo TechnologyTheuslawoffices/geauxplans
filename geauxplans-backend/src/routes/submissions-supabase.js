@@ -90,18 +90,26 @@ router.get('/', authenticate, async (req, res) => {
 
     res.json({
       success: true,
-      data: (submissions || []).map(s => ({
-        id: s.id,
-        formType: s.form_type,
-        submissionStatus: s.submission_status,
-        formData: s.form_data,
-        knacklyRecordId: s.knackly_record_id,
-        knacklyStatus: s.knackly_status,
-        knacklyDocuments: s.knackly_documents,
-        knacklyZipUrl: s.knackly_zip_url,
-        createdAt: s.created_at,
-        updatedAt: s.updated_at,
-      })),
+      data: (submissions || []).map(s => {
+        // Extract zipUrl from documents if stored as metadata
+        const docs = s.knackly_documents || [];
+        const zipMeta = docs.find(d => d.name === '__zip__');
+        const zipUrl = zipMeta?.zipUrl || null;
+        const actualDocs = docs.filter(d => d.name !== '__zip__');
+
+        return {
+          id: s.id,
+          formType: s.form_type,
+          submissionStatus: s.submission_status,
+          formData: s.form_data,
+          knacklyRecordId: s.knackly_record_id,
+          knacklyStatus: s.knackly_status,
+          knacklyDocuments: actualDocs,
+          knacklyZipUrl: zipUrl,
+          createdAt: s.created_at,
+          updatedAt: s.updated_at,
+        };
+      }),
     });
   } catch (error) {
     console.error('List submissions error:', error);
@@ -189,6 +197,7 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
         console.log('Document check result:', JSON.stringify(docResult));
 
         if ((docResult.status === 'Ok' || docResult.status === 'Completed') && docResult.files && docResult.files.length > 0) {
+          const zipUrl = docResult.zipUrl || null;
           const documents = docResult.files.map((file) => ({
             name: file.name,
             base64: null,
@@ -196,16 +205,21 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
             url: file.url,
           }));
 
-          // Include zipUrl for "Download All" functionality
-          const zipUrl = docResult.zipUrl || null;
+          // Add zipUrl as a special metadata document at the end
+          const documentsWithMeta = [...documents];
+          if (zipUrl) {
+            documentsWithMeta.push({
+              name: '__zip__',
+              zipUrl: zipUrl,
+            });
+          }
 
           // Update database with completed documents
           await supabase
             .from('poa_submissions')
             .update({
               knackly_status: 'completed',
-              knackly_documents: documents,
-              knackly_zip_url: zipUrl,
+              knackly_documents: documentsWithMeta,
               updated_at: new Date().toISOString(),
             })
             .eq('id', id);
