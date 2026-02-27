@@ -11,7 +11,9 @@ const FORM_TYPES: Record<string, { name: string; description: string }> = {
   trustBasedEstatePlanSolo: { name: 'Trust-Based Estate Plan', description: 'Individual trust documents' },
   trustBasedEstatePlan2Person: { name: 'Trust-Based Estate Plan for 2 Persons', description: 'Couple trust documents' },
   willBasedEstatePlan: { name: 'Will-Based Estate Plan', description: 'Will and related documents' },
+  willBasedEstatePlan2Person: { name: 'Will-Based Estate Plan for 2 Persons', description: 'Couple will documents' },
   minorChildEstatePlan: { name: 'Minor-Child Centered Estate Plan', description: 'Guardian and trust provisions' },
+  minorChildEstatePlan2Person: { name: 'Minor-Child Centered Estate Plan for 2 Persons', description: 'Couple guardian provisions' },
 };
 
 // Status colors matching WordPress
@@ -24,10 +26,14 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 interface KnacklyDocument {
-  id: string;
+  id?: string;
   name: string;
-  url: string;
-  type: string;
+  url?: string;         // Direct URL from Knackly
+  publicUrl?: string;   // Public URL from Knackly
+  type?: string;
+  base64?: string;      // Full base64 data (only when fetching individual docs)
+  storedUrl?: string;   // External storage URL (Supabase)
+  hasData?: boolean;    // Summary flag from list endpoint
 }
 
 interface ApiSubmission {
@@ -55,9 +61,11 @@ const allProducts: AllProducts[] = [
   { id: 614, name: 'Power of Attorney Plan', price: 99, shortDescription: 'Financial and healthcare POA documents for individuals', url: '/checkout?product=614&type=solo', formType: 'powerOfAttorneyForm' },
   { id: 614, name: 'Power of Attorney Plan for 2 Persons', price: 99, shortDescription: 'Financial and healthcare POA documents for couples', url: '/checkout?product=614&type=2person', formType: 'powerOfAttorneyForm2Person' },
   { id: 676, name: 'Trust-Based Estate Plan', price: 399, shortDescription: 'Comprehensive trust-based planning for individuals', url: '/checkout?product=676&type=solo', formType: 'trustBasedEstatePlanSolo' },
-  { id: 677, name: 'Trust-Based Estate Plan for 2 Persons', price: 399, shortDescription: 'Comprehensive trust-based planning for couples', url: '/checkout?product=676&type=2person', formType: 'trustBasedEstatePlan2Person' },
+  { id: 676, name: 'Trust-Based Estate Plan for 2 Persons', price: 399, shortDescription: 'Comprehensive trust-based planning for couples', url: '/checkout?product=676&type=2person', formType: 'trustBasedEstatePlan2Person' },
   { id: 673, name: 'Will-Based Estate Plan', price: 199, shortDescription: 'Essential will and POA documents', url: '/checkout?product=673&type=solo', formType: 'willBasedEstatePlan' },
+  { id: 673, name: 'Will-Based Estate Plan for 2 Persons', price: 199, shortDescription: 'Essential will and POA documents for couples', url: '/checkout?product=673&type=2person', formType: 'willBasedEstatePlan2Person' },
   { id: 606, name: 'Minor Child-Centered Estate Plan', price: 199, shortDescription: 'Guardian nominations and children\'s trusts', url: '/checkout?product=606&type=solo', formType: 'minorChildEstatePlan' },
+  { id: 606, name: 'Minor Child-Centered Estate Plan for 2 Persons', price: 199, shortDescription: 'Guardian nominations and children\'s trusts for couples', url: '/checkout?product=606&type=2person', formType: 'minorChildEstatePlan2Person' },
 ];
 
 const ViewPlans: React.FC = () => {
@@ -66,6 +74,8 @@ const ViewPlans: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState<number | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
+  // Cache for full document data (fetched on demand)
+  const [documentCache, setDocumentCache] = useState<Record<number, KnacklyDocument[]>>({});
 
   useEffect(() => {
     if (session) {
@@ -177,6 +187,63 @@ const ViewPlans: React.FC = () => {
     }
   };
 
+  // Fetch full documents with base64 data for a specific submission
+  const fetchDocuments = async (submissionId: number): Promise<KnacklyDocument[]> => {
+    // Check cache first
+    if (documentCache[submissionId]) {
+      return documentCache[submissionId];
+    }
+
+    try {
+      const response = await api.get(`/submissions/${submissionId}/documents`, getAuthHeaders());
+      if (response.success && response.data?.knacklyDocuments) {
+        const docs = response.data.knacklyDocuments;
+        setDocumentCache(prev => ({ ...prev, [submissionId]: docs }));
+        return docs;
+      }
+    } catch (error) {
+      console.error('Failed to fetch documents:', error);
+    }
+    return [];
+  };
+
+  // Download a document (fetches full data if needed)
+  const downloadDocument = async (submissionId: number, docIndex: number, docName: string) => {
+    try {
+      const docs = await fetchDocuments(submissionId);
+      const doc = docs[docIndex];
+
+      if (doc?.base64) {
+        const byteCharacters = atob(doc.base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = docName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        // Try any available URL (storedUrl from Supabase, publicUrl/url from Knackly)
+        const directUrl = doc?.storedUrl || doc?.publicUrl || doc?.url;
+        if (directUrl) {
+          window.open(directUrl, '_blank');
+        } else {
+          alert('Document not available yet. Please try refreshing.');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to download document:', error);
+      alert('Failed to download document. Please try again.');
+    }
+  };
+
   const getStatus = (submission: ApiSubmission | undefined): { text: string; color: string } => {
     if (!submission) {
       return { text: 'Not Started', color: STATUS_COLORS['Not Started'] };
@@ -231,31 +298,30 @@ const ViewPlans: React.FC = () => {
             <ol className="gpx_ep_documents_ul" style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
               {documents.map((doc: any, index: number) => {
                 const docName = doc.name || `Document ${index + 1}.docx`;
+                // Check for any available URL (storedUrl from Supabase, publicUrl/url from Knackly)
+                const directUrl = doc.storedUrl || doc.publicUrl || doc.url;
 
-                // Handle base64 documents (from doc-tools)
-                if (doc.base64) {
-                  const handleDownload = () => {
-                    const byteCharacters = atob(doc.base64);
-                    const byteNumbers = new Array(byteCharacters.length);
-                    for (let i = 0; i < byteCharacters.length; i++) {
-                      byteNumbers[i] = byteCharacters.charCodeAt(i);
-                    }
-                    const byteArray = new Uint8Array(byteNumbers);
-                    const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = docName;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                  };
+                // Use direct URL if available - direct link
+                if (directUrl) {
+                  return (
+                    <li key={doc.id || index}>
+                      <a
+                        href={directUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {docName}
+                      </a>
+                    </li>
+                  );
+                }
 
+                // Document has data (base64) - fetch on demand
+                if (doc.hasData || doc.base64) {
                   return (
                     <li key={doc.id || index}>
                       <button
-                        onClick={handleDownload}
+                        onClick={() => downloadDocument(submission.id, index, docName)}
                         style={{
                           cursor: 'pointer',
                           background: 'none',
@@ -268,21 +334,6 @@ const ViewPlans: React.FC = () => {
                       >
                         {docName}
                       </button>
-                    </li>
-                  );
-                }
-
-                // Use storedUrl (public Supabase URL) if available
-                if (doc.storedUrl) {
-                  return (
-                    <li key={doc.id || index}>
-                      <a
-                        href={doc.storedUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {docName}
-                      </a>
                     </li>
                   );
                 }
