@@ -177,8 +177,60 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
       }
     }
 
-    // Already has record - create a NEW record with fresh data transformation
-    // This ensures computed properties are up-to-date
+    // Already has record - check if documents are ready first (for processing status)
+    if (submission.knackly_status === 'processing') {
+      console.log('Checking existing record for documents:', submission.knackly_record_id);
+
+      try {
+        const docResult = await documentService.getDocuments(submission.knackly_record_id, submission.form_type);
+        console.log('Document check result:', JSON.stringify(docResult));
+
+        if (docResult.status === 'Ok' && docResult.files && docResult.files.length > 0) {
+          const documents = docResult.files.map((file) => ({
+            name: file.name,
+            base64: null,
+            publicUrl: file.publicUrl,
+            url: file.url,
+          }));
+
+          // Update database with completed documents
+          await supabase
+            .from('poa_submissions')
+            .update({
+              knackly_status: 'completed',
+              knackly_documents: documents,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', id);
+
+          return res.json({
+            success: true,
+            message: 'Documents ready',
+            data: {
+              id: submission.id,
+              knacklyStatus: 'completed',
+              knacklyDocuments: documents,
+            },
+          });
+        }
+
+        // Still processing
+        return res.json({
+          success: true,
+          message: 'Documents still processing',
+          data: {
+            id: submission.id,
+            knacklyStatus: 'processing',
+            knacklyDocuments: [],
+          },
+        });
+      } catch (checkError) {
+        console.error('Error checking documents:', checkError);
+        // Fall through to regeneration if check fails
+      }
+    }
+
+    // Create a NEW record for regeneration (explicit regenerate or after completion)
     console.log('Creating new record for regeneration (old record:', submission.knackly_record_id, ')');
 
     // Process submission to create new record and generate documents
@@ -205,7 +257,7 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
         message: 'Documents regenerated successfully',
         data: {
           id: submission.id,
-          knacklyStatus: 'completed',
+          knacklyStatus: result.status || 'completed',
           knacklyDocuments: result.documents,
         },
       });
