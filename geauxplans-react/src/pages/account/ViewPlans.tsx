@@ -91,9 +91,9 @@ const ViewPlans: React.FC = () => {
         // Skip if not completed submission
         if (sub.submissionStatus !== 'completed') continue;
 
-        // If has knacklyRecordId but not complete, and no documents yet
+        // If has knacklyRecordId but no documents yet (even if status says completed)
         const hasDocuments = sub.knacklyDocuments && sub.knacklyDocuments.length > 0;
-        const needsRefresh = sub.knacklyRecordId && sub.knacklyStatus !== 'completed' && !hasDocuments;
+        const needsRefresh = sub.knacklyRecordId && !hasDocuments;
 
         if (needsRefresh && refreshing !== sub.id) {
           console.log(`Auto-refreshing documents for submission ${sub.id}...`);
@@ -357,17 +357,26 @@ const ViewPlans: React.FC = () => {
           </>
         );
       } else {
-        // Complete but no documents array yet
+        // Complete but no documents array yet - need to fetch them
+        const isRefreshing = refreshing === submission.id;
         return (
           <>
             <p className="mb-0" style={{ lineHeight: '14px' }}>
               <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
             </p>
             <p className="mb-0 mt-0">
-              <strong style={{ color: '#28a745' }}>
-                Documents ready - refreshing...
+              <strong style={{ color: '#ff9900' }}>
+                Documents generated - click to download
               </strong>
             </p>
+            <button
+              onClick={() => refreshDocuments(submission.id)}
+              disabled={isRefreshing}
+              className="btn btn-sm btn-primary mt-2"
+              style={{ fontSize: '12px' }}
+            >
+              {isRefreshing ? 'Fetching...' : '📥 Fetch Documents'}
+            </button>
           </>
         );
       }
