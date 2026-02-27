@@ -440,14 +440,56 @@ async function processSubmission(submission, catalogId, appId) {
 
     // Create record using form type to determine endpoint (matching WordPress)
     const result = await createRecordItem(formData, submission.form_type);
+    const recordId = result.id || result._id;
 
-    console.log(`Knackly: Record created with ID ${result.id || result._id}`);
+    console.log(`Knackly: Record created with ID ${recordId}`);
 
+    // Wait for documents to be ready (poll Knackly)
+    console.log(`Knackly: Waiting for documents...`);
+    const maxAttempts = 30;
+    const intervalMs = 3000;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      await new Promise(resolve => setTimeout(resolve, intervalMs));
+
+      try {
+        const docResult = await getDocuments(recordId, submission.form_type);
+        console.log(`Knackly: Poll attempt ${attempt + 1} - status: ${docResult.status}, files: ${docResult.files?.length || 0}`);
+
+        if (docResult.status === 'Ok' && docResult.files && docResult.files.length > 0) {
+          // Map Knackly files to our document format
+          const documents = docResult.files.map((file, index) => ({
+            name: file.name,
+            base64: null, // Knackly returns URLs, not base64
+            publicUrl: file.publicUrl,
+            url: file.url,
+          }));
+
+          console.log(`Knackly: Documents ready! Found ${documents.length} documents`);
+
+          return {
+            success: true,
+            recordId: recordId,
+            status: 'completed',
+            documents: documents,
+          };
+        }
+
+        if (docResult.status === 'Error' || docResult.error) {
+          throw new Error(docResult.error || 'Document generation failed');
+        }
+      } catch (pollError) {
+        console.log(`Knackly: Poll attempt ${attempt + 1} error:`, pollError.message);
+      }
+    }
+
+    // Timeout - return what we have
+    console.log(`Knackly: Timeout waiting for documents`);
     return {
       success: true,
-      recordId: result.id || result._id,
-      status: result.status || 'processing',
-      url: result.url,
+      recordId: recordId,
+      status: 'processing',
+      documents: [],
     };
   } catch (error) {
     console.error('Knackly: Failed to process submission:', error);
