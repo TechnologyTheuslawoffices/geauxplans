@@ -44,6 +44,7 @@ interface ApiSubmission {
   knacklyRecordId?: string;
   knacklyStatus?: string;
   knacklyDocuments?: KnacklyDocument[];
+  knacklyZipUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -321,14 +322,27 @@ const ViewPlans: React.FC = () => {
                 );
               })}
             </ol>
-            <button
-              onClick={() => refreshDocuments(submission.id)}
-              disabled={refreshing === submission.id}
-              className="btn btn-sm btn-outline-warning mt-2"
-              style={{ fontSize: '12px' }}
-            >
-              {refreshing === submission.id ? 'Refreshing...' : '🔄 Refresh Documents'}
-            </button>
+            <div className="mt-2 d-flex gap-2 flex-wrap">
+              {submission.knacklyZipUrl && (
+                <a
+                  href={submission.knacklyZipUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-sm btn-primary"
+                  style={{ fontSize: '12px' }}
+                >
+                  📦 Download All
+                </a>
+              )}
+              <button
+                onClick={() => refreshDocuments(submission.id)}
+                disabled={refreshing === submission.id}
+                className="btn btn-sm btn-outline-secondary"
+                style={{ fontSize: '12px' }}
+              >
+                {refreshing === submission.id ? 'Refreshing...' : '🔄 Refresh'}
+              </button>
+            </div>
           </>
         );
       } else {
