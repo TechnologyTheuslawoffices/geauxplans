@@ -177,9 +177,11 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
       }
     }
 
-    // Already has record - check if documents are ready first (for processing status)
-    if (submission.knackly_status === 'processing') {
-      console.log('Checking existing record for documents:', submission.knackly_record_id);
+    // Already has record - check if documents are ready first
+    // Check existing record if: status is 'processing' OR (status is 'completed' but no documents stored)
+    const hasStoredDocuments = submission.knackly_documents && submission.knackly_documents.length > 0;
+    if (submission.knackly_status === 'processing' || !hasStoredDocuments) {
+      console.log('Checking existing record for documents:', submission.knackly_record_id, 'status:', submission.knackly_status, 'hasStoredDocs:', hasStoredDocuments);
 
       try {
         const docResult = await documentService.getDocuments(submission.knackly_record_id, submission.form_type);
@@ -214,14 +216,14 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
           });
         }
 
-        // Still processing
+        // Still processing - keep current status (don't downgrade 'completed' to 'processing')
         return res.json({
           success: true,
-          message: 'Documents still processing',
+          message: 'Documents not ready yet, please wait and try again',
           data: {
             id: submission.id,
-            knacklyStatus: 'processing',
-            knacklyDocuments: [],
+            knacklyStatus: submission.knackly_status,
+            knacklyDocuments: submission.knackly_documents || [],
           },
         });
       } catch (checkError) {
