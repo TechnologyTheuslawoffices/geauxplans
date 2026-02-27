@@ -5,7 +5,15 @@
 
 const express = require('express');
 const { supabase } = require('../config/supabase');
-const doctools = require('../services/doctools');
+
+// Toggle between doc-tools (CGD) and Knackly
+// Set USE_DOCTOOLS=true for doc-tools, false for Knackly
+const USE_DOCTOOLS = process.env.USE_DOCTOOLS === 'true';
+const documentService = USE_DOCTOOLS
+  ? require('../services/doctools')
+  : require('../services/knackly');
+
+console.log(`Document service: ${USE_DOCTOOLS ? 'doc-tools (CGD)' : 'Knackly'}`);
 
 const router = express.Router();
 
@@ -134,7 +142,7 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
       }
 
       // Trigger Doc Tools generation
-      const result = await doctools.processSubmission({
+      const result = await documentService.processSubmission({
         id: submission.id,
         form_type: submission.form_type,
         form_data: submission.form_data,
@@ -174,7 +182,7 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
     console.log('Creating new record for regeneration (old record:', submission.knackly_record_id, ')');
 
     // Process submission to create new record and generate documents
-    const result = await doctools.processSubmission({
+    const result = await documentService.processSubmission({
       id: submission.id,
       form_type: submission.form_type,
       form_data: submission.form_data,
@@ -306,7 +314,7 @@ router.post('/', authenticate, async (req, res) => {
       // Trigger document generation if newly completed
       let docResult = null;
       if (submission_status === 'completed' && existing.submission_status !== 'completed') {
-        docResult = await doctools.processSubmission({
+        docResult = await documentService.processSubmission({
           id: existing.id,
           form_type,
           form_data,
@@ -350,7 +358,7 @@ router.post('/', authenticate, async (req, res) => {
 
     // Trigger document generation if completed
     if (submission_status === 'completed') {
-      const docResult = await doctools.processSubmission({
+      const docResult = await documentService.processSubmission({
         id: newSubmission.id,
         form_type,
         form_data,
@@ -426,7 +434,7 @@ router.put('/:id', authenticate, async (req, res) => {
     // Trigger document generation if newly completed
     let docResult = null;
     if (submission_status === 'completed' && existing.submission_status !== 'completed') {
-      docResult = await doctools.processSubmission({
+      docResult = await documentService.processSubmission({
         id: existing.id,
         form_type: form_type || existing.form_type,
         form_data,
