@@ -18,16 +18,40 @@ const KNACKLY_CONFIG = {
   // API paths (matching WordPress implementation)
   paths: {
     auth: '/auth/login',  // Note: /auth/login NOT /auth/token
+    // Power of Attorney
     powerOfAttorneyForm: '/catalogs/GeauxPlans/apps/Power%20of%20Attorney%20Supplement%20Solo%20Documents',
     powerOfAttorneyForm2Person: '/catalogs/GeauxPlans/apps/Power%20of%20Attorney%20Supplement',
+    // Trust-Based Estate Plan
     trustBasedEstatePlanSolo: '/catalogs/GeauxPlans/apps/Trust-Based%20Estate%20Plan%20Solo%20Documents',
     trustBasedEstatePlan2Person: '/catalogs/GeauxPlans/apps/Trust-Based%20Estate%20Plan',
+    // Will-Based Estate Plan
+    willBasedEstatePlan: '/catalogs/GeauxPlans/apps/Will-Based%20Estate%20Plan%20Solo%20Documents',
+    willBasedEstatePlan2Person: '/catalogs/GeauxPlans/apps/Will-Based%20Estate%20Plan',
+    // Minor Child-Centered Estate Plan
+    minorChildEstatePlan: '/catalogs/GeauxPlans/apps/Minor%20Child-Centered%20Estate%20Plan%20Solo%20Documents',
+    minorChildEstatePlan2Person: '/catalogs/GeauxPlans/apps/Minor%20Child-Centered%20Estate%20Plan',
   },
 };
 
 // Token cache (for token-based auth)
 let accessToken = null;
 let tokenExpiry = null;
+
+// Mapping of form types to Knackly app names (URL-encoded)
+const FORM_TYPE_TO_APP = {
+  // Power of Attorney
+  powerOfAttorneyForm: 'Power%20of%20Attorney%20Supplement%20Solo%20Documents',
+  powerOfAttorneyForm2Person: 'Power%20of%20Attorney%20Supplement',
+  // Trust-Based Estate Plan
+  trustBasedEstatePlanSolo: 'Trust-Based%20Estate%20Plan%20Solo%20Documents',
+  trustBasedEstatePlan2Person: 'Trust-Based%20Estate%20Plan',
+  // Will-Based Estate Plan
+  willBasedEstatePlan: 'Will-Based%20Estate%20Plan%20Solo%20Documents',
+  willBasedEstatePlan2Person: 'Will-Based%20Estate%20Plan',
+  // Minor Child-Centered Estate Plan
+  minorChildEstatePlan: 'Minor%20Child-Centered%20Estate%20Plan%20Solo%20Documents',
+  minorChildEstatePlan2Person: 'Minor%20Child-Centered%20Estate%20Plan',
+};
 
 /**
  * Make an HTTPS request to Knackly API
@@ -178,15 +202,7 @@ async function createRecordItem(formData, formType = 'powerOfAttorneyForm') {
  */
 async function getDocuments(recordId, formType = 'powerOfAttorneyForm') {
   const token = await getAccessToken();
-
-  // Get app name from form type
-  const appNames = {
-    powerOfAttorneyForm: 'Power%20of%20Attorney%20Supplement%20Solo%20Documents',
-    powerOfAttorneyForm2Person: 'Power%20of%20Attorney%20Supplement',
-    trustBasedEstatePlanSolo: 'Trust-Based%20Estate%20Plan%20Solo%20Documents',
-    trustBasedEstatePlan2Person: 'Trust-Based%20Estate%20Plan',
-  };
-  const appName = appNames[formType] || appNames.powerOfAttorneyForm;
+  const appName = FORM_TYPE_TO_APP[formType] || FORM_TYPE_TO_APP.powerOfAttorneyForm;
 
   const path = `/catalogs/GeauxPlans/items/${recordId}/apps/${appName}`;
   return makeRequest('GET', path, null, token);
@@ -197,14 +213,7 @@ async function getDocuments(recordId, formType = 'powerOfAttorneyForm') {
  */
 async function getRecordItem(recordId, formType = 'powerOfAttorneyForm') {
   const token = await getAccessToken();
-
-  const appNames = {
-    powerOfAttorneyForm: 'Power%20of%20Attorney%20Supplement%20Solo%20Documents',
-    powerOfAttorneyForm2Person: 'Power%20of%20Attorney%20Supplement',
-    trustBasedEstatePlanSolo: 'Trust-Based%20Estate%20Plan%20Solo%20Documents',
-    trustBasedEstatePlan2Person: 'Trust-Based%20Estate%20Plan',
-  };
-  const appName = appNames[formType] || appNames.powerOfAttorneyForm;
+  const appName = FORM_TYPE_TO_APP[formType] || FORM_TYPE_TO_APP.powerOfAttorneyForm;
 
   // Use the /load/ endpoint which returns id$ fields
   const path = `/collections/GeauxPlans/apps/${appName}/load/${recordId}`;
@@ -216,14 +225,7 @@ async function getRecordItem(recordId, formType = 'powerOfAttorneyForm') {
  */
 async function regenerateDocuments(recordId, formType = 'powerOfAttorneyForm') {
   const token = await getAccessToken();
-
-  const appNames = {
-    powerOfAttorneyForm: 'Power%20of%20Attorney%20Supplement%20Solo%20Documents',
-    powerOfAttorneyForm2Person: 'Power%20of%20Attorney%20Supplement',
-    trustBasedEstatePlanSolo: 'Trust-Based%20Estate%20Plan%20Solo%20Documents',
-    trustBasedEstatePlan2Person: 'Trust-Based%20Estate%20Plan',
-  };
-  const appName = appNames[formType] || appNames.powerOfAttorneyForm;
+  const appName = FORM_TYPE_TO_APP[formType] || FORM_TYPE_TO_APP.powerOfAttorneyForm;
 
   const path = `/catalogs/GeauxPlans/items/${recordId}/apps/${appName}`;
   return makeRequest('POST', path, {}, token);
