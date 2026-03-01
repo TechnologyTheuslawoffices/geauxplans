@@ -74,6 +74,7 @@ const ViewPlans: React.FC = () => {
   const [submissions, setSubmissions] = useState<ApiSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState<number | null>(null);
+  const [downloading, setDownloading] = useState<number | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
   // Cache for full document data (fetched on demand)
   const [documentCache, setDocumentCache] = useState<Record<number, KnacklyDocument[]>>({});
@@ -160,6 +161,38 @@ const ViewPlans: React.FC = () => {
       console.error('Failed to refresh documents:', error);
     } finally {
       setRefreshing(null);
+    }
+  };
+
+  // Download all documents as ZIP from our backend
+  const downloadAllDocuments = async (submissionId: number, clientName: string) => {
+    setDownloading(submissionId);
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/submissions/${submissionId}/download-all`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to download documents');
+      }
+
+      // Get the blob and create download link
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${clientName}_EstatePlan_${submissionId}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Failed to download documents:', error);
+      alert('Failed to download documents. Please try again.');
+    } finally {
+      setDownloading(null);
     }
   };
 
@@ -323,16 +356,18 @@ const ViewPlans: React.FC = () => {
               })}
             </ol>
             <div className="mt-2 d-flex gap-2 flex-wrap">
-              {submission.knacklyZipUrl && (
-                <a
-                  href={submission.knacklyZipUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              {submission.knacklyDocuments && submission.knacklyDocuments.length > 0 && (
+                <button
+                  onClick={() => downloadAllDocuments(
+                    submission.id,
+                    submission.formData?.personal_info?.first_name || 'Documents'
+                  )}
+                  disabled={downloading === submission.id}
                   className="btn btn-sm btn-primary"
                   style={{ fontSize: '12px' }}
                 >
-                  📦 Download All
-                </a>
+                  {downloading === submission.id ? '⏳ Downloading...' : '📦 Download All'}
+                </button>
               )}
               <button
                 onClick={() => refreshDocuments(submission.id)}

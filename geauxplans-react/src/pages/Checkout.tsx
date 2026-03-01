@@ -63,14 +63,29 @@ const Checkout: React.FC = () => {
     }
   }, [searchParams]);
 
-  // Map form type for POA form URL
+  // Map form type for POA form URL based on product and type
   const getFormUrl = () => {
-    // Map checkout types to form types
-    const formTypeMap: Record<string, string> = {
-      'solo': 'powerOfAttorneyForm',
-      '2person': 'powerOfAttorneyForm2Person',
+    // Map product ID + type to correct form type
+    const formTypeMap: Record<string, Record<string, string>> = {
+      '614': { // POA
+        'solo': 'powerOfAttorneyForm',
+        '2person': 'powerOfAttorneyForm2Person',
+      },
+      '676': { // Trust-Based Estate Plan
+        'solo': 'trustBasedEstatePlanSolo',
+        '2person': 'trustBasedEstatePlan2Person',
+      },
+      '673': { // Will-Based Estate Plan
+        'solo': 'willBasedEstatePlan',
+        '2person': 'willBasedEstatePlan2Person',
+      },
+      '606': { // Minor Child-Centered Estate Plan
+        'solo': 'minorChildEstatePlan',
+        '2person': 'minorChildEstatePlan2Person',
+      },
     };
-    const mappedType = formTypeMap[formType] || formType;
+    const productMap = formTypeMap[productId] || formTypeMap['614'];
+    const mappedType = productMap[formType] || productMap['solo'] || 'powerOfAttorneyForm';
     return `/poa-form?product=${productId}&type=${mappedType}`;
   };
 

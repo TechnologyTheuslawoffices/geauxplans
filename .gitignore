@@ -59,3 +59,26 @@ coverage/
 
 .vercel
 .env.vercel
+
+.env*.local
+
+# Temp Claude directories
+tmpclaude-*/
+
+# Backup files
+*.backup
+*.stackdump
+.env.backup
+.env.check
+.env.old*
+.env.to-migrate
+
+# Images (not source code)
+*.png
+*.jpg
+
+# HTML exports
+*.html
+
+# Supabase temp
+supabase/.temp/

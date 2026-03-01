@@ -4,6 +4,7 @@
  */
 
 const express = require('express');
+const archiver = require('archiver');
 const { supabase } = require('../config/supabase');
 
 // Toggle between doc-tools (CGD) and Knackly
@@ -187,10 +188,11 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
     }
 
     // Already has record - check if documents are ready first
-    // Check existing record if: status is 'processing' OR (status is 'completed' but no documents stored)
+    // Check existing record if: status is 'processing' OR no documents stored OR missing zipUrl
     const hasStoredDocuments = submission.knackly_documents && submission.knackly_documents.length > 0;
-    if (submission.knackly_status === 'processing' || !hasStoredDocuments) {
-      console.log('Checking existing record for documents:', submission.knackly_record_id, 'status:', submission.knackly_status, 'hasStoredDocs:', hasStoredDocuments);
+    const hasZipUrl = submission.knackly_documents?.some(d => d.name === '__zip__');
+    if (submission.knackly_status === 'processing' || !hasStoredDocuments || !hasZipUrl) {
+      console.log('Checking existing record for documents:', submission.knackly_record_id, 'status:', submission.knackly_status, 'hasStoredDocs:', hasStoredDocuments, 'hasZipUrl:', hasZipUrl);
 
       try {
         const docResult = await documentService.getDocuments(submission.knackly_record_id, submission.form_type);
@@ -582,6 +584,75 @@ router.get('/by-type/:formType', authenticate, async (req, res) => {
   } catch (error) {
     console.error('Get by type error:', error);
     res.status(500).json({ success: false, error: 'Failed to get submission' });
+  }
+});
+
+/**
+ * GET /api/submissions/:id/download-all
+ * Download all documents as a ZIP file
+ */
+router.get('/:id/download-all', authenticate, async (req, res) => {
+  if (!isSupabaseConfigured()) {
+    return res.status(500).json({ success: false, error: 'Database not configured' });
+  }
+
+  const { id } = req.params;
+
+  try {
+    // Get the submission
+    const { data: submission, error } = await supabase
+      .from('poa_submissions')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (error || !submission) {
+      return res.status(404).json({ success: false, error: 'Submission not found' });
+    }
+
+    // Get documents (filter out __zip__ metadata)
+    const documents = (submission.knackly_documents || []).filter(d => d.name !== '__zip__');
+
+    if (!documents.length) {
+      return res.status(404).json({ success: false, error: 'No documents available' });
+    }
+
+    // Create ZIP archive
+    const archive = archiver('zip', { zlib: { level: 5 } });
+
+    // Set response headers
+    const clientName = submission.form_data?.personal_info?.first_name || 'Documents';
+    const zipName = `${clientName}_EstatePlan_${id}.zip`;
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${zipName}"`);
+
+    // Pipe archive to response
+    archive.pipe(res);
+
+    // Fetch and add each document to the archive
+    for (const doc of documents) {
+      const docUrl = doc.storedUrl || doc.publicUrl || doc.url;
+      if (!docUrl) continue;
+
+      try {
+        const response = await fetch(docUrl);
+        if (response.ok) {
+          const buffer = await response.arrayBuffer();
+          archive.append(Buffer.from(buffer), { name: doc.name });
+        }
+      } catch (fetchErr) {
+        console.error(`Failed to fetch document ${doc.name}:`, fetchErr.message);
+      }
+    }
+
+    // Finalize the archive
+    await archive.finalize();
+  } catch (error) {
+    console.error('Download all error:', error);
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: 'Failed to create ZIP' });
+    }
   }
 });
 

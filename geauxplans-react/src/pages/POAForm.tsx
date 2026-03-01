@@ -4,36 +4,109 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import '../styles/poa-form.css';
 
+/**
+ * Deep merge two objects, ensuring all fields from defaults exist
+ * Arrays from saved data replace defaults (not merged)
+ */
+function deepMerge<T extends Record<string, any>>(defaults: T, saved: Partial<T>): T {
+  const result = { ...defaults };
+
+  for (const key in saved) {
+    const savedValue = saved[key];
+    if (savedValue !== undefined && savedValue !== null) {
+      if (
+        typeof savedValue === 'object' &&
+        !Array.isArray(savedValue) &&
+        typeof defaults[key] === 'object' &&
+        !Array.isArray(defaults[key])
+      ) {
+        // Recursively merge objects
+        result[key] = deepMerge(defaults[key], savedValue as any);
+      } else {
+        // Use saved value (including arrays)
+        (result as any)[key] = savedValue;
+      }
+    }
+  }
+
+  return result;
+}
+
 // Page display names for progress bar
 const PAGE_NAMES: Record<string, string> = {
   start: 'Start',
   personal_info: 'Personal',
-  spouse_info: 'Other Parties',
+  spouse_info: 'Spouse',
+  children: 'Children',
   agents: 'Agents',
   plan_contents: 'Contents',
+  // POA Pages
   fpoa: 'FPOA',
   hcpoa: 'HCPOA',
   hcd: 'HCD',
-  trust_info: 'Trust',
+  // Trust Pages
+  trust_setup: 'Trust Setup',
+  trustees: 'Trustees',
+  distribution: 'Distribution',
+  trust_info: 'Trust', // Legacy - kept for compatibility
+  // Will Pages
+  executors: 'Executors',
+  guardians: 'Guardians',
+  will_distribution: 'Distribution',
+  // Minor Child Pages
+  children_trusts: 'Children Trusts',
+  // Review
+  review: 'Review',
 };
 
-// Form type configurations matching WordPress
-const FORM_TYPES: Record<string, { title: string; pages: string[] }> = {
+// Form type configurations - each plan has specific pages
+const FORM_TYPES: Record<string, { title: string; pages: string[]; planType: string }> = {
+  // POA Plans
   powerOfAttorneyForm: {
     title: 'Power of Attorney Supplement for One Person',
-    pages: ['start', 'personal_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd'],
+    pages: ['start', 'personal_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    planType: 'poa',
   },
   powerOfAttorneyForm2Person: {
     title: 'Power of Attorney Supplement for Two Persons',
-    pages: ['start', 'personal_info', 'spouse_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd'],
+    pages: ['start', 'personal_info', 'spouse_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    planType: 'poa_couple',
   },
+
+  // Trust-Based Plans
   trustBasedEstatePlanSolo: {
     title: 'Trust-Based Estate Plan',
-    pages: ['start', 'personal_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'trust_info'],
+    pages: ['start', 'personal_info', 'children', 'agents', 'trust_setup', 'trustees', 'distribution', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    planType: 'single_trust',
   },
   trustBasedEstatePlan2Person: {
     title: 'Trust-Based Estate Plan for 2 Persons',
-    pages: ['start', 'personal_info', 'spouse_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'trust_info'],
+    pages: ['start', 'personal_info', 'spouse_info', 'children', 'agents', 'trust_setup', 'trustees', 'distribution', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    planType: 'joint_trust',
+  },
+
+  // Will-Based Plans
+  willBasedEstatePlan: {
+    title: 'Will-Based Estate Plan',
+    pages: ['start', 'personal_info', 'children', 'agents', 'executors', 'guardians', 'will_distribution', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    planType: 'will_based',
+  },
+  willBasedEstatePlan2Person: {
+    title: 'Will-Based Estate Plan for 2 Persons',
+    pages: ['start', 'personal_info', 'spouse_info', 'children', 'agents', 'executors', 'guardians', 'will_distribution', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    planType: 'will_based_couple',
+  },
+
+  // Minor Child-Centered Plans
+  minorChildEstatePlan: {
+    title: 'Minor Child-Centered Estate Plan',
+    pages: ['start', 'personal_info', 'children', 'guardians', 'children_trusts', 'agents', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    planType: 'minor_child',
+  },
+  minorChildEstatePlan2Person: {
+    title: 'Minor Child-Centered Estate Plan for 2 Persons',
+    pages: ['start', 'personal_info', 'spouse_info', 'children', 'guardians', 'children_trusts', 'agents', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    planType: 'minor_child_couple',
   },
 };
 
@@ -194,11 +267,28 @@ interface FormData {
   trust_info: {
     trust_name: string;
     trust_type: string;
+    is_amendment: boolean;
+    settlor_as_trustee: boolean;
+    successor_trustee: string;
+    marital_trust_type: string;
     primary_beneficiaries: string[];
     contingent_beneficiaries: string[];
     successor_trustees: string[];
     specific_bequests: string;
+    residuary_distribution: string;
     special_instructions: string;
+  };
+  will_info: {
+    primary_executor: string;
+    successor_executor: string;
+    primary_guardian: string;
+    backup_guardian: string;
+    has_specific_bequests: boolean;
+    specific_bequests: string;
+    residuary_distribution: string;
+    distribution_age: string;
+    children_trustee: string;
+    allow_education_distributions: boolean;
   };
 }
 
@@ -311,11 +401,28 @@ const initialFormData: FormData = {
   trust_info: {
     trust_name: '',
     trust_type: 'revocable',
+    is_amendment: false,
+    settlor_as_trustee: true,
+    successor_trustee: '',
+    marital_trust_type: '',
     primary_beneficiaries: [],
     contingent_beneficiaries: [],
     successor_trustees: [],
     specific_bequests: '',
+    residuary_distribution: '',
     special_instructions: '',
+  },
+  will_info: {
+    primary_executor: '',
+    successor_executor: '',
+    primary_guardian: '',
+    backup_guardian: '',
+    has_specific_bequests: false,
+    specific_bequests: '',
+    residuary_distribution: '',
+    distribution_age: '25',
+    children_trustee: '',
+    allow_education_distributions: true,
   },
 };
 
@@ -341,6 +448,280 @@ const createEmptyParty = (): Party => ({
   parish: '',
   signers: [],
 });
+
+// ============================================================================
+// TEST DATA FOR PREFILL - Covers all scenarios for POA 2-Person
+// ============================================================================
+const TEST_PREFILL_DATA: FormData = {
+  esign: true,
+  married: true,
+  children_as_agents: true,
+  governing_law: 'Louisiana',
+  personal_info: {
+    first_name: 'John',
+    middle_name: 'Michael',
+    surname: 'Smith',
+    suffix: 'Jr.',
+    date_of_birth: '1975-06-15',
+    gender: 'male',
+    street_address: '123 Main Street',
+    street_address_2: 'Suite 100',
+    city: 'Baton Rouge',
+    state: 'Louisiana',
+    zip: '70801',
+    parish: 'East Baton Rouge',
+    phone_number: '(225) 555-1234',
+    last_4_ssn_digits: '1234',
+  },
+  spouse_info: {
+    first_name: 'Jane',
+    middle_name: 'Marie',
+    surname: 'Smith',
+    suffix: '',
+    date_of_birth: '1978-03-22',
+    gender: 'female',
+    phone_number: '(225) 555-5678',
+    last_4_ssn_digits: '5678',
+    same_address_as_primary: true,
+    street_address: '',
+    street_address_2: '',
+    city: '',
+    state: 'Louisiana',
+    zip: '',
+    parish: '',
+  },
+  people_or_entities_who_will_serve_as_agents: {
+    parties: [
+      // Agent 1: Individual (child)
+      {
+        id: 'party_1',
+        type_of_party: 'An individual person',
+        first_name: 'Robert',
+        middle_name: 'James',
+        surname: 'Smith',
+        suffix: '',
+        date_of_birth: '1998-09-10',
+        gender: 'male',
+        relationship_with_person: 'Son',
+        last_4_ssn_digits: '9876',
+        entity_name: '',
+        last_4_ein_digits: '',
+        same_address_as_person_granting_power_of_attorney: false,
+        street_address: '456 Oak Avenue',
+        street_address_2: '',
+        city: 'New Orleans',
+        state: 'Louisiana',
+        zip: '70112',
+        parish: 'Orleans',
+        signers: [],
+      },
+      // Agent 2: Individual (child)
+      {
+        id: 'party_2',
+        type_of_party: 'An individual person',
+        first_name: 'Emily',
+        middle_name: 'Rose',
+        surname: 'Johnson',
+        suffix: '',
+        date_of_birth: '2000-12-05',
+        gender: 'female',
+        relationship_with_person: 'Daughter',
+        last_4_ssn_digits: '5432',
+        entity_name: '',
+        last_4_ein_digits: '',
+        same_address_as_person_granting_power_of_attorney: false,
+        street_address: '789 Pine Road',
+        street_address_2: 'Apt 3B',
+        city: 'Lafayette',
+        state: 'Louisiana',
+        zip: '70501',
+        parish: 'Lafayette',
+        signers: [],
+      },
+      // Agent 3: Entity (bank/trust company)
+      {
+        id: 'party_3',
+        type_of_party: 'An entity',
+        first_name: '',
+        middle_name: '',
+        surname: '',
+        suffix: '',
+        date_of_birth: '',
+        gender: '',
+        relationship_with_person: '',
+        last_4_ssn_digits: '',
+        entity_name: 'First National Trust Company',
+        last_4_ein_digits: '4321',
+        same_address_as_person_granting_power_of_attorney: false,
+        street_address: '100 Financial Plaza',
+        street_address_2: 'Floor 25',
+        city: 'Baton Rouge',
+        state: 'Louisiana',
+        zip: '70802',
+        parish: 'East Baton Rouge',
+        signers: [
+          {
+            first_name: 'William',
+            middle_name: 'T.',
+            surname: 'Davis',
+            suffix: '',
+            title: 'Trust Officer',
+          },
+        ],
+      },
+      // Agent 4: Another individual (friend/trusted person)
+      {
+        id: 'party_4',
+        type_of_party: 'An individual person',
+        first_name: 'Michael',
+        middle_name: 'Andrew',
+        surname: 'Williams',
+        suffix: 'III',
+        date_of_birth: '1970-04-18',
+        gender: 'male',
+        relationship_with_person: 'Friend',
+        last_4_ssn_digits: '7890',
+        entity_name: '',
+        last_4_ein_digits: '',
+        same_address_as_person_granting_power_of_attorney: false,
+        street_address: '555 Elm Street',
+        street_address_2: '',
+        city: 'Shreveport',
+        state: 'Louisiana',
+        zip: '71101',
+        parish: 'Caddo',
+        signers: [],
+      },
+    ],
+  },
+  // Client FPOA - Immediate POA with co-agents and successors
+  fpoa: {
+    springing_poa: 'No',  // Immediate
+    revoke_prior_poa: 'Yes',
+    fpoa_initial_agents: {
+      person_to_serve: 'Robert James Smith',  // First child
+      second_coagent_person_to_serve: 'First National Trust Company',  // Entity co-agent to test GeauxSigners
+      agents_serve_alone: 'No',  // Must act together
+    },
+    has_appointer_successor_agents: 'Yes',
+    successor_agents: [
+      {
+        successor_agent_to_serve: 'Michael Andrew Williams III',
+        second_successor_coagent_to_serve: 'First National Trust Company',
+        agents_serve_alone: 'Yes',
+      },
+    ],
+  },
+  // Spouse FPOA - Springing POA (only on incapacity)
+  spouse_fpoa: {
+    springing_poa: 'Yes',  // Springing - only on incapacity
+    revoke_prior_poa: 'No',
+    fpoa_initial_agents: {
+      person_to_serve: 'Emily Rose Johnson',
+      second_coagent_person_to_serve: '',  // Single agent
+      agents_serve_alone: 'Yes',
+    },
+    has_appointer_successor_agents: 'Yes',
+    successor_agents: [
+      {
+        successor_agent_to_serve: 'Robert James Smith',
+        second_successor_coagent_to_serve: '',
+        agents_serve_alone: 'Yes',
+      },
+      {
+        successor_agent_to_serve: 'First National Trust Company',
+        second_successor_coagent_to_serve: '',
+        agents_serve_alone: 'Yes',
+      },
+    ],
+  },
+  // Client HCPOA - Immediate with organ donation
+  hcpoa: {
+    springing_poa: 'No',
+    revoke_prior_poa: 'Yes',
+    wish_to_be_organ_donor: 'Yes',
+    wish_to_donate_body_to_science: 'No',
+    no_blood_transfusion: 'No',
+    hcpoa_initial_agents: {
+      person_to_serve: 'spouse',  // Use 'spouse' to select spouse from dropdown
+      second_coagent_person_to_serve: '',
+      agents_serve_alone: 'Yes',
+    },
+    has_appointed_successor_agents: 'Yes',
+    successor_agents: [
+      {
+        successor_agent_to_serve: 'Robert James Smith',
+        second_successor_coagent_to_serve: 'Emily Rose Johnson',
+        agents_serve_alone: 'No',
+      },
+    ],
+  },
+  // Spouse HCPOA - Body to science, no blood transfusion
+  spouse_hcpoa: {
+    springing_poa: 'No',
+    revoke_prior_poa: 'No',
+    wish_to_be_organ_donor: 'No',
+    wish_to_donate_body_to_science: 'Yes',
+    no_blood_transfusion: 'Yes',  // Religious preference
+    hcpoa_initial_agents: {
+      person_to_serve: 'client',  // Use 'client' to select client (my spouse) from dropdown
+      second_coagent_person_to_serve: '',
+      agents_serve_alone: 'Yes',
+    },
+    has_appointed_successor_agents: 'Yes',
+    successor_agents: [
+      {
+        successor_agent_to_serve: 'Emily Rose Johnson',
+        second_successor_coagent_to_serve: '',
+        agents_serve_alone: 'Yes',
+      },
+    ],
+  },
+  // Client HCD - Choose specific options with extension
+  hcd: {
+    life_support_option: 'CHOOSE',  // 'WITHDRAW' or 'CHOOSE'
+    client_hcds: ['Nutr', 'Hydr', 'CPR'],  // Options: 'Nutr', 'Hydr', 'Vent', 'CPR'
+    extend_hcd: 'Yes',
+    hcd_days: 14,
+    hcd_sooner_longer: 'longer',
+  },
+  // Spouse HCD - Withdraw all life support
+  spouse_hcd: {
+    life_support_option: 'WITHDRAW',  // 'WITHDRAW' or 'CHOOSE'
+    spouse_hcds: ['Vent'],  // Some options still selected for demo
+    extend_hcd: 'No',
+    hcd_days: 7,
+    hcd_sooner_longer: '',
+  },
+  // Trust info (for trust-based plans)
+  trust_info: {
+    trust_name: 'Smith Family Living Trust',
+    trust_type: 'revocable',
+    is_amendment: false,
+    settlor_as_trustee: true,
+    successor_trustee: 'Robert James Smith',
+    marital_trust_type: 'NoMarital',
+    primary_beneficiaries: ['Robert James Smith', 'Emily Rose Johnson'],
+    contingent_beneficiaries: ['Grandchildren per stirpes'],
+    successor_trustees: ['First National Trust Company'],
+    specific_bequests: 'Family home to children equally; Jewelry collection to daughter Emily.',
+    residuary_distribution: 'Equally among my children',
+    special_instructions: 'Distribute trust assets to children at ages 25, 30, and 35 in equal portions.',
+  },
+  // Will info (for will-based plans)
+  will_info: {
+    primary_executor: 'Robert James Smith',
+    successor_executor: 'Emily Rose Johnson',
+    primary_guardian: 'Michael Andrew Williams III',
+    backup_guardian: 'Emily Rose Johnson',
+    has_specific_bequests: true,
+    specific_bequests: 'My jewelry collection to my daughter Emily.',
+    residuary_distribution: 'Equally among my children per stirpes.',
+    distribution_age: '25',
+    children_trustee: 'First National Trust Company',
+    allow_education_distributions: true,
+  },
+};
 
 const POAForm: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -368,7 +749,10 @@ const POAForm: React.FC = () => {
       try {
         const response = await api.get(`/submissions/by-type/${formType}`);
         if (response.success && response.data && response.data.formData) {
-          setFormData(response.data.formData);
+          // Deep merge saved data with initial data to ensure all required fields exist
+          const savedData = response.data.formData;
+          const mergedData = deepMerge(initialFormData, savedData);
+          setFormData(mergedData);
           setExistingSubmissionId(response.data.id);
         }
       } catch (error) {
@@ -417,7 +801,7 @@ const POAForm: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       people_or_entities_who_will_serve_as_agents: {
-        parties: [...prev.people_or_entities_who_will_serve_as_agents.parties, createEmptyParty()],
+        parties: [...(prev.people_or_entities_who_will_serve_as_agents?.parties || []), createEmptyParty()],
       },
     }));
   };
@@ -426,17 +810,98 @@ const POAForm: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       people_or_entities_who_will_serve_as_agents: {
-        parties: prev.people_or_entities_who_will_serve_as_agents.parties.filter((_, i) => i !== index),
+        parties: (prev.people_or_entities_who_will_serve_as_agents?.parties || []).filter((_, i) => i !== index),
       },
     }));
   };
+
+  // Easter egg: Prefill form with test data (Ctrl+Shift+T)
+  const prefillTestData = useCallback(() => {
+    setFormData(TEST_PREFILL_DATA);
+    setHasOtherParties('Yes');
+    setSaveMessage('🥚 Test data loaded!');
+    setTimeout(() => setSaveMessage(''), 3000);
+  }, []);
+
+  // Easter egg: Click title 5 times rapidly to prefill
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [easterEggClicks, setEasterEggClicks] = useState(0);
+  const easterEggTimeout = React.useRef<NodeJS.Timeout | null>(null);
+
+  const handleTitleClick = useCallback(() => {
+    setEasterEggClicks(prev => {
+      const newCount = prev + 1;
+      if (newCount >= 5) {
+        prefillTestData();
+        return 0;
+      }
+      // Reset after 2 seconds of no clicks
+      if (easterEggTimeout.current) clearTimeout(easterEggTimeout.current);
+      easterEggTimeout.current = setTimeout(() => setEasterEggClicks(0), 2000);
+      return newCount;
+    });
+  }, [prefillTestData]);
 
   const updateParty = (index: number, field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       people_or_entities_who_will_serve_as_agents: {
-        parties: prev.people_or_entities_who_will_serve_as_agents.parties.map((party, i) =>
+        parties: (prev.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, i) =>
           i === index ? { ...party, [field]: value } : party
+        ),
+      },
+    }));
+  };
+
+  // Signer management for entity parties
+  const addSigner = (partyIndex: number) => {
+    setFormData(prev => ({
+      ...prev,
+      people_or_entities_who_will_serve_as_agents: {
+        parties: (prev.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, i) =>
+          i === partyIndex
+            ? {
+                ...party,
+                signers: [
+                  ...(party.signers || []),
+                  { first_name: '', middle_name: '', surname: '', suffix: '', title: '' },
+                ],
+              }
+            : party
+        ),
+      },
+    }));
+  };
+
+  const updateSigner = (partyIndex: number, signerIndex: number, field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      people_or_entities_who_will_serve_as_agents: {
+        parties: (prev.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, i) =>
+          i === partyIndex
+            ? {
+                ...party,
+                signers: (party.signers || []).map((signer, si) =>
+                  si === signerIndex ? { ...signer, [field]: value } : signer
+                ),
+              }
+            : party
+        ),
+      },
+    }));
+  };
+
+  const removeSigner = (partyIndex: number, signerIndex: number) => {
+    setFormData(prev => ({
+      ...prev,
+      people_or_entities_who_will_serve_as_agents: {
+        parties: (prev.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, i) =>
+          i === partyIndex
+            ? {
+                ...party,
+                signers: (party.signers || []).filter((_, si) => si !== signerIndex),
+              }
+            : party
         ),
       },
     }));
@@ -480,7 +945,7 @@ const POAForm: React.FC = () => {
     }
 
     if (pageName === 'agents') {
-      if (formData.people_or_entities_who_will_serve_as_agents.parties.length === 0) {
+      if ((formData.people_or_entities_who_will_serve_as_agents?.parties || []).length === 0) {
         newErrors['agents'] = 'You must add at least one agent';
       }
     }
@@ -938,7 +1403,7 @@ const POAForm: React.FC = () => {
 
       {errors['agents'] && <div className="alert alert-danger">{errors['agents']}</div>}
 
-      {formData.people_or_entities_who_will_serve_as_agents.parties.map((party, index) => (
+      {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, index) => (
         <div key={party.id} className="card mb-3">
           <div className="card-header d-flex justify-content-between align-items-center">
             <strong>Party {index + 1}: {getPartyDisplayName(party)}</strong>
@@ -1083,6 +1548,85 @@ const POAForm: React.FC = () => {
                     />
                   </div>
                 </div>
+
+                {/* Authorized Signers for Entity */}
+                <div className="mb-3">
+                  <label className="form-label">
+                    <strong>Authorized Signers</strong>
+                    <span className="text-muted ms-2">(Person(s) who will sign on behalf of the entity)</span>
+                  </label>
+
+                  {(party.signers || []).map((signer, signerIndex) => (
+                    <div key={signerIndex} className="card card-body bg-light mb-2">
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <small className="text-muted">Signer {signerIndex + 1}</small>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => removeSigner(index, signerIndex)}
+                        >
+                          <i className="fas fa-times"></i>
+                        </button>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-3 mb-2">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            placeholder="First Name"
+                            value={signer.first_name}
+                            onChange={(e) => updateSigner(index, signerIndex, 'first_name', e.target.value)}
+                          />
+                        </div>
+                        <div className="col-md-2 mb-2">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            placeholder="Middle"
+                            value={signer.middle_name}
+                            onChange={(e) => updateSigner(index, signerIndex, 'middle_name', e.target.value)}
+                          />
+                        </div>
+                        <div className="col-md-3 mb-2">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            placeholder="Last Name"
+                            value={signer.surname}
+                            onChange={(e) => updateSigner(index, signerIndex, 'surname', e.target.value)}
+                          />
+                        </div>
+                        <div className="col-md-1 mb-2">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            placeholder="Sfx"
+                            value={signer.suffix}
+                            onChange={(e) => updateSigner(index, signerIndex, 'suffix', e.target.value)}
+                          />
+                        </div>
+                        <div className="col-md-3 mb-2">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            placeholder="Title (e.g., President)"
+                            value={signer.title}
+                            onChange={(e) => updateSigner(index, signerIndex, 'title', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => addSigner(index)}
+                  >
+                    <i className="fas fa-plus me-1"></i>
+                    Add Signer
+                  </button>
+                </div>
               </>
             )}
 
@@ -1167,23 +1711,47 @@ const POAForm: React.FC = () => {
     </div>
   );
 
-  const renderPlanContentsPage = () => (
-    <div className="poa-page">
-      <h2>4. Plan Contents</h2>
-      <div className="alert alert-info">
-        <p>Your Power of Attorney plan will include the following documents:</p>
-        <ul>
-          <li><strong>Financial Power of Attorney (FPOA)</strong> - Allows your agent to manage your financial affairs</li>
-          <li><strong>Healthcare Power of Attorney (HCPOA)</strong> - Allows your agent to make healthcare decisions</li>
-          <li><strong>Healthcare Directive (HCD)</strong> - Your wishes regarding end-of-life care</li>
-        </ul>
-        <p>In the following pages, you'll designate agents for each document and specify your preferences.</p>
+  const renderPlanContentsPage = () => {
+    const isTrust = formType.includes('trustBased');
+    const isWill = formType.includes('willBased') || formType.includes('minorChild');
+    const planName = isTrust ? 'Trust-Based Estate' : isWill ? 'Will-Based Estate' : 'Power of Attorney';
+
+    return (
+      <div className="poa-page">
+        <h2>4. Plan Contents</h2>
+        <div className="alert alert-info">
+          <p>Your {planName} plan will include the following documents:</p>
+          <ul>
+            {/* Trust-specific documents */}
+            {isTrust && (
+              <>
+                <li><strong>Trust Agreement</strong> - Your revocable living trust document</li>
+                <li><strong>Certificate of Trust</strong> - Summary for financial institutions</li>
+                <li><strong>Pour-Over Will</strong> - Transfers remaining assets to the trust</li>
+                <li><strong>Trust Funding Instructions</strong> - Guide for funding your trust</li>
+              </>
+            )}
+            {/* Will-specific documents */}
+            {isWill && (
+              <>
+                <li><strong>Last Will and Testament</strong> - Directs distribution of your estate</li>
+                <li><strong>Will Attestation</strong> - Witness certification for your will</li>
+              </>
+            )}
+            {/* POA documents (all plans) */}
+            <li><strong>Financial Power of Attorney (FPOA)</strong> - Allows your agent to manage your financial affairs</li>
+            <li><strong>Healthcare Power of Attorney (HCPOA)</strong> - Allows your agent to make healthcare decisions</li>
+            <li><strong>Healthcare Directive (HCD)</strong> - Your wishes regarding end-of-life care</li>
+            <li><strong>HIPAA Authorization</strong> - Allows access to your medical records</li>
+          </ul>
+          <p>In the following pages, you'll provide the information needed for each document.</p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderFPOAPage = () => {
-    const parties = formData.people_or_entities_who_will_serve_as_agents.parties;
+    const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
     const isTwoPerson = formType.includes('2Person');
 
     return (
@@ -1462,7 +2030,7 @@ const POAForm: React.FC = () => {
   };
 
   const renderHCPOAPage = () => {
-    const parties = formData.people_or_entities_who_will_serve_as_agents.parties;
+    const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
     const isTwoPerson = formType.includes('2Person');
 
     return (
@@ -2127,9 +2695,9 @@ const POAForm: React.FC = () => {
         <i className="fas fa-plus me-2"></i> Add Party
       </button>
 
-      {formData.people_or_entities_who_will_serve_as_agents.parties.length > 0 && (
+      {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).length > 0 && (
         <>
-          {formData.people_or_entities_who_will_serve_as_agents.parties.map((party, index) => (
+          {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, index) => (
             <div key={party.id} className="card mb-3">
               <div className="card-header d-flex justify-content-between align-items-center">
                 <strong>Party {index + 1}: {getPartyDisplayName(party)}</strong>
@@ -2274,6 +2842,85 @@ const POAForm: React.FC = () => {
                         />
                       </div>
                     </div>
+
+                    {/* Authorized Signers for Entity */}
+                    <div className="mb-3">
+                      <label className="form-label">
+                        <strong>Authorized Signers</strong>
+                        <span className="text-muted ms-2">(Person(s) who will sign on behalf of the entity)</span>
+                      </label>
+
+                      {(party.signers || []).map((signer, signerIndex) => (
+                        <div key={signerIndex} className="card card-body bg-light mb-2">
+                          <div className="d-flex justify-content-between align-items-center mb-2">
+                            <small className="text-muted">Signer {signerIndex + 1}</small>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => removeSigner(index, signerIndex)}
+                            >
+                              <i className="fas fa-times"></i>
+                            </button>
+                          </div>
+                          <div className="row">
+                            <div className="col-md-3 mb-2">
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                placeholder="First Name"
+                                value={signer.first_name}
+                                onChange={(e) => updateSigner(index, signerIndex, 'first_name', e.target.value)}
+                              />
+                            </div>
+                            <div className="col-md-2 mb-2">
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                placeholder="Middle"
+                                value={signer.middle_name}
+                                onChange={(e) => updateSigner(index, signerIndex, 'middle_name', e.target.value)}
+                              />
+                            </div>
+                            <div className="col-md-3 mb-2">
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                placeholder="Last Name"
+                                value={signer.surname}
+                                onChange={(e) => updateSigner(index, signerIndex, 'surname', e.target.value)}
+                              />
+                            </div>
+                            <div className="col-md-1 mb-2">
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                placeholder="Sfx"
+                                value={signer.suffix}
+                                onChange={(e) => updateSigner(index, signerIndex, 'suffix', e.target.value)}
+                              />
+                            </div>
+                            <div className="col-md-3 mb-2">
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                placeholder="Title (e.g., President)"
+                                value={signer.title}
+                                onChange={(e) => updateSigner(index, signerIndex, 'title', e.target.value)}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => addSigner(index)}
+                      >
+                        <i className="fas fa-plus me-1"></i>
+                        Add Signer
+                      </button>
+                    </div>
                   </>
                 )}
 
@@ -2417,27 +3064,1067 @@ const POAForm: React.FC = () => {
         After submission, our team will contact you to confirm these details.
       </div>
 
-      <div className="alert alert-success mt-4">
-        <h5><i className="fas fa-check-circle me-2"></i>Review and Submit</h5>
-        <p>You have completed all sections of the form. Please review your information and click "Submit Form" when ready.</p>
-        <p className="mb-0"><strong>After submission, your documents will be generated and available for download.</strong></p>
+    </div>
+  );
+
+  // ============================================================================
+  // CHILDREN PAGE (Trust, Will, Minor Child plans)
+  // ============================================================================
+  const renderChildrenPage = () => (
+    <div className="poa-page">
+      <h2>Children Information</h2>
+      <p className="text-muted">Enter information about your children.</p>
+
+      <div className="mb-3">
+        <label className="form-label">Do you have children? <span className="text-danger">*</span></label>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="hasChildren"
+            id="hasChildrenYes"
+            value="yes"
+            checked={formData.children_as_agents === true}
+            onChange={() => updateFormData('', 'children_as_agents', true)}
+          />
+          <label className="form-check-label" htmlFor="hasChildrenYes">Yes</label>
+        </div>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="hasChildren"
+            id="hasChildrenNo"
+            value="no"
+            checked={formData.children_as_agents === false}
+            onChange={() => updateFormData('', 'children_as_agents', false)}
+          />
+          <label className="form-check-label" htmlFor="hasChildrenNo">No</label>
+        </div>
+      </div>
+
+      {formData.children_as_agents && (
+        <div className="alert alert-info">
+          <i className="fas fa-info-circle me-2"></i>
+          Children can be added as agents on the Agents page. Their information will be used for beneficiary designations.
+        </div>
+      )}
+    </div>
+  );
+
+  // ============================================================================
+  // TRUST SETUP PAGE (Trust plans only)
+  // ============================================================================
+  const renderTrustSetupPage = () => (
+    <div className="poa-page">
+      <h2>Trust Setup</h2>
+      <p className="text-muted">Configure your trust settings.</p>
+
+      <div className="mb-3">
+        <label className="form-label">Trust Name</label>
+        <input
+          type="text"
+          className="form-control"
+          value={formData.trust_info?.trust_name || ''}
+          onChange={(e) => updateFormData('trust_info', 'trust_name', e.target.value)}
+          placeholder="e.g., The Smith Family Living Trust"
+        />
+        <small className="text-muted">Leave blank to use default naming based on your name</small>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Trust Type <span className="text-danger">*</span></label>
+        <select
+          className={`form-select ${errors['trust_info.trust_type'] ? 'is-invalid' : ''}`}
+          value={formData.trust_info?.trust_type || ''}
+          onChange={(e) => updateFormData('trust_info', 'trust_type', e.target.value)}
+        >
+          <option value="">Select trust type...</option>
+          <option value="revocable">Revocable Living Trust (Most Common)</option>
+          <option value="apt">Asset Protection Trust</option>
+          <option value="idgt">Intentionally Defective Grantor Trust (IDGT)</option>
+        </select>
+        {errors['trust_info.trust_type'] && <div className="invalid-feedback">{errors['trust_info.trust_type']}</div>}
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Is this an amendment to an existing trust?</label>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="isAmendment"
+            value="no"
+            checked={!formData.trust_info?.is_amendment}
+            onChange={() => updateFormData('trust_info', 'is_amendment', false)}
+          />
+          <label className="form-check-label">No, this is a new trust</label>
+        </div>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="isAmendment"
+            value="yes"
+            checked={formData.trust_info?.is_amendment === true}
+            onChange={() => updateFormData('trust_info', 'is_amendment', true)}
+          />
+          <label className="form-check-label">Yes, amending existing trust</label>
+        </div>
       </div>
     </div>
   );
 
+  // ============================================================================
+  // TRUSTEES PAGE (Trust plans only)
+  // ============================================================================
+  const renderTrusteesPage = () => {
+    const isTwoPerson = formType.includes('2Person');
+    return (
+      <div className="poa-page">
+        <h2>Trustees</h2>
+        <p className="text-muted">Designate who will manage your trust.</p>
+
+        <div className="mb-3">
+          <label className="form-label">Will you serve as your own initial trustee?</label>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="settlorAsTrustee"
+              value="yes"
+              checked={formData.trust_info?.settlor_as_trustee === true}
+              onChange={() => updateFormData('trust_info', 'settlor_as_trustee', true)}
+            />
+            <label className="form-check-label">
+              Yes{isTwoPerson ? ', both of us will serve as co-trustees' : ', I will serve as my own trustee'}
+            </label>
+          </div>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="settlorAsTrustee"
+              value="no"
+              checked={formData.trust_info?.settlor_as_trustee === false}
+              onChange={() => updateFormData('trust_info', 'settlor_as_trustee', false)}
+            />
+            <label className="form-check-label">No, someone else will serve</label>
+          </div>
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Successor Trustee(s)</label>
+          <p className="text-muted small">Select from agents you've added, or add new ones on the Agents page.</p>
+          <select
+            className="form-select"
+            value={formData.trust_info?.successor_trustee || ''}
+            onChange={(e) => updateFormData('trust_info', 'successor_trustee', e.target.value)}
+          >
+            <option value="">Select successor trustee...</option>
+            {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, i) => (
+              <option key={i} value={`${party.first_name} ${party.surname}`.trim() || party.entity_name}>
+                {party.type_of_party === 'An entity' ? party.entity_name : `${party.first_name} ${party.surname}`.trim()}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="alert alert-info">
+          <i className="fas fa-info-circle me-2"></i>
+          <strong>Tip:</strong> A successor trustee manages your trust if you become incapacitated or pass away.
+          Choose someone you trust completely with financial matters.
+        </div>
+      </div>
+    );
+  };
+
+  // ============================================================================
+  // DISTRIBUTION PAGE (Trust plans only)
+  // ============================================================================
+  const renderDistributionPage = () => {
+    const isTwoPerson = formType.includes('2Person');
+    return (
+      <div className="poa-page">
+        <h2>Distribution</h2>
+        <p className="text-muted">Specify how your assets should be distributed.</p>
+
+        {isTwoPerson && (
+          <div className="mb-4">
+            <label className="form-label">Marital Trust Options</label>
+            <select
+              className="form-select"
+              value={formData.trust_info?.marital_trust_type || ''}
+              onChange={(e) => updateFormData('trust_info', 'marital_trust_type', e.target.value)}
+            >
+              <option value="">Select marital trust option...</option>
+              <option value="NoMarital">No Marital Trust - outright to surviving spouse</option>
+              <option value="MaritalNoFed">Marital Trust (without federal tax optimization)</option>
+              <option value="MaritalFed">Marital Trust with QTIP/Credit Shelter</option>
+            </select>
+          </div>
+        )}
+
+        <div className="mb-3">
+          <label className="form-label">Specific Bequests</label>
+          <textarea
+            className="form-control"
+            rows={4}
+            value={formData.trust_info?.specific_bequests || ''}
+            onChange={(e) => updateFormData('trust_info', 'specific_bequests', e.target.value)}
+            placeholder="List any specific items you wish to leave to specific people (e.g., 'My grandmother's ring to my daughter Jane')"
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Residuary Distribution</label>
+          <p className="text-muted small">After specific bequests, how should the remainder be distributed?</p>
+          <textarea
+            className="form-control"
+            rows={3}
+            value={formData.trust_info?.residuary_distribution || ''}
+            onChange={(e) => updateFormData('trust_info', 'residuary_distribution', e.target.value)}
+            placeholder="e.g., Equally among my children, or specific percentages"
+          />
+        </div>
+      </div>
+    );
+  };
+
+  // ============================================================================
+  // EXECUTORS PAGE (Will plans only)
+  // ============================================================================
+  const renderExecutorsPage = () => (
+    <div className="poa-page">
+      <h2>Executors</h2>
+      <p className="text-muted">Designate who will administer your estate.</p>
+
+      <div className="mb-3">
+        <label className="form-label">Primary Executor</label>
+        <select
+          className="form-select"
+          value={formData.will_info?.primary_executor || ''}
+          onChange={(e) => updateFormData('will_info', 'primary_executor', e.target.value)}
+        >
+          <option value="">Select primary executor...</option>
+          {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, i) => (
+            <option key={i} value={`${party.first_name} ${party.surname}`.trim() || party.entity_name}>
+              {party.type_of_party === 'An entity' ? party.entity_name : `${party.first_name} ${party.surname}`.trim()}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Successor Executor</label>
+        <select
+          className="form-select"
+          value={formData.will_info?.successor_executor || ''}
+          onChange={(e) => updateFormData('will_info', 'successor_executor', e.target.value)}
+        >
+          <option value="">Select successor executor...</option>
+          {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, i) => (
+            <option key={i} value={`${party.first_name} ${party.surname}`.trim() || party.entity_name}>
+              {party.type_of_party === 'An entity' ? party.entity_name : `${party.first_name} ${party.surname}`.trim()}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="alert alert-info">
+        <i className="fas fa-info-circle me-2"></i>
+        <strong>What does an Executor do?</strong> The executor is responsible for managing your estate after you pass,
+        including paying debts, filing taxes, and distributing assets according to your will.
+      </div>
+    </div>
+  );
+
+  // ============================================================================
+  // GUARDIANS PAGE (Will & Minor Child plans)
+  // ============================================================================
+  const renderGuardiansPage = () => (
+    <div className="poa-page">
+      <h2>Guardians for Minor Children</h2>
+      <p className="text-muted">Designate who will care for your minor children if needed.</p>
+
+      <div className="mb-3">
+        <label className="form-label">Primary Guardian (Tutor)</label>
+        <select
+          className="form-select"
+          value={formData.will_info?.primary_guardian || ''}
+          onChange={(e) => updateFormData('will_info', 'primary_guardian', e.target.value)}
+        >
+          <option value="">Select primary guardian...</option>
+          {(formData.people_or_entities_who_will_serve_as_agents?.parties || [])
+            .filter(p => p.type_of_party === 'An individual person')
+            .map((party, i) => (
+              <option key={i} value={`${party.first_name} ${party.surname}`.trim()}>
+                {`${party.first_name} ${party.surname}`.trim()}
+              </option>
+            ))}
+        </select>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Backup Guardian (Under-Tutor)</label>
+        <select
+          className="form-select"
+          value={formData.will_info?.backup_guardian || ''}
+          onChange={(e) => updateFormData('will_info', 'backup_guardian', e.target.value)}
+        >
+          <option value="">Select backup guardian...</option>
+          {(formData.people_or_entities_who_will_serve_as_agents?.parties || [])
+            .filter(p => p.type_of_party === 'An individual person')
+            .map((party, i) => (
+              <option key={i} value={`${party.first_name} ${party.surname}`.trim()}>
+                {`${party.first_name} ${party.surname}`.trim()}
+              </option>
+            ))}
+        </select>
+      </div>
+
+      <div className="alert alert-warning">
+        <i className="fas fa-exclamation-triangle me-2"></i>
+        <strong>Important:</strong> Guardian designations only apply to minor children (under 18).
+        Make sure to discuss this responsibility with your chosen guardians beforehand.
+      </div>
+    </div>
+  );
+
+  // ============================================================================
+  // WILL DISTRIBUTION PAGE (Will plans only)
+  // ============================================================================
+  const renderWillDistributionPage = () => (
+    <div className="poa-page">
+      <h2>Will Distribution</h2>
+      <p className="text-muted">Specify how your assets should be distributed in your will.</p>
+
+      <div className="mb-3">
+        <label className="form-label">Do you want to include specific bequests?</label>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="hasSpecificBequests"
+            value="yes"
+            checked={formData.will_info?.has_specific_bequests === true}
+            onChange={() => updateFormData('will_info', 'has_specific_bequests', true)}
+          />
+          <label className="form-check-label">Yes, I have specific items to leave to specific people</label>
+        </div>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="hasSpecificBequests"
+            value="no"
+            checked={formData.will_info?.has_specific_bequests === false}
+            onChange={() => updateFormData('will_info', 'has_specific_bequests', false)}
+          />
+          <label className="form-check-label">No, distribute everything according to my residuary plan</label>
+        </div>
+      </div>
+
+      {formData.will_info?.has_specific_bequests && (
+        <div className="mb-3">
+          <label className="form-label">Specific Bequests</label>
+          <textarea
+            className="form-control"
+            rows={4}
+            value={formData.will_info?.specific_bequests || ''}
+            onChange={(e) => updateFormData('will_info', 'specific_bequests', e.target.value)}
+            placeholder="List specific items and recipients (e.g., 'My jewelry collection to my daughter Jane')"
+          />
+        </div>
+      )}
+
+      <div className="mb-3">
+        <label className="form-label">Residuary Estate Distribution</label>
+        <textarea
+          className="form-control"
+          rows={3}
+          value={formData.will_info?.residuary_distribution || ''}
+          onChange={(e) => updateFormData('will_info', 'residuary_distribution', e.target.value)}
+          placeholder="e.g., Equally among my children, or specific percentages"
+        />
+        <small className="text-muted">This covers everything not specifically bequeathed above.</small>
+      </div>
+    </div>
+  );
+
+  // ============================================================================
+  // CHILDREN TRUSTS PAGE (Minor Child plans only)
+  // ============================================================================
+  const renderChildrenTrustsPage = () => (
+    <div className="poa-page">
+      <h2>Children's Trust Provisions</h2>
+      <p className="text-muted">Configure trust provisions for your minor children.</p>
+
+      <div className="mb-3">
+        <label className="form-label">Age for Outright Distribution</label>
+        <select
+          className="form-select"
+          value={formData.will_info?.distribution_age || '25'}
+          onChange={(e) => updateFormData('will_info', 'distribution_age', e.target.value)}
+        >
+          <option value="18">18 years old</option>
+          <option value="21">21 years old</option>
+          <option value="25">25 years old (Recommended)</option>
+          <option value="30">30 years old</option>
+          <option value="35">35 years old</option>
+        </select>
+        <small className="text-muted">
+          At this age, your children will receive their inheritance outright.
+          Until then, it will be held in trust.
+        </small>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Trustee for Children's Trust</label>
+        <select
+          className="form-select"
+          value={formData.will_info?.children_trustee || ''}
+          onChange={(e) => updateFormData('will_info', 'children_trustee', e.target.value)}
+        >
+          <option value="">Select trustee...</option>
+          {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, i) => (
+            <option key={i} value={`${party.first_name} ${party.surname}`.trim() || party.entity_name}>
+              {party.type_of_party === 'An entity' ? party.entity_name : `${party.first_name} ${party.surname}`.trim()}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Allow education distributions before distribution age?</label>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            checked={formData.will_info?.allow_education_distributions === true}
+            onChange={(e) => updateFormData('will_info', 'allow_education_distributions', e.target.checked)}
+          />
+          <label className="form-check-label">
+            Yes, the trustee may distribute funds for education expenses
+          </label>
+        </div>
+      </div>
+
+      <div className="alert alert-info">
+        <i className="fas fa-info-circle me-2"></i>
+        <strong>Why a Children's Trust?</strong> Holding assets in trust until a certain age protects your children
+        from making poor financial decisions when they're young and inexperienced.
+      </div>
+    </div>
+  );
+
+  // Calculate warning formulas based on form data
+  const getWarnings = (): { type: 'warning' | 'info'; message: string }[] => {
+    const warnings: { type: 'warning' | 'info'; message: string }[] = [];
+    const isTwoPerson = formType.includes('2Person');
+    const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
+
+    // AddressWarningTF - Check if address is incomplete
+    const client = formData.personal_info;
+    if (!client.street_address || !client.city || !client.state || !client.zip) {
+      warnings.push({
+        type: 'warning',
+        message: 'Your address information appears incomplete. Please review the Personal Information page.',
+      });
+    }
+
+    // Spouse address warning for 2-person forms
+    if (isTwoPerson) {
+      const spouse = formData.spouse_info;
+      if (spouse && !spouse.same_address_as_primary && (!spouse.street_address || !spouse.city || !spouse.state || !spouse.zip)) {
+        warnings.push({
+          type: 'warning',
+          message: 'Spouse address information appears incomplete. Please review the Other Parties page.',
+        });
+      }
+    }
+
+    // No agents warning
+    if (parties.length === 0) {
+      warnings.push({
+        type: 'warning',
+        message: 'You have not added any agents. At least one agent is required for your documents.',
+      });
+    }
+
+    // FPOA agent selection warning
+    if (!formData.fpoa?.fpoa_initial_agents?.person_to_serve) {
+      warnings.push({
+        type: 'warning',
+        message: 'No initial Financial POA agent selected. Please review the FPOA page.',
+      });
+    }
+
+    // HCPOA agent selection warning
+    if (!formData.hcpoa?.hcpoa_initial_agents?.person_to_serve) {
+      warnings.push({
+        type: 'warning',
+        message: 'No initial Healthcare POA agent selected. Please review the HCPOA page.',
+      });
+    }
+
+    // Successor agents info
+    const hasSuccessorFPOA = formData.fpoa?.successor_agents?.length > 0;
+    const hasSuccessorHCPOA = formData.hcpoa?.successor_agents?.length > 0;
+    if (!hasSuccessorFPOA && !hasSuccessorHCPOA) {
+      warnings.push({
+        type: 'info',
+        message: 'Consider naming successor agents in case your primary agents are unable to serve.',
+      });
+    }
+
+    return warnings;
+  };
+
+  const renderReviewPage = () => {
+    const warnings = getWarnings();
+    const hasErrors = warnings.some(w => w.type === 'warning');
+    const isTwoPerson = formType.includes('2Person');
+    const isTrustPlan = formType.includes('trustBased');
+    const isWillPlan = formType.includes('willBased') || formType.includes('minorChild');
+    const agents = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
+
+    // Helper to get life support choice label
+    const getLifeSupportLabel = (option: string) => {
+      switch (option) {
+        case 'ALL': return 'Use all life-sustaining measures';
+        case 'NONE': return 'Withhold all life-sustaining measures';
+        case 'CHOOSE': return 'Selectively withhold specific measures';
+        default: return 'Not selected';
+      }
+    };
+
+    // Helper to get HCD choices
+    const getHCDChoices = (choices: string[]) => {
+      const labels: Record<string, string> = {
+        'Nutr': 'Nutrition/Feeding Tube',
+        'Hydr': 'Hydration',
+        'Vent': 'Ventilator/Breathing Machine',
+        'CPR': 'CPR/Resuscitation',
+      };
+      return choices.map(c => labels[c] || c).join(', ') || 'None selected';
+    };
+
+    // Helper to get trust type label
+    const getTrustTypeLabel = (type: string) => {
+      switch (type) {
+        case 'revocable': return 'Revocable Living Trust';
+        case 'apt': return 'Asset Protection Trust';
+        case 'idgt': return 'Intentionally Defective Grantor Trust (IDGT)';
+        default: return type || 'Not selected';
+      }
+    };
+
+    return (
+      <div className="poa-page">
+        <h2>Review & Submit</h2>
+        <p className="text-muted">Please review all information below before submitting your form.</p>
+
+        {/* Warnings Section */}
+        {warnings.length > 0 && (
+          <div className="mb-4">
+            <h5>
+              <i className="fas fa-exclamation-triangle me-2 text-warning"></i>
+              Notices
+            </h5>
+            {warnings.map((warning, index) => (
+              <div
+                key={index}
+                className={`alert ${warning.type === 'warning' ? 'alert-warning' : 'alert-info'} d-flex align-items-center`}
+              >
+                <i className={`fas ${warning.type === 'warning' ? 'fa-exclamation-circle' : 'fa-info-circle'} me-2`}></i>
+                {warning.message}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ===== SECTION 1: PERSONAL INFORMATION ===== */}
+        <h4 className="mt-4 mb-3 border-bottom pb-2">Personal Information</h4>
+        <div className="row">
+          {/* Principal Info */}
+          <div className="col-md-6 mb-3">
+            <div className="card h-100">
+              <div className="card-header bg-primary text-white">
+                <strong>Principal (You)</strong>
+                <button
+                  type="button"
+                  className="btn btn-link btn-sm float-end p-0 text-white"
+                  onClick={() => setCurrentPage(pages.indexOf('personal_info'))}
+                >
+                  Edit
+                </button>
+              </div>
+              <div className="card-body">
+                <p className="mb-1"><strong>Name:</strong> {getPrincipalFullName()}</p>
+                <p className="mb-1"><strong>Date of Birth:</strong> {formData.personal_info.date_of_birth || 'Not provided'}</p>
+                <p className="mb-1"><strong>Gender:</strong> {formData.personal_info.gender || 'Not provided'}</p>
+                <p className="mb-1"><strong>Phone:</strong> {formData.personal_info.phone_number || 'Not provided'}</p>
+                <p className="mb-1"><strong>Address:</strong> {formData.personal_info.street_address || 'Not provided'}</p>
+                <p className="mb-1"><strong>City/State/Zip:</strong> {formData.personal_info.city}, {formData.personal_info.state} {formData.personal_info.zip}</p>
+                <p className="mb-0"><strong>Parish/County:</strong> {formData.personal_info.parish || 'Not provided'}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Spouse Info (if 2-person) */}
+          {isTwoPerson && (
+            <div className="col-md-6 mb-3">
+              <div className="card h-100">
+                <div className="card-header bg-primary text-white">
+                  <strong>Spouse</strong>
+                  <button
+                    type="button"
+                    className="btn btn-link btn-sm float-end p-0 text-white"
+                    onClick={() => setCurrentPage(pages.indexOf('spouse_info'))}
+                  >
+                    Edit
+                  </button>
+                </div>
+                <div className="card-body">
+                  <p className="mb-1"><strong>Name:</strong> {formData.spouse_info?.first_name} {formData.spouse_info?.middle_name} {formData.spouse_info?.surname} {formData.spouse_info?.suffix}</p>
+                  <p className="mb-1"><strong>Date of Birth:</strong> {formData.spouse_info?.date_of_birth || 'Not provided'}</p>
+                  <p className="mb-1"><strong>Gender:</strong> {formData.spouse_info?.gender || 'Not provided'}</p>
+                  <p className="mb-1"><strong>Phone:</strong> {formData.spouse_info?.phone_number || 'Not provided'}</p>
+                  <p className="mb-0"><strong>Same Address:</strong> {formData.spouse_info?.same_address_as_primary ? 'Yes' : 'No'}</p>
+                  {!formData.spouse_info?.same_address_as_primary && (
+                    <>
+                      <p className="mb-1 mt-2"><strong>Address:</strong> {formData.spouse_info?.street_address}</p>
+                      <p className="mb-0"><strong>City/State/Zip:</strong> {formData.spouse_info?.city}, {formData.spouse_info?.state} {formData.spouse_info?.zip}</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ===== SECTION 2: CHILDREN ===== */}
+        {pages.includes('children') && (
+          <>
+            <h4 className="mt-4 mb-3 border-bottom pb-2">Children</h4>
+            <div className="row">
+              <div className="col-12 mb-3">
+                <div className="card">
+                  <div className="card-header">
+                    <strong>Children Information</strong>
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm float-end p-0"
+                      onClick={() => setCurrentPage(pages.indexOf('children'))}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                  <div className="card-body">
+                    <p className="mb-2"><strong>Has Children:</strong> {formData.children_as_agents ? 'Yes' : 'No'}</p>
+                    {formData.children_as_agents && agents.filter(a => a.relationship_with_person?.toLowerCase().includes('child') || a.relationship_with_person?.toLowerCase().includes('son') || a.relationship_with_person?.toLowerCase().includes('daughter')).length > 0 && (
+                      <ul className="mb-0">
+                        {agents.filter(a => a.relationship_with_person?.toLowerCase().includes('child') || a.relationship_with_person?.toLowerCase().includes('son') || a.relationship_with_person?.toLowerCase().includes('daughter')).map((child, idx) => (
+                          <li key={idx}>
+                            {child.first_name} {child.surname} - {child.relationship_with_person}
+                            {child.date_of_birth && ` (DOB: ${child.date_of_birth})`}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ===== SECTION 3: AGENTS ===== */}
+        <h4 className="mt-4 mb-3 border-bottom pb-2">Agents & Fiduciaries</h4>
+        <div className="row">
+          <div className="col-12 mb-3">
+            <div className="card">
+              <div className="card-header">
+                <strong>All Designated Agents ({agents.length})</strong>
+                <button
+                  type="button"
+                  className="btn btn-link btn-sm float-end p-0"
+                  onClick={() => setCurrentPage(pages.indexOf('agents'))}
+                >
+                  Edit
+                </button>
+              </div>
+              <div className="card-body">
+                {agents.length === 0 ? (
+                  <p className="text-muted mb-0">No agents added yet.</p>
+                ) : (
+                  <div className="table-responsive">
+                    <table className="table table-sm mb-0">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Relationship</th>
+                          <th>Location</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {agents.map((agent, idx) => (
+                          <tr key={idx}>
+                            <td>{agent.type_of_party === 'An entity' ? agent.entity_name : `${agent.first_name} ${agent.surname}`}</td>
+                            <td>{agent.type_of_party || 'Individual'}</td>
+                            <td>{agent.relationship_with_person || '-'}</td>
+                            <td>{agent.city ? `${agent.city}, ${agent.state}` : '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== SECTION 4: TRUST DETAILS (Trust Plans Only) ===== */}
+        {isTrustPlan && (
+          <>
+            <h4 className="mt-4 mb-3 border-bottom pb-2">Trust Details</h4>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <div className="card h-100">
+                  <div className="card-header">
+                    <strong>Trust Setup</strong>
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm float-end p-0"
+                      onClick={() => setCurrentPage(pages.indexOf('trust_setup'))}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                  <div className="card-body">
+                    <p className="mb-1"><strong>Trust Name:</strong> {formData.trust_info?.trust_name || 'Default (based on your name)'}</p>
+                    <p className="mb-1"><strong>Trust Type:</strong> {getTrustTypeLabel(formData.trust_info?.trust_type)}</p>
+                    <p className="mb-1"><strong>Amendment:</strong> {formData.trust_info?.is_amendment ? 'Yes (amending existing trust)' : 'No (new trust)'}</p>
+                    <p className="mb-0"><strong>Settlor as Trustee:</strong> {formData.trust_info?.settlor_as_trustee ? 'Yes' : 'No'}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6 mb-3">
+                <div className="card h-100">
+                  <div className="card-header">
+                    <strong>Trustees & Distribution</strong>
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm float-end p-0"
+                      onClick={() => setCurrentPage(pages.indexOf('trustees'))}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                  <div className="card-body">
+                    <p className="mb-1"><strong>Successor Trustee:</strong> {formData.trust_info?.successor_trustee || 'Not selected'}</p>
+                    <p className="mb-1"><strong>Distribution Plan:</strong> {formData.trust_info?.residuary_distribution || 'Not specified'}</p>
+                    {formData.trust_info?.specific_bequests && (
+                      <p className="mb-0"><strong>Specific Bequests:</strong> {formData.trust_info.specific_bequests.substring(0, 100)}...</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ===== SECTION 5: WILL DETAILS (Will Plans Only) ===== */}
+        {isWillPlan && (
+          <>
+            <h4 className="mt-4 mb-3 border-bottom pb-2">Will Details</h4>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <div className="card h-100">
+                  <div className="card-header">
+                    <strong>Executors</strong>
+                    {pages.includes('executors') && (
+                      <button
+                        type="button"
+                        className="btn btn-link btn-sm float-end p-0"
+                        onClick={() => setCurrentPage(pages.indexOf('executors'))}
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </div>
+                  <div className="card-body">
+                    <p className="mb-1"><strong>Primary Executor:</strong> {formData.will_info?.primary_executor || 'Not selected'}</p>
+                    <p className="mb-0"><strong>Successor Executor:</strong> {formData.will_info?.successor_executor || 'Not selected'}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6 mb-3">
+                <div className="card h-100">
+                  <div className="card-header">
+                    <strong>Guardians (for minor children)</strong>
+                    {pages.includes('guardians') && (
+                      <button
+                        type="button"
+                        className="btn btn-link btn-sm float-end p-0"
+                        onClick={() => setCurrentPage(pages.indexOf('guardians'))}
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </div>
+                  <div className="card-body">
+                    <p className="mb-1"><strong>Primary Guardian:</strong> {formData.will_info?.primary_guardian || 'Not selected'}</p>
+                    <p className="mb-0"><strong>Backup Guardian:</strong> {formData.will_info?.backup_guardian || 'Not selected'}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="col-12 mb-3">
+                <div className="card">
+                  <div className="card-header">
+                    <strong>Distribution</strong>
+                  </div>
+                  <div className="card-body">
+                    <p className="mb-1"><strong>Residuary Distribution:</strong> {formData.will_info?.residuary_distribution || 'Not specified'}</p>
+                    <p className="mb-1"><strong>Distribution Age:</strong> {formData.will_info?.distribution_age || '25'} years old</p>
+                    <p className="mb-1"><strong>Children's Trustee:</strong> {formData.will_info?.children_trustee || 'Not selected'}</p>
+                    <p className="mb-0"><strong>Allow Education Distributions:</strong> {formData.will_info?.allow_education_distributions ? 'Yes' : 'No'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ===== SECTION 6: FPOA DETAILS ===== */}
+        <h4 className="mt-4 mb-3 border-bottom pb-2">Financial Power of Attorney (FPOA)</h4>
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <div className="card h-100">
+              <div className="card-header">
+                <strong>{isTwoPerson ? 'Your FPOA' : 'FPOA Settings'}</strong>
+                <button
+                  type="button"
+                  className="btn btn-link btn-sm float-end p-0"
+                  onClick={() => setCurrentPage(pages.indexOf('fpoa'))}
+                >
+                  Edit
+                </button>
+              </div>
+              <div className="card-body">
+                <p className="mb-1"><strong>Primary Agent:</strong> {formData.fpoa?.fpoa_initial_agents?.person_to_serve || 'Not selected'}</p>
+                {formData.fpoa?.fpoa_initial_agents?.second_coagent_person_to_serve && (
+                  <p className="mb-1"><strong>Co-Agent:</strong> {formData.fpoa.fpoa_initial_agents.second_coagent_person_to_serve}</p>
+                )}
+                <p className="mb-1"><strong>Agents Act Independently:</strong> {formData.fpoa?.fpoa_initial_agents?.agents_serve_alone === 'Yes' ? 'Yes' : 'No (must act together)'}</p>
+                <p className="mb-1"><strong>Springing POA:</strong> {formData.fpoa?.springing_poa === 'Yes' ? 'Yes (effective upon incapacity)' : 'No (effective immediately)'}</p>
+                <p className="mb-0"><strong>Revoke Prior POAs:</strong> {formData.fpoa?.revoke_prior_poa === 'Yes' ? 'Yes' : 'No'}</p>
+              </div>
+            </div>
+          </div>
+          {isTwoPerson && (
+            <div className="col-md-6 mb-3">
+              <div className="card h-100">
+                <div className="card-header">
+                  <strong>Spouse's FPOA</strong>
+                </div>
+                <div className="card-body">
+                  <p className="mb-1"><strong>Primary Agent:</strong> {formData.spouse_fpoa?.fpoa_initial_agents?.person_to_serve || 'Not selected'}</p>
+                  {formData.spouse_fpoa?.fpoa_initial_agents?.second_coagent_person_to_serve && (
+                    <p className="mb-1"><strong>Co-Agent:</strong> {formData.spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve}</p>
+                  )}
+                  <p className="mb-1"><strong>Agents Act Independently:</strong> {formData.spouse_fpoa?.fpoa_initial_agents?.agents_serve_alone === 'Yes' ? 'Yes' : 'No'}</p>
+                  <p className="mb-1"><strong>Springing POA:</strong> {formData.spouse_fpoa?.springing_poa === 'Yes' ? 'Yes' : 'No'}</p>
+                  <p className="mb-0"><strong>Revoke Prior POAs:</strong> {formData.spouse_fpoa?.revoke_prior_poa === 'Yes' ? 'Yes' : 'No'}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ===== SECTION 7: HCPOA DETAILS ===== */}
+        <h4 className="mt-4 mb-3 border-bottom pb-2">Healthcare Power of Attorney (HCPOA)</h4>
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <div className="card h-100">
+              <div className="card-header">
+                <strong>{isTwoPerson ? 'Your HCPOA' : 'HCPOA Settings'}</strong>
+                <button
+                  type="button"
+                  className="btn btn-link btn-sm float-end p-0"
+                  onClick={() => setCurrentPage(pages.indexOf('hcpoa'))}
+                >
+                  Edit
+                </button>
+              </div>
+              <div className="card-body">
+                <p className="mb-1"><strong>Primary Agent:</strong> {formData.hcpoa?.hcpoa_initial_agents?.person_to_serve || 'Not selected'}</p>
+                {formData.hcpoa?.hcpoa_initial_agents?.second_coagent_person_to_serve && (
+                  <p className="mb-1"><strong>Co-Agent:</strong> {formData.hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve}</p>
+                )}
+                <p className="mb-1"><strong>Organ Donor:</strong> {formData.hcpoa?.wish_to_be_organ_donor === 'Yes' ? 'Yes' : formData.hcpoa?.wish_to_be_organ_donor === 'No' ? 'No' : 'Not specified'}</p>
+                <p className="mb-1"><strong>Donate Body to Science:</strong> {formData.hcpoa?.wish_to_donate_body_to_science === 'Yes' ? 'Yes' : formData.hcpoa?.wish_to_donate_body_to_science === 'No' ? 'No' : 'Not specified'}</p>
+                <p className="mb-0"><strong>No Blood Transfusions:</strong> {formData.hcpoa?.no_blood_transfusion === 'Yes' ? 'Yes (religious objection)' : 'No'}</p>
+              </div>
+            </div>
+          </div>
+          {isTwoPerson && (
+            <div className="col-md-6 mb-3">
+              <div className="card h-100">
+                <div className="card-header">
+                  <strong>Spouse's HCPOA</strong>
+                </div>
+                <div className="card-body">
+                  <p className="mb-1"><strong>Primary Agent:</strong> {formData.spouse_hcpoa?.hcpoa_initial_agents?.person_to_serve || 'Not selected'}</p>
+                  {formData.spouse_hcpoa?.hcpoa_initial_agents?.second_coagent_person_to_serve && (
+                    <p className="mb-1"><strong>Co-Agent:</strong> {formData.spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve}</p>
+                  )}
+                  <p className="mb-1"><strong>Organ Donor:</strong> {formData.spouse_hcpoa?.wish_to_be_organ_donor === 'Yes' ? 'Yes' : formData.spouse_hcpoa?.wish_to_be_organ_donor === 'No' ? 'No' : 'Not specified'}</p>
+                  <p className="mb-1"><strong>Donate Body to Science:</strong> {formData.spouse_hcpoa?.wish_to_donate_body_to_science === 'Yes' ? 'Yes' : 'No'}</p>
+                  <p className="mb-0"><strong>No Blood Transfusions:</strong> {formData.spouse_hcpoa?.no_blood_transfusion === 'Yes' ? 'Yes' : 'No'}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ===== SECTION 8: HCD DETAILS ===== */}
+        <h4 className="mt-4 mb-3 border-bottom pb-2">Healthcare Directive (Living Will)</h4>
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <div className="card h-100">
+              <div className="card-header">
+                <strong>{isTwoPerson ? 'Your Directive' : 'Healthcare Directive'}</strong>
+                <button
+                  type="button"
+                  className="btn btn-link btn-sm float-end p-0"
+                  onClick={() => setCurrentPage(pages.indexOf('hcd'))}
+                >
+                  Edit
+                </button>
+              </div>
+              <div className="card-body">
+                <p className="mb-1"><strong>Life Support Preference:</strong> {getLifeSupportLabel(formData.hcd?.life_support_option)}</p>
+                {formData.hcd?.life_support_option === 'CHOOSE' && (
+                  <p className="mb-1"><strong>Withhold:</strong> {getHCDChoices(formData.hcd?.client_hcds || [])}</p>
+                )}
+                <p className="mb-1"><strong>Extend Default Period:</strong> {formData.hcd?.extend_hcd === 'Yes' ? `Yes (${formData.hcd?.hcd_days} days ${formData.hcd?.hcd_sooner_longer})` : 'No'}</p>
+              </div>
+            </div>
+          </div>
+          {isTwoPerson && (
+            <div className="col-md-6 mb-3">
+              <div className="card h-100">
+                <div className="card-header">
+                  <strong>Spouse's Directive</strong>
+                </div>
+                <div className="card-body">
+                  <p className="mb-1"><strong>Life Support Preference:</strong> {getLifeSupportLabel(formData.spouse_hcd?.life_support_option)}</p>
+                  {formData.spouse_hcd?.life_support_option === 'CHOOSE' && (
+                    <p className="mb-1"><strong>Withhold:</strong> {getHCDChoices(formData.spouse_hcd?.spouse_hcds || [])}</p>
+                  )}
+                  <p className="mb-1"><strong>Extend Default Period:</strong> {formData.spouse_hcd?.extend_hcd === 'Yes' ? `Yes (${formData.spouse_hcd?.hcd_days} days ${formData.spouse_hcd?.hcd_sooner_longer})` : 'No'}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ===== SECTION 9: DOCUMENTS TO GENERATE ===== */}
+        <h4 className="mt-4 mb-3 border-bottom pb-2">Documents to Generate</h4>
+        <div className="row">
+          <div className="col-12 mb-3">
+            <div className="card">
+              <div className="card-header bg-success text-white">
+                <strong>Your Document Package</strong>
+              </div>
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-6">
+                    <ul className="mb-0">
+                      {/* Trust-Based Plan Documents */}
+                      {isTrustPlan && (
+                        <>
+                          <li><i className="fas fa-file-alt me-2 text-primary"></i>Signing Instructions</li>
+                          <li><i className="fas fa-folder me-2 text-primary"></i>Estate Planning Portfolio</li>
+                          <li><i className="fas fa-file-contract me-2 text-primary"></i>Trust Agreement</li>
+                          <li><i className="fas fa-certificate me-2 text-primary"></i>Certificate of Trust</li>
+                          <li><i className="fas fa-file-signature me-2 text-primary"></i>Pour-Over Will{isTwoPerson ? ' (x2)' : ''}</li>
+                          <li><i className="fas fa-tasks me-2 text-primary"></i>Trust Funding Instructions</li>
+                        </>
+                      )}
+                      {/* Will-Based Plan Documents */}
+                      {isWillPlan && (
+                        <>
+                          <li><i className="fas fa-folder me-2 text-primary"></i>Estate Planning Portfolio</li>
+                          <li><i className="fas fa-file-signature me-2 text-primary"></i>Last Will and Testament{isTwoPerson ? ' (x2)' : ''}</li>
+                          <li><i className="fas fa-stamp me-2 text-primary"></i>Will Attestation{isTwoPerson ? ' (x2)' : ''}</li>
+                        </>
+                      )}
+                    </ul>
+                  </div>
+                  <div className="col-md-6">
+                    <ul className="mb-0">
+                      {/* POA Documents (all plans include these) */}
+                      <li><i className="fas fa-hand-holding-usd me-2 text-success"></i>Financial Power of Attorney{isTwoPerson ? ' (x2)' : ''}</li>
+                      <li><i className="fas fa-heartbeat me-2 text-success"></i>Healthcare Power of Attorney{isTwoPerson ? ' (x2)' : ''}</li>
+                      <li><i className="fas fa-notes-medical me-2 text-success"></i>Healthcare Directive{isTwoPerson ? ' (x2)' : ''}</li>
+                      <li><i className="fas fa-shield-alt me-2 text-success"></i>HIPAA Authorization{isTwoPerson ? ' (x2)' : ''}</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Submit Section */}
+        <div className={`alert ${hasErrors ? 'alert-warning' : 'alert-success'} mt-4`}>
+          <h5>
+            <i className={`fas ${hasErrors ? 'fa-exclamation-triangle' : 'fa-check-circle'} me-2`}></i>
+            {hasErrors ? 'Please Review Warnings' : 'Ready to Submit'}
+          </h5>
+          {hasErrors ? (
+            <p className="mb-0">Please address the warnings above before submitting. You can still submit, but your documents may be incomplete.</p>
+          ) : (
+            <p className="mb-0">Your information looks complete. Click "Submit Form" below to generate your documents.</p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const renderCurrentPage = () => {
     const pageName = pages[currentPage];
     switch (pageName) {
+      // Common pages
       case 'start': return renderStartPage();
       case 'personal_info': return renderPersonalInfoPage();
       case 'spouse_info': return renderOtherPartiesPage();
+      case 'children': return renderChildrenPage();
       case 'agents': return renderAgentsPage();
       case 'plan_contents': return renderPlanContentsPage();
+      // POA pages
       case 'fpoa': return renderFPOAPage();
       case 'hcpoa': return renderHCPOAPage();
       case 'hcd': return renderHCDPage();
-      case 'trust_info': return renderTrustInfoPage();
-      default: return <div>Page not found</div>;
+      // Trust pages
+      case 'trust_setup': return renderTrustSetupPage();
+      case 'trustees': return renderTrusteesPage();
+      case 'distribution': return renderDistributionPage();
+      case 'trust_info': return renderTrustInfoPage(); // Legacy compatibility
+      // Will pages
+      case 'executors': return renderExecutorsPage();
+      case 'guardians': return renderGuardiansPage();
+      case 'will_distribution': return renderWillDistributionPage();
+      // Minor child pages
+      case 'children_trusts': return renderChildrenTrustsPage();
+      // Review
+      case 'review': return renderReviewPage();
+      default: return <div>Page not found: {pageName}</div>;
     }
   };
 
@@ -2449,7 +4136,7 @@ const POAForm: React.FC = () => {
         <div className="row justify-content-center">
           <div className="col-lg-10">
             <div className="poa-header text-center mb-4">
-              <h1>{formConfig.title}</h1>
+              <h1 onClick={handleTitleClick} style={{ cursor: 'default' }}>{formConfig.title}</h1>
             </div>
 
             {/* Progress Bar */}
