@@ -59,17 +59,73 @@ const PAGE_NAMES: Record<string, string> = {
   review: 'Review',
 };
 
+// US States for dropdown
+const US_STATES = [
+  'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
+  'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+  'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan',
+  'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+  'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
+  'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
+  'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
+  'Wisconsin', 'Wyoming', 'District of Columbia'
+];
+
+// Louisiana Cities for autocomplete
+const LOUISIANA_CITIES = [
+  'Abbeville', 'Addis', 'Alexandria', 'Amite City', 'Arcadia', 'Baker', 'Ball',
+  'Basile', 'Bastrop', 'Baton Rouge', 'Berwick', 'Blanchard', 'Bogalusa', 'Bossier City',
+  'Boutte', 'Breaux Bridge', 'Bridge City', 'Broussard', 'Brusly', 'Bunkie',
+  'Carencro', 'Carlyss', 'Central', 'Chalmette', 'Chauvin', 'Church Point', 'Claiborne',
+  'Clarks', 'Clinton', 'Colfax', 'Covington', 'Crowley', 'Cut Off', 'Denham Springs',
+  'DeQuincy', 'DeRidder', 'Donaldsonville', 'Duson', 'Eastwood', 'Eden Isle', 'Edgard',
+  'Elton', 'Erath', 'Estelle', 'Eunice', 'Farmerville', 'Ferriday', 'Franklin',
+  'Franklinton', 'Galliano', 'Gardere', 'Golden Meadow', 'Gonzales', 'Grambling',
+  'Gramercy', 'Grand Isle', 'Gretna', 'Grosse Tete', 'Gueydan', 'Hackberry',
+  'Hammond', 'Harahan', 'Harvey', 'Haughton', 'Haynesville', 'Henderson', 'Homer',
+  'Houma', 'Independence', 'Iowa', 'Jackson', 'Jean Lafitte', 'Jeanerette', 'Jefferson',
+  'Jennings', 'Jonesboro', 'Kaplan', 'Kenner', 'Kentwood', 'Killian', 'Kinder',
+  'Lacombe', 'Lafayette', 'Lake Arthur', 'Lake Charles', 'Lake Providence', 'Laplace',
+  'Larose', 'Leesville', 'Livonia', 'Lockport', 'Logansport', 'Luling', 'Lutcher',
+  'Madisonville', 'Mamou', 'Mandeville', 'Mansfield', 'Many', 'Maringouin', 'Marksville',
+  'Marrero', 'Maurice', 'Meraux', 'Merrydale', 'Metairie', 'Milton', 'Minden',
+  'Monroe', 'Monticello', 'Morgan City', 'Moss Bluff', 'Natchitoches', 'New Iberia',
+  'New Orleans', 'New Roads', 'Norco', 'Oak Grove', 'Oakdale', 'Oberlin', 'Opelousas',
+  'Patterson', 'Pearl River', 'Pierre Part', 'Pineville', 'Plaquemine', 'Ponchatoula',
+  'Port Allen', 'Port Barre', 'Port Sulphur', 'Prairieville', 'Raceland', 'Rayne',
+  'Rayville', 'Reserve', 'River Ridge', 'Roseland', 'Ruston', 'Saint Francisville',
+  'Saint Gabriel', 'Saint Martinville', 'Saint Rose', 'Scott', 'Shreveport', 'Simmesport',
+  'Slidell', 'Springhill', 'Sterlington', 'Stonewall', 'Sulphur', 'Tallulah',
+  'Terrytown', 'Thibodaux', 'Vidalia', 'Ville Platte', 'Vinton', 'Violet', 'Vivian',
+  'Waggaman', 'Walker', 'Welsh', 'West Monroe', 'Westlake', 'Westwego', 'Winnsboro',
+  'Youngsville', 'Zachary', 'Zwolle'
+];
+
+// Louisiana Parishes for dropdown
+const LOUISIANA_PARISHES = [
+  'Acadia', 'Allen', 'Ascension', 'Assumption', 'Avoyelles', 'Beauregard', 'Bienville',
+  'Bossier', 'Caddo', 'Calcasieu', 'Caldwell', 'Cameron', 'Catahoula', 'Claiborne',
+  'Concordia', 'De Soto', 'East Baton Rouge', 'East Carroll', 'East Feliciana', 'Evangeline',
+  'Franklin', 'Grant', 'Iberia', 'Iberville', 'Jackson', 'Jefferson', 'Jefferson Davis',
+  'Lafayette', 'Lafourche', 'LaSalle', 'Lincoln', 'Livingston', 'Madison', 'Morehouse',
+  'Natchitoches', 'Orleans', 'Ouachita', 'Plaquemines', 'Pointe Coupee', 'Rapides',
+  'Red River', 'Richland', 'Sabine', 'St. Bernard', 'St. Charles', 'St. Helena',
+  'St. James', 'St. John the Baptist', 'St. Landry', 'St. Martin', 'St. Mary', 'St. Tammany',
+  'Tangipahoa', 'Tensas', 'Terrebonne', 'Union', 'Vermilion', 'Vernon', 'Washington',
+  'Webster', 'West Baton Rouge', 'West Carroll', 'West Feliciana', 'Winn'
+];
+
 // Form type configurations - each plan has specific pages
 const FORM_TYPES: Record<string, { title: string; pages: string[]; planType: string }> = {
-  // POA Plans
+  // POA Plans - plan_contents removed to match WordPress flow
   powerOfAttorneyForm: {
     title: 'Power of Attorney Supplement for One Person',
-    pages: ['start', 'personal_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    pages: ['start', 'personal_info', 'agents', 'fpoa', 'hcpoa', 'hcd', 'review'],
     planType: 'poa',
   },
   powerOfAttorneyForm2Person: {
     title: 'Power of Attorney Supplement for Two Persons',
-    pages: ['start', 'personal_info', 'spouse_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    pages: ['start', 'personal_info', 'spouse_info', 'agents', 'fpoa', 'hcpoa', 'hcd', 'review'],
     planType: 'poa_couple',
   },
 
@@ -463,7 +519,7 @@ const TEST_PREFILL_DATA: FormData = {
     surname: 'Smith',
     suffix: 'Jr.',
     date_of_birth: '1975-06-15',
-    gender: 'male',
+    gender: 'Male',
     street_address: '123 Main Street',
     street_address_2: 'Suite 100',
     city: 'Baton Rouge',
@@ -479,7 +535,7 @@ const TEST_PREFILL_DATA: FormData = {
     surname: 'Smith',
     suffix: '',
     date_of_birth: '1978-03-22',
-    gender: 'female',
+    gender: 'Female',
     phone_number: '(225) 555-5678',
     last_4_ssn_digits: '5678',
     same_address_as_primary: true,
@@ -501,7 +557,7 @@ const TEST_PREFILL_DATA: FormData = {
         surname: 'Smith',
         suffix: '',
         date_of_birth: '1998-09-10',
-        gender: 'male',
+        gender: 'Male',
         relationship_with_person: 'Son',
         last_4_ssn_digits: '9876',
         entity_name: '',
@@ -524,7 +580,7 @@ const TEST_PREFILL_DATA: FormData = {
         surname: 'Johnson',
         suffix: '',
         date_of_birth: '2000-12-05',
-        gender: 'female',
+        gender: 'Female',
         relationship_with_person: 'Daughter',
         last_4_ssn_digits: '5432',
         entity_name: '',
@@ -578,7 +634,7 @@ const TEST_PREFILL_DATA: FormData = {
         surname: 'Williams',
         suffix: 'III',
         date_of_birth: '1970-04-18',
-        gender: 'male',
+        gender: 'Male',
         relationship_with_person: 'Friend',
         last_4_ssn_digits: '7890',
         entity_name: '',
@@ -594,104 +650,75 @@ const TEST_PREFILL_DATA: FormData = {
       },
     ],
   },
-  // Client FPOA - Immediate POA with co-agents and successors
+  // Client FPOA - Simplified (hidden fields use defaults)
   fpoa: {
-    springing_poa: 'No',  // Immediate
-    revoke_prior_poa: 'Yes',
+    springing_poa: 'No',  // HIDDEN: defaults to No (immediate)
+    revoke_prior_poa: 'No',  // HIDDEN: defaults to No
     fpoa_initial_agents: {
-      person_to_serve: 'Robert James Smith',  // First child
-      second_coagent_person_to_serve: 'First National Trust Company',  // Entity co-agent to test GeauxSigners
-      agents_serve_alone: 'No',  // Must act together
+      person_to_serve: 'spouse',  // Spouse as primary agent
+      second_coagent_person_to_serve: '',  // HIDDEN: defaults to none
+      agents_serve_alone: 'Yes',  // HIDDEN: defaults to Yes
     },
-    has_appointer_successor_agents: 'Yes',
-    successor_agents: [
-      {
-        successor_agent_to_serve: 'Michael Andrew Williams III',
-        second_successor_coagent_to_serve: 'First National Trust Company',
-        agents_serve_alone: 'Yes',
-      },
-    ],
+    has_appointer_successor_agents: 'No',  // HIDDEN: defaults to No
+    successor_agents: [],  // HIDDEN: no successors
   },
-  // Spouse FPOA - Springing POA (only on incapacity)
+  // Spouse FPOA - Simplified (hidden fields use defaults)
   spouse_fpoa: {
-    springing_poa: 'Yes',  // Springing - only on incapacity
-    revoke_prior_poa: 'No',
+    springing_poa: 'No',  // HIDDEN: defaults to No (immediate)
+    revoke_prior_poa: 'No',  // HIDDEN: defaults to No
     fpoa_initial_agents: {
       person_to_serve: 'Emily Rose Johnson',
-      second_coagent_person_to_serve: '',  // Single agent
-      agents_serve_alone: 'Yes',
+      second_coagent_person_to_serve: '',  // HIDDEN: defaults to none
+      agents_serve_alone: 'Yes',  // HIDDEN: defaults to Yes
     },
-    has_appointer_successor_agents: 'Yes',
-    successor_agents: [
-      {
-        successor_agent_to_serve: 'Robert James Smith',
-        second_successor_coagent_to_serve: '',
-        agents_serve_alone: 'Yes',
-      },
-      {
-        successor_agent_to_serve: 'First National Trust Company',
-        second_successor_coagent_to_serve: '',
-        agents_serve_alone: 'Yes',
-      },
-    ],
+    has_appointer_successor_agents: 'No',  // HIDDEN: defaults to No
+    successor_agents: [],  // HIDDEN: no successors
   },
-  // Client HCPOA - Immediate with organ donation
+  // Client HCPOA - Simplified (hidden fields use defaults)
   hcpoa: {
-    springing_poa: 'No',
-    revoke_prior_poa: 'Yes',
+    springing_poa: 'No',  // HIDDEN: defaults to No
+    revoke_prior_poa: 'No',  // HIDDEN: defaults to No
     wish_to_be_organ_donor: 'Yes',
     wish_to_donate_body_to_science: 'No',
-    no_blood_transfusion: 'No',
+    no_blood_transfusion: 'No',  // HIDDEN: defaults to No (allow transfusions)
     hcpoa_initial_agents: {
       person_to_serve: 'spouse',  // Use 'spouse' to select spouse from dropdown
-      second_coagent_person_to_serve: '',
-      agents_serve_alone: 'Yes',
+      second_coagent_person_to_serve: '',  // HIDDEN: defaults to none
+      agents_serve_alone: 'Yes',  // HIDDEN: defaults to Yes
     },
-    has_appointed_successor_agents: 'Yes',
-    successor_agents: [
-      {
-        successor_agent_to_serve: 'Robert James Smith',
-        second_successor_coagent_to_serve: 'Emily Rose Johnson',
-        agents_serve_alone: 'No',
-      },
-    ],
+    has_appointed_successor_agents: 'No',  // HIDDEN: defaults to No
+    successor_agents: [],  // HIDDEN: no successors
   },
-  // Spouse HCPOA - Body to science, no blood transfusion
+  // Spouse HCPOA - Simplified (hidden fields use defaults)
   spouse_hcpoa: {
-    springing_poa: 'No',
-    revoke_prior_poa: 'No',
+    springing_poa: 'No',  // HIDDEN: defaults to No
+    revoke_prior_poa: 'No',  // HIDDEN: defaults to No
     wish_to_be_organ_donor: 'No',
     wish_to_donate_body_to_science: 'Yes',
-    no_blood_transfusion: 'Yes',  // Religious preference
+    no_blood_transfusion: 'No',  // HIDDEN: defaults to No (allow transfusions)
     hcpoa_initial_agents: {
       person_to_serve: 'client',  // Use 'client' to select client (my spouse) from dropdown
-      second_coagent_person_to_serve: '',
-      agents_serve_alone: 'Yes',
+      second_coagent_person_to_serve: '',  // HIDDEN: defaults to none
+      agents_serve_alone: 'Yes',  // HIDDEN: defaults to Yes
     },
-    has_appointed_successor_agents: 'Yes',
-    successor_agents: [
-      {
-        successor_agent_to_serve: 'Emily Rose Johnson',
-        second_successor_coagent_to_serve: '',
-        agents_serve_alone: 'Yes',
-      },
-    ],
+    has_appointed_successor_agents: 'No',  // HIDDEN: defaults to No
+    successor_agents: [],  // HIDDEN: no successors
   },
-  // Client HCD - Choose specific options with extension
+  // Client HCD - Simplified (hidden fields use defaults)
   hcd: {
     life_support_option: 'CHOOSE',  // 'WITHDRAW' or 'CHOOSE'
     client_hcds: ['Nutr', 'Hydr', 'CPR'],  // Options: 'Nutr', 'Hydr', 'Vent', 'CPR'
-    extend_hcd: 'Yes',
-    hcd_days: 14,
-    hcd_sooner_longer: 'longer',
+    extend_hcd: 'No',  // HIDDEN: defaults to No (standard period)
+    hcd_days: 7,  // HIDDEN: defaults to 7
+    hcd_sooner_longer: '',  // HIDDEN: defaults to empty
   },
-  // Spouse HCD - Withdraw all life support
+  // Spouse HCD - Simplified (hidden fields use defaults)
   spouse_hcd: {
     life_support_option: 'WITHDRAW',  // 'WITHDRAW' or 'CHOOSE'
-    spouse_hcds: ['Vent'],  // Some options still selected for demo
-    extend_hcd: 'No',
-    hcd_days: 7,
-    hcd_sooner_longer: '',
+    spouse_hcds: [],  // No specific options when WITHDRAW
+    extend_hcd: 'No',  // HIDDEN: defaults to No
+    hcd_days: 7,  // HIDDEN: defaults to 7
+    hcd_sooner_longer: '',  // HIDDEN: defaults to empty
   },
   // Trust info (for trust-based plans)
   trust_info: {
@@ -1291,9 +1318,8 @@ const POAForm: React.FC = () => {
             onChange={(e) => updateFormData('personal_info', 'gender', e.target.value)}
           >
             <option value="">Select...</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="non-binary">Non-binary</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           </select>
           {errors['personal_info.gender'] && <div className="invalid-feedback">{errors['personal_info.gender']}</div>}
         </div>
@@ -1493,9 +1519,8 @@ const POAForm: React.FC = () => {
                       onChange={(e) => updateParty(index, 'gender', e.target.value)}
                     >
                       <option value="">Select...</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="non-binary">Non-binary</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
                     </select>
                   </div>
                   <div className="col-md-4">
@@ -2787,9 +2812,8 @@ const POAForm: React.FC = () => {
                           onChange={(e) => updateParty(index, 'gender', e.target.value)}
                         >
                           <option value="">Select...</option>
-                          <option value="male">Male</option>
-                          <option value="female">Female</option>
-                          <option value="non-binary">Non-binary</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
                         </select>
                       </div>
                       <div className="col-md-4">
