@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/estate-plan-page.css';
 
 const WillBasedEstatePlan: React.FC = () => {
   const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
+  const navigate = useNavigate();
 
   const toggleDoc = (id: string) => {
     setExpandedDoc(expandedDoc === id ? null : id);
@@ -12,6 +15,16 @@ const WillBasedEstatePlan: React.FC = () => {
 
   const toggleFaq = (id: string) => {
     setExpandedFaq(expandedFaq === id ? null : id);
+  };
+
+  const getPrice = () => {
+    return numPersons === '1' ? 199 : 299;
+  };
+
+  const handlePurchase = () => {
+    // Product 673 = Will-Based Estate Plan
+    const type = numPersons === '1' ? 'solo' : '2person';
+    navigate(`/checkout?product=673&type=${type}`);
   };
 
   return (
@@ -27,7 +40,7 @@ const WillBasedEstatePlan: React.FC = () => {
                 <em>Create a Will-Based Estate Plan in minutes to determine who will control your affairs during life, as well as your final wishes for the distribution of assets if something should ever happen to you. This plan is suitable for both single and married individuals with or without children.</em>
               </p>
               <div className="ep-hero-buttons pill-group">
-                <Link to="/checkout?product=673" className="btn btn-pill-left">Start My Plan</Link>
+                <button onClick={() => setShowPurchaseModal(true)} className="btn btn-pill-left">Start My Plan</button>
                 <Link to="/estate-planning" className="btn btn-pill-right">Is this plan right for me?</Link>
               </div>
             </div>
@@ -66,7 +79,7 @@ const WillBasedEstatePlan: React.FC = () => {
           <div className="ep-build-grid">
             <div className="ep-build-card">
               <h2><strong><em>Build your</em></strong><br /><span className="text-blue"><em><strong>Will-Based Estate Plan</strong></em></span></h2>
-              <Link to="/checkout?product=673" className="btn btn-solid btn-lg">Get Started</Link>
+              <button onClick={() => setShowPurchaseModal(true)} className="btn btn-solid btn-lg">Get Started</button>
               <p className="guarantee-text"><em><strong>Money-Back Guarantee!</strong> If you are unsatisfied with your completed documents, contact us within 30-days of your purchase to request a refund under our Refund Policy.</em></p>
             </div>
             <div className="ep-documents">
@@ -194,6 +207,62 @@ const WillBasedEstatePlan: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Purchase Modal */}
+      {showPurchaseModal && (
+        <div className="modal-overlay" onClick={() => setShowPurchaseModal(false)}>
+          <div className="modal-content purchase-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowPurchaseModal(false)}>&times;</button>
+
+            <div className="text-center mb-4">
+              <img
+                src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
+                alt="Plan Builder"
+                style={{ width: '48px', marginBottom: '20px' }}
+              />
+              <h2 style={{ color: '#0000ff' }}>Will-Based Estate Plan</h2>
+              <p className="text-muted fst-italic">
+                The Will-Based Estate Plan includes a Last Will and Testament, Financial Power of Attorney, Medical Power of Attorney, as well as an Advance Healthcare Directive (a/k/a "Living Will").
+              </p>
+              <p className="mb-4">Average time to build a plan: <strong style={{ color: '#0000ff' }}>15 minutes</strong></p>
+            </div>
+
+            <h4 className="mb-3">Build your plan</h4>
+            <p className="text-muted fst-italic mb-4">
+              After the purchase at your convenience, you will answer a series of questions to prepare your documents.
+            </p>
+
+            <div className="mb-3">
+              <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
+              <select
+                className="form-select"
+                value={numPersons}
+                onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
+              >
+                <option value="1">For one person</option>
+                <option value="2">For two people</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-muted fst-italic">
+                <strong>2.</strong> Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <strong>Final Price:</strong> <strong style={{ fontSize: '1.25rem' }}>${getPrice()}</strong>
+            </div>
+
+            <button
+              onClick={handlePurchase}
+              className="btn btn-solid btn-lg w-100"
+            >
+              Purchase
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

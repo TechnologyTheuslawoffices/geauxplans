@@ -4,11 +4,12 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 // Product configuration - must match backend
-const PRODUCTS: Record<string, { name: string; price: number; description: string }> = {
-  '606': { name: 'Minor Child-Centered Estate Plan', price: 199, description: 'Create a will-based plan to appoint a Tutor for minor children.' },
-  '614': { name: 'Power of Attorney Supplement', price: 99, description: 'Financial and Healthcare Power of Attorney documents.' },
-  '673': { name: 'Will-Based Estate Plan', price: 199, description: 'Control your legacy with a comprehensive will-based estate plan.' },
-  '676': { name: 'Trust-Based Estate Plan', price: 399, description: 'Avoid probate and transfer assets smoothly with a trust.' },
+const PRODUCTS: Record<string, { name: string; price: number; price2person: number; description: string; type?: string }> = {
+  '606': { name: 'Minor Child-Centered Estate Plan', price: 199, price2person: 299, description: 'Create a will-based plan to appoint a Tutor for minor children.' },
+  '614': { name: 'Power of Attorney Supplement', price: 99, price2person: 149, description: 'Financial and Healthcare Power of Attorney documents.' },
+  '673': { name: 'Will-Based Estate Plan', price: 199, price2person: 299, description: 'Control your legacy with a comprehensive will-based estate plan.' },
+  '676': { name: 'Trust-Based Estate Plan', price: 399, price2person: 599, description: 'Avoid probate and transfer assets smoothly with a trust.' },
+  '1367': { name: 'Form Editing Subscription', price: 49, price2person: 49, description: 'Extend your form editing access indefinitely. Edit your estate planning documents anytime.', type: 'subscription' },
 };
 
 // Easter egg: Type "geaux" to enable test mode
@@ -29,6 +30,9 @@ const Checkout: React.FC = () => {
   const productId = searchParams.get('product') || '';
   const formType = searchParams.get('type') || 'solo';
   const product = PRODUCTS[productId];
+
+  // Calculate price based on solo vs 2person
+  const displayPrice = product ? (formType === '2person' ? product.price2person : product.price) : 0;
 
   // Build return URL for after login/register
   const returnUrl = `/checkout?product=${productId}&type=${formType}`;
@@ -253,7 +257,7 @@ const Checkout: React.FC = () => {
                   )}
                 </div>
                 <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#004d71' }}>
-                  ${product.price}
+                  ${displayPrice}
                 </span>
               </div>
 
@@ -266,7 +270,7 @@ const Checkout: React.FC = () => {
                 }}
               >
                 <span>Total</span>
-                <span style={{ color: '#004d71' }}>${product.price}</span>
+                <span style={{ color: '#004d71' }}>${displayPrice}</span>
               </div>
             </div>
 
@@ -280,13 +284,23 @@ const Checkout: React.FC = () => {
               }}
             >
               <h3 style={{ fontSize: '16px', marginBottom: '15px' }}>What's Included:</h3>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: '#555' }}>
-                <li style={{ marginBottom: '8px' }}>Professionally drafted legal documents</li>
-                <li style={{ marginBottom: '8px' }}>Easy online questionnaire</li>
-                <li style={{ marginBottom: '8px' }}>Documents ready within 3 business days</li>
-                <li style={{ marginBottom: '8px' }}>Download from your account dashboard</li>
-                <li style={{ marginBottom: '0' }}>30-day money-back guarantee</li>
-              </ul>
+              {product.type === 'subscription' ? (
+                <ul style={{ margin: 0, paddingLeft: '20px', color: '#555' }}>
+                  <li style={{ marginBottom: '8px' }}>Unlimited form edits for 1 year</li>
+                  <li style={{ marginBottom: '8px' }}>Regenerate documents after changes</li>
+                  <li style={{ marginBottom: '8px' }}>Access to all your estate plan forms</li>
+                  <li style={{ marginBottom: '8px' }}>Keep your documents up to date</li>
+                  <li style={{ marginBottom: '0' }}>Annual renewal available</li>
+                </ul>
+              ) : (
+                <ul style={{ margin: 0, paddingLeft: '20px', color: '#555' }}>
+                  <li style={{ marginBottom: '8px' }}>Professionally drafted legal documents</li>
+                  <li style={{ marginBottom: '8px' }}>Easy online questionnaire</li>
+                  <li style={{ marginBottom: '8px' }}>Documents ready within 3 business days</li>
+                  <li style={{ marginBottom: '8px' }}>Download from your account dashboard</li>
+                  <li style={{ marginBottom: '0' }}>30-day edit period included</li>
+                </ul>
+              )}
             </div>
 
             {/* Checkout Button or Login Prompt */}

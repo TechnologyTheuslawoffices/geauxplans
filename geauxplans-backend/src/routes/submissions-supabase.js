@@ -1,11 +1,14 @@
 /**
  * Form Submissions Routes - Supabase Version
  * REST API for estate planning form submissions
+ * Includes 30-day edit grace period with subscription extension
  */
 
 const express = require('express');
 const archiver = require('archiver');
 const { supabase } = require('../config/supabase');
+const { canEditForm, getFormAccessStatus, getDaysRemaining } = require('../helpers/accessControl');
+const { keapService } = require('../services/keap');
 
 // Toggle between doc-tools (CGD) and Knackly
 // Set USE_DOCTOOLS=true for doc-tools, false for Knackly
@@ -17,6 +20,36 @@ const documentService = USE_DOCTOOLS
 console.log(`Document service: ${USE_DOCTOOLS ? 'doc-tools (CGD)' : 'Knackly'}`);
 
 const router = express.Router();
+
+/**
+ * GET /api/submissions/test-keap
+ * Test Keap connection and API access
+ */
+router.get('/test-keap', async (req, res) => {
+  try {
+    if (!keapService.isConfigured()) {
+      return res.json({
+        success: false,
+        error: 'Keap not configured - KEAP_ACCESS_TOKEN not set',
+      });
+    }
+
+    // Try to fetch tags as a simple API test
+    const tags = await keapService.getTags();
+
+    res.json({
+      success: true,
+      message: 'Keap connection successful',
+      tagCount: tags.length,
+      sampleTags: tags.slice(0, 5).map(t => ({ id: t.id, name: t.name })),
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
 
 /**
  * Upload documents to Supabase Storage and return URLs
@@ -190,28 +223,40 @@ router.get('/', authenticate, async (req, res) => {
       return res.status(500).json({ success: false, error: 'Failed to fetch submissions' });
     }
 
+    // Map submissions with access info
+    const mappedSubmissions = await Promise.all((submissions || []).map(async (s) => {
+      // Extract zipUrl from documents if stored as metadata
+      const docs = s.knackly_documents || [];
+      const zipMeta = docs.find(d => d.name === '__zip__');
+      const zipUrl = zipMeta?.zipUrl || null;
+      const actualDocs = docs.filter(d => d.name !== '__zip__');
+
+      // Get access status for this submission
+      const accessInfo = await canEditForm(req.user.id, s.first_submitted_at, s.form_type);
+
+      return {
+        id: s.id,
+        formType: s.form_type,
+        submissionStatus: s.submission_status,
+        formData: s.form_data,
+        knacklyRecordId: s.knackly_record_id,
+        knacklyStatus: s.knackly_status,
+        knacklyDocuments: actualDocs,
+        knacklyZipUrl: zipUrl,
+        createdAt: s.created_at,
+        updatedAt: s.updated_at,
+        firstSubmittedAt: s.first_submitted_at,
+        // Access control info
+        canEdit: accessInfo.canEdit,
+        daysRemaining: accessInfo.daysRemaining,
+        accessMessage: accessInfo.message,
+        hasSubscription: accessInfo.hasSubscription,
+      };
+    }));
+
     res.json({
       success: true,
-      data: (submissions || []).map(s => {
-        // Extract zipUrl from documents if stored as metadata
-        const docs = s.knackly_documents || [];
-        const zipMeta = docs.find(d => d.name === '__zip__');
-        const zipUrl = zipMeta?.zipUrl || null;
-        const actualDocs = docs.filter(d => d.name !== '__zip__');
-
-        return {
-          id: s.id,
-          formType: s.form_type,
-          submissionStatus: s.submission_status,
-          formData: s.form_data,
-          knacklyRecordId: s.knackly_record_id,
-          knacklyStatus: s.knackly_status,
-          knacklyDocuments: actualDocs,
-          knacklyZipUrl: zipUrl,
-          createdAt: s.created_at,
-          updatedAt: s.updated_at,
-        };
-      }),
+      data: mappedSubmissions,
     });
   } catch (error) {
     console.error('List submissions error:', error);
@@ -491,6 +536,44 @@ router.get('/:id/documents', authenticate, async (req, res) => {
 });
 
 /**
+ * GET /api/submissions/:id/access
+ * Check edit access status for a submission
+ */
+router.get('/:id/access', authenticate, async (req, res) => {
+  if (!isSupabaseConfigured()) {
+    return res.status(500).json({ success: false, error: 'Database not configured' });
+  }
+
+  const { id } = req.params;
+
+  try {
+    const { data: submission, error } = await supabase
+      .from('poa_submissions')
+      .select('id, form_type, submission_status, first_submitted_at, created_at')
+      .eq('id', id)
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (error || !submission) {
+      return res.status(404).json({ success: false, error: 'Submission not found' });
+    }
+
+    const accessStatus = await getFormAccessStatus(req.user.id, submission);
+
+    res.json({
+      success: true,
+      data: {
+        id: submission.id,
+        ...accessStatus,
+      },
+    });
+  } catch (error) {
+    console.error('Get access status error:', error);
+    res.status(500).json({ success: false, error: 'Failed to get access status' });
+  }
+});
+
+/**
  * GET /api/submissions/:id
  * Get single submission
  */
@@ -513,6 +596,9 @@ router.get('/:id', authenticate, async (req, res) => {
       return res.status(404).json({ success: false, error: 'Submission not found' });
     }
 
+    // Get access status
+    const accessInfo = await canEditForm(req.user.id, submission.first_submitted_at, submission.form_type);
+
     res.json({
       success: true,
       data: {
@@ -525,6 +611,12 @@ router.get('/:id', authenticate, async (req, res) => {
         knacklyDocuments: submission.knackly_documents,
         createdAt: submission.created_at,
         updatedAt: submission.updated_at,
+        firstSubmittedAt: submission.first_submitted_at,
+        // Access control info
+        canEdit: accessInfo.canEdit,
+        daysRemaining: accessInfo.daysRemaining,
+        accessMessage: accessInfo.message,
+        hasSubscription: accessInfo.hasSubscription,
       },
     });
   } catch (error) {
@@ -558,14 +650,41 @@ router.post('/', authenticate, async (req, res) => {
       .single();
 
     if (existing) {
+      // Check if user can still edit this form
+      const { data: fullSubmission } = await supabase
+        .from('poa_submissions')
+        .select('first_submitted_at, form_type')
+        .eq('id', existing.id)
+        .single();
+
+      const accessInfo = await canEditForm(req.user.id, fullSubmission?.first_submitted_at, form_type);
+
+      if (!accessInfo.canEdit) {
+        return res.status(403).json({
+          success: false,
+          error: accessInfo.message,
+          code: 'EDIT_EXPIRED',
+          daysRemaining: 0,
+          hasSubscription: accessInfo.hasSubscription,
+        });
+      }
+
+      // Build update object
+      const updateData = {
+        form_data,
+        submission_status,
+        updated_at: new Date().toISOString(),
+      };
+
+      // Set first_submitted_at when form is first completed
+      if (submission_status === 'completed' && !fullSubmission?.first_submitted_at) {
+        updateData.first_submitted_at = new Date().toISOString();
+      }
+
       // Update existing
       const { error: updateError } = await supabase
         .from('poa_submissions')
-        .update({
-          form_data,
-          submission_status,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', existing.id);
 
       if (updateError) {
@@ -606,6 +725,19 @@ router.post('/', authenticate, async (req, res) => {
             })
             .eq('id', existing.id);
         }
+
+        // Sync to Keap CRM (non-blocking)
+        keapService.handleFormSubmission(form_data, form_type)
+          .then(keapResult => {
+            if (keapResult.success && keapResult.contactId) {
+              supabase
+                .from('poa_submissions')
+                .update({ keap_contact_id: keapResult.contactId })
+                .eq('id', existing.id)
+                .then(() => console.log(`Keap contact ${keapResult.contactId} linked to submission ${existing.id}`));
+            }
+          })
+          .catch(err => console.error('Keap sync error:', err));
       }
 
       return res.json({
@@ -616,14 +748,21 @@ router.post('/', authenticate, async (req, res) => {
     }
 
     // Create new submission
+    const insertData = {
+      user_id: req.user.id,
+      form_data,
+      form_type,
+      submission_status,
+    };
+
+    // Set first_submitted_at if creating as completed
+    if (submission_status === 'completed') {
+      insertData.first_submitted_at = new Date().toISOString();
+    }
+
     const { data: newSubmission, error: insertError } = await supabase
       .from('poa_submissions')
-      .insert({
-        user_id: req.user.id,
-        form_data,
-        form_type,
-        submission_status,
-      })
+      .insert(insertData)
       .select()
       .single();
 
@@ -652,6 +791,19 @@ router.post('/', authenticate, async (req, res) => {
           })
           .eq('id', newSubmission.id);
       }
+
+      // Sync to Keap CRM (non-blocking)
+      keapService.handleFormSubmission(form_data, form_type)
+        .then(keapResult => {
+          if (keapResult.success && keapResult.contactId) {
+            supabase
+              .from('poa_submissions')
+              .update({ keap_contact_id: keapResult.contactId })
+              .eq('id', newSubmission.id)
+              .then(() => console.log(`Keap contact ${keapResult.contactId} linked to submission ${newSubmission.id}`));
+          }
+        })
+        .catch(err => console.error('Keap sync error:', err));
     }
 
     res.status(201).json({
@@ -685,7 +837,7 @@ router.put('/:id', authenticate, async (req, res) => {
     // Check submission exists and belongs to user
     const { data: existing, error: fetchError } = await supabase
       .from('poa_submissions')
-      .select('id, submission_status, form_type')
+      .select('id, submission_status, form_type, first_submitted_at')
       .eq('id', id)
       .eq('user_id', req.user.id)
       .single();
@@ -694,14 +846,35 @@ router.put('/:id', authenticate, async (req, res) => {
       return res.status(404).json({ success: false, error: 'Submission not found' });
     }
 
+    // Check if user can still edit this form
+    const accessInfo = await canEditForm(req.user.id, existing.first_submitted_at, existing.form_type);
+
+    if (!accessInfo.canEdit) {
+      return res.status(403).json({
+        success: false,
+        error: accessInfo.message,
+        code: 'EDIT_EXPIRED',
+        daysRemaining: 0,
+        hasSubscription: accessInfo.hasSubscription,
+      });
+    }
+
+    // Build update object
+    const updateData = {
+      form_data,
+      submission_status,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Set first_submitted_at when form is first completed
+    if (submission_status === 'completed' && !existing.first_submitted_at) {
+      updateData.first_submitted_at = new Date().toISOString();
+    }
+
     // Update submission
     const { error: updateError } = await supabase
       .from('poa_submissions')
-      .update({
-        form_data,
-        submission_status,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq('id', id);
 
     if (updateError) {
@@ -767,8 +940,14 @@ router.get('/by-type/:formType', authenticate, async (req, res) => {
         success: true,
         data: null,
         exists: false,
+        // For new submissions, full grace period available
+        canEdit: true,
+        daysRemaining: 30,
       });
     }
+
+    // Get access status
+    const accessInfo = await canEditForm(req.user.id, submission.first_submitted_at, submission.form_type);
 
     res.json({
       success: true,
@@ -782,8 +961,16 @@ router.get('/by-type/:formType', authenticate, async (req, res) => {
         knacklyDocuments: submission.knackly_documents,
         createdAt: submission.created_at,
         updatedAt: submission.updated_at,
+        firstSubmittedAt: submission.first_submitted_at,
+        // Access control info
+        canEdit: accessInfo.canEdit,
+        daysRemaining: accessInfo.daysRemaining,
+        accessMessage: accessInfo.message,
+        hasSubscription: accessInfo.hasSubscription,
       },
       exists: true,
+      canEdit: accessInfo.canEdit,
+      daysRemaining: accessInfo.daysRemaining,
     });
   } catch (error) {
     console.error('Get by type error:', error);

@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/estate-plan-page.css';
 
 const PowerOfAttorneyPlan: React.FC = () => {
   const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
+  const navigate = useNavigate();
 
   const toggleDoc = (id: string) => {
     setExpandedDoc(expandedDoc === id ? null : id);
@@ -12,6 +15,16 @@ const PowerOfAttorneyPlan: React.FC = () => {
 
   const toggleFaq = (id: string) => {
     setExpandedFaq(expandedFaq === id ? null : id);
+  };
+
+  const getPrice = () => {
+    return numPersons === '1' ? 99 : 149;
+  };
+
+  const handlePurchase = () => {
+    // Product 614 = POA Plan
+    const type = numPersons === '1' ? 'solo' : '2person';
+    navigate(`/checkout?product=614&type=${type}`);
   };
 
   return (
@@ -27,7 +40,7 @@ const PowerOfAttorneyPlan: React.FC = () => {
                 <em>Create Power of Attorney documents for your college student or aging family members to handle financial and healthcare decisions. This plan provides essential incapacity planning without a full estate plan.</em>
               </p>
               <div className="ep-hero-buttons pill-group">
-                <Link to="/checkout?product=614" className="btn btn-pill-left">Start My Plan</Link>
+                <button onClick={() => setShowPurchaseModal(true)} className="btn btn-pill-left">Start My Plan</button>
                 <Link to="/estate-planning" className="btn btn-pill-right">Is this plan right for me?</Link>
               </div>
             </div>
@@ -66,7 +79,7 @@ const PowerOfAttorneyPlan: React.FC = () => {
           <div className="ep-build-grid">
             <div className="ep-build-card">
               <h2><strong><em>Build your</em></strong><br /><span className="text-blue"><em><strong>Power of Attorney Supplement Plan</strong></em></span></h2>
-              <Link to="/checkout?product=614" className="btn btn-solid btn-lg">Get Started</Link>
+              <button onClick={() => setShowPurchaseModal(true)} className="btn btn-solid btn-lg">Get Started</button>
               <p className="guarantee-text"><em><strong>Money-Back Guarantee!</strong> If you are unsatisfied with your completed documents, contact us within 30-days of your purchase to request a refund under our Refund Policy.</em></p>
             </div>
             <div className="ep-documents">
@@ -181,6 +194,62 @@ const PowerOfAttorneyPlan: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Purchase Modal */}
+      {showPurchaseModal && (
+        <div className="modal-overlay" onClick={() => setShowPurchaseModal(false)}>
+          <div className="modal-content purchase-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowPurchaseModal(false)}>&times;</button>
+
+            <div className="text-center mb-4">
+              <img
+                src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
+                alt="Plan Builder"
+                style={{ width: '48px', marginBottom: '20px' }}
+              />
+              <h2 style={{ color: '#0000ff' }}>Power of Attorney Plan</h2>
+              <p className="text-muted fst-italic">
+                Create durable powers of attorney and other important documents for your college student, an aging parent, or any other person you need to assist if something happens.
+              </p>
+              <p className="mb-4">Average time to build a plan: <strong style={{ color: '#0000ff' }}>5 minutes</strong></p>
+            </div>
+
+            <h4 className="mb-3">Build your plan</h4>
+            <p className="text-muted fst-italic mb-4">
+              After the purchase at your convenience, you will answer a series of questions to prepare your documents.
+            </p>
+
+            <div className="mb-3">
+              <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
+              <select
+                className="form-select"
+                value={numPersons}
+                onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
+              >
+                <option value="1">For one person</option>
+                <option value="2">For two people</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-muted fst-italic">
+                <strong>2.</strong> Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <strong>Final Price:</strong> <strong style={{ fontSize: '1.25rem' }}>${getPrice()}</strong>
+            </div>
+
+            <button
+              onClick={handlePurchase}
+              className="btn btn-solid btn-lg w-100"
+            >
+              Purchase
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

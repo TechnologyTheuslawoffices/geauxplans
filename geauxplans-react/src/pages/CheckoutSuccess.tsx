@@ -89,6 +89,7 @@ const CheckoutSuccess: React.FC = () => {
   }
 
   const formUrl = `/poa-form?product=${sessionData.productId}&type=${sessionData.formType}`;
+  const isSubscription = sessionData.productId === '1367';
 
   return (
     <main>
@@ -169,30 +170,61 @@ const CheckoutSuccess: React.FC = () => {
                 marginBottom: '30px',
               }}
             >
-              <h3 style={{ fontSize: '16px', marginBottom: '10px', color: '#1565c0' }}>
-                <i className="fas fa-arrow-right me-2"></i>
-                Next Step: Complete Your Questionnaire
-              </h3>
-              <p style={{ margin: 0, color: '#555', fontSize: '14px' }}>
-                Answer a few questions about your situation to customize your documents.
-                This typically takes 15-20 minutes.
-              </p>
+              {isSubscription ? (
+                <>
+                  <h3 style={{ fontSize: '16px', marginBottom: '10px', color: '#1565c0' }}>
+                    <i className="fas fa-check-circle me-2"></i>
+                    Subscription Activated!
+                  </h3>
+                  <p style={{ margin: 0, color: '#555', fontSize: '14px' }}>
+                    You can now edit your estate planning forms anytime. Your subscription is valid for 1 year.
+                    Go to your dashboard to continue editing your forms.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h3 style={{ fontSize: '16px', marginBottom: '10px', color: '#1565c0' }}>
+                    <i className="fas fa-arrow-right me-2"></i>
+                    Next Step: Complete Your Questionnaire
+                  </h3>
+                  <p style={{ margin: 0, color: '#555', fontSize: '14px' }}>
+                    Answer a few questions about your situation to customize your documents.
+                    This typically takes 15-20 minutes.
+                  </p>
+                </>
+              )}
             </div>
 
             {/* Action Buttons */}
-            <Link
-              to={formUrl}
-              className="btn btn-primary btn-lg"
-              style={{
-                width: '100%',
-                padding: '15px',
-                fontSize: '18px',
-                marginBottom: '15px',
-              }}
-            >
-              <i className="fas fa-edit me-2"></i>
-              Start Your Questionnaire
-            </Link>
+            {isSubscription ? (
+              <Link
+                to="/my-account/my-estate-planning"
+                className="btn btn-primary btn-lg"
+                style={{
+                  width: '100%',
+                  padding: '15px',
+                  fontSize: '18px',
+                  marginBottom: '15px',
+                }}
+              >
+                <i className="fas fa-folder-open me-2"></i>
+                Go to My Estate Planning
+              </Link>
+            ) : (
+              <Link
+                to={formUrl}
+                className="btn btn-primary btn-lg"
+                style={{
+                  width: '100%',
+                  padding: '15px',
+                  fontSize: '18px',
+                  marginBottom: '15px',
+                }}
+              >
+                <i className="fas fa-edit me-2"></i>
+                Start Your Questionnaire
+              </Link>
+            )}
 
             <Link
               to="/my-account"

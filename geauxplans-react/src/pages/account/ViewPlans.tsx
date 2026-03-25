@@ -47,6 +47,12 @@ interface ApiSubmission {
   knacklyZipUrl?: string;
   createdAt: string;
   updatedAt: string;
+  firstSubmittedAt?: string;
+  // Access control fields
+  canEdit?: boolean;
+  daysRemaining?: number;
+  accessMessage?: string;
+  hasSubscription?: boolean;
 }
 
 interface AllProducts {
@@ -519,19 +525,60 @@ const ViewPlans: React.FC = () => {
                 {/* Left Column - Plan Info */}
                 <div className="col-12 col-sm-4">
                   <h6 className="mb-0">
-                    <Link to={`/poa-form?type=${submission.formType}`}>
-                      {formConfig?.name || submission.formType}
-                    </Link>
-                    <Link
-                      to={`/poa-form?type=${submission.formType}`}
-                      className="poa-edit-icon"
-                      title="Edit/Start Form"
-                      style={{ color: '#0000ff', textDecoration: 'none', marginLeft: '8px' }}
-                    >
-                      <EditIcon />
-                    </Link>
+                    {submission.canEdit !== false ? (
+                      <>
+                        <Link to={`/poa-form?type=${submission.formType}`}>
+                          {formConfig?.name || submission.formType}
+                        </Link>
+                        <Link
+                          to={`/poa-form?type=${submission.formType}`}
+                          className="poa-edit-icon"
+                          title="Edit/Start Form"
+                          style={{ color: '#0000ff', textDecoration: 'none', marginLeft: '8px' }}
+                        >
+                          <EditIcon />
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ color: '#666' }}>
+                          {formConfig?.name || submission.formType}
+                        </span>
+                        <span
+                          style={{ color: '#999', marginLeft: '8px', cursor: 'not-allowed' }}
+                          title="Edit period expired"
+                        >
+                          <EditIcon />
+                        </span>
+                      </>
+                    )}
                   </h6>
                   <small style={{ color: '#999' }}>{formConfig?.description}</small>
+
+                  {/* Access Warning */}
+                  {submission.submissionStatus === 'completed' && submission.canEdit === false && (
+                    <div className="mt-2" style={{ fontSize: '12px' }}>
+                      <span style={{ color: '#dc3545' }}>
+                        <i className="fas fa-lock me-1"></i>
+                        Edit period expired
+                      </span>
+                      <Link
+                        to="/checkout?product=1367"
+                        className="ms-2"
+                        style={{ color: '#007bff', fontSize: '12px' }}
+                      >
+                        Extend Access
+                      </Link>
+                    </div>
+                  )}
+                  {submission.submissionStatus === 'completed' && submission.canEdit !== false && submission.daysRemaining !== undefined && submission.daysRemaining <= 7 && submission.daysRemaining > 0 && (
+                    <div className="mt-2" style={{ fontSize: '12px' }}>
+                      <span style={{ color: '#ffc107' }}>
+                        <i className="fas fa-clock me-1"></i>
+                        {submission.daysRemaining} day{submission.daysRemaining !== 1 ? 's' : ''} left to edit
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Middle Column - Status */}

@@ -283,6 +283,54 @@ function transformFormDataToKnackly(formData) {
     return name;
   };
 
+  // Helper to get full party data by name (for TrueAgents)
+  const getFullPartyData = (agentName) => {
+    if (!agentName) return null;
+
+    for (const party of allParties) {
+      const isEntity = (party.type_of_party || '') === 'An entity';
+      let matchName = '';
+
+      if (isEntity) {
+        matchName = party.entity_name || '';
+      } else {
+        matchName = `${party.first_name || ''} ${party.surname || ''}`.trim();
+      }
+
+      // Also check full name with middle
+      const fullName = `${party.first_name || ''} ${party.middle_name || ''} ${party.surname || ''}`.trim().replace(/\s+/g, ' ');
+
+      if (matchName.trim() === agentName.trim() || fullName === agentName.trim()) {
+        // Build NAMECO (computed full name)
+        const nameCO = isEntity
+          ? party.entity_name
+          : [party.first_name, party.middle_name, party.surname, party.suffix]
+              .filter(Boolean).join(' ');
+
+        return {
+          NAMECO: nameCO,
+          IndividualTF: !isEntity,
+          PartyParish: party.parish || '',
+          PartyParishCounty: (party.state || '').toLowerCase() === 'louisiana' ? 'Parish' : 'County',
+          PartyState: party.state || '',
+          SSNorEIN: isEntity ? (party.last_4_ein_digits || '') : (party.last_4_ssn_digits || ''),
+          GeauxSigners: isEntity && party.signers ? party.signers.map(s => ({
+            SignerFullName: [s.first_name, s.middle_name, s.surname].filter(Boolean).join(' '),
+            SignerTitle: s.title || ''
+          })) : [],
+          // Include additional properties that might be needed
+          First: party.first_name || '',
+          Middle: party.middle_name || '',
+          Last: party.surname || '',
+          Suffix: party.suffix || '',
+          EntityName: isEntity ? party.entity_name : '',
+          Gender: (party.gender || '').toLowerCase(),
+        };
+      }
+    }
+    return null;
+  };
+
   // Map OtherParties (agents/parties)
   if (allParties.length > 0) {
     knacklyData.OtherParties = allParties.map(party => {
@@ -421,19 +469,46 @@ function transformFormDataToKnackly(formData) {
   // Map FPOA data
   if (formData.fpoa?.fpoa_initial_agents) {
     const fpoaAgents = formData.fpoa.fpoa_initial_agents;
+
+    // Build TrueAgents array with full party details
+    const trueAgents = [];
+    if (fpoaAgents.person_to_serve) {
+      const agent = getFullPartyData(fpoaAgents.person_to_serve);
+      if (agent) trueAgents.push(agent);
+    }
+    if (fpoaAgents.second_coagent_person_to_serve) {
+      const agent = getFullPartyData(fpoaAgents.second_coagent_person_to_serve);
+      if (agent) trueAgents.push(agent);
+    }
+
     knacklyData.ClientAgentsFPOA = {
       AgentSelect: getAgentName(fpoaAgents.person_to_serve || ''),
-      CoAgentSelect: getAgentName(fpoaAgents.second_coagent_person_to_serve || '')
+      CoAgentSelect: getAgentName(fpoaAgents.second_coagent_person_to_serve || ''),
+      TrueAgents: trueAgents
     };
 
     const hasSuccessors = (fpoaAgents.has_appointer_successor_agents || '') === 'Yes';
     knacklyData.ClientFPOASuccessors = hasSuccessors;
 
     if (hasSuccessors && fpoaAgents.successor_agents && Array.isArray(fpoaAgents.successor_agents)) {
-      knacklyData.ClientFPOASuccAgents = fpoaAgents.successor_agents.map(successor => ({
-        AgentSelect: getAgentName(successor.successor_agent_to_serve || ''),
-        CoAgentSelect: getAgentName(successor.second_successor_coagent_to_serve || '')
-      }));
+      knacklyData.ClientFPOASuccAgents = fpoaAgents.successor_agents.map(successor => {
+        // Build TrueAgents for THIS successor agent set
+        const succTrueAgents = [];
+        if (successor.successor_agent_to_serve) {
+          const agent = getFullPartyData(successor.successor_agent_to_serve);
+          if (agent) succTrueAgents.push(agent);
+        }
+        if (successor.second_successor_coagent_to_serve) {
+          const agent = getFullPartyData(successor.second_successor_coagent_to_serve);
+          if (agent) succTrueAgents.push(agent);
+        }
+
+        return {
+          AgentSelect: getAgentName(successor.successor_agent_to_serve || ''),
+          CoAgentSelect: getAgentName(successor.second_successor_coagent_to_serve || ''),
+          TrueAgents: succTrueAgents
+        };
+      });
     }
   }
 
@@ -450,19 +525,44 @@ function transformFormDataToKnackly(formData) {
 
     if (hcpoa.hcpoa_initial_agents) {
       const agents = hcpoa.hcpoa_initial_agents;
+
+      // Build TrueAgents for HCPOA
+      const hpoaTrueAgents = [];
+      if (agents.person_to_serve) {
+        const agent = getFullPartyData(agents.person_to_serve);
+        if (agent) hpoaTrueAgents.push(agent);
+      }
+      if (agents.second_coagent_person_to_serve) {
+        const agent = getFullPartyData(agents.second_coagent_person_to_serve);
+        if (agent) hpoaTrueAgents.push(agent);
+      }
+
       knacklyData.ClientAgentsHPOA = {
         AgentSelect: getAgentName(agents.person_to_serve || ''),
-        CoAgentSelect: getAgentName(agents.second_coagent_person_to_serve || '')
+        CoAgentSelect: getAgentName(agents.second_coagent_person_to_serve || ''),
+        TrueAgents: hpoaTrueAgents
       };
 
       const hasSuccessors = (agents.has_appointed_successor_agents || '') === 'Yes';
       knacklyData.ClientHPOASuccessors = hasSuccessors;
 
       if (hasSuccessors && agents.successor_agents && Array.isArray(agents.successor_agents)) {
-        knacklyData.ClientHPOASuccAgents = agents.successor_agents.map(successor => ({
-          AgentSelect: getAgentName(successor.successor_agent_to_serve || ''),
-          CoAgentSelect: getAgentName(successor.second_successor_coagent_to_serve || '')
-        }));
+        knacklyData.ClientHPOASuccAgents = agents.successor_agents.map(successor => {
+          const succTrueAgents = [];
+          if (successor.successor_agent_to_serve) {
+            const agent = getFullPartyData(successor.successor_agent_to_serve);
+            if (agent) succTrueAgents.push(agent);
+          }
+          if (successor.second_successor_coagent_to_serve) {
+            const agent = getFullPartyData(successor.second_successor_coagent_to_serve);
+            if (agent) succTrueAgents.push(agent);
+          }
+          return {
+            AgentSelect: getAgentName(successor.successor_agent_to_serve || ''),
+            CoAgentSelect: getAgentName(successor.second_successor_coagent_to_serve || ''),
+            TrueAgents: succTrueAgents
+          };
+        });
       }
     }
   }
@@ -485,19 +585,44 @@ function transformFormDataToKnackly(formData) {
   // Map Spouse FPOA data (for 2-person forms)
   if (formData.spouse_fpoa?.fpoa_initial_agents) {
     const fpoaAgents = formData.spouse_fpoa.fpoa_initial_agents;
+
+    // Build TrueAgents for Spouse FPOA
+    const spouseFpoaTrueAgents = [];
+    if (fpoaAgents.person_to_serve) {
+      const agent = getFullPartyData(fpoaAgents.person_to_serve);
+      if (agent) spouseFpoaTrueAgents.push(agent);
+    }
+    if (fpoaAgents.second_coagent_person_to_serve) {
+      const agent = getFullPartyData(fpoaAgents.second_coagent_person_to_serve);
+      if (agent) spouseFpoaTrueAgents.push(agent);
+    }
+
     knacklyData.SpouseAgentsFPOA = {
       AgentSelect: getAgentName(fpoaAgents.person_to_serve || ''),
-      CoAgentSelect: getAgentName(fpoaAgents.second_coagent_person_to_serve || '')
+      CoAgentSelect: getAgentName(fpoaAgents.second_coagent_person_to_serve || ''),
+      TrueAgents: spouseFpoaTrueAgents
     };
 
     const hasSuccessors = (formData.spouse_fpoa.has_appointer_successor_agents || '') === 'Yes';
     knacklyData.SpouseFPOASuccessors = hasSuccessors;
 
     if (hasSuccessors && formData.spouse_fpoa.successor_agents && Array.isArray(formData.spouse_fpoa.successor_agents)) {
-      knacklyData.SpouseFPOASuccAgents = formData.spouse_fpoa.successor_agents.map(successor => ({
-        AgentSelect: getAgentName(successor.successor_agent_to_serve || ''),
-        CoAgentSelect: getAgentName(successor.second_successor_coagent_to_serve || '')
-      }));
+      knacklyData.SpouseFPOASuccAgents = formData.spouse_fpoa.successor_agents.map(successor => {
+        const succTrueAgents = [];
+        if (successor.successor_agent_to_serve) {
+          const agent = getFullPartyData(successor.successor_agent_to_serve);
+          if (agent) succTrueAgents.push(agent);
+        }
+        if (successor.second_successor_coagent_to_serve) {
+          const agent = getFullPartyData(successor.second_successor_coagent_to_serve);
+          if (agent) succTrueAgents.push(agent);
+        }
+        return {
+          AgentSelect: getAgentName(successor.successor_agent_to_serve || ''),
+          CoAgentSelect: getAgentName(successor.second_successor_coagent_to_serve || ''),
+          TrueAgents: succTrueAgents
+        };
+      });
     }
   }
 
@@ -514,19 +639,44 @@ function transformFormDataToKnackly(formData) {
 
     if (hcpoa.hcpoa_initial_agents) {
       const agents = hcpoa.hcpoa_initial_agents;
+
+      // Build TrueAgents for Spouse HCPOA
+      const spouseHpoaTrueAgents = [];
+      if (agents.person_to_serve) {
+        const agent = getFullPartyData(agents.person_to_serve);
+        if (agent) spouseHpoaTrueAgents.push(agent);
+      }
+      if (agents.second_coagent_person_to_serve) {
+        const agent = getFullPartyData(agents.second_coagent_person_to_serve);
+        if (agent) spouseHpoaTrueAgents.push(agent);
+      }
+
       knacklyData.SpouseAgentsHPOA = {
         AgentSelect: getAgentName(agents.person_to_serve || ''),
-        CoAgentSelect: getAgentName(agents.second_coagent_person_to_serve || '')
+        CoAgentSelect: getAgentName(agents.second_coagent_person_to_serve || ''),
+        TrueAgents: spouseHpoaTrueAgents
       };
 
       const hasSuccessors = (agents.has_appointed_successor_agents || '') === 'Yes';
       knacklyData.SpouseHPOASuccessors = hasSuccessors;
 
       if (hasSuccessors && agents.successor_agents && Array.isArray(agents.successor_agents)) {
-        knacklyData.SpouseHPOASuccAgents = agents.successor_agents.map(successor => ({
-          AgentSelect: getAgentName(successor.successor_agent_to_serve || ''),
-          CoAgentSelect: getAgentName(successor.second_successor_coagent_to_serve || '')
-        }));
+        knacklyData.SpouseHPOASuccAgents = agents.successor_agents.map(successor => {
+          const succTrueAgents = [];
+          if (successor.successor_agent_to_serve) {
+            const agent = getFullPartyData(successor.successor_agent_to_serve);
+            if (agent) succTrueAgents.push(agent);
+          }
+          if (successor.second_successor_coagent_to_serve) {
+            const agent = getFullPartyData(successor.second_successor_coagent_to_serve);
+            if (agent) succTrueAgents.push(agent);
+          }
+          return {
+            AgentSelect: getAgentName(successor.successor_agent_to_serve || ''),
+            CoAgentSelect: getAgentName(successor.second_successor_coagent_to_serve || ''),
+            TrueAgents: succTrueAgents
+          };
+        });
       }
     }
   }
