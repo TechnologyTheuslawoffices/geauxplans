@@ -59,62 +59,6 @@ const PAGE_NAMES: Record<string, string> = {
   review: 'Review',
 };
 
-// US States for dropdown (reserved for future use)
-const _US_STATES = [
-  'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
-  'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
-  'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan',
-  'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-  'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
-  'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
-  'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
-  'Wisconsin', 'Wyoming', 'District of Columbia'
-];
-
-// Louisiana Cities for autocomplete (reserved for future use)
-const _LOUISIANA_CITIES = [
-  'Abbeville', 'Addis', 'Alexandria', 'Amite City', 'Arcadia', 'Baker', 'Ball',
-  'Basile', 'Bastrop', 'Baton Rouge', 'Berwick', 'Blanchard', 'Bogalusa', 'Bossier City',
-  'Boutte', 'Breaux Bridge', 'Bridge City', 'Broussard', 'Brusly', 'Bunkie',
-  'Carencro', 'Carlyss', 'Central', 'Chalmette', 'Chauvin', 'Church Point', 'Claiborne',
-  'Clarks', 'Clinton', 'Colfax', 'Covington', 'Crowley', 'Cut Off', 'Denham Springs',
-  'DeQuincy', 'DeRidder', 'Donaldsonville', 'Duson', 'Eastwood', 'Eden Isle', 'Edgard',
-  'Elton', 'Erath', 'Estelle', 'Eunice', 'Farmerville', 'Ferriday', 'Franklin',
-  'Franklinton', 'Galliano', 'Gardere', 'Golden Meadow', 'Gonzales', 'Grambling',
-  'Gramercy', 'Grand Isle', 'Gretna', 'Grosse Tete', 'Gueydan', 'Hackberry',
-  'Hammond', 'Harahan', 'Harvey', 'Haughton', 'Haynesville', 'Henderson', 'Homer',
-  'Houma', 'Independence', 'Iowa', 'Jackson', 'Jean Lafitte', 'Jeanerette', 'Jefferson',
-  'Jennings', 'Jonesboro', 'Kaplan', 'Kenner', 'Kentwood', 'Killian', 'Kinder',
-  'Lacombe', 'Lafayette', 'Lake Arthur', 'Lake Charles', 'Lake Providence', 'Laplace',
-  'Larose', 'Leesville', 'Livonia', 'Lockport', 'Logansport', 'Luling', 'Lutcher',
-  'Madisonville', 'Mamou', 'Mandeville', 'Mansfield', 'Many', 'Maringouin', 'Marksville',
-  'Marrero', 'Maurice', 'Meraux', 'Merrydale', 'Metairie', 'Milton', 'Minden',
-  'Monroe', 'Monticello', 'Morgan City', 'Moss Bluff', 'Natchitoches', 'New Iberia',
-  'New Orleans', 'New Roads', 'Norco', 'Oak Grove', 'Oakdale', 'Oberlin', 'Opelousas',
-  'Patterson', 'Pearl River', 'Pierre Part', 'Pineville', 'Plaquemine', 'Ponchatoula',
-  'Port Allen', 'Port Barre', 'Port Sulphur', 'Prairieville', 'Raceland', 'Rayne',
-  'Rayville', 'Reserve', 'River Ridge', 'Roseland', 'Ruston', 'Saint Francisville',
-  'Saint Gabriel', 'Saint Martinville', 'Saint Rose', 'Scott', 'Shreveport', 'Simmesport',
-  'Slidell', 'Springhill', 'Sterlington', 'Stonewall', 'Sulphur', 'Tallulah',
-  'Terrytown', 'Thibodaux', 'Vidalia', 'Ville Platte', 'Vinton', 'Violet', 'Vivian',
-  'Waggaman', 'Walker', 'Welsh', 'West Monroe', 'Westlake', 'Westwego', 'Winnsboro',
-  'Youngsville', 'Zachary', 'Zwolle'
-];
-
-// Louisiana Parishes for dropdown (reserved for future use)
-const _LOUISIANA_PARISHES = [
-  'Acadia', 'Allen', 'Ascension', 'Assumption', 'Avoyelles', 'Beauregard', 'Bienville',
-  'Bossier', 'Caddo', 'Calcasieu', 'Caldwell', 'Cameron', 'Catahoula', 'Claiborne',
-  'Concordia', 'De Soto', 'East Baton Rouge', 'East Carroll', 'East Feliciana', 'Evangeline',
-  'Franklin', 'Grant', 'Iberia', 'Iberville', 'Jackson', 'Jefferson', 'Jefferson Davis',
-  'Lafayette', 'Lafourche', 'LaSalle', 'Lincoln', 'Livingston', 'Madison', 'Morehouse',
-  'Natchitoches', 'Orleans', 'Ouachita', 'Plaquemines', 'Pointe Coupee', 'Rapides',
-  'Red River', 'Richland', 'Sabine', 'St. Bernard', 'St. Charles', 'St. Helena',
-  'St. James', 'St. John the Baptist', 'St. Landry', 'St. Martin', 'St. Mary', 'St. Tammany',
-  'Tangipahoa', 'Tensas', 'Terrebonne', 'Union', 'Vermilion', 'Vernon', 'Washington',
-  'Webster', 'West Baton Rouge', 'West Carroll', 'West Feliciana', 'Winn'
-];
-
 // Form type configurations - each plan has specific pages
 const FORM_TYPES: Record<string, { title: string; pages: string[]; planType: string }> = {
   // POA Plans - plan_contents removed to match WordPress flow
