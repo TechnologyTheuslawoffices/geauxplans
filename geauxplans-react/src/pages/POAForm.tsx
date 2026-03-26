@@ -59,8 +59,8 @@ const PAGE_NAMES: Record<string, string> = {
   review: 'Review',
 };
 
-// US States for dropdown
-const US_STATES = [
+// US States for dropdown (reserved for future use)
+const _US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
   'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
   'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan',
@@ -71,8 +71,8 @@ const US_STATES = [
   'Wisconsin', 'Wyoming', 'District of Columbia'
 ];
 
-// Louisiana Cities for autocomplete
-const LOUISIANA_CITIES = [
+// Louisiana Cities for autocomplete (reserved for future use)
+const _LOUISIANA_CITIES = [
   'Abbeville', 'Addis', 'Alexandria', 'Amite City', 'Arcadia', 'Baker', 'Ball',
   'Basile', 'Bastrop', 'Baton Rouge', 'Berwick', 'Blanchard', 'Bogalusa', 'Bossier City',
   'Boutte', 'Breaux Bridge', 'Bridge City', 'Broussard', 'Brusly', 'Bunkie',
@@ -101,8 +101,8 @@ const LOUISIANA_CITIES = [
   'Youngsville', 'Zachary', 'Zwolle'
 ];
 
-// Louisiana Parishes for dropdown
-const LOUISIANA_PARISHES = [
+// Louisiana Parishes for dropdown (reserved for future use)
+const _LOUISIANA_PARISHES = [
   'Acadia', 'Allen', 'Ascension', 'Assumption', 'Avoyelles', 'Beauregard', 'Bienville',
   'Bossier', 'Caddo', 'Calcasieu', 'Caldwell', 'Cameron', 'Catahoula', 'Claiborne',
   'Concordia', 'De Soto', 'East Baton Rouge', 'East Carroll', 'East Feliciana', 'Evangeline',
