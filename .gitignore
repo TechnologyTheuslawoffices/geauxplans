@@ -82,3 +82,6 @@ tmpclaude-*/
 
 # Supabase temp
 supabase/.temp/
+
+# Standalone drafter project (not part of main repo)
+geauxdrafter-v2/

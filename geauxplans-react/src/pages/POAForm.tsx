@@ -61,15 +61,15 @@ const PAGE_NAMES: Record<string, string> = {
 
 // Form type configurations - each plan has specific pages
 const FORM_TYPES: Record<string, { title: string; pages: string[]; planType: string }> = {
-  // POA Plans - plan_contents removed to match WordPress flow
+  // POA Plans
   powerOfAttorneyForm: {
     title: 'Power of Attorney Supplement for One Person',
-    pages: ['start', 'personal_info', 'agents', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    pages: ['start', 'personal_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'review'],
     planType: 'poa',
   },
   powerOfAttorneyForm2Person: {
     title: 'Power of Attorney Supplement for Two Persons',
-    pages: ['start', 'personal_info', 'spouse_info', 'agents', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    pages: ['start', 'personal_info', 'spouse_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'review'],
     planType: 'poa_couple',
   },
 
@@ -110,6 +110,154 @@ const FORM_TYPES: Record<string, { title: string; pages: string[]; planType: str
   },
 };
 
+// Suffix options (from Knackly suffixes table)
+const SUFFIX_OPTIONS = [
+  'Jr.',
+  'Sr.',
+  'II',
+  'III',
+  'Esq.',
+  'M.D.',
+  'O.D.',
+  'Ph.D.',
+];
+
+// Relationship options for agent dropdown
+const RELATIONSHIP_OPTIONS = [
+  'Self',
+  'Spouse',
+  'Son',
+  'Daughter',
+  'Step-Son',
+  'Step-Daughter',
+  'Son-in-Law',
+  'Daughter-in-Law',
+  'Grandson',
+  'Granddaughter',
+  'Brother',
+  'Sister',
+  'Brother-in-Law',
+  'Sister-in-Law',
+  'Father',
+  'Mother',
+  'Father-in-Law',
+  'Mother-in-Law',
+  'Uncle',
+  'Aunt',
+  'Nephew',
+  'Niece',
+  'Cousin',
+  'Friend',
+];
+
+// Entity type options (from Knackly entitytypes table)
+const ENTITY_TYPE_OPTIONS = [
+  { value: 'limited liability company', label: 'Limited Liability Company (LLC)' },
+  { value: 'corporation', label: 'Corporation' },
+  { value: 'limited partnership', label: 'Limited Partnership' },
+  { value: 'general partnership', label: 'General Partnership' },
+  { value: 'sole proprietorship', label: 'Sole Proprietorship' },
+  { value: 'trust', label: 'Trust' },
+];
+
+// Entity role options for signer title (from Knackly entityroles table)
+const ENTITY_ROLE_OPTIONS = [
+  'President',
+  'CEO',
+  'Secretary',
+  'Member',
+  'Manager',
+  'Sole Proprietor',
+  'Shareholder',
+  'Partner',
+  'Authorized Signatory',
+  'Trustee',
+  'Director',
+  'Vice President',
+  'Treasurer',
+  'Trust Officer',
+];
+
+// US States (from Knackly states table)
+const US_STATES = [
+  { value: 'Alabama', abbrev: 'AL' },
+  { value: 'Alaska', abbrev: 'AK' },
+  { value: 'Arizona', abbrev: 'AZ' },
+  { value: 'Arkansas', abbrev: 'AR' },
+  { value: 'California', abbrev: 'CA' },
+  { value: 'Colorado', abbrev: 'CO' },
+  { value: 'Connecticut', abbrev: 'CT' },
+  { value: 'Delaware', abbrev: 'DE' },
+  { value: 'District of Columbia', abbrev: 'DC' },
+  { value: 'Florida', abbrev: 'FL' },
+  { value: 'Georgia', abbrev: 'GA' },
+  { value: 'Hawaii', abbrev: 'HI' },
+  { value: 'Idaho', abbrev: 'ID' },
+  { value: 'Illinois', abbrev: 'IL' },
+  { value: 'Indiana', abbrev: 'IN' },
+  { value: 'Iowa', abbrev: 'IA' },
+  { value: 'Kansas', abbrev: 'KS' },
+  { value: 'Kentucky', abbrev: 'KY' },
+  { value: 'Louisiana', abbrev: 'LA' },
+  { value: 'Maine', abbrev: 'ME' },
+  { value: 'Maryland', abbrev: 'MD' },
+  { value: 'Massachusetts', abbrev: 'MA' },
+  { value: 'Michigan', abbrev: 'MI' },
+  { value: 'Minnesota', abbrev: 'MN' },
+  { value: 'Mississippi', abbrev: 'MS' },
+  { value: 'Missouri', abbrev: 'MO' },
+  { value: 'Montana', abbrev: 'MT' },
+  { value: 'Nebraska', abbrev: 'NE' },
+  { value: 'Nevada', abbrev: 'NV' },
+  { value: 'New Hampshire', abbrev: 'NH' },
+  { value: 'New Jersey', abbrev: 'NJ' },
+  { value: 'New Mexico', abbrev: 'NM' },
+  { value: 'New York', abbrev: 'NY' },
+  { value: 'North Carolina', abbrev: 'NC' },
+  { value: 'North Dakota', abbrev: 'ND' },
+  { value: 'Ohio', abbrev: 'OH' },
+  { value: 'Oklahoma', abbrev: 'OK' },
+  { value: 'Oregon', abbrev: 'OR' },
+  { value: 'Pennsylvania', abbrev: 'PA' },
+  { value: 'Rhode Island', abbrev: 'RI' },
+  { value: 'South Carolina', abbrev: 'SC' },
+  { value: 'South Dakota', abbrev: 'SD' },
+  { value: 'Tennessee', abbrev: 'TN' },
+  { value: 'Texas', abbrev: 'TX' },
+  { value: 'Utah', abbrev: 'UT' },
+  { value: 'Vermont', abbrev: 'VT' },
+  { value: 'Virginia', abbrev: 'VA' },
+  { value: 'Washington', abbrev: 'WA' },
+  { value: 'West Virginia', abbrev: 'WV' },
+  { value: 'Wisconsin', abbrev: 'WI' },
+  { value: 'Wyoming', abbrev: 'WY' },
+];
+
+// Louisiana Parishes (from Knackly parishes table)
+const LOUISIANA_PARISHES = [
+  'Acadia', 'Allen', 'Ascension', 'Assumption', 'Avoyelles',
+  'Beauregard', 'Bienville', 'Bossier',
+  'Caddo', 'Calcasieu', 'Caldwell', 'Cameron', 'Catahoula', 'Claiborne', 'Concordia',
+  'De Soto',
+  'East Baton Rouge', 'East Carroll', 'East Feliciana', 'Evangeline',
+  'Franklin',
+  'Grant',
+  'Iberia', 'Iberville',
+  'Jackson', 'Jefferson', 'Jefferson Davis',
+  'Lafayette', 'Lafourche', 'La Salle', 'Lincoln', 'Livingston',
+  'Madison', 'Morehouse',
+  'Natchitoches',
+  'Orleans', 'Ouachita',
+  'Plaquemines', 'Pointe Coupee',
+  'Rapides', 'Red River', 'Richland',
+  'Sabine', 'St. Bernard', 'St. Charles', 'St. Helena', 'St. James', 'St. John the Baptist',
+  'St. Landry', 'St. Martin', 'St. Mary', 'St. Tammany',
+  'Tangipahoa', 'Tensas', 'Terrebonne',
+  'Union',
+  'Vermilion', 'Vernon',
+  'Washington', 'Webster', 'West Baton Rouge', 'West Carroll', 'West Feliciana', 'Winn',
+];
+
 interface Party {
   id: string;
   type_of_party: 'An individual person' | 'An entity' | '';
@@ -122,6 +270,7 @@ interface Party {
   relationship_with_person: string;
   last_4_ssn_digits: string;
   entity_name: string;
+  entity_type: string;
   last_4_ein_digits: string;
   same_address_as_person_granting_power_of_attorney: boolean;
   street_address: string;
@@ -438,6 +587,7 @@ const createEmptyParty = (): Party => ({
   relationship_with_person: '',
   last_4_ssn_digits: '',
   entity_name: '',
+  entity_type: '',
   last_4_ein_digits: '',
   same_address_as_person_granting_power_of_attorney: false,
   street_address: '',
@@ -505,6 +655,7 @@ const TEST_PREFILL_DATA: FormData = {
         relationship_with_person: 'Son',
         last_4_ssn_digits: '9876',
         entity_name: '',
+        entity_type: '',
         last_4_ein_digits: '',
         same_address_as_person_granting_power_of_attorney: false,
         street_address: '456 Oak Avenue',
@@ -528,6 +679,7 @@ const TEST_PREFILL_DATA: FormData = {
         relationship_with_person: 'Daughter',
         last_4_ssn_digits: '5432',
         entity_name: '',
+        entity_type: '',
         last_4_ein_digits: '',
         same_address_as_person_granting_power_of_attorney: false,
         street_address: '789 Pine Road',
@@ -551,6 +703,7 @@ const TEST_PREFILL_DATA: FormData = {
         relationship_with_person: '',
         last_4_ssn_digits: '',
         entity_name: 'First National Trust Company',
+        entity_type: 'trust',
         last_4_ein_digits: '4321',
         same_address_as_person_granting_power_of_attorney: false,
         street_address: '100 Financial Plaza',
@@ -582,6 +735,7 @@ const TEST_PREFILL_DATA: FormData = {
         relationship_with_person: 'Friend',
         last_4_ssn_digits: '7890',
         entity_name: '',
+        entity_type: '',
         last_4_ein_digits: '',
         same_address_as_person_granting_power_of_attorney: false,
         street_address: '555 Elm Street',
@@ -786,13 +940,69 @@ const POAForm: React.FC = () => {
     }));
   };
 
+  // Successor agent helper functions
+  const addSuccessorAgent = (poaType: 'fpoa' | 'hcpoa' | 'spouse_fpoa' | 'spouse_hcpoa') => {
+    setFormData(prev => ({
+      ...prev,
+      [poaType]: {
+        ...prev[poaType],
+        successor_agents: [
+          ...(prev[poaType].successor_agents || []),
+          { successor_agent_to_serve: '', second_successor_coagent_to_serve: '', agents_serve_alone: '' }
+        ],
+      },
+    }));
+  };
+
+  const removeSuccessorAgent = (poaType: 'fpoa' | 'hcpoa' | 'spouse_fpoa' | 'spouse_hcpoa', index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      [poaType]: {
+        ...prev[poaType],
+        successor_agents: (prev[poaType].successor_agents || []).filter((_, i) => i !== index),
+      },
+    }));
+  };
+
+  const updateSuccessorAgent = (poaType: 'fpoa' | 'hcpoa' | 'spouse_fpoa' | 'spouse_hcpoa', index: number, field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [poaType]: {
+        ...prev[poaType],
+        successor_agents: (prev[poaType].successor_agents || []).map((agent, i) =>
+          i === index ? { ...agent, [field]: value } : agent
+        ),
+      },
+    }));
+  };
+
+  const getOrdinalLabel = (index: number): string => {
+    const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth'];
+    return ordinals[index] || `${index + 1}th`;
+  };
+
   // Easter egg: Prefill form with test data (Ctrl+Shift+T)
   const prefillTestData = useCallback(() => {
-    setFormData(TEST_PREFILL_DATA);
+    const isTwoPerson = formType.includes('2Person');
+
+    // Clone test data and adjust agent selections based on form type
+    const testData = JSON.parse(JSON.stringify(TEST_PREFILL_DATA));
+
+    if (!isTwoPerson) {
+      // For 1-person forms, use actual party names instead of 'spouse'
+      // Compute the name exactly as getPartyDisplayName does
+      const firstParty = testData.people_or_entities_who_will_serve_as_agents.parties[0];
+      const firstPartyName = [firstParty.first_name, firstParty.middle_name, firstParty.surname]
+        .filter(Boolean).join(' ');
+      testData.fpoa.fpoa_initial_agents.person_to_serve = firstPartyName;
+      testData.hcpoa.hcpoa_initial_agents.person_to_serve = firstPartyName;
+    }
+
+    setFormData(testData);
     setHasOtherParties('Yes');
     setSaveMessage('🥚 Test data loaded!');
     setTimeout(() => setSaveMessage(''), 3000);
-  }, []);
+  }, [formType]);
 
   // Easter egg: Click title 5 times rapidly to prefill
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1045,149 +1255,11 @@ const POAForm: React.FC = () => {
 
   const renderStartPage = () => (
     <div className="poa-page">
+      <p className="text-muted"><em>Estate Plan Document Selection</em></p>
       <h2>1. {formConfig.title}</h2>
-      <div className="alert alert-info">
-        <h5>Welcome to the {formConfig.title} Interview</h5>
-        <p>This interview will guide you through creating your Power of Attorney documents. Please have the following information ready:</p>
-        <ul>
-          <li>Your personal information (name, date of birth, address)</li>
-          <li>Information about the people or entities you want to appoint as agents</li>
-          <li>Your preferences for healthcare decisions</li>
-        </ul>
-        <p><strong>Your progress is saved automatically.</strong> You can return and complete this form at any time.</p>
-      </div>
-
-      {/* Governing Law */}
-      <div className="mb-4">
-        <label className="form-label"><strong>Governing Law</strong></label>
-        <p className="text-muted small">Select the state whose laws will govern your Power of Attorney documents.</p>
-        <select
-          className="form-select"
-          value={formData.governing_law}
-          onChange={(e) => setFormData(prev => ({ ...prev, governing_law: e.target.value }))}
-        >
-          <option value="Louisiana">Louisiana</option>
-          <option value="Alabama">Alabama</option>
-          <option value="Alaska">Alaska</option>
-          <option value="Arizona">Arizona</option>
-          <option value="Arkansas">Arkansas</option>
-          <option value="California">California</option>
-          <option value="Colorado">Colorado</option>
-          <option value="Connecticut">Connecticut</option>
-          <option value="Delaware">Delaware</option>
-          <option value="Florida">Florida</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Hawaii">Hawaii</option>
-          <option value="Idaho">Idaho</option>
-          <option value="Illinois">Illinois</option>
-          <option value="Indiana">Indiana</option>
-          <option value="Iowa">Iowa</option>
-          <option value="Kansas">Kansas</option>
-          <option value="Kentucky">Kentucky</option>
-          <option value="Maine">Maine</option>
-          <option value="Maryland">Maryland</option>
-          <option value="Massachusetts">Massachusetts</option>
-          <option value="Michigan">Michigan</option>
-          <option value="Minnesota">Minnesota</option>
-          <option value="Mississippi">Mississippi</option>
-          <option value="Missouri">Missouri</option>
-          <option value="Montana">Montana</option>
-          <option value="Nebraska">Nebraska</option>
-          <option value="Nevada">Nevada</option>
-          <option value="New Hampshire">New Hampshire</option>
-          <option value="New Jersey">New Jersey</option>
-          <option value="New Mexico">New Mexico</option>
-          <option value="New York">New York</option>
-          <option value="North Carolina">North Carolina</option>
-          <option value="North Dakota">North Dakota</option>
-          <option value="Ohio">Ohio</option>
-          <option value="Oklahoma">Oklahoma</option>
-          <option value="Oregon">Oregon</option>
-          <option value="Pennsylvania">Pennsylvania</option>
-          <option value="Rhode Island">Rhode Island</option>
-          <option value="South Carolina">South Carolina</option>
-          <option value="South Dakota">South Dakota</option>
-          <option value="Tennessee">Tennessee</option>
-          <option value="Texas">Texas</option>
-          <option value="Utah">Utah</option>
-          <option value="Vermont">Vermont</option>
-          <option value="Virginia">Virginia</option>
-          <option value="Washington">Washington</option>
-          <option value="West Virginia">West Virginia</option>
-          <option value="Wisconsin">Wisconsin</option>
-          <option value="Wyoming">Wyoming</option>
-        </select>
-      </div>
-
-      {/* Electronic Signature */}
-      <div className="mb-4">
-        <div className="form-check">
-          <input
-            type="checkbox"
-            className="form-check-input"
-            id="esign"
-            checked={formData.esign}
-            onChange={(e) => setFormData(prev => ({ ...prev, esign: e.target.checked }))}
-          />
-          <label className="form-check-label" htmlFor="esign">
-            <strong>Include digital signature language</strong> in documents that may be executed by electronic signature.
-          </label>
-        </div>
-      </div>
-
-      {/* Married / Life Partner */}
-      <div className="mb-4">
-        <label className="form-label"><strong>Is the person granting the power of attorney married or do they have a life partner?</strong></label>
-        <div className="form-check">
-          <input
-            type="radio"
-            className="form-check-input"
-            id="married-yes"
-            name="married"
-            checked={formData.married === true}
-            onChange={() => setFormData(prev => ({ ...prev, married: true }))}
-          />
-          <label className="form-check-label" htmlFor="married-yes">Yes</label>
-        </div>
-        <div className="form-check">
-          <input
-            type="radio"
-            className="form-check-input"
-            id="married-no"
-            name="married"
-            checked={formData.married === false}
-            onChange={() => setFormData(prev => ({ ...prev, married: false }))}
-          />
-          <label className="form-check-label" htmlFor="married-no">No</label>
-        </div>
-      </div>
-
-      {/* Children as Agents */}
-      <div className="mb-4">
-        <label className="form-label"><strong>Will you name any children as a Healthcare Agent or Financial Agent?</strong></label>
-        <div className="form-check">
-          <input
-            type="radio"
-            className="form-check-input"
-            id="children-yes"
-            name="children_as_agents"
-            checked={formData.children_as_agents === true}
-            onChange={() => setFormData(prev => ({ ...prev, children_as_agents: true }))}
-          />
-          <label className="form-check-label" htmlFor="children-yes">Yes</label>
-        </div>
-        <div className="form-check">
-          <input
-            type="radio"
-            className="form-check-input"
-            id="children-no"
-            name="children_as_agents"
-            checked={formData.children_as_agents === false}
-            onChange={() => setFormData(prev => ({ ...prev, children_as_agents: false }))}
-          />
-          <label className="form-check-label" htmlFor="children-no">No</label>
-        </div>
-      </div>
+      <p>
+        The Power of Attorney (POA) Supplement to your estate plan is well suited for families with a young adult child or student who is over the age of eighteen (18), or families with an agent parent, or any other person who needs to authorize someone to act for them legally. The Power of Attorney Supplement includes a Financial Power of Attorney, a Medical Power of Attorney, and an Advanced Healthcare Directive (a/k/a "Living Will") for one person. These documents would authorize someone to make legal or financial decisions for yourself, an adult child, an aging parent, or any other person, as well as access protected health information, consent to medical procedures, or make care arrangements if the person granting the power is unable to do so.
+      </p>
     </div>
   );
 
@@ -1234,11 +1306,9 @@ const POAForm: React.FC = () => {
             onChange={(e) => updateFormData('personal_info', 'suffix', e.target.value)}
           >
             <option value="">None</option>
-            <option value="Jr.">Jr.</option>
-            <option value="Sr.">Sr.</option>
-            <option value="II">II</option>
-            <option value="III">III</option>
-            <option value="IV">IV</option>
+            {SUFFIX_OPTIONS.map((sfx) => (
+              <option key={sfx} value={sfx}>{sfx}</option>
+            ))}
           </select>
         </div>
       </div>
@@ -1305,12 +1375,16 @@ const POAForm: React.FC = () => {
         </div>
         <div className="col-md-3">
           <label className="form-label">State <span className="text-danger">*</span></label>
-          <input
-            type="text"
-            className={`form-control ${errors['personal_info.state'] ? 'is-invalid' : ''}`}
+          <select
+            className={`form-select ${errors['personal_info.state'] ? 'is-invalid' : ''}`}
             value={formData.personal_info.state}
             onChange={(e) => updateFormData('personal_info', 'state', e.target.value)}
-          />
+          >
+            <option value="">Select State...</option>
+            {US_STATES.map((st) => (
+              <option key={st.abbrev} value={st.value}>{st.value}</option>
+            ))}
+          </select>
           {errors['personal_info.state'] && <div className="invalid-feedback">{errors['personal_info.state']}</div>}
         </div>
         <div className="col-md-3">
@@ -1325,16 +1399,30 @@ const POAForm: React.FC = () => {
           {errors['personal_info.zip'] && <div className="invalid-feedback">{errors['personal_info.zip']}</div>}
         </div>
         <div className="col-md-3">
-          <label className="form-label">Parish <span className="text-danger">*</span></label>
-          <input
-            type="text"
-            className={`form-control ${errors['personal_info.parish'] ? 'is-invalid' : ''}`}
-            value={formData.personal_info.parish}
-            onChange={(e) => updateFormData('personal_info', 'parish', e.target.value)}
-            placeholder="e.g., Orleans"
-          />
+          <label className="form-label">
+            {formData.personal_info.state === 'Louisiana' ? 'Parish' : 'County'} <span className="text-danger">*</span>
+          </label>
+          {formData.personal_info.state === 'Louisiana' ? (
+            <select
+              className={`form-select ${errors['personal_info.parish'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.parish}
+              onChange={(e) => updateFormData('personal_info', 'parish', e.target.value)}
+            >
+              <option value="">Select Parish...</option>
+              {LOUISIANA_PARISHES.map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type="text"
+              className={`form-control ${errors['personal_info.parish'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.parish}
+              onChange={(e) => updateFormData('personal_info', 'parish', e.target.value)}
+              placeholder={formData.personal_info.state ? 'Enter county' : 'Select state first'}
+            />
+          )}
           {errors['personal_info.parish'] && <div className="invalid-feedback">{errors['personal_info.parish']}</div>}
-          <small className="text-muted">Do not include the word "Parish"</small>
         </div>
       </div>
 
@@ -1469,13 +1557,16 @@ const POAForm: React.FC = () => {
                   </div>
                   <div className="col-md-4">
                     <label className="form-label">Relationship <span className="text-danger">*</span></label>
-                    <input
-                      type="text"
-                      className="form-control"
+                    <select
+                      className="form-select"
                       value={party.relationship_with_person}
                       onChange={(e) => updateParty(index, 'relationship_with_person', e.target.value)}
-                      placeholder="e.g., Spouse, Child, Friend"
-                    />
+                    >
+                      <option value="">Select...</option>
+                      {RELATIONSHIP_OPTIONS.map((rel) => (
+                        <option key={rel} value={rel}>{rel}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
                 <div className="row mb-3">
@@ -1515,6 +1606,22 @@ const POAForm: React.FC = () => {
                       onChange={(e) => updateParty(index, 'last_4_ein_digits', e.target.value.replace(/\D/g, ''))}
                       maxLength={4}
                     />
+                  </div>
+                </div>
+
+                <div className="row mb-3">
+                  <div className="col-md-6">
+                    <label className="form-label">Entity Type <span className="text-danger">*</span></label>
+                    <select
+                      className="form-select"
+                      value={party.entity_type}
+                      onChange={(e) => updateParty(index, 'entity_type', e.target.value)}
+                    >
+                      <option value="">Select Entity Type...</option>
+                      {ENTITY_TYPE_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
@@ -1566,22 +1673,28 @@ const POAForm: React.FC = () => {
                           />
                         </div>
                         <div className="col-md-1 mb-2">
-                          <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            placeholder="Sfx"
+                          <select
+                            className="form-select form-select-sm"
                             value={signer.suffix}
                             onChange={(e) => updateSigner(index, signerIndex, 'suffix', e.target.value)}
-                          />
+                          >
+                            <option value="">-</option>
+                            {SUFFIX_OPTIONS.map((sfx) => (
+                              <option key={sfx} value={sfx}>{sfx}</option>
+                            ))}
+                          </select>
                         </div>
                         <div className="col-md-3 mb-2">
-                          <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            placeholder="Title (e.g., President)"
+                          <select
+                            className="form-select form-select-sm"
                             value={signer.title}
                             onChange={(e) => updateSigner(index, signerIndex, 'title', e.target.value)}
-                          />
+                          >
+                            <option value="">Title...</option>
+                            {ENTITY_ROLE_OPTIONS.map((role) => (
+                              <option key={role} value={role}>{role}</option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                     </div>
@@ -1642,12 +1755,16 @@ const POAForm: React.FC = () => {
                 </div>
                 <div className="col-md-3 mt-2">
                   <label className="form-label">State</label>
-                  <input
-                    type="text"
-                    className="form-control"
+                  <select
+                    className="form-select"
                     value={party.state}
                     onChange={(e) => updateParty(index, 'state', e.target.value)}
-                  />
+                  >
+                    <option value="">Select State...</option>
+                    {US_STATES.map((st) => (
+                      <option key={st.abbrev} value={st.value}>{st.value}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="col-md-3 mt-2">
                   <label className="form-label">ZIP Code</label>
@@ -1660,13 +1777,29 @@ const POAForm: React.FC = () => {
                   />
                 </div>
                 <div className="col-md-3 mt-2">
-                  <label className="form-label">Parish</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={party.parish}
-                    onChange={(e) => updateParty(index, 'parish', e.target.value)}
-                  />
+                  <label className="form-label">
+                    {party.state === 'Louisiana' ? 'Parish' : 'County'}
+                  </label>
+                  {party.state === 'Louisiana' ? (
+                    <select
+                      className="form-select"
+                      value={party.parish}
+                      onChange={(e) => updateParty(index, 'parish', e.target.value)}
+                    >
+                      <option value="">Select Parish...</option>
+                      {LOUISIANA_PARISHES.map((p) => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={party.parish}
+                      onChange={(e) => updateParty(index, 'parish', e.target.value)}
+                      placeholder={party.state ? `Enter county` : 'Select state first'}
+                    />
+                  )}
                 </div>
               </div>
             )}
@@ -1683,38 +1816,35 @@ const POAForm: React.FC = () => {
   const renderPlanContentsPage = () => {
     const isTrust = formType.includes('trustBased');
     const isWill = formType.includes('willBased') || formType.includes('minorChild');
-    const planName = isTrust ? 'Trust-Based Estate' : isWill ? 'Will-Based Estate' : 'Power of Attorney';
 
     return (
       <div className="poa-page">
         <h2>4. Plan Contents</h2>
-        <div className="alert alert-info">
-          <p>Your {planName} plan will include the following documents:</p>
-          <ul>
-            {/* Trust-specific documents */}
-            {isTrust && (
-              <>
-                <li><strong>Trust Agreement</strong> - Your revocable living trust document</li>
-                <li><strong>Certificate of Trust</strong> - Summary for financial institutions</li>
-                <li><strong>Pour-Over Will</strong> - Transfers remaining assets to the trust</li>
-                <li><strong>Trust Funding Instructions</strong> - Guide for funding your trust</li>
-              </>
-            )}
-            {/* Will-specific documents */}
-            {isWill && (
-              <>
-                <li><strong>Last Will and Testament</strong> - Directs distribution of your estate</li>
-                <li><strong>Will Attestation</strong> - Witness certification for your will</li>
-              </>
-            )}
-            {/* POA documents (all plans) */}
-            <li><strong>Financial Power of Attorney (FPOA)</strong> - Allows your agent to manage your financial affairs</li>
-            <li><strong>Healthcare Power of Attorney (HCPOA)</strong> - Allows your agent to make healthcare decisions</li>
-            <li><strong>Healthcare Directive (HCD)</strong> - Your wishes regarding end-of-life care</li>
-            <li><strong>HIPAA Authorization</strong> - Allows access to your medical records</li>
-          </ul>
-          <p>In the following pages, you'll provide the information needed for each document.</p>
-        </div>
+        <p><em><strong>In the following steps you will enter information to create the following documents:</strong></em></p>
+        <ul className="mb-4" style={{ listStyleType: 'disc', paddingLeft: '2.5rem' }}>
+          {/* Trust-specific documents */}
+          {isTrust && (
+            <>
+              <li><em>Revocable Living Trust Agreement</em></li>
+              <li><em>Certificate of Trust</em></li>
+              <li><em>Pour-Over Will</em></li>
+              <li><em>Trust Funding Instructions</em></li>
+            </>
+          )}
+          {/* Will-specific documents */}
+          {isWill && (
+            <>
+              <li><em>Last Will and Testament</em></li>
+              <li><em>Will Attestation</em></li>
+            </>
+          )}
+          {/* POA documents (all plans) */}
+          <li><em>Durable Financial Power of Attorney</em></li>
+          <li><em>Durable Medical Power of Attorney</em></li>
+          <li><em>Advance Healthcare Directive (a/k/a Living Will)</em></li>
+          <li><em>HIPAA Release</em></li>
+        </ul>
+        <p>If you wish to add, remove, or edit personal information about any person to be included in your GeauxPlan, simply return to the previous steps. Your revisions will then be available in the following steps.</p>
       </div>
     );
   };
@@ -1795,18 +1925,22 @@ const POAForm: React.FC = () => {
           </div>
         </div>
 
+        <p className="mb-3">Select the initial agent(s) for {getPrincipalFullName()}'s Financial Power of Attorney:</p>
         <div className="card mb-3">
-          <div className="card-header">Initial Agents</div>
+          <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <span>Item</span>
+            <span>−</span>
+          </div>
           <div className="card-body">
             <div className="row">
               <div className="col-md-6 mb-3">
-                <label className="form-label">Initial Agent <span className="text-danger">*</span></label>
+                <label className="form-label">Select the person you want to serve:</label>
                 <select
                   className="form-select"
                   value={formData.fpoa.fpoa_initial_agents.person_to_serve}
                   onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
                 >
-                  <option value="">Select Initial Agent...</option>
+                  <option value="">Initial Agent</option>
                   {isTwoPerson && (
                     <option value="spouse">My Spouse</option>
                   )}
@@ -1816,13 +1950,13 @@ const POAForm: React.FC = () => {
                 </select>
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label">Initial Co-Agent (if any)</label>
+                <label className="form-label">If you want to appoint a second person (a Co-Agent) to serve at the same time as the Initial Agent, select them here:</label>
                 <select
                   className="form-select"
                   value={formData.fpoa.fpoa_initial_agents.second_coagent_person_to_serve}
                   onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                 >
-                  <option value="">None</option>
+                  <option value="">Initial Co-Agent (if any)</option>
                   {parties.map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
@@ -1862,7 +1996,7 @@ const POAForm: React.FC = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Do you want to appoint successor agents? <span className="text-danger">*</span></label>
+          <label className="form-label">Will Successor Agent(s) be appointed for {getPrincipalFullName()}'s Financial Power of Attorney?</label>
           <div>
             <div className="form-check form-check-inline">
               <input
@@ -1888,6 +2022,73 @@ const POAForm: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Successor Agents Section - appears when Yes is selected */}
+        {formData.fpoa.has_appointer_successor_agents === 'Yes' && (
+          <>
+            <p className="text-muted mb-2">
+              The successor agents will serve if all of the initial Agents are unable to serve.
+              These successor Agents will serve in the order they are entered.
+              Successor agents are not required, but are usually recommended.
+            </p>
+            <p className="mb-3">Select the successor agents for {getPrincipalFullName()}'s Financial Power of Attorney:</p>
+
+            {(formData.fpoa.successor_agents || []).map((agent, index) => (
+              <div key={index} className="card mb-2">
+                <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                  <span>{getOrdinalLabel(index)} Successor Agent(s)</span>
+                  <div>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-link text-white"
+                      onClick={() => removeSuccessorAgent('fpoa', index)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Select the person you want to serve:</label>
+                      <select
+                        className="form-select"
+                        value={agent.successor_agent_to_serve || ''}
+                        onChange={(e) => updateSuccessorAgent('fpoa', index, 'successor_agent_to_serve', e.target.value)}
+                      >
+                        <option value="">Successor Agent</option>
+                        {parties.map((party) => (
+                          <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">If you want to appoint a second person (a Co-Agent) to serve as Successor Agent, select them here:</label>
+                      <select
+                        className="form-select"
+                        value={agent.second_successor_coagent_to_serve || ''}
+                        onChange={(e) => updateSuccessorAgent('fpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
+                      >
+                        <option value="">Successor Co-Agent (if any)</option>
+                        {parties.map((party) => (
+                          <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              className="btn btn-outline-primary mb-3"
+              onClick={() => addSuccessorAgent('fpoa')}
+            >
+              + Add {getOrdinalLabel((formData.fpoa.successor_agents || []).length)} Successor Agent(s)
+            </button>
+          </>
+        )}
 
         {/* Spouse FPOA Section for 2-person forms */}
         {isTwoPerson && (
@@ -1992,6 +2193,71 @@ const POAForm: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Spouse FPOA Successor Agents Section */}
+            {formData.spouse_fpoa.has_appointer_successor_agents === 'Yes' && (
+              <>
+                <p className="text-muted mb-2">
+                  The successor agents will serve if all of the initial Agents are unable to serve.
+                  These successor Agents will serve in the order they are entered.
+                </p>
+                <p className="mb-3">Select the successor agents for {formData.spouse_info.first_name || 'Spouse'}'s Financial Power of Attorney:</p>
+
+                {(formData.spouse_fpoa.successor_agents || []).map((agent, index) => (
+                  <div key={index} className="card mb-2">
+                    <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                      <span>{getOrdinalLabel(index)} Successor Agent(s)</span>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-link text-white"
+                        onClick={() => removeSuccessorAgent('spouse_fpoa', index)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="card-body">
+                      <div className="row">
+                        <div className="col-md-6 mb-3">
+                          <label className="form-label">Select the person you want to serve:</label>
+                          <select
+                            className="form-select"
+                            value={agent.successor_agent_to_serve || ''}
+                            onChange={(e) => updateSuccessorAgent('spouse_fpoa', index, 'successor_agent_to_serve', e.target.value)}
+                          >
+                            <option value="">Successor Agent</option>
+                            <option value="client">{formData.personal_info.first_name || 'Client'} (My Spouse)</option>
+                            {parties.map((party) => (
+                              <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <label className="form-label">If you want to appoint a Co-Agent as Successor, select them here:</label>
+                          <select
+                            className="form-select"
+                            value={agent.second_successor_coagent_to_serve || ''}
+                            onChange={(e) => updateSuccessorAgent('spouse_fpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
+                          >
+                            <option value="">Successor Co-Agent (if any)</option>
+                            {parties.map((party) => (
+                              <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className="btn btn-outline-primary mb-3"
+                  onClick={() => addSuccessorAgent('spouse_fpoa')}
+                >
+                  + Add {getOrdinalLabel((formData.spouse_fpoa.successor_agents || []).length)} Successor Agent(s)
+                </button>
+              </>
+            )}
           </>
         )}
       </div>
@@ -2096,18 +2362,22 @@ const POAForm: React.FC = () => {
           </div>
         </div>
 
+        <p className="mb-3">Select the initial agent(s) for {getPrincipalFullName()}'s Healthcare Power of Attorney:</p>
         <div className="card mb-3">
-          <div className="card-header">Healthcare Agents</div>
+          <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <span>Item</span>
+            <span>−</span>
+          </div>
           <div className="card-body">
             <div className="row">
               <div className="col-md-6 mb-3">
-                <label className="form-label">Initial Healthcare Agent <span className="text-danger">*</span></label>
+                <label className="form-label">Select the person you want to serve:</label>
                 <select
                   className="form-select"
                   value={formData.hcpoa.hcpoa_initial_agents.person_to_serve}
                   onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
                 >
-                  <option value="">Select Initial Agent...</option>
+                  <option value="">Initial Agent</option>
                   {isTwoPerson && (
                     <option value="spouse">My Spouse</option>
                   )}
@@ -2117,13 +2387,13 @@ const POAForm: React.FC = () => {
                 </select>
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label">Initial Co-Agent (if any)</label>
+                <label className="form-label">If you want to appoint a second person (a Co-Agent) to serve at the same time as the Initial Agent, select them here:</label>
                 <select
                   className="form-select"
                   value={formData.hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve}
                   onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                 >
-                  <option value="">None</option>
+                  <option value="">Initial Co-Agent (if any)</option>
                   {parties.map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
@@ -2163,7 +2433,7 @@ const POAForm: React.FC = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Do you want to appoint successor agents? <span className="text-danger">*</span></label>
+          <label className="form-label">Will Successor Agent(s) be appointed for {getPrincipalFullName()}'s Healthcare Power of Attorney?</label>
           <div>
             <div className="form-check form-check-inline">
               <input
@@ -2189,6 +2459,73 @@ const POAForm: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Successor Agents Section - appears when Yes is selected */}
+        {formData.hcpoa.has_appointed_successor_agents === 'Yes' && (
+          <>
+            <p className="text-muted mb-2">
+              The successor agents will serve if all of the initial Agents are unable to serve.
+              These successor Agents will serve in the order they are entered.
+              Successor agents are not required, but are usually recommended.
+            </p>
+            <p className="mb-3">Select the successor agents for {getPrincipalFullName()}'s Healthcare Power of Attorney:</p>
+
+            {(formData.hcpoa.successor_agents || []).map((agent, index) => (
+              <div key={index} className="card mb-2">
+                <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                  <span>{getOrdinalLabel(index)} Successor Agent(s)</span>
+                  <div>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-link text-white"
+                      onClick={() => removeSuccessorAgent('hcpoa', index)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Select the person you want to serve:</label>
+                      <select
+                        className="form-select"
+                        value={agent.successor_agent_to_serve || ''}
+                        onChange={(e) => updateSuccessorAgent('hcpoa', index, 'successor_agent_to_serve', e.target.value)}
+                      >
+                        <option value="">Successor Agent</option>
+                        {parties.map((party) => (
+                          <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">If you want to appoint a second person (a Co-Agent) to serve as Successor Agent, select them here:</label>
+                      <select
+                        className="form-select"
+                        value={agent.second_successor_coagent_to_serve || ''}
+                        onChange={(e) => updateSuccessorAgent('hcpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
+                      >
+                        <option value="">Successor Co-Agent (if any)</option>
+                        {parties.map((party) => (
+                          <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              className="btn btn-outline-primary mb-3"
+              onClick={() => addSuccessorAgent('hcpoa')}
+            >
+              + Add {getOrdinalLabel((formData.hcpoa.successor_agents || []).length)} Successor Agent(s)
+            </button>
+          </>
+        )}
 
         {/* Spouse HCPOA Section for 2-person forms */}
         {isTwoPerson && (
@@ -2347,6 +2684,71 @@ const POAForm: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Spouse HCPOA Successor Agents Section */}
+            {formData.spouse_hcpoa.has_appointed_successor_agents === 'Yes' && (
+              <>
+                <p className="text-muted mb-2">
+                  The successor agents will serve if all of the initial Agents are unable to serve.
+                  These successor Agents will serve in the order they are entered.
+                </p>
+                <p className="mb-3">Select the successor agents for {formData.spouse_info.first_name || 'Spouse'}'s Healthcare Power of Attorney:</p>
+
+                {(formData.spouse_hcpoa.successor_agents || []).map((agent, index) => (
+                  <div key={index} className="card mb-2">
+                    <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                      <span>{getOrdinalLabel(index)} Successor Agent(s)</span>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-link text-white"
+                        onClick={() => removeSuccessorAgent('spouse_hcpoa', index)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="card-body">
+                      <div className="row">
+                        <div className="col-md-6 mb-3">
+                          <label className="form-label">Select the person you want to serve:</label>
+                          <select
+                            className="form-select"
+                            value={agent.successor_agent_to_serve || ''}
+                            onChange={(e) => updateSuccessorAgent('spouse_hcpoa', index, 'successor_agent_to_serve', e.target.value)}
+                          >
+                            <option value="">Successor Agent</option>
+                            <option value="client">{formData.personal_info.first_name || 'Client'} (My Spouse)</option>
+                            {parties.map((party) => (
+                              <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <label className="form-label">If you want to appoint a Co-Agent as Successor, select them here:</label>
+                          <select
+                            className="form-select"
+                            value={agent.second_successor_coagent_to_serve || ''}
+                            onChange={(e) => updateSuccessorAgent('spouse_hcpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
+                          >
+                            <option value="">Successor Co-Agent (if any)</option>
+                            {parties.map((party) => (
+                              <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className="btn btn-outline-primary mb-3"
+                  onClick={() => addSuccessorAgent('spouse_hcpoa')}
+                >
+                  + Add {getOrdinalLabel((formData.spouse_hcpoa.successor_agents || []).length)} Successor Agent(s)
+                </button>
+              </>
+            )}
           </>
         )}
       </div>
@@ -2762,13 +3164,16 @@ const POAForm: React.FC = () => {
                       </div>
                       <div className="col-md-4">
                         <label className="form-label">Relationship <span className="text-danger">*</span></label>
-                        <input
-                          type="text"
-                          className="form-control"
+                        <select
+                          className="form-select"
                           value={party.relationship_with_person}
                           onChange={(e) => updateParty(index, 'relationship_with_person', e.target.value)}
-                          placeholder="e.g., Spouse, Child, Friend"
-                        />
+                        >
+                          <option value="">Select...</option>
+                          {RELATIONSHIP_OPTIONS.map((rel) => (
+                            <option key={rel} value={rel}>{rel}</option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                     <div className="row mb-3">
@@ -2808,6 +3213,22 @@ const POAForm: React.FC = () => {
                           onChange={(e) => updateParty(index, 'last_4_ein_digits', e.target.value.replace(/\D/g, ''))}
                           maxLength={4}
                         />
+                      </div>
+                    </div>
+
+                    <div className="row mb-3">
+                      <div className="col-md-6">
+                        <label className="form-label">Entity Type <span className="text-danger">*</span></label>
+                        <select
+                          className="form-select"
+                          value={party.entity_type}
+                          onChange={(e) => updateParty(index, 'entity_type', e.target.value)}
+                        >
+                          <option value="">Select Entity Type...</option>
+                          {ENTITY_TYPE_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </select>
                       </div>
                     </div>
 
@@ -2859,22 +3280,28 @@ const POAForm: React.FC = () => {
                               />
                             </div>
                             <div className="col-md-1 mb-2">
-                              <input
-                                type="text"
-                                className="form-control form-control-sm"
-                                placeholder="Sfx"
+                              <select
+                                className="form-select form-select-sm"
                                 value={signer.suffix}
                                 onChange={(e) => updateSigner(index, signerIndex, 'suffix', e.target.value)}
-                              />
+                              >
+                                <option value="">-</option>
+                                {SUFFIX_OPTIONS.map((sfx) => (
+                                  <option key={sfx} value={sfx}>{sfx}</option>
+                                ))}
+                              </select>
                             </div>
                             <div className="col-md-3 mb-2">
-                              <input
-                                type="text"
-                                className="form-control form-control-sm"
-                                placeholder="Title (e.g., President)"
+                              <select
+                                className="form-select form-select-sm"
                                 value={signer.title}
                                 onChange={(e) => updateSigner(index, signerIndex, 'title', e.target.value)}
-                              />
+                              >
+                                <option value="">Title...</option>
+                                {ENTITY_ROLE_OPTIONS.map((role) => (
+                                  <option key={role} value={role}>{role}</option>
+                                ))}
+                              </select>
                             </div>
                           </div>
                         </div>
@@ -2935,12 +3362,16 @@ const POAForm: React.FC = () => {
                     </div>
                     <div className="col-md-3 mt-2">
                       <label className="form-label">State</label>
-                      <input
-                        type="text"
-                        className="form-control"
+                      <select
+                        className="form-select"
                         value={party.state}
                         onChange={(e) => updateParty(index, 'state', e.target.value)}
-                      />
+                      >
+                        <option value="">Select State...</option>
+                        {US_STATES.map((st) => (
+                          <option key={st.abbrev} value={st.value}>{st.value}</option>
+                        ))}
+                      </select>
                     </div>
                     <div className="col-md-3 mt-2">
                       <label className="form-label">ZIP Code</label>
@@ -2953,13 +3384,29 @@ const POAForm: React.FC = () => {
                       />
                     </div>
                     <div className="col-md-3 mt-2">
-                      <label className="form-label">Parish</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={party.parish}
-                        onChange={(e) => updateParty(index, 'parish', e.target.value)}
-                      />
+                      <label className="form-label">
+                        {party.state === 'Louisiana' ? 'Parish' : 'County'}
+                      </label>
+                      {party.state === 'Louisiana' ? (
+                        <select
+                          className="form-select"
+                          value={party.parish}
+                          onChange={(e) => updateParty(index, 'parish', e.target.value)}
+                        >
+                          <option value="">Select Parish...</option>
+                          {LOUISIANA_PARISHES.map((p) => (
+                            <option key={p} value={p}>{p}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={party.parish}
+                          onChange={(e) => updateParty(index, 'parish', e.target.value)}
+                          placeholder={party.state ? `Enter county` : 'Select state first'}
+                        />
+                      )}
                     </div>
                   </div>
                 )}
