@@ -69,7 +69,7 @@ const FORM_TYPES: Record<string, { title: string; pages: string[]; planType: str
   },
   powerOfAttorneyForm2Person: {
     title: 'Power of Attorney Supplement for Two Persons',
-    pages: ['start', 'personal_info', 'spouse_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    pages: ['start', 'personal_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'review'],
     planType: 'poa_couple',
   },
 
@@ -890,6 +890,23 @@ const POAForm: React.FC = () => {
     }
   }, [formType, isAuthenticated]);
 
+  // Set married flag based on form type
+  // For POA forms: always false (matching WordPress behavior)
+  // For Trust/Will forms: true for 2-person plans
+  useEffect(() => {
+    const isTwoPerson = formType.includes('2Person');
+    const isPOA = formType.includes('powerOfAttorney');
+
+    // POA forms always have married = false per WordPress
+    // Trust/Will forms set married based on 2-person status
+    const marriedValue = isPOA ? false : isTwoPerson;
+
+    setFormData(prev => ({
+      ...prev,
+      married: marriedValue,
+    }));
+  }, [formType]);
+
   const updateFormData = useCallback((section: string, field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
@@ -1253,6 +1270,15 @@ const POAForm: React.FC = () => {
     return [pi.first_name, pi.middle_name, pi.surname].filter(Boolean).join(' ') || 'Principal';
   };
 
+  // Get page display name based on form type (POA uses "Principal 2" instead of "Spouse")
+  const getPageDisplayName = (page: string): string => {
+    const isPOA = formType.includes('powerOfAttorney');
+    if (page === 'spouse_info') {
+      return isPOA ? 'Principal 2' : 'Spouse';
+    }
+    return PAGE_NAMES[page] || page;
+  };
+
   const renderStartPage = () => (
     <div className="poa-page">
       <p className="text-muted"><em>Estate Plan Document Selection</em></p>
@@ -1263,196 +1289,643 @@ const POAForm: React.FC = () => {
     </div>
   );
 
-  const renderPersonalInfoPage = () => (
-    <div className="poa-page">
-      <h2>2. Personal Information</h2>
-      <p className="text-muted">Enter your personal information below.</p>
+  const renderPersonalInfoPage = () => {
+    const isPOA2Person = formType === 'powerOfAttorneyForm2Person';
 
-      <div className="row mb-3">
-        <div className="col-md-3">
-          <label className="form-label">First Name <span className="text-danger">*</span></label>
-          <input
-            type="text"
-            className={`form-control ${errors['personal_info.first_name'] ? 'is-invalid' : ''}`}
-            value={formData.personal_info.first_name}
-            onChange={(e) => updateFormData('personal_info', 'first_name', e.target.value)}
-          />
-          {errors['personal_info.first_name'] && <div className="invalid-feedback">{errors['personal_info.first_name']}</div>}
-        </div>
-        <div className="col-md-3">
-          <label className="form-label">Middle Name</label>
-          <input
-            type="text"
-            className="form-control"
-            value={formData.personal_info.middle_name}
-            onChange={(e) => updateFormData('personal_info', 'middle_name', e.target.value)}
-          />
-        </div>
-        <div className="col-md-3">
-          <label className="form-label">Last Name <span className="text-danger">*</span></label>
-          <input
-            type="text"
-            className={`form-control ${errors['personal_info.surname'] ? 'is-invalid' : ''}`}
-            value={formData.personal_info.surname}
-            onChange={(e) => updateFormData('personal_info', 'surname', e.target.value)}
-          />
-          {errors['personal_info.surname'] && <div className="invalid-feedback">{errors['personal_info.surname']}</div>}
-        </div>
-        <div className="col-md-3">
-          <label className="form-label">Suffix</label>
-          <select
-            className="form-select"
-            value={formData.personal_info.suffix}
-            onChange={(e) => updateFormData('personal_info', 'suffix', e.target.value)}
-          >
-            <option value="">None</option>
-            {SUFFIX_OPTIONS.map((sfx) => (
-              <option key={sfx} value={sfx}>{sfx}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+    return (
+      <div className="poa-page">
+        <h2>2. Personal Information</h2>
+        <p className="text-muted">
+          {isPOA2Person
+            ? 'Enter the personal information for both persons granting powers of attorney.'
+            : 'Enter your personal information below.'}
+        </p>
 
-      <div className="row mb-3">
-        <div className="col-md-6">
-          <label className="form-label">Date of Birth <span className="text-danger">*</span></label>
-          <input
-            type="date"
-            className={`form-control ${errors['personal_info.date_of_birth'] ? 'is-invalid' : ''}`}
-            value={formData.personal_info.date_of_birth}
-            onChange={(e) => updateFormData('personal_info', 'date_of_birth', e.target.value)}
-          />
-          {errors['personal_info.date_of_birth'] && <div className="invalid-feedback">{errors['personal_info.date_of_birth']}</div>}
-        </div>
-        <div className="col-md-6">
-          <label className="form-label">Gender <span className="text-danger">*</span></label>
-          <select
-            className={`form-select ${errors['personal_info.gender'] ? 'is-invalid' : ''}`}
-            value={formData.personal_info.gender}
-            onChange={(e) => updateFormData('personal_info', 'gender', e.target.value)}
-          >
-            <option value="">Select...</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-          {errors['personal_info.gender'] && <div className="invalid-feedback">{errors['personal_info.gender']}</div>}
-        </div>
-      </div>
+        {/* First Principal Section */}
+        {isPOA2Person && (
+          <h4 className="mt-4 mb-3 text-primary">First Principal</h4>
+        )}
 
-      <div className="row mb-3">
-        <div className="col-md-6">
-          <label className="form-label">Street Address <span className="text-danger">*</span></label>
-          <input
-            type="text"
-            className={`form-control ${errors['personal_info.street_address'] ? 'is-invalid' : ''}`}
-            value={formData.personal_info.street_address}
-            onChange={(e) => updateFormData('personal_info', 'street_address', e.target.value)}
-          />
-          {errors['personal_info.street_address'] && <div className="invalid-feedback">{errors['personal_info.street_address']}</div>}
-        </div>
-        <div className="col-md-6">
-          <label className="form-label">Street Address 2</label>
-          <input
-            type="text"
-            className="form-control"
-            value={formData.personal_info.street_address_2}
-            onChange={(e) => updateFormData('personal_info', 'street_address_2', e.target.value)}
-            placeholder="Apt, Suite, Unit, etc."
-          />
-        </div>
-      </div>
-
-      <div className="row mb-3">
-        <div className="col-md-3">
-          <label className="form-label">City <span className="text-danger">*</span></label>
-          <input
-            type="text"
-            className={`form-control ${errors['personal_info.city'] ? 'is-invalid' : ''}`}
-            value={formData.personal_info.city}
-            onChange={(e) => updateFormData('personal_info', 'city', e.target.value)}
-          />
-          {errors['personal_info.city'] && <div className="invalid-feedback">{errors['personal_info.city']}</div>}
-        </div>
-        <div className="col-md-3">
-          <label className="form-label">State <span className="text-danger">*</span></label>
-          <select
-            className={`form-select ${errors['personal_info.state'] ? 'is-invalid' : ''}`}
-            value={formData.personal_info.state}
-            onChange={(e) => updateFormData('personal_info', 'state', e.target.value)}
-          >
-            <option value="">Select State...</option>
-            {US_STATES.map((st) => (
-              <option key={st.abbrev} value={st.value}>{st.value}</option>
-            ))}
-          </select>
-          {errors['personal_info.state'] && <div className="invalid-feedback">{errors['personal_info.state']}</div>}
-        </div>
-        <div className="col-md-3">
-          <label className="form-label">ZIP Code <span className="text-danger">*</span></label>
-          <input
-            type="text"
-            className={`form-control ${errors['personal_info.zip'] ? 'is-invalid' : ''}`}
-            value={formData.personal_info.zip}
-            onChange={(e) => updateFormData('personal_info', 'zip', e.target.value)}
-            maxLength={5}
-          />
-          {errors['personal_info.zip'] && <div className="invalid-feedback">{errors['personal_info.zip']}</div>}
-        </div>
-        <div className="col-md-3">
-          <label className="form-label">
-            {formData.personal_info.state === 'Louisiana' ? 'Parish' : 'County'} <span className="text-danger">*</span>
-          </label>
-          {formData.personal_info.state === 'Louisiana' ? (
-            <select
-              className={`form-select ${errors['personal_info.parish'] ? 'is-invalid' : ''}`}
-              value={formData.personal_info.parish}
-              onChange={(e) => updateFormData('personal_info', 'parish', e.target.value)}
-            >
-              <option value="">Select Parish...</option>
-              {LOUISIANA_PARISHES.map((p) => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
-          ) : (
+        <div className="row mb-3">
+          <div className="col-md-3">
+            <label className="form-label">First Name <span className="text-danger">*</span></label>
             <input
               type="text"
-              className={`form-control ${errors['personal_info.parish'] ? 'is-invalid' : ''}`}
-              value={formData.personal_info.parish}
-              onChange={(e) => updateFormData('personal_info', 'parish', e.target.value)}
-              placeholder={formData.personal_info.state ? 'Enter county' : 'Select state first'}
+              className={`form-control ${errors['personal_info.first_name'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.first_name}
+              onChange={(e) => updateFormData('personal_info', 'first_name', e.target.value)}
             />
-          )}
-          {errors['personal_info.parish'] && <div className="invalid-feedback">{errors['personal_info.parish']}</div>}
+            {errors['personal_info.first_name'] && <div className="invalid-feedback">{errors['personal_info.first_name']}</div>}
+          </div>
+          <div className="col-md-3">
+            <label className="form-label">Middle Name</label>
+            <input
+              type="text"
+              className="form-control"
+              value={formData.personal_info.middle_name}
+              onChange={(e) => updateFormData('personal_info', 'middle_name', e.target.value)}
+            />
+          </div>
+          <div className="col-md-3">
+            <label className="form-label">Last Name <span className="text-danger">*</span></label>
+            <input
+              type="text"
+              className={`form-control ${errors['personal_info.surname'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.surname}
+              onChange={(e) => updateFormData('personal_info', 'surname', e.target.value)}
+            />
+            {errors['personal_info.surname'] && <div className="invalid-feedback">{errors['personal_info.surname']}</div>}
+          </div>
+          <div className="col-md-3">
+            <label className="form-label">Suffix</label>
+            <select
+              className="form-select"
+              value={formData.personal_info.suffix}
+              onChange={(e) => updateFormData('personal_info', 'suffix', e.target.value)}
+            >
+              <option value="">None</option>
+              {SUFFIX_OPTIONS.map((sfx) => (
+                <option key={sfx} value={sfx}>{sfx}</option>
+              ))}
+            </select>
+          </div>
         </div>
-      </div>
 
-      <div className="row mb-3">
-        <div className="col-md-6">
-          <label className="form-label">Phone Number <span className="text-danger">*</span></label>
-          <input
-            type="tel"
-            className={`form-control ${errors['personal_info.phone_number'] ? 'is-invalid' : ''}`}
-            value={formData.personal_info.phone_number}
-            onChange={(e) => updateFormData('personal_info', 'phone_number', e.target.value)}
-            placeholder="(504) 555-1234"
-          />
-          {errors['personal_info.phone_number'] && <div className="invalid-feedback">{errors['personal_info.phone_number']}</div>}
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <label className="form-label">Date of Birth <span className="text-danger">*</span></label>
+            <input
+              type="date"
+              className={`form-control ${errors['personal_info.date_of_birth'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.date_of_birth}
+              onChange={(e) => updateFormData('personal_info', 'date_of_birth', e.target.value)}
+            />
+            {errors['personal_info.date_of_birth'] && <div className="invalid-feedback">{errors['personal_info.date_of_birth']}</div>}
+          </div>
+          <div className="col-md-6">
+            <label className="form-label">Gender <span className="text-danger">*</span></label>
+            <select
+              className={`form-select ${errors['personal_info.gender'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.gender}
+              onChange={(e) => updateFormData('personal_info', 'gender', e.target.value)}
+            >
+              <option value="">Select...</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+            {errors['personal_info.gender'] && <div className="invalid-feedback">{errors['personal_info.gender']}</div>}
+          </div>
         </div>
-        <div className="col-md-6">
-          <label className="form-label">Last 4 Digits of SSN <span className="text-danger">*</span></label>
-          <input
-            type="text"
-            className={`form-control ${errors['personal_info.last_4_ssn_digits'] ? 'is-invalid' : ''}`}
-            value={formData.personal_info.last_4_ssn_digits}
-            onChange={(e) => updateFormData('personal_info', 'last_4_ssn_digits', e.target.value.replace(/\D/g, ''))}
-            maxLength={4}
-            placeholder="XXXX"
-          />
-          {errors['personal_info.last_4_ssn_digits'] && <div className="invalid-feedback">{errors['personal_info.last_4_ssn_digits']}</div>}
+
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <label className="form-label">Street Address <span className="text-danger">*</span></label>
+            <input
+              type="text"
+              className={`form-control ${errors['personal_info.street_address'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.street_address}
+              onChange={(e) => updateFormData('personal_info', 'street_address', e.target.value)}
+            />
+            {errors['personal_info.street_address'] && <div className="invalid-feedback">{errors['personal_info.street_address']}</div>}
+          </div>
+          <div className="col-md-6">
+            <label className="form-label">Street Address 2</label>
+            <input
+              type="text"
+              className="form-control"
+              value={formData.personal_info.street_address_2}
+              onChange={(e) => updateFormData('personal_info', 'street_address_2', e.target.value)}
+              placeholder="Apt, Suite, Unit, etc."
+            />
+          </div>
         </div>
+
+        <div className="row mb-3">
+          <div className="col-md-3">
+            <label className="form-label">City <span className="text-danger">*</span></label>
+            <input
+              type="text"
+              className={`form-control ${errors['personal_info.city'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.city}
+              onChange={(e) => updateFormData('personal_info', 'city', e.target.value)}
+            />
+            {errors['personal_info.city'] && <div className="invalid-feedback">{errors['personal_info.city']}</div>}
+          </div>
+          <div className="col-md-3">
+            <label className="form-label">State <span className="text-danger">*</span></label>
+            <select
+              className={`form-select ${errors['personal_info.state'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.state}
+              onChange={(e) => updateFormData('personal_info', 'state', e.target.value)}
+            >
+              <option value="">Select State...</option>
+              {US_STATES.map((st) => (
+                <option key={st.abbrev} value={st.value}>{st.value}</option>
+              ))}
+            </select>
+            {errors['personal_info.state'] && <div className="invalid-feedback">{errors['personal_info.state']}</div>}
+          </div>
+          <div className="col-md-3">
+            <label className="form-label">ZIP Code <span className="text-danger">*</span></label>
+            <input
+              type="text"
+              className={`form-control ${errors['personal_info.zip'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.zip}
+              onChange={(e) => updateFormData('personal_info', 'zip', e.target.value)}
+              maxLength={5}
+            />
+            {errors['personal_info.zip'] && <div className="invalid-feedback">{errors['personal_info.zip']}</div>}
+          </div>
+          <div className="col-md-3">
+            <label className="form-label">
+              {formData.personal_info.state === 'Louisiana' ? 'Parish' : 'County'} <span className="text-danger">*</span>
+            </label>
+            {formData.personal_info.state === 'Louisiana' ? (
+              <select
+                className={`form-select ${errors['personal_info.parish'] ? 'is-invalid' : ''}`}
+                value={formData.personal_info.parish}
+                onChange={(e) => updateFormData('personal_info', 'parish', e.target.value)}
+              >
+                <option value="">Select Parish...</option>
+                {LOUISIANA_PARISHES.map((p) => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                className={`form-control ${errors['personal_info.parish'] ? 'is-invalid' : ''}`}
+                value={formData.personal_info.parish}
+                onChange={(e) => updateFormData('personal_info', 'parish', e.target.value)}
+                placeholder={formData.personal_info.state ? 'Enter county' : 'Select state first'}
+              />
+            )}
+            {errors['personal_info.parish'] && <div className="invalid-feedback">{errors['personal_info.parish']}</div>}
+          </div>
+        </div>
+
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <label className="form-label">Phone Number <span className="text-danger">*</span></label>
+            <input
+              type="tel"
+              className={`form-control ${errors['personal_info.phone_number'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.phone_number}
+              onChange={(e) => updateFormData('personal_info', 'phone_number', e.target.value)}
+              placeholder="(504) 555-1234"
+            />
+            {errors['personal_info.phone_number'] && <div className="invalid-feedback">{errors['personal_info.phone_number']}</div>}
+          </div>
+          <div className="col-md-6">
+            <label className="form-label">Last 4 Digits of SSN <span className="text-danger">*</span></label>
+            <input
+              type="text"
+              className={`form-control ${errors['personal_info.last_4_ssn_digits'] ? 'is-invalid' : ''}`}
+              value={formData.personal_info.last_4_ssn_digits}
+              onChange={(e) => updateFormData('personal_info', 'last_4_ssn_digits', e.target.value.replace(/\D/g, ''))}
+              maxLength={4}
+              placeholder="XXXX"
+            />
+            {errors['personal_info.last_4_ssn_digits'] && <div className="invalid-feedback">{errors['personal_info.last_4_ssn_digits']}</div>}
+          </div>
+        </div>
+
+        {/* Second Principal Section (only for POA 2-person) */}
+        {isPOA2Person && (
+          <>
+            <hr className="my-4" />
+            <h4 className="mb-3 text-primary">Second Principal</h4>
+
+            <div className="row mb-3">
+              <div className="col-md-3">
+                <label className="form-label">First Name <span className="text-danger">*</span></label>
+                <input
+                  type="text"
+                  className={`form-control ${errors['spouse_info.first_name'] ? 'is-invalid' : ''}`}
+                  value={formData.spouse_info.first_name}
+                  onChange={(e) => updateFormData('spouse_info', 'first_name', e.target.value)}
+                />
+                {errors['spouse_info.first_name'] && <div className="invalid-feedback">{errors['spouse_info.first_name']}</div>}
+              </div>
+              <div className="col-md-3">
+                <label className="form-label">Middle Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={formData.spouse_info.middle_name}
+                  onChange={(e) => updateFormData('spouse_info', 'middle_name', e.target.value)}
+                />
+              </div>
+              <div className="col-md-3">
+                <label className="form-label">Last Name <span className="text-danger">*</span></label>
+                <input
+                  type="text"
+                  className={`form-control ${errors['spouse_info.surname'] ? 'is-invalid' : ''}`}
+                  value={formData.spouse_info.surname}
+                  onChange={(e) => updateFormData('spouse_info', 'surname', e.target.value)}
+                />
+                {errors['spouse_info.surname'] && <div className="invalid-feedback">{errors['spouse_info.surname']}</div>}
+              </div>
+              <div className="col-md-3">
+                <label className="form-label">Suffix</label>
+                <select
+                  className="form-select"
+                  value={formData.spouse_info.suffix}
+                  onChange={(e) => updateFormData('spouse_info', 'suffix', e.target.value)}
+                >
+                  <option value="">None</option>
+                  {SUFFIX_OPTIONS.map((sfx) => (
+                    <option key={sfx} value={sfx}>{sfx}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <label className="form-label">Date of Birth <span className="text-danger">*</span></label>
+                <input
+                  type="date"
+                  className={`form-control ${errors['spouse_info.date_of_birth'] ? 'is-invalid' : ''}`}
+                  value={formData.spouse_info.date_of_birth}
+                  onChange={(e) => updateFormData('spouse_info', 'date_of_birth', e.target.value)}
+                />
+                {errors['spouse_info.date_of_birth'] && <div className="invalid-feedback">{errors['spouse_info.date_of_birth']}</div>}
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Gender <span className="text-danger">*</span></label>
+                <select
+                  className={`form-select ${errors['spouse_info.gender'] ? 'is-invalid' : ''}`}
+                  value={formData.spouse_info.gender}
+                  onChange={(e) => updateFormData('spouse_info', 'gender', e.target.value)}
+                >
+                  <option value="">Select...</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+                {errors['spouse_info.gender'] && <div className="invalid-feedback">{errors['spouse_info.gender']}</div>}
+              </div>
+            </div>
+
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <label className="form-label">Phone Number <span className="text-danger">*</span></label>
+                <input
+                  type="tel"
+                  className={`form-control ${errors['spouse_info.phone_number'] ? 'is-invalid' : ''}`}
+                  value={formData.spouse_info.phone_number}
+                  onChange={(e) => updateFormData('spouse_info', 'phone_number', e.target.value)}
+                  placeholder="(504) 555-1234"
+                />
+                {errors['spouse_info.phone_number'] && <div className="invalid-feedback">{errors['spouse_info.phone_number']}</div>}
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Last 4 Digits of SSN <span className="text-danger">*</span></label>
+                <input
+                  type="text"
+                  className={`form-control ${errors['spouse_info.last_4_ssn_digits'] ? 'is-invalid' : ''}`}
+                  value={formData.spouse_info.last_4_ssn_digits}
+                  onChange={(e) => updateFormData('spouse_info', 'last_4_ssn_digits', e.target.value.replace(/\D/g, ''))}
+                  maxLength={4}
+                  placeholder="XXXX"
+                />
+                {errors['spouse_info.last_4_ssn_digits'] && <div className="invalid-feedback">{errors['spouse_info.last_4_ssn_digits']}</div>}
+              </div>
+            </div>
+
+            {/* Same Address Checkbox */}
+            <div className="mb-3">
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="same_address_as_primary"
+                  checked={formData.spouse_info.same_address_as_primary}
+                  onChange={(e) => updateFormData('spouse_info', 'same_address_as_primary', e.target.checked)}
+                />
+                <label className="form-check-label" htmlFor="same_address_as_primary">
+                  Same address as first principal
+                </label>
+              </div>
+            </div>
+
+            {/* Address fields (shown only if different address) */}
+            {!formData.spouse_info.same_address_as_primary && (
+              <>
+                <div className="row mb-3">
+                  <div className="col-md-6">
+                    <label className="form-label">Street Address <span className="text-danger">*</span></label>
+                    <input
+                      type="text"
+                      className={`form-control ${errors['spouse_info.street_address'] ? 'is-invalid' : ''}`}
+                      value={formData.spouse_info.street_address}
+                      onChange={(e) => updateFormData('spouse_info', 'street_address', e.target.value)}
+                    />
+                    {errors['spouse_info.street_address'] && <div className="invalid-feedback">{errors['spouse_info.street_address']}</div>}
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">Street Address 2</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={formData.spouse_info.street_address_2}
+                      onChange={(e) => updateFormData('spouse_info', 'street_address_2', e.target.value)}
+                      placeholder="Apt, Suite, Unit, etc."
+                    />
+                  </div>
+                </div>
+
+                <div className="row mb-3">
+                  <div className="col-md-3">
+                    <label className="form-label">City <span className="text-danger">*</span></label>
+                    <input
+                      type="text"
+                      className={`form-control ${errors['spouse_info.city'] ? 'is-invalid' : ''}`}
+                      value={formData.spouse_info.city}
+                      onChange={(e) => updateFormData('spouse_info', 'city', e.target.value)}
+                    />
+                    {errors['spouse_info.city'] && <div className="invalid-feedback">{errors['spouse_info.city']}</div>}
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">State <span className="text-danger">*</span></label>
+                    <select
+                      className={`form-select ${errors['spouse_info.state'] ? 'is-invalid' : ''}`}
+                      value={formData.spouse_info.state}
+                      onChange={(e) => updateFormData('spouse_info', 'state', e.target.value)}
+                    >
+                      <option value="">Select State...</option>
+                      {US_STATES.map((st) => (
+                        <option key={st.abbrev} value={st.value}>{st.value}</option>
+                      ))}
+                    </select>
+                    {errors['spouse_info.state'] && <div className="invalid-feedback">{errors['spouse_info.state']}</div>}
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">ZIP Code <span className="text-danger">*</span></label>
+                    <input
+                      type="text"
+                      className={`form-control ${errors['spouse_info.zip'] ? 'is-invalid' : ''}`}
+                      value={formData.spouse_info.zip}
+                      onChange={(e) => updateFormData('spouse_info', 'zip', e.target.value)}
+                      maxLength={5}
+                    />
+                    {errors['spouse_info.zip'] && <div className="invalid-feedback">{errors['spouse_info.zip']}</div>}
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">
+                      {formData.spouse_info.state === 'Louisiana' ? 'Parish' : 'County'} <span className="text-danger">*</span>
+                    </label>
+                    {formData.spouse_info.state === 'Louisiana' ? (
+                      <select
+                        className={`form-select ${errors['spouse_info.parish'] ? 'is-invalid' : ''}`}
+                        value={formData.spouse_info.parish}
+                        onChange={(e) => updateFormData('spouse_info', 'parish', e.target.value)}
+                      >
+                        <option value="">Select Parish...</option>
+                        {LOUISIANA_PARISHES.map((p) => (
+                          <option key={p} value={p}>{p}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        className={`form-control ${errors['spouse_info.parish'] ? 'is-invalid' : ''}`}
+                        value={formData.spouse_info.parish}
+                        onChange={(e) => updateFormData('spouse_info', 'parish', e.target.value)}
+                        placeholder={formData.spouse_info.state ? 'Enter county' : 'Select state first'}
+                      />
+                    )}
+                    {errors['spouse_info.parish'] && <div className="invalid-feedback">{errors['spouse_info.parish']}</div>}
+                  </div>
+                </div>
+              </>
+            )}
+          </>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
+
+  // For POA 2-person forms: Second Principal's Personal Information
+  const renderSecondPrincipalPage = () => {
+    const isPOA = formType.includes('powerOfAttorney');
+    const pageTitle = isPOA ? '3. Personal Information for Second Principal' : '3. Spouse Information';
+    const pageDescription = isPOA
+      ? 'Enter the personal information about the second person granting powers of attorney (e.g., an adult child, aging parent, or other person):'
+      : 'Enter your spouse\'s personal information below.';
+
+    return (
+      <div className="poa-page">
+        <h2>{pageTitle}</h2>
+        <p className="text-muted">{pageDescription}</p>
+
+        <div className="row mb-3">
+          <div className="col-md-3">
+            <label className="form-label">First Name <span className="text-danger">*</span></label>
+            <input
+              type="text"
+              className={`form-control ${errors['spouse_info.first_name'] ? 'is-invalid' : ''}`}
+              value={formData.spouse_info.first_name}
+              onChange={(e) => updateFormData('spouse_info', 'first_name', e.target.value)}
+            />
+            {errors['spouse_info.first_name'] && <div className="invalid-feedback">{errors['spouse_info.first_name']}</div>}
+          </div>
+          <div className="col-md-3">
+            <label className="form-label">Middle Name</label>
+            <input
+              type="text"
+              className="form-control"
+              value={formData.spouse_info.middle_name}
+              onChange={(e) => updateFormData('spouse_info', 'middle_name', e.target.value)}
+            />
+          </div>
+          <div className="col-md-3">
+            <label className="form-label">Last Name <span className="text-danger">*</span></label>
+            <input
+              type="text"
+              className={`form-control ${errors['spouse_info.surname'] ? 'is-invalid' : ''}`}
+              value={formData.spouse_info.surname}
+              onChange={(e) => updateFormData('spouse_info', 'surname', e.target.value)}
+            />
+            {errors['spouse_info.surname'] && <div className="invalid-feedback">{errors['spouse_info.surname']}</div>}
+          </div>
+          <div className="col-md-3">
+            <label className="form-label">Suffix</label>
+            <select
+              className="form-select"
+              value={formData.spouse_info.suffix}
+              onChange={(e) => updateFormData('spouse_info', 'suffix', e.target.value)}
+            >
+              <option value="">None</option>
+              {SUFFIX_OPTIONS.map((sfx) => (
+                <option key={sfx} value={sfx}>{sfx}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <label className="form-label">Date of Birth <span className="text-danger">*</span></label>
+            <input
+              type="date"
+              className={`form-control ${errors['spouse_info.date_of_birth'] ? 'is-invalid' : ''}`}
+              value={formData.spouse_info.date_of_birth}
+              onChange={(e) => updateFormData('spouse_info', 'date_of_birth', e.target.value)}
+            />
+            {errors['spouse_info.date_of_birth'] && <div className="invalid-feedback">{errors['spouse_info.date_of_birth']}</div>}
+          </div>
+          <div className="col-md-6">
+            <label className="form-label">Gender <span className="text-danger">*</span></label>
+            <select
+              className={`form-select ${errors['spouse_info.gender'] ? 'is-invalid' : ''}`}
+              value={formData.spouse_info.gender}
+              onChange={(e) => updateFormData('spouse_info', 'gender', e.target.value)}
+            >
+              <option value="">Select...</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+            {errors['spouse_info.gender'] && <div className="invalid-feedback">{errors['spouse_info.gender']}</div>}
+          </div>
+        </div>
+
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <label className="form-label">Phone Number <span className="text-danger">*</span></label>
+            <input
+              type="tel"
+              className={`form-control ${errors['spouse_info.phone_number'] ? 'is-invalid' : ''}`}
+              value={formData.spouse_info.phone_number}
+              onChange={(e) => updateFormData('spouse_info', 'phone_number', e.target.value)}
+              placeholder="(504) 555-1234"
+            />
+            {errors['spouse_info.phone_number'] && <div className="invalid-feedback">{errors['spouse_info.phone_number']}</div>}
+          </div>
+          <div className="col-md-6">
+            <label className="form-label">Last 4 Digits of SSN <span className="text-danger">*</span></label>
+            <input
+              type="text"
+              className={`form-control ${errors['spouse_info.last_4_ssn_digits'] ? 'is-invalid' : ''}`}
+              value={formData.spouse_info.last_4_ssn_digits}
+              onChange={(e) => updateFormData('spouse_info', 'last_4_ssn_digits', e.target.value.replace(/\D/g, ''))}
+              maxLength={4}
+              placeholder="XXXX"
+            />
+            {errors['spouse_info.last_4_ssn_digits'] && <div className="invalid-feedback">{errors['spouse_info.last_4_ssn_digits']}</div>}
+          </div>
+        </div>
+
+        {/* Same Address Checkbox */}
+        <div className="mb-3">
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="same_address_as_primary"
+              checked={formData.spouse_info.same_address_as_primary}
+              onChange={(e) => updateFormData('spouse_info', 'same_address_as_primary', e.target.checked)}
+            />
+            <label className="form-check-label" htmlFor="same_address_as_primary">
+              Same address as {isPOA ? 'first principal' : 'primary account holder'}
+            </label>
+          </div>
+        </div>
+
+        {/* Address fields (shown only if different address) */}
+        {!formData.spouse_info.same_address_as_primary && (
+          <>
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <label className="form-label">Street Address <span className="text-danger">*</span></label>
+                <input
+                  type="text"
+                  className={`form-control ${errors['spouse_info.street_address'] ? 'is-invalid' : ''}`}
+                  value={formData.spouse_info.street_address}
+                  onChange={(e) => updateFormData('spouse_info', 'street_address', e.target.value)}
+                />
+                {errors['spouse_info.street_address'] && <div className="invalid-feedback">{errors['spouse_info.street_address']}</div>}
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Street Address 2</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={formData.spouse_info.street_address_2}
+                  onChange={(e) => updateFormData('spouse_info', 'street_address_2', e.target.value)}
+                  placeholder="Apt, Suite, Unit, etc."
+                />
+              </div>
+            </div>
+
+            <div className="row mb-3">
+              <div className="col-md-3">
+                <label className="form-label">City <span className="text-danger">*</span></label>
+                <input
+                  type="text"
+                  className={`form-control ${errors['spouse_info.city'] ? 'is-invalid' : ''}`}
+                  value={formData.spouse_info.city}
+                  onChange={(e) => updateFormData('spouse_info', 'city', e.target.value)}
+                />
+                {errors['spouse_info.city'] && <div className="invalid-feedback">{errors['spouse_info.city']}</div>}
+              </div>
+              <div className="col-md-3">
+                <label className="form-label">State <span className="text-danger">*</span></label>
+                <select
+                  className={`form-select ${errors['spouse_info.state'] ? 'is-invalid' : ''}`}
+                  value={formData.spouse_info.state}
+                  onChange={(e) => updateFormData('spouse_info', 'state', e.target.value)}
+                >
+                  <option value="">Select State...</option>
+                  {US_STATES.map((st) => (
+                    <option key={st.abbrev} value={st.value}>{st.value}</option>
+                  ))}
+                </select>
+                {errors['spouse_info.state'] && <div className="invalid-feedback">{errors['spouse_info.state']}</div>}
+              </div>
+              <div className="col-md-3">
+                <label className="form-label">ZIP Code <span className="text-danger">*</span></label>
+                <input
+                  type="text"
+                  className={`form-control ${errors['spouse_info.zip'] ? 'is-invalid' : ''}`}
+                  value={formData.spouse_info.zip}
+                  onChange={(e) => updateFormData('spouse_info', 'zip', e.target.value)}
+                  maxLength={5}
+                />
+                {errors['spouse_info.zip'] && <div className="invalid-feedback">{errors['spouse_info.zip']}</div>}
+              </div>
+              <div className="col-md-3">
+                <label className="form-label">
+                  {formData.spouse_info.state === 'Louisiana' ? 'Parish' : 'County'} <span className="text-danger">*</span>
+                </label>
+                {formData.spouse_info.state === 'Louisiana' ? (
+                  <select
+                    className={`form-select ${errors['spouse_info.parish'] ? 'is-invalid' : ''}`}
+                    value={formData.spouse_info.parish}
+                    onChange={(e) => updateFormData('spouse_info', 'parish', e.target.value)}
+                  >
+                    <option value="">Select Parish...</option>
+                    {LOUISIANA_PARISHES.map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    className={`form-control ${errors['spouse_info.parish'] ? 'is-invalid' : ''}`}
+                    value={formData.spouse_info.parish}
+                    onChange={(e) => updateFormData('spouse_info', 'parish', e.target.value)}
+                    placeholder={formData.spouse_info.state ? 'Enter county' : 'Select state first'}
+                  />
+                )}
+                {errors['spouse_info.parish'] && <div className="invalid-feedback">{errors['spouse_info.parish']}</div>}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
 
   const renderAgentsPage = () => (
     <div className="poa-page">
@@ -1555,8 +2028,74 @@ const POAForm: React.FC = () => {
                       <option value="Female">Female</option>
                     </select>
                   </div>
+                </div>
+                <div className="row mb-3">
+                  <div className="col-md-6">
+                    <label className="form-label">Street Address</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={party.street_address || ''}
+                      onChange={(e) => updateParty(index, 'street_address', e.target.value)}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">Second line of street address, if any (Apt. or Suite No.)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={party.street_address_2 || ''}
+                      onChange={(e) => updateParty(index, 'street_address_2', e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="row mb-3">
+                  <div className="col-md-3">
+                    <label className="form-label">City</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={party.city || ''}
+                      onChange={(e) => updateParty(index, 'city', e.target.value)}
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">State</label>
+                    <select
+                      className="form-select"
+                      value={party.state || ''}
+                      onChange={(e) => updateParty(index, 'state', e.target.value)}
+                    >
+                      <option value="">Select...</option>
+                      {US_STATES.map((st) => (
+                        <option key={st.abbrev} value={st.value}>{st.value}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">Zip</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={party.zip || ''}
+                      onChange={(e) => updateParty(index, 'zip', e.target.value)}
+                      maxLength={10}
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">Parish or County</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={party.parish || ''}
+                      onChange={(e) => updateParty(index, 'parish', e.target.value)}
+                      placeholder="Do not include 'Parish' or 'County'"
+                    />
+                  </div>
+                </div>
+                <div className="row mb-3">
                   <div className="col-md-4">
-                    <label className="form-label">Relationship <span className="text-danger">*</span></label>
+                    <label className="form-label">Your relationship with this person <span className="text-danger">*</span></label>
                     <select
                       className="form-select"
                       value={party.relationship_with_person}
@@ -1568,10 +2107,8 @@ const POAForm: React.FC = () => {
                       ))}
                     </select>
                   </div>
-                </div>
-                <div className="row mb-3">
                   <div className="col-md-4">
-                    <label className="form-label">Last 4 SSN Digits <span className="text-danger">*</span></label>
+                    <label className="form-label">Last 4 digits SSN <span className="text-danger">*</span></label>
                     <input
                       type="text"
                       className="form-control"
@@ -1852,78 +2389,22 @@ const POAForm: React.FC = () => {
   const renderFPOAPage = () => {
     const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
     const isTwoPerson = formType.includes('2Person');
+    const isPOA = formType.includes('powerOfAttorney');
+    const secondPersonLabel = isPOA ? 'Second Principal' : 'Spouse';
+    const getSecondPersonName = () => formData.spouse_info.first_name || secondPersonLabel;
 
     return (
       <div className="poa-page">
         <h2>5. Financial Power of Attorney for {getPrincipalFullName()}</h2>
-        <p className="text-muted">Select who will serve as your agents for financial matters.</p>
-
-        {/* POA Type Options */}
-        <div className="card mb-3">
-          <div className="card-header">Power of Attorney Options</div>
-          <div className="card-body">
-            <div className="row">
-              <div className="col-md-6 mb-3">
-                <label className="form-label">When should this POA take effect?</label>
-                <div>
-                  <div className="form-check">
-                    <input
-                      type="radio"
-                      className="form-check-input"
-                      name="fpoa_springing"
-                      value="No"
-                      checked={formData.fpoa.springing_poa === 'No'}
-                      onChange={(e) => updateNestedFormData('fpoa.springing_poa', e.target.value)}
-                    />
-                    <label className="form-check-label">
-                      <strong>Immediate</strong> - Takes effect when signed
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      type="radio"
-                      className="form-check-input"
-                      name="fpoa_springing"
-                      value="Yes"
-                      checked={formData.fpoa.springing_poa === 'Yes'}
-                      onChange={(e) => updateNestedFormData('fpoa.springing_poa', e.target.value)}
-                    />
-                    <label className="form-check-label">
-                      <strong>Springing</strong> - Takes effect only upon incapacity
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-6 mb-3">
-                <label className="form-label">Do you have a prior Financial POA to revoke?</label>
-                <div>
-                  <div className="form-check form-check-inline">
-                    <input
-                      type="radio"
-                      className="form-check-input"
-                      name="fpoa_revoke"
-                      value="Yes"
-                      checked={formData.fpoa.revoke_prior_poa === 'Yes'}
-                      onChange={(e) => updateNestedFormData('fpoa.revoke_prior_poa', e.target.value)}
-                    />
-                    <label className="form-check-label">Yes</label>
-                  </div>
-                  <div className="form-check form-check-inline">
-                    <input
-                      type="radio"
-                      className="form-check-input"
-                      name="fpoa_revoke"
-                      value="No"
-                      checked={formData.fpoa.revoke_prior_poa === 'No'}
-                      onChange={(e) => updateNestedFormData('fpoa.revoke_prior_poa', e.target.value)}
-                    />
-                    <label className="form-check-label">No</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <p className="text-muted mb-3">
+          A Financial Power of Attorney gives a person, called an Agent, the authority to make financial decisions for
+          you if you become incapacitated or otherwise unable to manage your own affairs. Agents can pay your bills,
+          manage your investments and financial accounts, and other similar tasks.
+        </p>
+        <p className="text-muted mb-4">
+          <em>If you did not enter an Agent for this Principal on the "Agents" step (Step 3), please return to Step 3
+          and enter at least one Agent before continuing.</em>
+        </p>
 
         <p className="mb-3">Select the initial agent(s) for {getPrincipalFullName()}'s Financial Power of Attorney:</p>
         <div className="card mb-3">
@@ -2090,84 +2571,91 @@ const POAForm: React.FC = () => {
           </>
         )}
 
-        {/* Spouse FPOA Section for 2-person forms */}
+        {/* Second Principal FPOA Section for 2-person forms */}
         {isTwoPerson && (
           <>
-            <hr className="my-4" />
-            <h3>Financial Power of Attorney for {formData.spouse_info.first_name || 'Spouse'}</h3>
+            <hr className="my-5" />
+            <h2>5. Financial Power of Attorney for {getSecondPersonName()}</h2>
+            <p className="text-muted mb-3">
+              A Financial Power of Attorney gives a person, called an Agent, the authority to make financial decisions for
+              you if you become incapacitated or otherwise unable to manage your own affairs. Agents can pay your bills,
+              manage your investments and financial accounts, and other similar tasks.
+            </p>
+            <p className="text-muted mb-4">
+              <em>If you did not enter an Agent for this Principal on the "Agents" step (Step 3), please return to Step 3
+              and enter at least one Agent before continuing.</em>
+            </p>
 
+            <p className="mb-3">Select the initial agent(s) for {getSecondPersonName()}'s Financial Power of Attorney:</p>
             <div className="card mb-3">
-              <div className="card-header">Spouse's POA Options</div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">When should this POA take effect?</label>
-                    <div>
-                      <div className="form-check">
-                        <input
-                          type="radio"
-                          className="form-check-input"
-                          name="spouse_fpoa_springing"
-                          value="No"
-                          checked={formData.spouse_fpoa.springing_poa === 'No'}
-                          onChange={(e) => updateNestedFormData('spouse_fpoa.springing_poa', e.target.value)}
-                        />
-                        <label className="form-check-label">Immediate</label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          type="radio"
-                          className="form-check-input"
-                          name="spouse_fpoa_springing"
-                          value="Yes"
-                          checked={formData.spouse_fpoa.springing_poa === 'Yes'}
-                          onChange={(e) => updateNestedFormData('spouse_fpoa.springing_poa', e.target.value)}
-                        />
-                        <label className="form-check-label">Springing</label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span>Item</span>
+                <span>−</span>
               </div>
-            </div>
-
-            <div className="card mb-3">
-              <div className="card-header">Spouse's Initial Agents</div>
               <div className="card-body">
                 <div className="row">
                   <div className="col-md-6 mb-3">
-                    <label className="form-label">Initial Agent <span className="text-danger">*</span></label>
+                    <label className="form-label">Select the person you want to serve:</label>
                     <select
                       className="form-select"
                       value={formData.spouse_fpoa.fpoa_initial_agents.person_to_serve}
                       onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
                     >
-                      <option value="">Select Initial Agent...</option>
-                      <option value="client">My Spouse ({formData.personal_info.first_name || 'Client'})</option>
+                      <option value="">Initial Agent</option>
+                      <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
                       {parties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label className="form-label">Initial Co-Agent (if any)</label>
+                    <label className="form-label">If you want to appoint a second person (a Co-Agent) to serve at the same time as the Initial Agent, select them here:</label>
                     <select
                       className="form-select"
                       value={formData.spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve}
                       onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                     >
-                      <option value="">None</option>
+                      <option value="">Initial Co-Agent (if any)</option>
                       {parties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
                   </div>
                 </div>
+                {formData.spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve && (
+                  <div className="mb-3">
+                    <label className="form-label">Can each agent act independently?</label>
+                    <div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_fpoa_serve_alone"
+                          value="Yes"
+                          checked={formData.spouse_fpoa.fpoa_initial_agents.agents_serve_alone === 'Yes'}
+                          onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.agents_serve_alone', e.target.value)}
+                        />
+                        <label className="form-check-label">Yes - Each agent can act alone</label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_fpoa_serve_alone"
+                          value="No"
+                          checked={formData.spouse_fpoa.fpoa_initial_agents.agents_serve_alone === 'No'}
+                          onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.agents_serve_alone', e.target.value)}
+                        />
+                        <label className="form-check-label">No - Agents must act together</label>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="mb-3">
-              <label className="form-label">Does spouse want successor agents?</label>
+              <label className="form-label">Will Successor Agent(s) be appointed for {getSecondPersonName()}'s Financial Power of Attorney?</label>
               <div>
                 <div className="form-check form-check-inline">
                   <input
@@ -2201,7 +2689,7 @@ const POAForm: React.FC = () => {
                   The successor agents will serve if all of the initial Agents are unable to serve.
                   These successor Agents will serve in the order they are entered.
                 </p>
-                <p className="mb-3">Select the successor agents for {formData.spouse_info.first_name || 'Spouse'}'s Financial Power of Attorney:</p>
+                <p className="mb-3">Select the successor agents for {getSecondPersonName()}'s Financial Power of Attorney:</p>
 
                 {(formData.spouse_fpoa.successor_agents || []).map((agent, index) => (
                   <div key={index} className="card mb-2">
@@ -2225,7 +2713,7 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_fpoa', index, 'successor_agent_to_serve', e.target.value)}
                           >
                             <option value="">Successor Agent</option>
-                            <option value="client">{formData.personal_info.first_name || 'Client'} (My Spouse)</option>
+                            <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
                             {parties.map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
@@ -2267,97 +2755,100 @@ const POAForm: React.FC = () => {
   const renderHCPOAPage = () => {
     const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
     const isTwoPerson = formType.includes('2Person');
+    const isPOA = formType.includes('powerOfAttorney');
+    const secondPersonLabel = isPOA ? 'Second Principal' : 'Spouse';
+    const getSecondPersonName = () => formData.spouse_info.first_name || secondPersonLabel;
 
     return (
       <div className="poa-page">
-        <h2>6. Healthcare Power of Attorney for {getPrincipalFullName()}</h2>
-        <p className="text-muted">Select who will serve as your agents for healthcare decisions.</p>
+        <h2>6. Healthcare Power of Attorney For {getPrincipalFullName()}</h2>
+        <p className="text-muted mb-3">
+          A Healthcare Power of Attorney (HCPOA) is a legal document that allows an individual (the "Principal") to
+          designate another person (an "Agent") to make medical decisions for him or her when he or she cannot make
+          decisions for himself or herself.
+        </p>
+        <p className="text-muted mb-3">
+          Healthcare decisions include the power to consent, refuse to consent, or withdraw consent to any type of
+          medical care, treatment, service or procedure, as well as accessing protected health information, and
+          making care arrangements.
+        </p>
+        <p className="text-muted mb-3">
+          The Healthcare Power of Attorney will be effective immediately upon execution by the Principal and Agent.
+        </p>
+        <p className="text-muted mb-3">
+          The Healthcare Power of Attorney is "durable", which means it will remain effective until the earlier of
+          the death of the Principal or until it is expressly revoked, and shall not be affected by the subsequent
+          disability, incapacity, or other condition of Principal making express revocation impossible or impracticable.
+        </p>
+        <p className="text-muted mb-4">
+          You can designate a single Agent who will serve alone, or you may designate Co-Agents who will serve at
+          the same time. If you designate Co-Agents, then decisions must be made jointly by mutual consent.
+        </p>
 
-        <div className="card mb-3">
-          <div className="card-header">Healthcare Preferences</div>
-          <div className="card-body">
-            <div className="row">
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Do you wish to be an organ donor? <span className="text-danger">*</span></label>
-                <div>
-                  <div className="form-check">
-                    <input
-                      type="radio"
-                      className="form-check-input"
-                      name="organ_donor"
-                      value="Yes"
-                      checked={formData.hcpoa.wish_to_be_organ_donor === 'Yes'}
-                      onChange={(e) => updateNestedFormData('hcpoa.wish_to_be_organ_donor', e.target.value)}
-                    />
-                    <label className="form-check-label">Yes</label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      type="radio"
-                      className="form-check-input"
-                      name="organ_donor"
-                      value="No"
-                      checked={formData.hcpoa.wish_to_be_organ_donor === 'No'}
-                      onChange={(e) => updateNestedFormData('hcpoa.wish_to_be_organ_donor', e.target.value)}
-                    />
-                    <label className="form-check-label">No</label>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Donate body to science? <span className="text-danger">*</span></label>
-                <div>
-                  <div className="form-check">
-                    <input
-                      type="radio"
-                      className="form-check-input"
-                      name="donate_science"
-                      value="Yes"
-                      checked={formData.hcpoa.wish_to_donate_body_to_science === 'Yes'}
-                      onChange={(e) => updateNestedFormData('hcpoa.wish_to_donate_body_to_science', e.target.value)}
-                    />
-                    <label className="form-check-label">Yes</label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      type="radio"
-                      className="form-check-input"
-                      name="donate_science"
-                      value="No"
-                      checked={formData.hcpoa.wish_to_donate_body_to_science === 'No'}
-                      onChange={(e) => updateNestedFormData('hcpoa.wish_to_donate_body_to_science', e.target.value)}
-                    />
-                    <label className="form-check-label">No</label>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Refuse blood transfusions?</label>
-                <div>
-                  <div className="form-check">
-                    <input
-                      type="radio"
-                      className="form-check-input"
-                      name="no_blood"
-                      value="Yes"
-                      checked={formData.hcpoa.no_blood_transfusion === 'Yes'}
-                      onChange={(e) => updateNestedFormData('hcpoa.no_blood_transfusion', e.target.value)}
-                    />
-                    <label className="form-check-label">Yes - I refuse blood transfusions</label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      type="radio"
-                      className="form-check-input"
-                      name="no_blood"
-                      value="No"
-                      checked={formData.hcpoa.no_blood_transfusion === 'No'}
-                      onChange={(e) => updateNestedFormData('hcpoa.no_blood_transfusion', e.target.value)}
-                    />
-                    <label className="form-check-label">No - Allow transfusions</label>
-                  </div>
-                </div>
-              </div>
+        <div className="alert alert-light border mb-4">
+          <strong>If you do not see the name of the person or entity you wish to designate as an Agent:</strong>
+          <div className="d-flex align-items-center mt-2 flex-wrap">
+            <span>Return to Step 3</span>
+            <span className="mx-2">&rarr;</span>
+            <span>Select "yes" that the person will serve as Financial Agent or Medical Agent</span>
+            <span className="mx-2">&rarr;</span>
+            <span>Add the last 4 digits of the SSN or EIN as appropriate.</span>
+            <span className="ms-2 text-success">&#10003;</span>
+          </div>
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Does {getPrincipalFullName()} wish to be an organ donor?</label>
+          <div>
+            <div className="form-check form-check-inline">
+              <input
+                type="radio"
+                className="form-check-input"
+                name="organ_donor"
+                value="Yes"
+                checked={formData.hcpoa.wish_to_be_organ_donor === 'Yes'}
+                onChange={(e) => updateNestedFormData('hcpoa.wish_to_be_organ_donor', e.target.value)}
+              />
+              <label className="form-check-label">Yes</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input
+                type="radio"
+                className="form-check-input"
+                name="organ_donor"
+                value="No"
+                checked={formData.hcpoa.wish_to_be_organ_donor === 'No'}
+                onChange={(e) => updateNestedFormData('hcpoa.wish_to_be_organ_donor', e.target.value)}
+              />
+              <label className="form-check-label">No</label>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <label className="form-label">Does {getPrincipalFullName()} wish to donate their body to science?</label>
+          <div>
+            <div className="form-check form-check-inline">
+              <input
+                type="radio"
+                className="form-check-input"
+                name="donate_science"
+                value="Yes"
+                checked={formData.hcpoa.wish_to_donate_body_to_science === 'Yes'}
+                onChange={(e) => updateNestedFormData('hcpoa.wish_to_donate_body_to_science', e.target.value)}
+              />
+              <label className="form-check-label">Yes</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input
+                type="radio"
+                className="form-check-input"
+                name="donate_science"
+                value="No"
+                checked={formData.hcpoa.wish_to_donate_body_to_science === 'No'}
+                onChange={(e) => updateNestedFormData('hcpoa.wish_to_donate_body_to_science', e.target.value)}
+              />
+              <label className="form-check-label">No</label>
             </div>
           </div>
         </div>
@@ -2527,138 +3018,160 @@ const POAForm: React.FC = () => {
           </>
         )}
 
-        {/* Spouse HCPOA Section for 2-person forms */}
+        {/* Second Principal HCPOA Section for 2-person forms */}
         {isTwoPerson && (
           <>
-            <hr className="my-4" />
-            <h3>Healthcare Power of Attorney for {formData.spouse_info.first_name || 'Spouse'}</h3>
+            <hr className="my-5" />
+            <h2>Healthcare Power of Attorney For {getSecondPersonName()}</h2>
+            <p className="text-muted mb-3">
+              A Healthcare Power of Attorney (HCPOA) is a legal document that allows an individual (the "Principal") to
+              designate another person (an "Agent") to make medical decisions for him or her when he or she cannot make
+              decisions for himself or herself.
+            </p>
+            <p className="text-muted mb-3">
+              Healthcare decisions include the power to consent, refuse to consent, or withdraw consent to any type of
+              medical care, treatment, service or procedure, as well as accessing protected health information, and
+              making care arrangements.
+            </p>
+            <p className="text-muted mb-3">
+              The Healthcare Power of Attorney will be effective immediately upon execution by the Principal and Agent.
+            </p>
+            <p className="text-muted mb-3">
+              The Healthcare Power of Attorney is "durable", which means it will remain effective until the earlier of
+              the death of the Principal or until it is expressly revoked, and shall not be affected by the subsequent
+              disability, incapacity, or other condition of Principal making express revocation impossible or impracticable.
+            </p>
+            <p className="text-muted mb-4">
+              You can designate a single Agent who will serve alone, or you may designate Co-Agents who will serve at
+              the same time. If you designate Co-Agents, then decisions must be made jointly by mutual consent.
+            </p>
 
-            <div className="card mb-3">
-              <div className="card-header">Spouse's Healthcare Preferences</div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-md-4 mb-3">
-                    <label className="form-label">Organ donor?</label>
-                    <div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          type="radio"
-                          className="form-check-input"
-                          name="spouse_organ_donor"
-                          value="Yes"
-                          checked={formData.spouse_hcpoa.wish_to_be_organ_donor === 'Yes'}
-                          onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_be_organ_donor', e.target.value)}
-                        />
-                        <label className="form-check-label">Yes</label>
-                      </div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          type="radio"
-                          className="form-check-input"
-                          name="spouse_organ_donor"
-                          value="No"
-                          checked={formData.spouse_hcpoa.wish_to_be_organ_donor === 'No'}
-                          onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_be_organ_donor', e.target.value)}
-                        />
-                        <label className="form-check-label">No</label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-4 mb-3">
-                    <label className="form-label">Donate to science?</label>
-                    <div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          type="radio"
-                          className="form-check-input"
-                          name="spouse_donate_science"
-                          value="Yes"
-                          checked={formData.spouse_hcpoa.wish_to_donate_body_to_science === 'Yes'}
-                          onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_donate_body_to_science', e.target.value)}
-                        />
-                        <label className="form-check-label">Yes</label>
-                      </div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          type="radio"
-                          className="form-check-input"
-                          name="spouse_donate_science"
-                          value="No"
-                          checked={formData.spouse_hcpoa.wish_to_donate_body_to_science === 'No'}
-                          onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_donate_body_to_science', e.target.value)}
-                        />
-                        <label className="form-check-label">No</label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-4 mb-3">
-                    <label className="form-label">Refuse blood transfusions?</label>
-                    <div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          type="radio"
-                          className="form-check-input"
-                          name="spouse_no_blood"
-                          value="Yes"
-                          checked={formData.spouse_hcpoa.no_blood_transfusion === 'Yes'}
-                          onChange={(e) => updateNestedFormData('spouse_hcpoa.no_blood_transfusion', e.target.value)}
-                        />
-                        <label className="form-check-label">Yes</label>
-                      </div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          type="radio"
-                          className="form-check-input"
-                          name="spouse_no_blood"
-                          value="No"
-                          checked={formData.spouse_hcpoa.no_blood_transfusion === 'No'}
-                          onChange={(e) => updateNestedFormData('spouse_hcpoa.no_blood_transfusion', e.target.value)}
-                        />
-                        <label className="form-check-label">No</label>
-                      </div>
-                    </div>
-                  </div>
+            <div className="mb-3">
+              <label className="form-label">Does {getSecondPersonName()} wish to be an organ donor?</label>
+              <div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="spouse_organ_donor"
+                    value="Yes"
+                    checked={formData.spouse_hcpoa.wish_to_be_organ_donor === 'Yes'}
+                    onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_be_organ_donor', e.target.value)}
+                  />
+                  <label className="form-check-label">Yes</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="spouse_organ_donor"
+                    value="No"
+                    checked={formData.spouse_hcpoa.wish_to_be_organ_donor === 'No'}
+                    onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_be_organ_donor', e.target.value)}
+                  />
+                  <label className="form-check-label">No</label>
                 </div>
               </div>
             </div>
 
+            <div className="mb-4">
+              <label className="form-label">Does {getSecondPersonName()} wish to donate their body to science?</label>
+              <div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="spouse_donate_science"
+                    value="Yes"
+                    checked={formData.spouse_hcpoa.wish_to_donate_body_to_science === 'Yes'}
+                    onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_donate_body_to_science', e.target.value)}
+                  />
+                  <label className="form-check-label">Yes</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="spouse_donate_science"
+                    value="No"
+                    checked={formData.spouse_hcpoa.wish_to_donate_body_to_science === 'No'}
+                    onChange={(e) => updateNestedFormData('spouse_hcpoa.wish_to_donate_body_to_science', e.target.value)}
+                  />
+                  <label className="form-check-label">No</label>
+                </div>
+              </div>
+            </div>
+
+            <p className="mb-3">Select the initial agent(s) for {getSecondPersonName()}'s Healthcare Power of Attorney:</p>
             <div className="card mb-3">
-              <div className="card-header">Spouse's Healthcare Agents</div>
+              <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span>Item</span>
+                <span>−</span>
+              </div>
               <div className="card-body">
                 <div className="row">
                   <div className="col-md-6 mb-3">
-                    <label className="form-label">Initial Agent</label>
+                    <label className="form-label">Select the person you want to serve:</label>
                     <select
                       className="form-select"
                       value={formData.spouse_hcpoa.hcpoa_initial_agents.person_to_serve}
                       onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
                     >
-                      <option value="">Select Initial Agent...</option>
-                      <option value="client">{formData.personal_info.first_name || 'Client'} (My Spouse)</option>
+                      <option value="">Initial Agent</option>
+                      <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
                       {parties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label className="form-label">Initial Co-Agent (if any)</label>
+                    <label className="form-label">If you want to appoint a second person (a Co-Agent) to serve at the same time as the Initial Agent, select them here:</label>
                     <select
                       className="form-select"
                       value={formData.spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve}
                       onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                     >
-                      <option value="">None</option>
+                      <option value="">Initial Co-Agent (if any)</option>
                       {parties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
                   </div>
                 </div>
+                {formData.spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve && (
+                  <div className="mb-3">
+                    <label className="form-label">Can each agent act independently?</label>
+                    <div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_hcpoa_serve_alone"
+                          value="Yes"
+                          checked={formData.spouse_hcpoa.hcpoa_initial_agents.agents_serve_alone === 'Yes'}
+                          onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.agents_serve_alone', e.target.value)}
+                        />
+                        <label className="form-check-label">Yes - Each can act alone</label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name="spouse_hcpoa_serve_alone"
+                          value="No"
+                          checked={formData.spouse_hcpoa.hcpoa_initial_agents.agents_serve_alone === 'No'}
+                          onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.agents_serve_alone', e.target.value)}
+                        />
+                        <label className="form-check-label">No - Must act together</label>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="mb-3">
-              <label className="form-label">Does spouse want successor agents?</label>
+              <label className="form-label">Will Successor Agent(s) be appointed for {getSecondPersonName()}'s Healthcare Power of Attorney?</label>
               <div>
                 <div className="form-check form-check-inline">
                   <input
@@ -2692,7 +3205,7 @@ const POAForm: React.FC = () => {
                   The successor agents will serve if all of the initial Agents are unable to serve.
                   These successor Agents will serve in the order they are entered.
                 </p>
-                <p className="mb-3">Select the successor agents for {formData.spouse_info.first_name || 'Spouse'}'s Healthcare Power of Attorney:</p>
+                <p className="mb-3">Select the successor agents for {getSecondPersonName()}'s Healthcare Power of Attorney:</p>
 
                 {(formData.spouse_hcpoa.successor_agents || []).map((agent, index) => (
                   <div key={index} className="card mb-2">
@@ -2716,7 +3229,7 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_hcpoa', index, 'successor_agent_to_serve', e.target.value)}
                           >
                             <option value="">Successor Agent</option>
-                            <option value="client">{formData.personal_info.first_name || 'Client'} (My Spouse)</option>
+                            <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
                             {parties.map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
@@ -2757,11 +3270,18 @@ const POAForm: React.FC = () => {
 
   const renderHCDPage = () => {
     const isTwoPerson = formType.includes('2Person');
+    const isPOA = formType.includes('powerOfAttorney');
+    const secondPersonLabel = isPOA ? 'Second Principal' : 'Spouse';
+    const getSecondPersonName = () => formData.spouse_info.first_name || secondPersonLabel;
 
     return (
       <div className="poa-page">
         <h2>7. Healthcare Directive for {getPrincipalFullName()}</h2>
-        <p className="text-muted">Enter your preferences for end-of-life care.</p>
+        <p className="text-muted mb-3">
+          A Healthcare Directive (also known as a Living Will) documents your wishes regarding end-of-life care.
+          It tells your healthcare providers and loved ones what medical treatments you want or don't want
+          if you become terminally ill or permanently unconscious.
+        </p>
 
         <div className="mb-3">
           <label className="form-label">Life Support Preference <span className="text-danger">*</span></label>
@@ -2909,14 +3429,19 @@ const POAForm: React.FC = () => {
           </div>
         </div>
 
-        {/* Spouse HCD Section for 2-person forms */}
+        {/* Second Principal HCD Section for 2-person forms */}
         {isTwoPerson && (
           <>
-            <hr className="my-4" />
-            <h3>Healthcare Directive for {formData.spouse_info.first_name || 'Spouse'}</h3>
+            <hr className="my-5" />
+            <h2>7. Healthcare Directive for {getSecondPersonName()}</h2>
+            <p className="text-muted mb-3">
+              A Healthcare Directive (also known as a Living Will) documents your wishes regarding end-of-life care.
+              It tells your healthcare providers and loved ones what medical treatments you want or don't want
+              if you become terminally ill or permanently unconscious.
+            </p>
 
             <div className="mb-3">
-              <label className="form-label">Life Support Preference</label>
+              <label className="form-label">Life Support Preference <span className="text-danger">*</span></label>
               <select
                 className="form-select"
                 value={formData.spouse_hcd.life_support_option}
@@ -2930,7 +3455,7 @@ const POAForm: React.FC = () => {
 
             {formData.spouse_hcd.life_support_option === 'CHOOSE' && (
               <div className="card mb-3">
-                <div className="card-header">Spouse's Specific Preferences</div>
+                <div className="card-header">Specific Preferences</div>
                 <div className="card-body">
                   <div className="form-check mb-2">
                     <input
@@ -3003,6 +3528,7 @@ const POAForm: React.FC = () => {
     );
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const renderOtherPartiesPage = () => (
     <div className="poa-page">
       <h2>3. Other Parties</h2>
@@ -4037,8 +4563,13 @@ const POAForm: React.FC = () => {
 
     return (
       <div className="poa-page">
-        <h2>Review & Submit</h2>
-        <p className="text-muted">Please review all information below before submitting your form.</p>
+        <h2>8. Review</h2>
+        <p className="text-muted mb-2">
+          You have completed all sections of the form. Please review your information and click "Submit Form" when ready.
+        </p>
+        <p className="text-muted mb-4">
+          After submission, your documents will be generated and available for download.
+        </p>
 
         {/* Warnings Section */}
         {warnings.length > 0 && (
@@ -4087,12 +4618,12 @@ const POAForm: React.FC = () => {
             </div>
           </div>
 
-          {/* Spouse Info (if 2-person) */}
+          {/* Second Principal / Spouse Info (if 2-person) */}
           {isTwoPerson && (
             <div className="col-md-6 mb-3">
               <div className="card h-100">
                 <div className="card-header bg-primary text-white">
-                  <strong>Spouse</strong>
+                  <strong>{formType.includes('powerOfAttorney') ? 'Second Principal' : 'Spouse'}</strong>
                   <button
                     type="button"
                     className="btn btn-link btn-sm float-end p-0 text-white"
@@ -4518,7 +5049,7 @@ const POAForm: React.FC = () => {
       // Common pages
       case 'start': return renderStartPage();
       case 'personal_info': return renderPersonalInfoPage();
-      case 'spouse_info': return renderOtherPartiesPage();
+      case 'spouse_info': return renderSecondPrincipalPage();
       case 'children': return renderChildrenPage();
       case 'agents': return renderAgentsPage();
       case 'plan_contents': return renderPlanContentsPage();
@@ -4563,10 +5094,10 @@ const POAForm: React.FC = () => {
                     className={`poa-progress-step ${index === currentPage ? 'active' : ''} ${index < currentPage ? 'completed' : ''}`}
                     onClick={() => setCurrentPage(index)}
                     type="button"
-                    title={PAGE_NAMES[page] || page}
+                    title={getPageDisplayName(page)}
                   >
                     <span className="step-number">{index + 1}</span>
-                    <span className="step-name">{PAGE_NAMES[page] || page}</span>
+                    <span className="step-name">{getPageDisplayName(page)}</span>
                   </button>
                 ))}
               </div>

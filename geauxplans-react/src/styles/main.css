@@ -1582,3 +1582,87 @@ button:hover {
     font-size: 3rem;
   }
 }
+
+/* ===== POA Form Page Compact Styling ===== */
+.poa-page {
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.poa-page h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.poa-page h3 {
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.poa-page h4 {
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.poa-page p {
+  margin-bottom: 0.5rem;
+}
+
+.poa-page p.text-muted {
+  font-size: 15px;
+  line-height: 1.55;
+  margin-bottom: 0.5rem;
+}
+
+.poa-page .mb-3 {
+  margin-bottom: 0.75rem !important;
+}
+
+.poa-page .mb-4 {
+  margin-bottom: 1rem !important;
+}
+
+.poa-page .form-label {
+  font-size: 15px;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.poa-page .form-check-label {
+  font-size: 15px;
+}
+
+.poa-page .form-select,
+.poa-page .form-control {
+  font-size: 15px;
+  padding: 0.4rem 0.75rem;
+}
+
+.poa-page .card {
+  margin-bottom: 0.75rem;
+}
+
+.poa-page .card-header {
+  padding: 0.5rem 0.75rem;
+  font-size: 15px;
+}
+
+.poa-page .card-body {
+  padding: 0.75rem;
+}
+
+.poa-page .alert {
+  font-size: 14px;
+  padding: 0.5rem 0.75rem;
+  line-height: 1.5;
+}
+
+.poa-page .btn {
+  font-size: 15px;
+  padding: 0.4rem 0.75rem;
+}
+
+.poa-page hr {
+  margin: 1.5rem 0;
+}
