@@ -258,6 +258,82 @@ const LOUISIANA_PARISHES = [
   'Washington', 'Webster', 'West Baton Rouge', 'West Carroll', 'West Feliciana', 'Winn',
 ];
 
+// US Counties by state (common counties for major states)
+const US_COUNTIES: Record<string, string[]> = {
+  'Alabama': ['Jefferson', 'Mobile', 'Madison', 'Montgomery', 'Shelby', 'Baldwin', 'Tuscaloosa', 'Lee', 'Morgan', 'Calhoun'],
+  'Alaska': ['Anchorage', 'Fairbanks North Star', 'Matanuska-Susitna', 'Kenai Peninsula', 'Juneau'],
+  'Arizona': ['Maricopa', 'Pima', 'Pinal', 'Yavapai', 'Yuma', 'Mohave', 'Coconino', 'Cochise', 'Navajo', 'Apache'],
+  'Arkansas': ['Pulaski', 'Benton', 'Washington', 'Sebastian', 'Faulkner', 'Saline', 'Craighead', 'Garland', 'White', 'Lonoke'],
+  'California': ['Los Angeles', 'San Diego', 'Orange', 'Riverside', 'San Bernardino', 'Santa Clara', 'Alameda', 'Sacramento', 'Contra Costa', 'Fresno'],
+  'Colorado': ['Denver', 'El Paso', 'Arapahoe', 'Jefferson', 'Adams', 'Larimer', 'Douglas', 'Boulder', 'Weld', 'Pueblo'],
+  'Connecticut': ['Fairfield', 'Hartford', 'New Haven', 'Litchfield', 'Middlesex', 'New London', 'Tolland', 'Windham'],
+  'Delaware': ['New Castle', 'Sussex', 'Kent'],
+  'Florida': ['Miami-Dade', 'Broward', 'Palm Beach', 'Hillsborough', 'Orange', 'Pinellas', 'Duval', 'Lee', 'Polk', 'Brevard'],
+  'Georgia': ['Fulton', 'Gwinnett', 'Cobb', 'DeKalb', 'Chatham', 'Clayton', 'Cherokee', 'Forsyth', 'Henry', 'Richmond'],
+  'Hawaii': ['Honolulu', 'Hawaii', 'Maui', 'Kauai'],
+  'Idaho': ['Ada', 'Canyon', 'Kootenai', 'Bonneville', 'Bannock', 'Twin Falls', 'Bingham', 'Madison', 'Nez Perce', 'Elmore'],
+  'Illinois': ['Cook', 'DuPage', 'Lake', 'Will', 'Kane', 'McHenry', 'Winnebago', 'Madison', 'St. Clair', 'Sangamon'],
+  'Indiana': ['Marion', 'Lake', 'Allen', 'Hamilton', 'St. Joseph', 'Elkhart', 'Tippecanoe', 'Vanderburgh', 'Porter', 'Hendricks'],
+  'Iowa': ['Polk', 'Linn', 'Scott', 'Johnson', 'Black Hawk', 'Woodbury', 'Dubuque', 'Story', 'Dallas', 'Pottawattamie'],
+  'Kansas': ['Johnson', 'Sedgwick', 'Shawnee', 'Wyandotte', 'Douglas', 'Leavenworth', 'Riley', 'Butler', 'Reno', 'Saline'],
+  'Kentucky': ['Jefferson', 'Fayette', 'Kenton', 'Boone', 'Warren', 'Hardin', 'Daviess', 'Campbell', 'Madison', 'Bullitt'],
+  'Maine': ['Cumberland', 'York', 'Penobscot', 'Kennebec', 'Androscoggin', 'Aroostook', 'Oxford', 'Somerset', 'Hancock', 'Knox'],
+  'Maryland': ['Montgomery', 'Prince George\'s', 'Baltimore', 'Anne Arundel', 'Howard', 'Baltimore City', 'Frederick', 'Harford', 'Carroll', 'Charles'],
+  'Massachusetts': ['Middlesex', 'Worcester', 'Suffolk', 'Essex', 'Norfolk', 'Bristol', 'Plymouth', 'Hampden', 'Barnstable', 'Hampshire'],
+  'Michigan': ['Wayne', 'Oakland', 'Macomb', 'Kent', 'Genesee', 'Washtenaw', 'Ingham', 'Ottawa', 'Kalamazoo', 'Livingston'],
+  'Minnesota': ['Hennepin', 'Ramsey', 'Dakota', 'Anoka', 'Washington', 'Scott', 'Olmsted', 'St. Louis', 'Wright', 'Stearns'],
+  'Mississippi': ['Hinds', 'Harrison', 'DeSoto', 'Rankin', 'Jackson', 'Madison', 'Lee', 'Forrest', 'Lauderdale', 'Jones'],
+  'Missouri': ['St. Louis', 'Jackson', 'St. Charles', 'St. Louis City', 'Greene', 'Clay', 'Jefferson', 'Boone', 'Jasper', 'Cass'],
+  'Montana': ['Yellowstone', 'Missoula', 'Gallatin', 'Flathead', 'Cascade', 'Lewis and Clark', 'Ravalli', 'Silver Bow', 'Lake', 'Lincoln'],
+  'Nebraska': ['Douglas', 'Lancaster', 'Sarpy', 'Hall', 'Buffalo', 'Scotts Bluff', 'Lincoln', 'Dodge', 'Madison', 'Platte'],
+  'Nevada': ['Clark', 'Washoe', 'Carson City', 'Douglas', 'Elko', 'Lyon', 'Nye', 'Churchill', 'Humboldt', 'White Pine'],
+  'New Hampshire': ['Hillsborough', 'Rockingham', 'Merrimack', 'Strafford', 'Grafton', 'Cheshire', 'Belknap', 'Carroll', 'Sullivan', 'Coos'],
+  'New Jersey': ['Bergen', 'Middlesex', 'Essex', 'Hudson', 'Monmouth', 'Ocean', 'Union', 'Passaic', 'Camden', 'Morris'],
+  'New Mexico': ['Bernalillo', 'Doña Ana', 'Santa Fe', 'Sandoval', 'San Juan', 'McKinley', 'Lea', 'Chaves', 'Valencia', 'Otero'],
+  'New York': ['Kings', 'Queens', 'New York', 'Suffolk', 'Bronx', 'Nassau', 'Westchester', 'Erie', 'Monroe', 'Richmond'],
+  'North Carolina': ['Mecklenburg', 'Wake', 'Guilford', 'Forsyth', 'Cumberland', 'Durham', 'Buncombe', 'Gaston', 'New Hanover', 'Union'],
+  'North Dakota': ['Cass', 'Burleigh', 'Grand Forks', 'Ward', 'Williams', 'Stark', 'Morton', 'Stutsman', 'Richland', 'Rolette'],
+  'Ohio': ['Franklin', 'Cuyahoga', 'Hamilton', 'Summit', 'Montgomery', 'Lucas', 'Butler', 'Stark', 'Lorain', 'Warren'],
+  'Oklahoma': ['Oklahoma', 'Tulsa', 'Cleveland', 'Canadian', 'Comanche', 'Rogers', 'Payne', 'Wagoner', 'Garfield', 'Pottawatomie'],
+  'Oregon': ['Multnomah', 'Washington', 'Clackamas', 'Lane', 'Marion', 'Jackson', 'Deschutes', 'Linn', 'Douglas', 'Yamhill'],
+  'Pennsylvania': ['Philadelphia', 'Allegheny', 'Montgomery', 'Bucks', 'Delaware', 'Lancaster', 'Chester', 'York', 'Berks', 'Lehigh'],
+  'Rhode Island': ['Providence', 'Kent', 'Washington', 'Newport', 'Bristol'],
+  'South Carolina': ['Greenville', 'Richland', 'Charleston', 'Horry', 'Spartanburg', 'Lexington', 'York', 'Berkeley', 'Anderson', 'Beaufort'],
+  'South Dakota': ['Minnehaha', 'Pennington', 'Lincoln', 'Brown', 'Brookings', 'Codington', 'Meade', 'Lawrence', 'Davison', 'Yankton'],
+  'Tennessee': ['Shelby', 'Davidson', 'Knox', 'Hamilton', 'Rutherford', 'Williamson', 'Sumner', 'Montgomery', 'Wilson', 'Sullivan'],
+  'Texas': ['Harris', 'Dallas', 'Tarrant', 'Bexar', 'Travis', 'Collin', 'Denton', 'Hidalgo', 'Fort Bend', 'El Paso'],
+  'Utah': ['Salt Lake', 'Utah', 'Davis', 'Weber', 'Washington', 'Cache', 'Tooele', 'Box Elder', 'Iron', 'Summit'],
+  'Vermont': ['Chittenden', 'Rutland', 'Washington', 'Windsor', 'Windham', 'Franklin', 'Bennington', 'Addison', 'Caledonia', 'Orange'],
+  'Virginia': ['Fairfax', 'Prince William', 'Virginia Beach', 'Loudoun', 'Chesterfield', 'Henrico', 'Norfolk', 'Chesapeake', 'Arlington', 'Newport News'],
+  'Washington': ['King', 'Pierce', 'Snohomish', 'Spokane', 'Clark', 'Thurston', 'Kitsap', 'Yakima', 'Whatcom', 'Benton'],
+  'West Virginia': ['Kanawha', 'Berkeley', 'Cabell', 'Wood', 'Monongalia', 'Raleigh', 'Putnam', 'Harrison', 'Marion', 'Mercer'],
+  'Wisconsin': ['Milwaukee', 'Dane', 'Waukesha', 'Brown', 'Racine', 'Outagamie', 'Winnebago', 'Kenosha', 'Rock', 'Marathon'],
+  'Wyoming': ['Laramie', 'Natrona', 'Campbell', 'Sweetwater', 'Fremont', 'Albany', 'Sheridan', 'Park', 'Teton', 'Uinta'],
+};
+
+// Get counties for a state (or parishes for Louisiana)
+const getCountiesForState = (state: string): string[] => {
+  if (state === 'Louisiana') {
+    return LOUISIANA_PARISHES;
+  }
+  return US_COUNTIES[state] || [];
+};
+
+// Format phone number as (XXX) XXX-XXXX
+const formatPhoneNumber = (value: string): string => {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length === 0) return '';
+  if (digits.length <= 3) return `(${digits}`;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+};
+
+// Handle phone input change
+const handlePhoneChange = (value: string): string => {
+  const digits = value.replace(/\D/g, '');
+  return formatPhoneNumber(digits.slice(0, 10));
+};
+
 interface Party {
   id: string;
   type_of_party: 'An individual person' | 'An entity' | '';
@@ -1440,14 +1516,14 @@ const POAForm: React.FC = () => {
             <label className="form-label">
               {formData.personal_info.state === 'Louisiana' ? 'Parish' : 'County'} <span className="text-danger">*</span>
             </label>
-            {formData.personal_info.state === 'Louisiana' ? (
+            {getCountiesForState(formData.personal_info.state).length > 0 ? (
               <select
                 className={`form-select ${errors['personal_info.parish'] ? 'is-invalid' : ''}`}
                 value={formData.personal_info.parish}
                 onChange={(e) => updateFormData('personal_info', 'parish', e.target.value)}
               >
-                <option value="">Select Parish...</option>
-                {LOUISIANA_PARISHES.map((p) => (
+                <option value="">Select {formData.personal_info.state === 'Louisiana' ? 'Parish' : 'County'}...</option>
+                {getCountiesForState(formData.personal_info.state).map((p) => (
                   <option key={p} value={p}>{p}</option>
                 ))}
               </select>
@@ -1471,7 +1547,7 @@ const POAForm: React.FC = () => {
               type="tel"
               className={`form-control ${errors['personal_info.phone_number'] ? 'is-invalid' : ''}`}
               value={formData.personal_info.phone_number}
-              onChange={(e) => updateFormData('personal_info', 'phone_number', e.target.value)}
+              onChange={(e) => updateFormData('personal_info', 'phone_number', handlePhoneChange(e.target.value))}
               placeholder="(504) 555-1234"
             />
             {errors['personal_info.phone_number'] && <div className="invalid-feedback">{errors['personal_info.phone_number']}</div>}
@@ -1574,7 +1650,7 @@ const POAForm: React.FC = () => {
                   type="tel"
                   className={`form-control ${errors['spouse_info.phone_number'] ? 'is-invalid' : ''}`}
                   value={formData.spouse_info.phone_number}
-                  onChange={(e) => updateFormData('spouse_info', 'phone_number', e.target.value)}
+                  onChange={(e) => updateFormData('spouse_info', 'phone_number', handlePhoneChange(e.target.value))}
                   placeholder="(504) 555-1234"
                 />
                 {errors['spouse_info.phone_number'] && <div className="invalid-feedback">{errors['spouse_info.phone_number']}</div>}
@@ -1675,14 +1751,14 @@ const POAForm: React.FC = () => {
                     <label className="form-label">
                       {formData.spouse_info.state === 'Louisiana' ? 'Parish' : 'County'} <span className="text-danger">*</span>
                     </label>
-                    {formData.spouse_info.state === 'Louisiana' ? (
+                    {getCountiesForState(formData.spouse_info.state).length > 0 ? (
                       <select
                         className={`form-select ${errors['spouse_info.parish'] ? 'is-invalid' : ''}`}
                         value={formData.spouse_info.parish}
                         onChange={(e) => updateFormData('spouse_info', 'parish', e.target.value)}
                       >
-                        <option value="">Select Parish...</option>
-                        {LOUISIANA_PARISHES.map((p) => (
+                        <option value="">Select {formData.spouse_info.state === 'Louisiana' ? 'Parish' : 'County'}...</option>
+                        {getCountiesForState(formData.spouse_info.state).map((p) => (
                           <option key={p} value={p}>{p}</option>
                         ))}
                       </select>
@@ -1797,7 +1873,7 @@ const POAForm: React.FC = () => {
               type="tel"
               className={`form-control ${errors['spouse_info.phone_number'] ? 'is-invalid' : ''}`}
               value={formData.spouse_info.phone_number}
-              onChange={(e) => updateFormData('spouse_info', 'phone_number', e.target.value)}
+              onChange={(e) => updateFormData('spouse_info', 'phone_number', handlePhoneChange(e.target.value))}
               placeholder="(504) 555-1234"
             />
             {errors['spouse_info.phone_number'] && <div className="invalid-feedback">{errors['spouse_info.phone_number']}</div>}
@@ -1898,14 +1974,14 @@ const POAForm: React.FC = () => {
                 <label className="form-label">
                   {formData.spouse_info.state === 'Louisiana' ? 'Parish' : 'County'} <span className="text-danger">*</span>
                 </label>
-                {formData.spouse_info.state === 'Louisiana' ? (
+                {getCountiesForState(formData.spouse_info.state).length > 0 ? (
                   <select
                     className={`form-select ${errors['spouse_info.parish'] ? 'is-invalid' : ''}`}
                     value={formData.spouse_info.parish}
                     onChange={(e) => updateFormData('spouse_info', 'parish', e.target.value)}
                   >
-                    <option value="">Select Parish...</option>
-                    {LOUISIANA_PARISHES.map((p) => (
+                    <option value="">Select {formData.spouse_info.state === 'Louisiana' ? 'Parish' : 'County'}...</option>
+                    {getCountiesForState(formData.spouse_info.state).map((p) => (
                       <option key={p} value={p}>{p}</option>
                     ))}
                   </select>
@@ -1937,7 +2013,7 @@ const POAForm: React.FC = () => {
       {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, index) => (
         <div key={party.id} className="card mb-3">
           <div className="card-header d-flex justify-content-between align-items-center">
-            <strong>Party {index + 1}: {getPartyDisplayName(party)}</strong>
+            <strong>{getPartyDisplayName(party) || `Agent ${index + 1}`}</strong>
             <button
               type="button"
               className="btn btn-sm btn-outline-danger"
@@ -2209,19 +2285,20 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSigner(index, signerIndex, 'surname', e.target.value)}
                           />
                         </div>
-                        <div className="col-md-1 mb-2">
+                        <div className="col-md-2 mb-2">
                           <select
                             className="form-select form-select-sm"
                             value={signer.suffix}
                             onChange={(e) => updateSigner(index, signerIndex, 'suffix', e.target.value)}
+                            title="Suffix (Jr., Sr., III, etc.)"
                           >
-                            <option value="">-</option>
+                            <option value="">Suffix</option>
                             {SUFFIX_OPTIONS.map((sfx) => (
                               <option key={sfx} value={sfx}>{sfx}</option>
                             ))}
                           </select>
                         </div>
-                        <div className="col-md-3 mb-2">
+                        <div className="col-md-2 mb-2">
                           <select
                             className="form-select form-select-sm"
                             value={signer.title}
@@ -2317,14 +2394,14 @@ const POAForm: React.FC = () => {
                   <label className="form-label">
                     {party.state === 'Louisiana' ? 'Parish' : 'County'}
                   </label>
-                  {party.state === 'Louisiana' ? (
+                  {getCountiesForState(party.state || '').length > 0 ? (
                     <select
                       className="form-select"
                       value={party.parish}
                       onChange={(e) => updateParty(index, 'parish', e.target.value)}
                     >
-                      <option value="">Select Parish...</option>
-                      {LOUISIANA_PARISHES.map((p) => (
+                      <option value="">Select {party.state === 'Louisiana' ? 'Parish' : 'County'}...</option>
+                      {getCountiesForState(party.state || '').map((p) => (
                         <option key={p} value={p}>{p}</option>
                       ))}
                     </select>
@@ -3597,7 +3674,7 @@ const POAForm: React.FC = () => {
           {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, index) => (
             <div key={party.id} className="card mb-3">
               <div className="card-header d-flex justify-content-between align-items-center">
-                <strong>Party {index + 1}: {getPartyDisplayName(party)}</strong>
+                <strong>{getPartyDisplayName(party) || `Agent ${index + 1}`}</strong>
                 <button
                   type="button"
                   className="btn btn-sm btn-outline-danger"
@@ -3805,19 +3882,20 @@ const POAForm: React.FC = () => {
                                 onChange={(e) => updateSigner(index, signerIndex, 'surname', e.target.value)}
                               />
                             </div>
-                            <div className="col-md-1 mb-2">
+                            <div className="col-md-2 mb-2">
                               <select
                                 className="form-select form-select-sm"
                                 value={signer.suffix}
                                 onChange={(e) => updateSigner(index, signerIndex, 'suffix', e.target.value)}
+                                title="Suffix (Jr., Sr., III, etc.)"
                               >
-                                <option value="">-</option>
+                                <option value="">Suffix</option>
                                 {SUFFIX_OPTIONS.map((sfx) => (
                                   <option key={sfx} value={sfx}>{sfx}</option>
                                 ))}
                               </select>
                             </div>
-                            <div className="col-md-3 mb-2">
+                            <div className="col-md-2 mb-2">
                               <select
                                 className="form-select form-select-sm"
                                 value={signer.title}
@@ -3913,14 +3991,14 @@ const POAForm: React.FC = () => {
                       <label className="form-label">
                         {party.state === 'Louisiana' ? 'Parish' : 'County'}
                       </label>
-                      {party.state === 'Louisiana' ? (
+                      {getCountiesForState(party.state || '').length > 0 ? (
                         <select
                           className="form-select"
                           value={party.parish}
                           onChange={(e) => updateParty(index, 'parish', e.target.value)}
                         >
-                          <option value="">Select Parish...</option>
-                          {LOUISIANA_PARISHES.map((p) => (
+                          <option value="">Select {party.state === 'Louisiana' ? 'Parish' : 'County'}...</option>
+                          {getCountiesForState(party.state || '').map((p) => (
                             <option key={p} value={p}>{p}</option>
                           ))}
                         </select>
