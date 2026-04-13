@@ -1368,7 +1368,7 @@ const POAForm: React.FC = () => {
               The Power of Attorney Supplement for Two People includes a set of the following legal documents for two people:
             </p>
             <p>
-              (1) Financial Power of Attorney; (2) Medical Power of Attorney; (3) Advanced Healthcare Directive (a/k/a "Living Will"); and (4) HIPAA Release.
+              <strong>(1) Financial Power of Attorney;</strong> <strong>(2) Medical Power of Attorney;</strong> <strong>(3) Advanced Healthcare Directive (a/k/a "Living Will");</strong> and <strong>(4) HIPAA Release.</strong>
             </p>
             <p>
               The Power of Attorney Supplement for Two People is well suited for married couples or life partners who wish to authorize legal or financial decisions for each other, as well as access protected health information, consent to medical procedures, or make care arrangements if they are unable to do so. Successor or alternative Agents may also be named. The persons granting powers of attorney (the "Principals") need not name each other as their first choice of Agent and, instead, may choose to name another person, whether a friend of family member, as their initial Agent.
