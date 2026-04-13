@@ -2492,14 +2492,28 @@ const POAForm: React.FC = () => {
       <div className="poa-page">
         <h2>5. Financial Power of Attorney for {getPrincipalFullName()}</h2>
         <p className="text-muted mb-3">
-          A Financial Power of Attorney gives a person, called an Agent, the authority to make financial decisions for
-          you if you become incapacitated or otherwise unable to manage your own affairs. Agents can pay your bills,
-          manage your investments and financial accounts, and other similar tasks.
+          A Financial Power of Attorney (FPOA) is a legal document that allows an individual (the "Principal") to designate another person (an "Agent") to make financial decisions for him or her when he or she cannot make decisions for himself or herself.
         </p>
-        <p className="text-muted mb-4">
-          <em>If you did not enter an Agent for this Principal on the "Agents" step (Step 3), please return to Step 3
-          and enter at least one Agent before continuing.</em>
+        <p className="text-muted mb-3">
+          The Financial Power of Attorney will be effective immediately upon execution by the Principal and Agent.
         </p>
+        <p className="text-muted mb-3">
+          The Financial Power of Attorney is "durable", which means it will remain effective until the earlier of the death of the of the Principal or until it is expressly revoked, and shall not be affected by the subsequent disability, incapacity, or other condition of Principal making express revocation impossible or impracticable.
+        </p>
+        <p className="text-muted mb-3">
+          You can designate a single Agent who will serve alone, or you may designate Co-Agents who will serve at the same time. If you designate Co-Agents, then decisions must be made jointly by mutual consent.
+        </p>
+        <div className="alert alert-light border mb-4">
+          <strong>If you do not see the name of the person or entity you wish to designate as an Agent:</strong>
+          <div className="d-flex align-items-center mt-2 flex-wrap">
+            <span>Return to Step 3</span>
+            <span className="mx-2">&rarr;</span>
+            <span>Select "yes" that the person will serve as Financial Agent or Medical Agent</span>
+            <span className="mx-2">&rarr;</span>
+            <span>Add the last 4 digits of the SSN or EIN as appropriate.</span>
+            <span className="ms-2 text-success">&#10003;</span>
+          </div>
+        </div>
 
         <p className="mb-3">Select the initial agent(s) for {getPrincipalFullName()}'s Financial Power of Attorney:</p>
         <div className="card mb-3">
