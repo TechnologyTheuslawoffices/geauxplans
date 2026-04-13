@@ -2292,7 +2292,7 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSigner(index, signerIndex, 'suffix', e.target.value)}
                             title="Suffix (Jr., Sr., III, etc.)"
                           >
-                            <option value="">Suffix</option>
+                            <option value="">None</option>
                             {SUFFIX_OPTIONS.map((sfx) => (
                               <option key={sfx} value={sfx}>{sfx}</option>
                             ))}
@@ -2304,7 +2304,7 @@ const POAForm: React.FC = () => {
                             value={signer.title}
                             onChange={(e) => updateSigner(index, signerIndex, 'title', e.target.value)}
                           >
-                            <option value="">Title...</option>
+                            <option value="">Select Title...</option>
                             {ENTITY_ROLE_OPTIONS.map((role) => (
                               <option key={role} value={role}>{role}</option>
                             ))}
@@ -2498,7 +2498,7 @@ const POAForm: React.FC = () => {
                   value={formData.fpoa.fpoa_initial_agents.person_to_serve}
                   onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
                 >
-                  <option value="">Initial Agent</option>
+                  <option value="">Select Agent...</option>
                   {isTwoPerson && (
                     <option value="spouse">My Spouse</option>
                   )}
@@ -2514,7 +2514,7 @@ const POAForm: React.FC = () => {
                   value={formData.fpoa.fpoa_initial_agents.second_coagent_person_to_serve}
                   onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                 >
-                  <option value="">Initial Co-Agent (if any)</option>
+                  <option value="">None</option>
                   {parties.map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
@@ -2614,7 +2614,7 @@ const POAForm: React.FC = () => {
                         value={agent.successor_agent_to_serve || ''}
                         onChange={(e) => updateSuccessorAgent('fpoa', index, 'successor_agent_to_serve', e.target.value)}
                       >
-                        <option value="">Successor Agent</option>
+                        <option value="">Select Agent...</option>
                         {parties.map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
@@ -2627,7 +2627,7 @@ const POAForm: React.FC = () => {
                         value={agent.second_successor_coagent_to_serve || ''}
                         onChange={(e) => updateSuccessorAgent('fpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                       >
-                        <option value="">Successor Co-Agent (if any)</option>
+                        <option value="">None</option>
                         {parties.map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
@@ -2678,7 +2678,7 @@ const POAForm: React.FC = () => {
                       value={formData.spouse_fpoa.fpoa_initial_agents.person_to_serve}
                       onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
                     >
-                      <option value="">Initial Agent</option>
+                      <option value="">Select Agent...</option>
                       <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
                       {parties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
@@ -2692,7 +2692,7 @@ const POAForm: React.FC = () => {
                       value={formData.spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve}
                       onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                     >
-                      <option value="">Initial Co-Agent (if any)</option>
+                      <option value="">None</option>
                       {parties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
@@ -2789,7 +2789,7 @@ const POAForm: React.FC = () => {
                             value={agent.successor_agent_to_serve || ''}
                             onChange={(e) => updateSuccessorAgent('spouse_fpoa', index, 'successor_agent_to_serve', e.target.value)}
                           >
-                            <option value="">Successor Agent</option>
+                            <option value="">Select Agent...</option>
                             <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
                             {parties.map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
@@ -2803,7 +2803,7 @@ const POAForm: React.FC = () => {
                             value={agent.second_successor_coagent_to_serve || ''}
                             onChange={(e) => updateSuccessorAgent('spouse_fpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                           >
-                            <option value="">Successor Co-Agent (if any)</option>
+                            <option value="">None</option>
                             {parties.map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
@@ -2945,7 +2945,7 @@ const POAForm: React.FC = () => {
                   value={formData.hcpoa.hcpoa_initial_agents.person_to_serve}
                   onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
                 >
-                  <option value="">Initial Agent</option>
+                  <option value="">Select Agent...</option>
                   {isTwoPerson && (
                     <option value="spouse">My Spouse</option>
                   )}
@@ -2961,7 +2961,7 @@ const POAForm: React.FC = () => {
                   value={formData.hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve}
                   onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                 >
-                  <option value="">Initial Co-Agent (if any)</option>
+                  <option value="">None</option>
                   {parties.map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
@@ -3061,7 +3061,7 @@ const POAForm: React.FC = () => {
                         value={agent.successor_agent_to_serve || ''}
                         onChange={(e) => updateSuccessorAgent('hcpoa', index, 'successor_agent_to_serve', e.target.value)}
                       >
-                        <option value="">Successor Agent</option>
+                        <option value="">Select Agent...</option>
                         {parties.map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
@@ -3074,7 +3074,7 @@ const POAForm: React.FC = () => {
                         value={agent.second_successor_coagent_to_serve || ''}
                         onChange={(e) => updateSuccessorAgent('hcpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                       >
-                        <option value="">Successor Co-Agent (if any)</option>
+                        <option value="">None</option>
                         {parties.map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
@@ -3194,7 +3194,7 @@ const POAForm: React.FC = () => {
                       value={formData.spouse_hcpoa.hcpoa_initial_agents.person_to_serve}
                       onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
                     >
-                      <option value="">Initial Agent</option>
+                      <option value="">Select Agent...</option>
                       <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
                       {parties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
@@ -3208,7 +3208,7 @@ const POAForm: React.FC = () => {
                       value={formData.spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve}
                       onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                     >
-                      <option value="">Initial Co-Agent (if any)</option>
+                      <option value="">None</option>
                       {parties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
@@ -3305,7 +3305,7 @@ const POAForm: React.FC = () => {
                             value={agent.successor_agent_to_serve || ''}
                             onChange={(e) => updateSuccessorAgent('spouse_hcpoa', index, 'successor_agent_to_serve', e.target.value)}
                           >
-                            <option value="">Successor Agent</option>
+                            <option value="">Select Agent...</option>
                             <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
                             {parties.map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
@@ -3319,7 +3319,7 @@ const POAForm: React.FC = () => {
                             value={agent.second_successor_coagent_to_serve || ''}
                             onChange={(e) => updateSuccessorAgent('spouse_hcpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                           >
-                            <option value="">Successor Co-Agent (if any)</option>
+                            <option value="">None</option>
                             {parties.map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
@@ -3444,67 +3444,6 @@ const POAForm: React.FC = () => {
             </div>
           </div>
         )}
-
-        <div className="card mb-3">
-          <div className="card-header">Extended Period Option</div>
-          <div className="card-body">
-            <div className="mb-3">
-              <label className="form-label">Do you want to extend the waiting period before withdrawal of life support?</label>
-              <div>
-                <div className="form-check form-check-inline">
-                  <input
-                    type="radio"
-                    className="form-check-input"
-                    name="extend_hcd"
-                    value="No"
-                    checked={formData.hcd.extend_hcd === 'No'}
-                    onChange={(e) => updateNestedFormData('hcd.extend_hcd', e.target.value)}
-                  />
-                  <label className="form-check-label">No - Use standard period</label>
-                </div>
-                <div className="form-check form-check-inline">
-                  <input
-                    type="radio"
-                    className="form-check-input"
-                    name="extend_hcd"
-                    value="Yes"
-                    checked={formData.hcd.extend_hcd === 'Yes'}
-                    onChange={(e) => updateNestedFormData('hcd.extend_hcd', e.target.value)}
-                  />
-                  <label className="form-check-label">Yes - Specify custom period</label>
-                </div>
-              </div>
-            </div>
-
-            {formData.hcd.extend_hcd === 'Yes' && (
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Number of days</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={formData.hcd.hcd_days}
-                    min={1}
-                    max={365}
-                    onChange={(e) => updateNestedFormData('hcd.hcd_days', parseInt(e.target.value) || 7)}
-                  />
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Timing preference</label>
-                  <select
-                    className="form-select"
-                    value={formData.hcd.hcd_sooner_longer}
-                    onChange={(e) => updateNestedFormData('hcd.hcd_sooner_longer', e.target.value)}
-                  >
-                    <option value="">Select...</option>
-                    <option value="sooner">Sooner - err on the side of earlier withdrawal</option>
-                    <option value="longer">Longer - err on the side of extended care</option>
-                  </select>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Second Principal HCD Section for 2-person forms */}
         {isTwoPerson && (
@@ -3889,7 +3828,7 @@ const POAForm: React.FC = () => {
                                 onChange={(e) => updateSigner(index, signerIndex, 'suffix', e.target.value)}
                                 title="Suffix (Jr., Sr., III, etc.)"
                               >
-                                <option value="">Suffix</option>
+                                <option value="">None</option>
                                 {SUFFIX_OPTIONS.map((sfx) => (
                                   <option key={sfx} value={sfx}>{sfx}</option>
                                 ))}
@@ -3901,7 +3840,7 @@ const POAForm: React.FC = () => {
                                 value={signer.title}
                                 onChange={(e) => updateSigner(index, signerIndex, 'title', e.target.value)}
                               >
-                                <option value="">Title...</option>
+                                <option value="">Select Title...</option>
                                 {ENTITY_ROLE_OPTIONS.map((role) => (
                                   <option key={role} value={role}>{role}</option>
                                 ))}
@@ -5035,7 +4974,6 @@ const POAForm: React.FC = () => {
                 {formData.hcd?.life_support_option === 'CHOOSE' && (
                   <p className="mb-1"><strong>Withhold:</strong> {getHCDChoices(formData.hcd?.client_hcds || [])}</p>
                 )}
-                <p className="mb-1"><strong>Extend Default Period:</strong> {formData.hcd?.extend_hcd === 'Yes' ? `Yes (${formData.hcd?.hcd_days} days ${formData.hcd?.hcd_sooner_longer})` : 'No'}</p>
               </div>
             </div>
           </div>
@@ -5050,7 +4988,6 @@ const POAForm: React.FC = () => {
                   {formData.spouse_hcd?.life_support_option === 'CHOOSE' && (
                     <p className="mb-1"><strong>Withhold:</strong> {getHCDChoices(formData.spouse_hcd?.spouse_hcds || [])}</p>
                   )}
-                  <p className="mb-1"><strong>Extend Default Period:</strong> {formData.spouse_hcd?.extend_hcd === 'Yes' ? `Yes (${formData.spouse_hcd?.hcd_days} days ${formData.spouse_hcd?.hcd_sooner_longer})` : 'No'}</p>
                 </div>
               </div>
             </div>
