@@ -2872,26 +2872,19 @@ const POAForm: React.FC = () => {
       <div className="poa-page">
         <h2>6. Healthcare Power of Attorney For {getPrincipalFullName()}</h2>
         <p className="text-muted mb-3">
-          A Healthcare Power of Attorney (HCPOA) is a legal document that allows an individual (the "Principal") to
-          designate another person (an "Agent") to make medical decisions for him or her when he or she cannot make
-          decisions for himself or herself.
+          <em><strong>A Healthcare Power of Attorney (HCPOA) is a legal document that allows an individual (the "Principal") to designate another person (an "Agent") to make medical decisions for him or her when he or she cannot make decisions for himself or herself.</strong></em>
         </p>
         <p className="text-muted mb-3">
-          Healthcare decisions include the power to consent, refuse to consent, or withdraw consent to any type of
-          medical care, treatment, service or procedure, as well as accessing protected health information, and
-          making care arrangements.
+          Healthcare decisions include the power to consent, refuse to consent, or withdraw consent to any type of medical care, treatment, service or procedure, as well as accessing protected health information, and making care arrangements.
         </p>
         <p className="text-muted mb-3">
           The Healthcare Power of Attorney will be effective immediately upon execution by the Principal and Agent.
         </p>
         <p className="text-muted mb-3">
-          The Healthcare Power of Attorney is "durable", which means it will remain effective until the earlier of
-          the death of the Principal or until it is expressly revoked, and shall not be affected by the subsequent
-          disability, incapacity, or other condition of Principal making express revocation impossible or impracticable.
+          The Healthcare Power of Attorney is "durable", which means it will remain effective until the earlier of the death of the Principal or until it is expressly revoked, and shall not be affected by the subsequent disability, incapacity, or other condition of Principal making express revocation impossible or impracticable.
         </p>
         <p className="text-muted mb-4">
-          You can designate a single Agent who will serve alone, or you may designate Co-Agents who will serve at
-          the same time. If you designate Co-Agents, then decisions must be made jointly by mutual consent.
+          You can designate a single Agent who will serve alone, or you may designate Co-Agents who will serve at the same time. If you designate Co-Agents, then decisions must be made jointly by mutual consent.
         </p>
 
         <div className="alert alert-light border mb-4">
@@ -3387,9 +3380,10 @@ const POAForm: React.FC = () => {
       <div className="poa-page">
         <h2>7. Healthcare Directive for {getPrincipalFullName()}</h2>
         <p className="text-muted mb-3">
-          A Healthcare Directive (also known as a Living Will) documents your wishes regarding end-of-life care.
-          It tells your healthcare providers and loved ones what medical treatments you want or don't want
-          if you become terminally ill or permanently unconscious.
+          <em><strong>Also known as a "Living Will"</strong></em>.
+        </p>
+        <p className="text-muted mb-3">
+          A Healthcare Directive (sometimes referred to as a "Living Will") is a document that instructs your healthcare provider to withhold life sustaining procedures in the event two (2) physicians certify that you are in a terminal and irreversible condition and that your death will occur whether or not life-sustaining procedures are utilized or artificially prolong your life. If you wish to make this directive, you essentially have two choices: (1) to withhold all life sustaining procedures, including nutrition and hydration; or (2) to withhold all life-sustaining procedures, except nutrition and hydration. You will not be conscious or able to communicate in this end-of-life state, so nutrition connotes a feeding tube and hydration would be administered intravenously. You must initial next to your choice as indicated on the form.
         </p>
 
         <div className="mb-3">
