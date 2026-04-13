@@ -47,6 +47,37 @@ a:hover {
   color: #0000cc;
 }
 
+/* Placeholder styling - faded appearance */
+::placeholder {
+  color: #999 !important;
+  opacity: 0.6 !important;
+  font-style: italic;
+}
+
+::-webkit-input-placeholder {
+  color: #999 !important;
+  opacity: 0.6 !important;
+  font-style: italic;
+}
+
+::-moz-placeholder {
+  color: #999 !important;
+  opacity: 0.6 !important;
+  font-style: italic;
+}
+
+:-ms-input-placeholder {
+  color: #999 !important;
+  opacity: 0.6 !important;
+  font-style: italic;
+}
+
+/* Also style select default options that act as placeholders */
+select option[value=""] {
+  color: #999;
+  font-style: italic;
+}
+
 /* Prevent hover color change on buttons - buttons should maintain their own text colors */
 a.btn:hover,
 a.btn-solid:hover,
