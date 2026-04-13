@@ -5114,9 +5114,23 @@ const POAForm: React.FC = () => {
       <div className="container py-4">
         <div className="row justify-content-center">
           <div className="col-lg-10">
-            <div className="poa-header text-center mb-4">
-              <h1 onClick={handleTitleClick} style={{ cursor: 'default' }}>{formConfig.title}</h1>
-            </div>
+            {/* Editing Submission Notice */}
+            {submissionId ? (
+              <div className="alert alert-info mb-4">
+                <strong onClick={handleTitleClick} style={{ cursor: 'default' }}>Editing Submission</strong>
+                <p className="mb-0 mt-1">
+                  You are editing an existing form submission. Your progress is automatically saved as you move between pages.
+                  Changes will be finalized when you complete the form. <a href="/dashboard">Back to Dashboard</a>
+                </p>
+              </div>
+            ) : (
+              <div className="alert alert-light border mb-4" onClick={handleTitleClick} style={{ cursor: 'default' }}>
+                <strong>New Submission</strong>
+                <p className="mb-0 mt-1">
+                  Your progress will be saved as you move between pages.
+                </p>
+              </div>
+            )}
 
             {/* Progress Bar */}
             <div className="poa-progress mb-4">
