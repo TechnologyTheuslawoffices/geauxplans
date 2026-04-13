@@ -1355,15 +1355,33 @@ const POAForm: React.FC = () => {
     return PAGE_NAMES[page] || page;
   };
 
-  const renderStartPage = () => (
-    <div className="poa-page">
-      <p className="text-muted"><em>Estate Plan Document Selection</em></p>
-      <h2>1. {formConfig.title}</h2>
-      <p>
-        The Power of Attorney (POA) Supplement to your estate plan is well suited for families with a young adult child or student who is over the age of eighteen (18), or families with an agent parent, or any other person who needs to authorize someone to act for them legally. The Power of Attorney Supplement includes a Financial Power of Attorney, a Medical Power of Attorney, and an Advanced Healthcare Directive (a/k/a "Living Will") for one person. These documents would authorize someone to make legal or financial decisions for yourself, an adult child, an aging parent, or any other person, as well as access protected health information, consent to medical procedures, or make care arrangements if the person granting the power is unable to do so.
-      </p>
-    </div>
-  );
+  const renderStartPage = () => {
+    const isPOA2Person = formType === 'powerOfAttorneyForm2Person';
+
+    return (
+      <div className="poa-page">
+        <p className="text-muted"><em>Estate Plan Document Selection</em></p>
+        <h2>1. {formConfig.title}</h2>
+        {isPOA2Person ? (
+          <>
+            <p>
+              The Power of Attorney Supplement for Two People includes a set of the following legal documents for two people:
+            </p>
+            <p>
+              (1) Financial Power of Attorney; (2) Medical Power of Attorney; (3) Advanced Healthcare Directive (a/k/a "Living Will"); and (4) HIPAA Release.
+            </p>
+            <p>
+              The Power of Attorney Supplement for Two People is well suited for married couples or life partners who wish to authorize legal or financial decisions for each other, as well as access protected health information, consent to medical procedures, or make care arrangements if they are unable to do so. Successor or alternative Agents may also be named. The persons granting powers of attorney (the "Principals") need not name each other as their first choice of Agent and, instead, may choose to name another person, whether a friend of family member, as their initial Agent.
+            </p>
+          </>
+        ) : (
+          <p>
+            The Power of Attorney (POA) Supplement to your estate plan is well suited for families with a young adult child or student who is over the age of eighteen (18), or families with an aging parent, or any other person who needs to authorize someone to act for them legally. The Power of Attorney Supplement includes a Financial Power of Attorney, a Medical Power of Attorney, and an Advanced Healthcare Directive (a/k/a "Living Will") for one person. These documents would authorize someone to make legal or financial decisions for yourself, an adult child, an aging parent, or any other person, as well as access protected health information, consent to medical procedures, or make care arrangements if the person granting the power is unable to do so.
+          </p>
+        )}
+      </div>
+    );
+  };
 
   const renderPersonalInfoPage = () => {
     const isPOA2Person = formType === 'powerOfAttorneyForm2Person';
