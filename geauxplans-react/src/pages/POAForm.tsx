@@ -2492,7 +2492,7 @@ const POAForm: React.FC = () => {
       <div className="poa-page">
         <h2>5. Financial Power of Attorney for {getPrincipalFullName()}</h2>
         <p className="text-muted mb-3">
-          A Financial Power of Attorney (FPOA) is a legal document that allows an individual (the "Principal") to designate another person (an "Agent") to make financial decisions for him or her when he or she cannot make decisions for himself or herself.
+          <em><strong>A Financial Power of Attorney (FPOA) is a legal document that allows an individual (the "Principal") to designate another person (an "Agent") to make financial decisions for him or her when he or she cannot make decisions for himself or herself.</strong></em>
         </p>
         <p className="text-muted mb-3">
           The Financial Power of Attorney will be effective immediately upon execution by the Principal and Agent.
