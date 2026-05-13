@@ -120,12 +120,48 @@ async function processSubmission(submission) {
     // Create record
     const result = await createRecordItem(formData, submission.form_type);
     console.log(`DocTools: Record created with ID ${result.id}`);
+    // DEBUG: Log spouse address debug info from doc-tools
+    if (result._debug) {
+      console.log('DocTools: DEBUG spouse address info:', JSON.stringify(result._debug, null, 2));
+    }
 
     // Determine which templates to generate based on form type
     const isTwoPerson = submission.form_type?.includes('2Person');
-    const templates = isTwoPerson
-      ? ['ClientFPOA', 'SpouseFPOA', 'ClientHPOA', 'SpouseHPOA', 'ClientHCD', 'SpouseHCD', 'ClientHipaa', 'SpouseHipaa']
-      : ['ClientFPOA', 'ClientHPOA', 'ClientHCD', 'ClientHipaa'];
+    const isTrust     = submission.form_type?.includes('trustBasedEstate');
+
+    const poaBundle2P   = ['ClientFPOA', 'SpouseFPOA', 'ClientHPOA', 'SpouseHPOA', 'ClientHCD', 'SpouseHCD', 'ClientHipaa', 'SpouseHipaa'];
+    const poaBundleSolo = ['ClientFPOA', 'ClientHPOA', 'ClientHCD', 'ClientHipaa'];
+
+    let templates;
+    if (isTrust && isTwoPerson) {
+      templates = [
+        'GeauxSignInstructions',
+        'GeauxMarriedTrustPortfolio',
+        'GeauxJointTrust',
+        'CertofTrust',
+        'ClientPourover',
+        'SpousePourover',
+        ...poaBundle2P,
+        'JointExtractGeaux',
+        'GeauxHome',
+        'GeaxTrustFundInstruct',
+      ];
+    } else if (isTrust) {
+      templates = [
+        'GeauxSignInstructions',
+        'GeauxSingleTrustPortfolio',
+        'GeauxSingleTrust',
+        'CertofTrust',
+        'ClientPourover',
+        ...poaBundleSolo,
+        'SingleExtractGeaux',
+        'GeauxHome',
+        'GeaxTrustFundInstruct',
+      ];
+    } else {
+      // POA / Will / Minor-child plans fall back to the POA-only bundle
+      templates = isTwoPerson ? poaBundle2P : poaBundleSolo;
+    }
 
     // Generate documents
     console.log(`DocTools: Generating documents for record ${result.id}...`);
