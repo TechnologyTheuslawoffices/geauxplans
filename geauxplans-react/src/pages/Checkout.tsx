@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 // Product configuration - must match backend
 const PRODUCTS: Record<string, { name: string; price: number; price2person: number; description: string; type?: string }> = {
@@ -9,39 +10,40 @@ const PRODUCTS: Record<string, { name: string; price: number; price2person: numb
   '614': { name: 'Power of Attorney Supplement', price: 99, price2person: 149, description: 'Financial and Healthcare Power of Attorney documents.' },
   '673': { name: 'Will-Based Estate Plan', price: 199, price2person: 299, description: 'Control your legacy with a comprehensive will-based estate plan.' },
   '676': { name: 'Trust-Based Estate Plan', price: 399, price2person: 599, description: 'Avoid probate and transfer assets smoothly with a trust.' },
-  '1367': { name: 'Form Editing Subscription', price: 49, price2person: 49, description: 'Extend your form editing access indefinitely. Edit your estate planning documents anytime.', type: 'subscription' },
+  '1367': {
+    name: 'Legal Edge Plan',
+    price: 9.99,
+    price2person: 9.99,
+    description: 'Forever revisions and Advanced Estate Plan upgrade credit. Cancel anytime.',
+    type: 'subscription',
+  },
 };
 
 // Easter egg: Type "geaux" to enable test mode
 const EASTER_EGG_CODE = 'geaux';
 
 // Maintenance mode - set to true to block new enrollments during upgrades
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 
 const Checkout: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { cart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [testMode, setTestMode] = useState(false);
   const [keySequence, setKeySequence] = useState('');
 
-  const productId = searchParams.get('product') || '';
-  const formType = searchParams.get('type') || 'solo';
-  const product = PRODUCTS[productId];
-
-  // Calculate price based on solo vs 2person
-  const displayPrice = product ? (formType === '2person' ? product.price2person : product.price) : 0;
-
-  // Build return URL for after login/register
-  const returnUrl = `/checkout?product=${productId}&type=${formType}`;
+  const returnUrl = '/checkout';
+  const hasItems = cart.items.length > 0;
+  const firstItem = cart.items[0];
 
   useEffect(() => {
-    if (!product) {
-      navigate('/');
+    if (!hasItems) {
+      navigate('/shop');
     }
-  }, [product, navigate]);
+  }, [hasItems, navigate]);
 
   // Easter egg: Listen for key sequence "geaux" to enable test mode
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
@@ -67,29 +69,19 @@ const Checkout: React.FC = () => {
     }
   }, [searchParams]);
 
-  // Map form type for POA form URL based on product and type
+  // Map first cart item's product ID + form type to its form URL (test bypass)
   const getFormUrl = () => {
-    // Map product ID + type to correct form type
+    if (!firstItem) return '/';
+    const productId = String(firstItem.productId);
+    const formType = firstItem.variationId === 2 ? '2person' : 'solo';
     const formTypeMap: Record<string, Record<string, string>> = {
-      '614': { // POA
-        'solo': 'powerOfAttorneyForm',
-        '2person': 'powerOfAttorneyForm2Person',
-      },
-      '676': { // Trust-Based Estate Plan
-        'solo': 'trustBasedEstatePlanSolo',
-        '2person': 'trustBasedEstatePlan2Person',
-      },
-      '673': { // Will-Based Estate Plan
-        'solo': 'willBasedEstatePlan',
-        '2person': 'willBasedEstatePlan2Person',
-      },
-      '606': { // Minor Child-Centered Estate Plan
-        'solo': 'minorChildEstatePlan',
-        '2person': 'minorChildEstatePlan2Person',
-      },
+      '614': { solo: 'powerOfAttorneyForm', '2person': 'powerOfAttorneyForm2Person' },
+      '676': { solo: 'trustBasedEstatePlanSolo', '2person': 'trustBasedEstatePlan2Person' },
+      '673': { solo: 'willBasedEstatePlan', '2person': 'willBasedEstatePlan2Person' },
+      '606': { solo: 'minorChildEstatePlan', '2person': 'minorChildEstatePlan2Person' },
     };
     const productMap = formTypeMap[productId] || formTypeMap['614'];
-    const mappedType = productMap[formType] || productMap['solo'] || 'powerOfAttorneyForm';
+    const mappedType = productMap[formType] || productMap.solo || 'powerOfAttorneyForm';
     return `/poa-form?product=${productId}&type=${mappedType}`;
   };
 
@@ -103,10 +95,15 @@ const Checkout: React.FC = () => {
     setError('');
 
     try {
-      const response = await api.post<{ sessionId: string; url: string }>('/stripe/create-checkout-session', {
-        productId: parseInt(productId),
-        formType,
-      });
+      const items = cart.items.map(i => ({
+        productId: i.productId,
+        formType: i.variationId === 2 ? '2person' : 'solo',
+      }));
+
+      const response = await api.post<{ sessionId: string; url: string }>(
+        '/stripe/create-checkout-session',
+        { items }
+      );
 
       if (response.success && response.data?.url) {
         // Redirect to Stripe Checkout
@@ -121,7 +118,7 @@ const Checkout: React.FC = () => {
     }
   };
 
-  if (!product) {
+  if (!hasItems) {
     return null;
   }
 
@@ -227,39 +224,51 @@ const Checkout: React.FC = () => {
             >
               <h2 style={{ marginBottom: '20px', fontSize: '20px' }}>Order Summary</h2>
 
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  paddingBottom: '20px',
-                  borderBottom: '1px solid #eaeaea',
-                  marginBottom: '20px',
-                }}
-              >
-                <div>
-                  <h3 style={{ fontSize: '18px', marginBottom: '5px' }}>{product.name}</h3>
-                  <p style={{ color: '#707070', fontSize: '14px', margin: 0 }}>{product.description}</p>
-                  {formType === '2person' && (
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        marginTop: '10px',
-                        padding: '4px 10px',
-                        backgroundColor: '#e3f2fd',
-                        color: '#1976d2',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                      }}
-                    >
-                      Married Couple Plan
+              {cart.items.map((item) => {
+                const productMeta = PRODUCTS[String(item.productId)];
+                const isSub = item.type === 'subscription' || productMeta?.type === 'subscription';
+                const isMarried = item.variationId === 2;
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      paddingBottom: '20px',
+                      borderBottom: '1px solid #eaeaea',
+                      marginBottom: '20px',
+                    }}
+                  >
+                    <div>
+                      <h3 style={{ fontSize: '18px', marginBottom: '5px' }}>{item.name}</h3>
+                      {productMeta?.description && (
+                        <p style={{ color: '#707070', fontSize: '14px', margin: 0 }}>
+                          {productMeta.description}
+                        </p>
+                      )}
+                      {isMarried && (
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            marginTop: '10px',
+                            padding: '4px 10px',
+                            backgroundColor: '#e3f2fd',
+                            color: '#1976d2',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                          }}
+                        >
+                          Married Couple Plan
+                        </span>
+                      )}
+                    </div>
+                    <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#004d71' }}>
+                      ${item.price.toFixed(2)}{isSub ? '/mo' : ''}
                     </span>
-                  )}
-                </div>
-                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#004d71' }}>
-                  ${displayPrice}
-                </span>
-              </div>
+                  </div>
+                );
+              })}
 
               <div
                 style={{
@@ -270,37 +279,8 @@ const Checkout: React.FC = () => {
                 }}
               >
                 <span>Total</span>
-                <span style={{ color: '#004d71' }}>${displayPrice}</span>
+                <span style={{ color: '#004d71' }}>${cart.total.toFixed(2)}</span>
               </div>
-            </div>
-
-            {/* What's Included */}
-            <div
-              style={{
-                backgroundColor: '#f8f9fa',
-                borderRadius: '8px',
-                padding: '20px',
-                marginBottom: '30px',
-              }}
-            >
-              <h3 style={{ fontSize: '16px', marginBottom: '15px' }}>What's Included:</h3>
-              {product.type === 'subscription' ? (
-                <ul style={{ margin: 0, paddingLeft: '20px', color: '#555' }}>
-                  <li style={{ marginBottom: '8px' }}>Unlimited form edits for 1 year</li>
-                  <li style={{ marginBottom: '8px' }}>Regenerate documents after changes</li>
-                  <li style={{ marginBottom: '8px' }}>Access to all your estate plan forms</li>
-                  <li style={{ marginBottom: '8px' }}>Keep your documents up to date</li>
-                  <li style={{ marginBottom: '0' }}>Annual renewal available</li>
-                </ul>
-              ) : (
-                <ul style={{ margin: 0, paddingLeft: '20px', color: '#555' }}>
-                  <li style={{ marginBottom: '8px' }}>Professionally drafted legal documents</li>
-                  <li style={{ marginBottom: '8px' }}>Easy online questionnaire</li>
-                  <li style={{ marginBottom: '8px' }}>Documents ready within 3 business days</li>
-                  <li style={{ marginBottom: '8px' }}>Download from your account dashboard</li>
-                  <li style={{ marginBottom: '0' }}>30-day edit period included</li>
-                </ul>
-              )}
             </div>
 
             {/* Checkout Button or Login Prompt */}

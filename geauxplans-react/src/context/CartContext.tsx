@@ -23,6 +23,7 @@ interface CartContextType {
   error: string | null;
   addItem: (productId: number, quantity?: number, variationId?: number) => Promise<boolean>;
   addToCart: (item: CustomCartItem) => void;
+  addEstatePlan: (productId: number, formType: 'solo' | '2person', withLEP: boolean) => Promise<boolean>;
   updateItem: (itemId: string, quantity: number) => Promise<boolean>;
   removeItem: (itemId: string) => Promise<boolean>;
   clearCart: () => Promise<boolean>;
@@ -263,12 +264,37 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     setError(null);
   }, []);
 
+  // Convenience: clear cart, add estate plan, optionally add Legal Edge Plan
+  const addEstatePlan = useCallback(async (
+    productId: number,
+    formType: 'solo' | '2person',
+    withLEP: boolean
+  ): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await cartService.clearCart();
+      await cartService.addToCart(productId, 1, formType === '2person' ? 2 : 1);
+      if (withLEP) {
+        await cartService.addToCart(1367, 1, 1);
+      }
+      await refreshCart();
+      setIsLoading(false);
+      return true;
+    } catch (err) {
+      setError('Failed to add plan to cart');
+      setIsLoading(false);
+      return false;
+    }
+  }, [refreshCart]);
+
   const value: CartContextType = {
     cart,
     isLoading,
     error,
     addItem,
     addToCart,
+    addEstatePlan,
     updateItem,
     removeItem,
     clearCart: clearCartItems,

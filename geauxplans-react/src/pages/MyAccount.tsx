@@ -133,7 +133,6 @@ const MyAccount: React.FC = () => {
                   borderRadius: '8px',
                 }}
               >
-                <p style={{ fontWeight: '600', marginBottom: '10px' }}>Welcome, {user.firstName || user.displayName}!</p>
                 <p style={{ fontSize: '14px', color: '#707070', marginBottom: '15px' }}>
                   {user.email}
                 </p>

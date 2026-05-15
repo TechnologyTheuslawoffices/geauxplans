@@ -65,8 +65,17 @@ const submissionsRoutes = require('../src/routes/submissions-supabase');
 app.use('/api/submissions', submissionsRoutes);
 console.log('Loaded Supabase submissions routes');
 
-// Note: Knackly and Stripe routes are not loaded on Vercel
-// They have SQLite dependencies that don't work in serverless
+// Mount Stripe routes — uses Supabase for subscriptions and guards SQLite
+// access via `if (db)` checks, so it's safe in the serverless environment.
+try {
+  const stripeRoutes = require('../src/routes/stripe');
+  app.use('/api/stripe', stripeRoutes);
+  console.log('Loaded Stripe routes');
+} catch (e) {
+  console.warn('Stripe routes failed to load:', e.message);
+}
+
+// Note: Knackly routes are not loaded on Vercel.
 // DocTools is used instead of Knackly for document generation
 console.log('Vercel mode: Using DocTools for document generation');
 

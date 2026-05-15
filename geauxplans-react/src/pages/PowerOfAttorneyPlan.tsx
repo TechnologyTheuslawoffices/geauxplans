@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import '../styles/estate-plan-page.css';
 
 const PowerOfAttorneyPlan: React.FC = () => {
@@ -7,7 +8,9 @@ const PowerOfAttorneyPlan: React.FC = () => {
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
+  const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
   const navigate = useNavigate();
+  const { addEstatePlan } = useCart();
 
   const toggleDoc = (id: string) => {
     setExpandedDoc(expandedDoc === id ? null : id);
@@ -21,10 +24,11 @@ const PowerOfAttorneyPlan: React.FC = () => {
     return numPersons === '1' ? 99 : 149;
   };
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     // Product 614 = POA Plan
-    const type = numPersons === '1' ? 'solo' : '2person';
-    navigate(`/checkout?product=614&type=${type}`);
+    const formType = numPersons === '1' ? 'solo' : '2person';
+    await addEstatePlan(614, formType, subscribeLEP === '1');
+    navigate('/checkout');
   };
 
   return (
@@ -90,29 +94,29 @@ const PowerOfAttorneyPlan: React.FC = () => {
               <div className="documents-accordion">
                 <div className={`doc-item ${expandedDoc === 'financial-poa' ? 'expanded' : ''}`}>
                   <button onClick={() => toggleDoc('financial-poa')}>
-                    <span>Durable Financial Power of Attorney</span>
+                    <span>Financial Power of Attorney</span>
                     <span className="toggle-icon">{expandedDoc === 'financial-poa' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>Appoint someone you know and trust to manage assets and make financial decisions for you if you become incapacitated or are unavailable.</p>
+                    <p>This document authorizes a person (an "agent") to make legal and financial decisions for another person (the "principal") during life.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'medical-poa' ? 'expanded' : ''}`}>
                   <button onClick={() => toggleDoc('medical-poa')}>
-                    <span>Durable Medical Power of Attorney</span>
+                    <span>Medical Power of Attorney</span>
                     <span className="toggle-icon">{expandedDoc === 'medical-poa' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>Appoint someone you know and trust to make medical decisions for you if you become incapacitated or are unavailable.</p>
+                    <p>This document authorizes a person (an "agent") to make medical decisions and access protected health information for another person (the "principal") if the person is unable to do so.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'living-will' ? 'expanded' : ''}`}>
                   <button onClick={() => toggleDoc('living-will')}>
-                    <span>Advance Healthcare Directive (a/k/a Living Will)</span>
+                    <span>Advanced Healthcare Directive (Living Will)</span>
                     <span className="toggle-icon">{expandedDoc === 'living-will' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>State your wishes in advance regarding what types of medical life support measures you prefer if you cannot express your preferences yourself.</p>
+                    <p>This document is a directive to healthcare providers regarding your preference for the withdrawal of artificial life-support in the event you are in a terminal and irreversible condition with no meaningful hope of recovery as certified by two physicians, one of which is your attending physician.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'hipaa' ? 'expanded' : ''}`}>
@@ -121,7 +125,7 @@ const PowerOfAttorneyPlan: React.FC = () => {
                     <span className="toggle-icon">{expandedDoc === 'hipaa' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>Authorize someone to access your Protected Health Information for quick assistance or decisions if you become incapacitated.</p>
+                    <p>This is a document that authorizes another person to receive your protected health information, which otherwise would be sealed under HIPAA (Health Insurance Portability and Accountability Act of 1986).</p>
                   </div>
                 </div>
               </div>
@@ -231,14 +235,25 @@ const PowerOfAttorneyPlan: React.FC = () => {
               </select>
             </div>
 
-            <div className="mb-4">
-              <p className="text-muted fst-italic">
+            <div className="mb-3">
+              <label className="form-label">
                 <strong>2.</strong> Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
-              </p>
+              </label>
+              <select
+                className="form-select"
+                value={subscribeLEP}
+                onChange={(e) => setSubscribeLEP(e.target.value as '1' | '0')}
+              >
+                <option value="1">Yes, sure!</option>
+                <option value="0">No, thank you</option>
+              </select>
             </div>
 
             <div className="mb-4">
-              <strong>Final Price:</strong> <strong style={{ fontSize: '1.25rem' }}>${getPrice()}</strong>
+              <strong>Final Price:</strong>{' '}
+              <strong style={{ fontSize: '1.25rem' }}>
+                ${getPrice()}{subscribeLEP === '1' ? ' + $9.99/mo' : ''}
+              </strong>
             </div>
 
             <button

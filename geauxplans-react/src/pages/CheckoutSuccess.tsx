@@ -174,11 +174,12 @@ const CheckoutSuccess: React.FC = () => {
                 <>
                   <h3 style={{ fontSize: '16px', marginBottom: '10px', color: '#1565c0' }}>
                     <i className="fas fa-check-circle me-2"></i>
-                    Subscription Activated!
+                    Legal Edge Plan Activated!
                   </h3>
                   <p style={{ margin: 0, color: '#555', fontSize: '14px' }}>
-                    You can now edit your estate planning forms anytime. Your subscription is valid for 1 year.
-                    Go to your dashboard to continue editing your forms.
+                    Your Legal Edge Plan subscription is now active. You have unlimited revisions to your
+                    GeauxPlan, an Advanced Estate Plan upgrade credit, and an annual review with an
+                    affiliated law firm. You may cancel anytime.
                   </p>
                 </>
               ) : (

@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import '../styles/legal-edge-plan.css';
 
 const LegalEdgePlan: React.FC = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const { addItem, clearCart } = useCart();
+  const navigate = useNavigate();
 
   const toggleItem = (id: string) => {
     setExpandedItem(expandedItem === id ? null : id);
+  };
+
+  const handleSubscribe = async () => {
+    await clearCart();
+    await addItem(1367, 1, 1);
+    navigate('/checkout');
   };
 
   return (
@@ -39,7 +48,7 @@ const LegalEdgePlan: React.FC = () => {
                 </p>
               </div>
 
-              <Link to="/shop" className="btn btn-solid btn-lg">Subscribe Now - $9.99/month</Link>
+              <button onClick={handleSubscribe} className="btn btn-solid btn-lg">Subscribe Now - $9.99/month</button>
               <p className="cancel-text"><em>You may cancel anytime.</em></p>
               <p className="contract-link"><Link to="/legal-edge-plan-contract">View Legal Edge Plan Contract</Link></p>
             </div>

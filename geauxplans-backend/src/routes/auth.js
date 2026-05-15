@@ -5,6 +5,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const { body, validationResult } = require('express-validator');
 const { db } = require('../config/database');
 const { authenticate } = require('../middleware/auth');
@@ -170,15 +171,121 @@ router.post('/logout', authenticate, (req, res) => {
 router.post(
   '/forgot-password',
   body('email').isEmail().normalizeEmail({ gmail_remove_subaddress: false, outlookdotcom_remove_subaddress: false, yahoo_remove_subaddress: false }),
-  (req, res) => {
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, error: 'Please enter a valid email address' });
+    }
+
     const { email } = req.body;
 
-    // In production, send email with reset token
-    // For now, just acknowledge the request
-    res.json({
-      success: true,
-      message: 'If an account with that email exists, a password reset link has been sent.',
-    });
+    try {
+      // Check if user exists
+      const user = db.prepare('SELECT id, email FROM users WHERE email = ?').get(email);
+
+      // Always return success to prevent email enumeration
+      if (!user) {
+        return res.json({
+          success: true,
+          message: 'If an account with that email exists, a password reset link has been sent.',
+        });
+      }
+
+      // Generate a secure reset token
+      const resetToken = crypto.randomBytes(32).toString('hex');
+
+      // Token expires in 1 hour
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+      // Delete any existing tokens for this user
+      db.prepare('DELETE FROM password_reset_tokens WHERE user_id = ?').run(user.id);
+
+      // Store the new token
+      db.prepare(`
+        INSERT INTO password_reset_tokens (user_id, token, expires_at)
+        VALUES (?, ?, ?)
+      `).run(user.id, resetToken, expiresAt);
+
+      // Build reset URL
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+
+      // Log reset URL for development (replace with email service in production)
+      console.log(`\n📧 Password reset requested for: ${email}`);
+      console.log(`🔗 Reset URL: ${resetUrl}\n`);
+
+      // TODO: In production, send email here using nodemailer or similar
+      // await sendPasswordResetEmail(user.email, resetUrl);
+
+      res.json({
+        success: true,
+        message: 'If an account with that email exists, a password reset link has been sent.',
+        // Include token in development mode for testing (remove in production)
+        ...(process.env.NODE_ENV !== 'production' && { resetUrl }),
+      });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({ success: false, error: 'Failed to process password reset request' });
+    }
+  }
+);
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password with token
+ */
+router.post(
+  '/reset-password',
+  [
+    body('token').notEmpty().withMessage('Reset token is required'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, error: errors.array()[0].msg });
+    }
+
+    const { token, password } = req.body;
+
+    try {
+      // Find valid token
+      const resetRecord = db.prepare(`
+        SELECT user_id, expires_at, used
+        FROM password_reset_tokens
+        WHERE token = ?
+      `).get(token);
+
+      if (!resetRecord) {
+        return res.status(400).json({ success: false, error: 'Invalid or expired reset link' });
+      }
+
+      if (resetRecord.used) {
+        return res.status(400).json({ success: false, error: 'This reset link has already been used' });
+      }
+
+      if (new Date(resetRecord.expires_at) < new Date()) {
+        return res.status(400).json({ success: false, error: 'This reset link has expired' });
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Update user's password
+      db.prepare('UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+        .run(hashedPassword, resetRecord.user_id);
+
+      // Mark token as used
+      db.prepare('UPDATE password_reset_tokens SET used = 1 WHERE token = ?').run(token);
+
+      res.json({
+        success: true,
+        message: 'Password has been reset successfully. You can now log in with your new password.',
+      });
+    } catch (error) {
+      console.error('Reset password error:', error);
+      res.status(500).json({ success: false, error: 'Failed to reset password' });
+    }
   }
 );
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import '../styles/estate-plan-page.css';
 
 const MinorChildEstatePlan: React.FC = () => {
@@ -7,7 +8,9 @@ const MinorChildEstatePlan: React.FC = () => {
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
+  const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
   const navigate = useNavigate();
+  const { addEstatePlan } = useCart();
 
   const toggleDoc = (id: string) => {
     setExpandedDoc(expandedDoc === id ? null : id);
@@ -21,10 +24,11 @@ const MinorChildEstatePlan: React.FC = () => {
     return numPersons === '1' ? 199 : 299;
   };
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     // Product 606 = Minor Child-Centered Estate Plan
-    const type = numPersons === '1' ? 'solo' : '2person';
-    navigate(`/checkout?product=606&type=${type}`);
+    const formType = numPersons === '1' ? 'solo' : '2person';
+    await addEstatePlan(606, formType, subscribeLEP === '1');
+    navigate('/checkout');
   };
 
   return (
@@ -244,14 +248,25 @@ const MinorChildEstatePlan: React.FC = () => {
               </select>
             </div>
 
-            <div className="mb-4">
-              <p className="text-muted fst-italic">
+            <div className="mb-3">
+              <label className="form-label">
                 <strong>2.</strong> Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
-              </p>
+              </label>
+              <select
+                className="form-select"
+                value={subscribeLEP}
+                onChange={(e) => setSubscribeLEP(e.target.value as '1' | '0')}
+              >
+                <option value="1">Yes, sure!</option>
+                <option value="0">No, thank you</option>
+              </select>
             </div>
 
             <div className="mb-4">
-              <strong>Final Price:</strong> <strong style={{ fontSize: '1.25rem' }}>${getPrice()}</strong>
+              <strong>Final Price:</strong>{' '}
+              <strong style={{ fontSize: '1.25rem' }}>
+                ${getPrice()}{subscribeLEP === '1' ? ' + $9.99/mo' : ''}
+              </strong>
             </div>
 
             <button

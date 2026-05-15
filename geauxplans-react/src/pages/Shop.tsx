@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface Product {
   id: number;
@@ -6,6 +7,7 @@ interface Product {
   price: string;
   description: string;
   features: string[];
+  url: string;
 }
 
 const products: Product[] = [
@@ -21,6 +23,7 @@ const products: Product[] = [
       'Living Will / Healthcare Directive',
       'HIPAA Authorization',
     ],
+    url: '/minor-child-centered-estate-plan',
   },
   {
     id: 2,
@@ -32,6 +35,7 @@ const products: Product[] = [
       'Healthcare Power of Attorney',
       'HIPAA Authorization',
     ],
+    url: '/power-of-attorney-plan',
   },
   {
     id: 3,
@@ -45,6 +49,7 @@ const products: Product[] = [
       'Living Will / Healthcare Directive',
       'HIPAA Authorization',
     ],
+    url: '/will-based-estate-plan',
   },
   {
     id: 4,
@@ -61,6 +66,7 @@ const products: Product[] = [
       'Certificate of Trust',
       'Trust Funding Instructions',
     ],
+    url: '/trust-based-estate-plan',
   },
 ];
 
@@ -99,13 +105,13 @@ const Shop: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <button
+                <Link
+                  to={product.url}
                   className="btn btn-primary"
-                  style={{ width: '100%' }}
-                  onClick={() => alert(`Add ${product.name} to cart - Implement checkout functionality`)}
+                  style={{ width: '100%', display: 'block', textAlign: 'center' }}
                 >
                   Get Started
-                </button>
+                </Link>
               </div>
             ))}
           </div>

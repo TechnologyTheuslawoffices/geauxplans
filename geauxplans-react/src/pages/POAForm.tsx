@@ -157,6 +157,7 @@ const ENTITY_TYPE_OPTIONS = [
   { value: 'limited partnership', label: 'Limited Partnership' },
   { value: 'general partnership', label: 'General Partnership' },
   { value: 'sole proprietorship', label: 'Sole Proprietorship' },
+  { value: 'corporate trustee', label: 'Corporate Trustee' },
   { value: 'trust', label: 'Trust' },
 ];
 
@@ -334,6 +335,11 @@ const handlePhoneChange = (value: string): string => {
   return formatPhoneNumber(digits.slice(0, 10));
 };
 
+// Format ZIP code: digits only, max 5
+const formatZipCode = (value: string): string => {
+  return value.replace(/\D/g, '').slice(0, 5);
+};
+
 interface Party {
   id: string;
   type_of_party: 'An individual person' | 'An entity' | '';
@@ -349,6 +355,7 @@ interface Party {
   entity_type: string;
   last_4_ein_digits: string;
   same_address_as_person_granting_power_of_attorney: boolean;
+  address_source: string; // 'principal' | 'spouse' | '' (for custom address)
   street_address: string;
   street_address_2: string;
   city: string;
@@ -419,6 +426,7 @@ interface FormData {
       successor_agent_to_serve: string;
       second_successor_coagent_to_serve: string;
       agents_serve_alone: string;
+      wants_coagent?: string;
     }>;
   };
   // Spouse FPOA (for 2-person forms)
@@ -435,6 +443,7 @@ interface FormData {
       successor_agent_to_serve: string;
       second_successor_coagent_to_serve: string;
       agents_serve_alone: string;
+      wants_coagent?: string;
     }>;
   };
   hcpoa: {
@@ -453,6 +462,7 @@ interface FormData {
       successor_agent_to_serve: string;
       second_successor_coagent_to_serve: string;
       agents_serve_alone: string;
+      wants_coagent?: string;
     }>;
   };
   // Spouse HCPOA (for 2-person forms)
@@ -472,6 +482,7 @@ interface FormData {
       successor_agent_to_serve: string;
       second_successor_coagent_to_serve: string;
       agents_serve_alone: string;
+      wants_coagent?: string;
     }>;
   };
   hcd: {
@@ -561,7 +572,7 @@ const initialFormData: FormData = {
   },
   fpoa: {
     springing_poa: 'No',  // Default to immediate POA
-    revoke_prior_poa: 'No',
+    revoke_prior_poa: 'Yes',
     fpoa_initial_agents: {
       person_to_serve: '',
       second_coagent_person_to_serve: '',
@@ -572,7 +583,7 @@ const initialFormData: FormData = {
   },
   spouse_fpoa: {
     springing_poa: 'No',
-    revoke_prior_poa: 'No',
+    revoke_prior_poa: 'Yes',
     fpoa_initial_agents: {
       person_to_serve: '',
       second_coagent_person_to_serve: '',
@@ -583,7 +594,7 @@ const initialFormData: FormData = {
   },
   hcpoa: {
     springing_poa: 'No',
-    revoke_prior_poa: 'No',
+    revoke_prior_poa: 'Yes',
     wish_to_be_organ_donor: '',
     wish_to_donate_body_to_science: '',
     no_blood_transfusion: 'No',
@@ -597,7 +608,7 @@ const initialFormData: FormData = {
   },
   spouse_hcpoa: {
     springing_poa: 'No',
-    revoke_prior_poa: 'No',
+    revoke_prior_poa: 'Yes',
     wish_to_be_organ_donor: '',
     wish_to_donate_body_to_science: '',
     no_blood_transfusion: 'No',
@@ -666,6 +677,7 @@ const createEmptyParty = (): Party => ({
   entity_type: '',
   last_4_ein_digits: '',
   same_address_as_person_granting_power_of_attorney: false,
+  address_source: '',
   street_address: '',
   street_address_2: '',
   city: '',
@@ -734,6 +746,7 @@ const TEST_PREFILL_DATA: FormData = {
         entity_type: '',
         last_4_ein_digits: '',
         same_address_as_person_granting_power_of_attorney: false,
+        address_source: '',
         street_address: '456 Oak Avenue',
         street_address_2: '',
         city: 'New Orleans',
@@ -758,6 +771,7 @@ const TEST_PREFILL_DATA: FormData = {
         entity_type: '',
         last_4_ein_digits: '',
         same_address_as_person_granting_power_of_attorney: false,
+        address_source: '',
         street_address: '789 Pine Road',
         street_address_2: 'Apt 3B',
         city: 'Lafayette',
@@ -782,6 +796,7 @@ const TEST_PREFILL_DATA: FormData = {
         entity_type: 'trust',
         last_4_ein_digits: '4321',
         same_address_as_person_granting_power_of_attorney: false,
+        address_source: '',
         street_address: '100 Financial Plaza',
         street_address_2: 'Floor 25',
         city: 'Baton Rouge',
@@ -814,6 +829,7 @@ const TEST_PREFILL_DATA: FormData = {
         entity_type: '',
         last_4_ein_digits: '',
         same_address_as_person_granting_power_of_attorney: false,
+        address_source: '',
         street_address: '555 Elm Street',
         street_address_2: '',
         city: 'Shreveport',
@@ -824,64 +840,76 @@ const TEST_PREFILL_DATA: FormData = {
       },
     ],
   },
-  // Client FPOA - Simplified (hidden fields use defaults)
+  // Client FPOA - with successor agents
   fpoa: {
-    springing_poa: 'No',  // HIDDEN: defaults to No (immediate)
-    revoke_prior_poa: 'No',  // HIDDEN: defaults to No
+    springing_poa: 'No',
+    revoke_prior_poa: 'Yes',
     fpoa_initial_agents: {
       person_to_serve: 'spouse',  // Spouse as primary agent
-      second_coagent_person_to_serve: '',  // HIDDEN: defaults to none
-      agents_serve_alone: 'Yes',  // HIDDEN: defaults to Yes
+      second_coagent_person_to_serve: '',
+      agents_serve_alone: 'Yes',
     },
-    has_appointer_successor_agents: 'No',  // HIDDEN: defaults to No
-    successor_agents: [],  // HIDDEN: no successors
+    has_appointer_successor_agents: 'Yes',
+    successor_agents: [
+      { successor_agent_to_serve: 'Robert James Smith', second_successor_coagent_to_serve: '', agents_serve_alone: 'Yes' },
+      { successor_agent_to_serve: 'Emily Rose Johnson', second_successor_coagent_to_serve: '', agents_serve_alone: 'Yes' },
+    ],
   },
-  // Spouse FPOA - Simplified (hidden fields use defaults)
+  // Spouse FPOA - with successor agents
   spouse_fpoa: {
-    springing_poa: 'No',  // HIDDEN: defaults to No (immediate)
-    revoke_prior_poa: 'No',  // HIDDEN: defaults to No
+    springing_poa: 'No',
+    revoke_prior_poa: 'Yes',
     fpoa_initial_agents: {
       person_to_serve: 'Emily Rose Johnson',
-      second_coagent_person_to_serve: '',  // HIDDEN: defaults to none
-      agents_serve_alone: 'Yes',  // HIDDEN: defaults to Yes
+      second_coagent_person_to_serve: '',
+      agents_serve_alone: 'Yes',
     },
-    has_appointer_successor_agents: 'No',  // HIDDEN: defaults to No
-    successor_agents: [],  // HIDDEN: no successors
+    has_appointer_successor_agents: 'Yes',
+    successor_agents: [
+      { successor_agent_to_serve: 'Robert James Smith', second_successor_coagent_to_serve: '', agents_serve_alone: 'Yes' },
+      { successor_agent_to_serve: 'Michael Andrew Williams III', second_successor_coagent_to_serve: '', agents_serve_alone: 'Yes' },
+    ],
   },
-  // Client HCPOA - Simplified (hidden fields use defaults)
+  // Client HCPOA - with successor agents
   hcpoa: {
-    springing_poa: 'No',  // HIDDEN: defaults to No
-    revoke_prior_poa: 'No',  // HIDDEN: defaults to No
+    springing_poa: 'No',
+    revoke_prior_poa: 'Yes',
     wish_to_be_organ_donor: 'Yes',
     wish_to_donate_body_to_science: 'No',
-    no_blood_transfusion: 'No',  // HIDDEN: defaults to No (allow transfusions)
+    no_blood_transfusion: 'No',
     hcpoa_initial_agents: {
-      person_to_serve: 'spouse',  // Use 'spouse' to select spouse from dropdown
-      second_coagent_person_to_serve: '',  // HIDDEN: defaults to none
-      agents_serve_alone: 'Yes',  // HIDDEN: defaults to Yes
+      person_to_serve: 'spouse',
+      second_coagent_person_to_serve: '',
+      agents_serve_alone: 'Yes',
     },
-    has_appointed_successor_agents: 'No',  // HIDDEN: defaults to No
-    successor_agents: [],  // HIDDEN: no successors
+    has_appointed_successor_agents: 'Yes',
+    successor_agents: [
+      { successor_agent_to_serve: 'Robert James Smith', second_successor_coagent_to_serve: '', agents_serve_alone: 'Yes' },
+      { successor_agent_to_serve: 'Emily Rose Johnson', second_successor_coagent_to_serve: '', agents_serve_alone: 'Yes' },
+    ],
   },
-  // Spouse HCPOA - Simplified (hidden fields use defaults)
+  // Spouse HCPOA - with successor agents
   spouse_hcpoa: {
-    springing_poa: 'No',  // HIDDEN: defaults to No
-    revoke_prior_poa: 'No',  // HIDDEN: defaults to No
+    springing_poa: 'No',
+    revoke_prior_poa: 'Yes',
     wish_to_be_organ_donor: 'No',
     wish_to_donate_body_to_science: 'Yes',
-    no_blood_transfusion: 'No',  // HIDDEN: defaults to No (allow transfusions)
+    no_blood_transfusion: 'No',
     hcpoa_initial_agents: {
-      person_to_serve: 'client',  // Use 'client' to select client (my spouse) from dropdown
-      second_coagent_person_to_serve: '',  // HIDDEN: defaults to none
-      agents_serve_alone: 'Yes',  // HIDDEN: defaults to Yes
+      person_to_serve: 'client',
+      second_coagent_person_to_serve: '',
+      agents_serve_alone: 'Yes',
     },
-    has_appointed_successor_agents: 'No',  // HIDDEN: defaults to No
-    successor_agents: [],  // HIDDEN: no successors
+    has_appointed_successor_agents: 'Yes',
+    successor_agents: [
+      { successor_agent_to_serve: 'Robert James Smith', second_successor_coagent_to_serve: '', agents_serve_alone: 'Yes' },
+      { successor_agent_to_serve: 'Michael Andrew Williams III', second_successor_coagent_to_serve: '', agents_serve_alone: 'Yes' },
+    ],
   },
   // Client HCD - Simplified (hidden fields use defaults)
   hcd: {
     life_support_option: 'CHOOSE',  // 'WITHDRAW' or 'CHOOSE'
-    client_hcds: ['Nutr', 'Hydr', 'CPR'],  // Options: 'Nutr', 'Hydr', 'Vent', 'CPR'
+    client_hcds: ['Nutr', 'Hydr'],  // Options: 'Nutr', 'Hydr'
     extend_hcd: 'No',  // HIDDEN: defaults to No (standard period)
     hcd_days: 7,  // HIDDEN: defaults to 7
     hcd_sooner_longer: '',  // HIDDEN: defaults to empty
@@ -940,6 +968,11 @@ const POAForm: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [existingSubmissionId, setExistingSubmissionId] = useState<number | null>(null);
   const [hasOtherParties, setHasOtherParties] = useState<string>('');
+  // Co-agent selection states (derived from existing data or user choice)
+  const [wantsFpoaCoAgent, setWantsFpoaCoAgent] = useState<string>('');
+  const [wantsSpouseFpoaCoAgent, setWantsSpouseFpoaCoAgent] = useState<string>('');
+  const [wantsHcpoaCoAgent, setWantsHcpoaCoAgent] = useState<string>('');
+  const [wantsSpouseHcpoaCoAgent, setWantsSpouseHcpoaCoAgent] = useState<string>('');
 
   const formConfig = FORM_TYPES[formType] || FORM_TYPES.powerOfAttorneyForm;
   const pages = formConfig.pages;
@@ -955,6 +988,19 @@ const POAForm: React.FC = () => {
           const mergedData = deepMerge(initialFormData, savedData);
           setFormData(mergedData);
           setExistingSubmissionId(response.data.id);
+          // Initialize co-agent states from saved data
+          if (mergedData.fpoa?.fpoa_initial_agents?.second_coagent_person_to_serve) {
+            setWantsFpoaCoAgent('Yes');
+          }
+          if (mergedData.spouse_fpoa?.fpoa_initial_agents?.second_coagent_person_to_serve) {
+            setWantsSpouseFpoaCoAgent('Yes');
+          }
+          if (mergedData.hcpoa?.hcpoa_initial_agents?.second_coagent_person_to_serve) {
+            setWantsHcpoaCoAgent('Yes');
+          }
+          if (mergedData.spouse_hcpoa?.hcpoa_initial_agents?.second_coagent_person_to_serve) {
+            setWantsSpouseHcpoaCoAgent('Yes');
+          }
         }
       } catch (error) {
         console.error('Failed to load submission:', error);
@@ -1293,6 +1339,11 @@ const POAForm: React.FC = () => {
     }
   };
 
+  const handleFinishLater = async () => {
+    await handleSave('inprogress');
+    navigate('/my-account/my-estate-planning');
+  };
+
   const handleSubmit = async () => {
     console.log('Submit clicked - validating all pages...');
 
@@ -1356,13 +1407,18 @@ const POAForm: React.FC = () => {
   };
 
   const renderStartPage = () => {
+    const isPOA = formType.includes('powerOfAttorney');
     const isPOA2Person = formType === 'powerOfAttorneyForm2Person';
+    const isTrustBased = formType.includes('trustBased');
+    const isTrust2Person = formType === 'trustBasedEstatePlan2Person';
+    const isWillBased = formType.includes('willBased');
+    const isWill2Person = formType === 'willBasedEstatePlan2Person';
+    const isMinorChild = formType.includes('minorChild');
+    const isMinorChild2Person = formType === 'minorChildEstatePlan2Person';
 
-    return (
-      <div className="poa-page">
-        <p className="text-muted"><em>Estate Plan Document Selection</em></p>
-        <h2>1. {formConfig.title}</h2>
-        {isPOA2Person ? (
+    const renderPOAContent = () => {
+      if (isPOA2Person) {
+        return (
           <>
             <p>
               The Power of Attorney Supplement for Two People includes a set of the following legal documents for two people:
@@ -1374,11 +1430,85 @@ const POAForm: React.FC = () => {
               The Power of Attorney Supplement for Two People is well suited for married couples or life partners who wish to authorize legal or financial decisions for each other, as well as access protected health information, consent to medical procedures, or make care arrangements if they are unable to do so. Successor or alternative Agents may also be named. The persons granting powers of attorney (the "Principals") need not name each other as their first choice of Agent and, instead, may choose to name another person, whether a friend of family member, as their initial Agent.
             </p>
           </>
-        ) : (
-          <p>
-            The Power of Attorney (POA) Supplement to your estate plan is well suited for families with a young adult child or student who is over the age of eighteen (18), or families with an aging parent, or any other person who needs to authorize someone to act for them legally. The Power of Attorney Supplement includes a Financial Power of Attorney, a Medical Power of Attorney, and an Advanced Healthcare Directive (a/k/a "Living Will") for one person. These documents would authorize someone to make legal or financial decisions for yourself, an adult child, an aging parent, or any other person, as well as access protected health information, consent to medical procedures, or make care arrangements if the person granting the power is unable to do so.
-          </p>
-        )}
+        );
+      }
+      return (
+        <p>
+          The Power of Attorney (POA) Supplement to your estate plan is well suited for families with a young adult child or student who is over the age of eighteen (18), or families with an aging parent, or any other person who needs to authorize someone to act for them legally. The Power of Attorney Supplement includes a Financial Power of Attorney, a Medical Power of Attorney, and an Advanced Healthcare Directive (a/k/a "Living Will") for one person. These documents would authorize someone to make legal or financial decisions for yourself, an adult child, an aging parent, or any other person, as well as access protected health information, consent to medical procedures, or make care arrangements if the person granting the power is unable to do so.
+        </p>
+      );
+    };
+
+    const renderTrustBasedContent = () => {
+      return (
+        <>
+          <p><i><strong>Welcome to GeauxPlans</strong></i></p>
+          <p>You're about to take the first step in reviewing and securing your estate plan—great job.</p>
+          <p>Your custom estate plan typically includes:</p>
+          <ul>
+            <li>A <strong>Revocable Living Trust</strong> to hold your assets and avoid probate</li>
+            <li>A <strong>Pourover Will</strong> as a back-up for anything not yet in your trust</li>
+            <li>A <strong>Financial Power of Attorney</strong> to authorize someone to handle your financial affairs</li>
+            <li>A <strong>Medical Power of Attorney</strong> to authorize someone to make healthcare decisions</li>
+            <li>An <strong>Advanced Healthcare Directive</strong> (a/k/a "Living Will") to express your end-of-life wishes</li>
+            <li>A <strong>HIPAA Release</strong> to allow access to your protected health information</li>
+          </ul>
+          {isTrust2Person && (
+            <p>This plan is designed for married couples or life partners who wish to create a joint estate plan together.</p>
+          )}
+        </>
+      );
+    };
+
+    const renderWillBasedContent = () => {
+      return (
+        <>
+          <p><i><strong>Welcome to GeauxPlans</strong></i></p>
+          <p>You're about to take the first step in reviewing and securing your estate plan—great job.</p>
+          <p>Your custom estate plan typically includes:</p>
+          <ul>
+            <li>A <strong>Last Will and Testament</strong> to distribute your assets and name guardians for minor children</li>
+            <li>A <strong>Financial Power of Attorney</strong> to authorize someone to handle your financial affairs</li>
+            <li>A <strong>Medical Power of Attorney</strong> to authorize someone to make healthcare decisions</li>
+            <li>An <strong>Advanced Healthcare Directive</strong> (a/k/a "Living Will") to express your end-of-life wishes</li>
+            <li>A <strong>HIPAA Release</strong> to allow access to your protected health information</li>
+          </ul>
+          {isWill2Person && (
+            <p>This plan is designed for married couples or life partners who wish to create an estate plan together.</p>
+          )}
+        </>
+      );
+    };
+
+    const renderMinorChildContent = () => {
+      return (
+        <>
+          <p><i><strong>Welcome to GeauxPlans</strong></i></p>
+          <p>You're about to take the first step in reviewing and securing your estate plan—great job.</p>
+          <p>This estate plan is designed specifically for parents with minor children. Your custom estate plan typically includes:</p>
+          <ul>
+            <li>A <strong>Last Will and Testament</strong> to distribute your assets and name guardians for your minor children</li>
+            <li>A <strong>Children's Trust</strong> to manage assets for your minor children until they reach adulthood</li>
+            <li>A <strong>Financial Power of Attorney</strong> to authorize someone to handle your financial affairs</li>
+            <li>A <strong>Medical Power of Attorney</strong> to authorize someone to make healthcare decisions</li>
+            <li>An <strong>Advanced Healthcare Directive</strong> (a/k/a "Living Will") to express your end-of-life wishes</li>
+            <li>A <strong>HIPAA Release</strong> to allow access to your protected health information</li>
+          </ul>
+          {isMinorChild2Person && (
+            <p>This plan is designed for married couples or life partners with minor children who wish to create an estate plan together.</p>
+          )}
+        </>
+      );
+    };
+
+    return (
+      <div className="poa-page">
+        <p className="text-muted"><em>Estate Plan Document Selection</em></p>
+        <h2>1. {formConfig.title}</h2>
+        {isPOA && renderPOAContent()}
+        {isTrustBased && renderTrustBasedContent()}
+        {isWillBased && renderWillBasedContent()}
+        {isMinorChild && renderMinorChildContent()}
       </div>
     );
   };
@@ -1437,7 +1567,7 @@ const POAForm: React.FC = () => {
               value={formData.personal_info.suffix}
               onChange={(e) => updateFormData('personal_info', 'suffix', e.target.value)}
             >
-              <option value="">None</option>
+              <option value="">Select Suffix...</option>
               {SUFFIX_OPTIONS.map((sfx) => (
                 <option key={sfx} value={sfx}>{sfx}</option>
               ))}
@@ -1466,6 +1596,7 @@ const POAForm: React.FC = () => {
               <option value="">Select...</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
+              <option value="Non-Binary">Non-Binary</option>
             </select>
             {errors['personal_info.gender'] && <div className="invalid-feedback">{errors['personal_info.gender']}</div>}
           </div>
@@ -1525,7 +1656,7 @@ const POAForm: React.FC = () => {
               type="text"
               className={`form-control ${errors['personal_info.zip'] ? 'is-invalid' : ''}`}
               value={formData.personal_info.zip}
-              onChange={(e) => updateFormData('personal_info', 'zip', e.target.value)}
+              onChange={(e) => updateFormData('personal_info', 'zip', formatZipCode(e.target.value))}
               maxLength={5}
             />
             {errors['personal_info.zip'] && <div className="invalid-feedback">{errors['personal_info.zip']}</div>}
@@ -1627,7 +1758,7 @@ const POAForm: React.FC = () => {
                   value={formData.spouse_info.suffix}
                   onChange={(e) => updateFormData('spouse_info', 'suffix', e.target.value)}
                 >
-                  <option value="">None</option>
+                  <option value="">Select Suffix...</option>
                   {SUFFIX_OPTIONS.map((sfx) => (
                     <option key={sfx} value={sfx}>{sfx}</option>
                   ))}
@@ -1656,6 +1787,7 @@ const POAForm: React.FC = () => {
                   <option value="">Select...</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
+                  <option value="Non-Binary">Non-Binary</option>
                 </select>
                 {errors['spouse_info.gender'] && <div className="invalid-feedback">{errors['spouse_info.gender']}</div>}
               </div>
@@ -1760,7 +1892,7 @@ const POAForm: React.FC = () => {
                       type="text"
                       className={`form-control ${errors['spouse_info.zip'] ? 'is-invalid' : ''}`}
                       value={formData.spouse_info.zip}
-                      onChange={(e) => updateFormData('spouse_info', 'zip', e.target.value)}
+                      onChange={(e) => updateFormData('spouse_info', 'zip', formatZipCode(e.target.value))}
                       maxLength={5}
                     />
                     {errors['spouse_info.zip'] && <div className="invalid-feedback">{errors['spouse_info.zip']}</div>}
@@ -1850,7 +1982,7 @@ const POAForm: React.FC = () => {
               value={formData.spouse_info.suffix}
               onChange={(e) => updateFormData('spouse_info', 'suffix', e.target.value)}
             >
-              <option value="">None</option>
+              <option value="">Select Suffix...</option>
               {SUFFIX_OPTIONS.map((sfx) => (
                 <option key={sfx} value={sfx}>{sfx}</option>
               ))}
@@ -1879,6 +2011,7 @@ const POAForm: React.FC = () => {
               <option value="">Select...</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
+              <option value="Non-Binary">Non-Binary</option>
             </select>
             {errors['spouse_info.gender'] && <div className="invalid-feedback">{errors['spouse_info.gender']}</div>}
           </div>
@@ -1983,7 +2116,7 @@ const POAForm: React.FC = () => {
                   type="text"
                   className={`form-control ${errors['spouse_info.zip'] ? 'is-invalid' : ''}`}
                   value={formData.spouse_info.zip}
-                  onChange={(e) => updateFormData('spouse_info', 'zip', e.target.value)}
+                  onChange={(e) => updateFormData('spouse_info', 'zip', formatZipCode(e.target.value))}
                   maxLength={5}
                 />
                 {errors['spouse_info.zip'] && <div className="invalid-feedback">{errors['spouse_info.zip']}</div>}
@@ -2021,7 +2154,36 @@ const POAForm: React.FC = () => {
     );
   };
 
-  const renderAgentsPage = () => (
+  const renderAgentsPage = () => {
+    const isTwoPerson = formType.includes('2Person');
+    const getSecondPersonFullName = () => {
+      const si = formData.spouse_info;
+      return [si.first_name, si.middle_name, si.surname].filter(Boolean).join(' ') || 'Principal 2';
+    };
+
+    // Handle address source change
+    const handleAddressSourceChange = (partyIndex: number, source: string) => {
+      if (source === '') {
+        // Custom address - clear the flag and keep empty address
+        updateParty(partyIndex, 'same_address_as_person_granting_power_of_attorney', false);
+        updateParty(partyIndex, 'address_source', '');
+      } else {
+        // Copy address from selected person
+        updateParty(partyIndex, 'same_address_as_person_granting_power_of_attorney', true);
+        updateParty(partyIndex, 'address_source', source);
+
+        // Copy the address fields
+        const sourceInfo = source === 'principal' ? formData.personal_info : formData.spouse_info;
+        updateParty(partyIndex, 'street_address', sourceInfo.street_address);
+        updateParty(partyIndex, 'street_address_2', sourceInfo.street_address_2);
+        updateParty(partyIndex, 'city', sourceInfo.city);
+        updateParty(partyIndex, 'state', sourceInfo.state);
+        updateParty(partyIndex, 'zip', sourceInfo.zip);
+        updateParty(partyIndex, 'parish', sourceInfo.parish);
+      }
+    };
+
+    return (
     <div className="poa-page">
       <h2>3. People or Entities Who Will Serve as Agents</h2>
       <p className="text-muted">Add the people or entities you want to serve as your agents (attorneys-in-fact).</p>
@@ -2120,73 +2282,132 @@ const POAForm: React.FC = () => {
                       <option value="">Select...</option>
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
+                      <option value="Non-Binary">Non-Binary</option>
                     </select>
                   </div>
                 </div>
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label className="form-label">Street Address</label>
+
+                {/* Same address checkboxes - shown ABOVE address fields */}
+                <div className="mb-3">
+                  <div className="form-check">
                     <input
-                      type="text"
-                      className="form-control"
-                      value={party.street_address || ''}
-                      onChange={(e) => updateParty(index, 'street_address', e.target.value)}
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={party.same_address_as_person_granting_power_of_attorney && party.address_source === 'principal'}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          handleAddressSourceChange(index, 'principal');
+                        } else {
+                          handleAddressSourceChange(index, '');
+                        }
+                      }}
                     />
+                    <label className="form-check-label">Same address as {getPrincipalFullName()}</label>
                   </div>
-                  <div className="col-md-6">
-                    <label className="form-label">Second line of street address, if any (Apt. or Suite No.)</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.street_address_2 || ''}
-                      onChange={(e) => updateParty(index, 'street_address_2', e.target.value)}
-                    />
-                  </div>
+                  {isTwoPerson && (
+                    <div className="form-check">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        checked={party.same_address_as_person_granting_power_of_attorney && party.address_source === 'spouse'}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            handleAddressSourceChange(index, 'spouse');
+                          } else {
+                            handleAddressSourceChange(index, '');
+                          }
+                        }}
+                      />
+                      <label className="form-check-label">Same address as {getSecondPersonFullName()}</label>
+                    </div>
+                  )}
                 </div>
-                <div className="row mb-3">
-                  <div className="col-md-3">
-                    <label className="form-label">City</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.city || ''}
-                      onChange={(e) => updateParty(index, 'city', e.target.value)}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <label className="form-label">State</label>
-                    <select
-                      className="form-select"
-                      value={party.state || ''}
-                      onChange={(e) => updateParty(index, 'state', e.target.value)}
-                    >
-                      <option value="">Select...</option>
-                      {US_STATES.map((st) => (
-                        <option key={st.abbrev} value={st.value}>{st.value}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="col-md-3">
-                    <label className="form-label">Zip</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.zip || ''}
-                      onChange={(e) => updateParty(index, 'zip', e.target.value)}
-                      maxLength={10}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <label className="form-label">Parish or County</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.parish || ''}
-                      onChange={(e) => updateParty(index, 'parish', e.target.value)}
-                      placeholder="Do not include 'Parish' or 'County'"
-                    />
-                  </div>
-                </div>
+
+                {/* Address fields - only show if NOT using someone else's address */}
+                {!party.same_address_as_person_granting_power_of_attorney && (
+                  <>
+                    <div className="row mb-3">
+                      <div className="col-md-6">
+                        <label className="form-label">Street Address</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={party.street_address || ''}
+                          onChange={(e) => updateParty(index, 'street_address', e.target.value)}
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label">Second line of street address, if any (Apt. or Suite No.)</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={party.street_address_2 || ''}
+                          onChange={(e) => updateParty(index, 'street_address_2', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="row mb-3">
+                      <div className="col-md-3">
+                        <label className="form-label">City</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={party.city || ''}
+                          onChange={(e) => updateParty(index, 'city', e.target.value)}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <label className="form-label">State</label>
+                        <select
+                          className="form-select"
+                          value={party.state || ''}
+                          onChange={(e) => updateParty(index, 'state', e.target.value)}
+                        >
+                          <option value="">Select...</option>
+                          {US_STATES.map((st) => (
+                            <option key={st.abbrev} value={st.value}>{st.value}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-md-3">
+                        <label className="form-label">Zip</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={party.zip || ''}
+                          onChange={(e) => updateParty(index, 'zip', formatZipCode(e.target.value))}
+                          maxLength={5}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <label className="form-label">
+                          {party.state === 'Louisiana' ? 'Parish' : 'County'}
+                        </label>
+                        {getCountiesForState(party.state || '').length > 0 ? (
+                          <select
+                            className="form-select"
+                            value={party.parish || ''}
+                            onChange={(e) => updateParty(index, 'parish', e.target.value)}
+                          >
+                            <option value="">Select {party.state === 'Louisiana' ? 'Parish' : 'County'}...</option>
+                            {getCountiesForState(party.state || '').map((p) => (
+                              <option key={p} value={p}>{p}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={party.parish || ''}
+                            onChange={(e) => updateParty(index, 'parish', e.target.value)}
+                            placeholder={party.state ? 'Enter county' : 'Select state first'}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 <div className="row mb-3">
                   <div className="col-md-4">
                     <label className="form-label">Your relationship with this person <span className="text-danger">*</span></label>
@@ -2343,98 +2564,6 @@ const POAForm: React.FC = () => {
                 </div>
               </>
             )}
-
-            <div className="mb-3">
-              <div className="form-check">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  checked={party.same_address_as_person_granting_power_of_attorney}
-                  onChange={(e) => updateParty(index, 'same_address_as_person_granting_power_of_attorney', e.target.checked)}
-                />
-                <label className="form-check-label">Same address as {getPrincipalFullName()}</label>
-              </div>
-            </div>
-
-            {!party.same_address_as_person_granting_power_of_attorney && (
-              <div className="row mb-3">
-                <div className="col-md-6">
-                  <label className="form-label">Street Address</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={party.street_address}
-                    onChange={(e) => updateParty(index, 'street_address', e.target.value)}
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label className="form-label">Street Address 2</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={party.street_address_2}
-                    onChange={(e) => updateParty(index, 'street_address_2', e.target.value)}
-                  />
-                </div>
-                <div className="col-md-3 mt-2">
-                  <label className="form-label">City</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={party.city}
-                    onChange={(e) => updateParty(index, 'city', e.target.value)}
-                  />
-                </div>
-                <div className="col-md-3 mt-2">
-                  <label className="form-label">State</label>
-                  <select
-                    className="form-select"
-                    value={party.state}
-                    onChange={(e) => updateParty(index, 'state', e.target.value)}
-                  >
-                    <option value="">Select State...</option>
-                    {US_STATES.map((st) => (
-                      <option key={st.abbrev} value={st.value}>{st.value}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-md-3 mt-2">
-                  <label className="form-label">ZIP Code</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={party.zip}
-                    onChange={(e) => updateParty(index, 'zip', e.target.value)}
-                    maxLength={5}
-                  />
-                </div>
-                <div className="col-md-3 mt-2">
-                  <label className="form-label">
-                    {party.state === 'Louisiana' ? 'Parish' : 'County'}
-                  </label>
-                  {getCountiesForState(party.state || '').length > 0 ? (
-                    <select
-                      className="form-select"
-                      value={party.parish}
-                      onChange={(e) => updateParty(index, 'parish', e.target.value)}
-                    >
-                      <option value="">Select {party.state === 'Louisiana' ? 'Parish' : 'County'}...</option>
-                      {getCountiesForState(party.state || '').map((p) => (
-                        <option key={p} value={p}>{p}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.parish}
-                      onChange={(e) => updateParty(index, 'parish', e.target.value)}
-                      placeholder={party.state ? `Enter county` : 'Select state first'}
-                    />
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       ))}
@@ -2444,6 +2573,7 @@ const POAForm: React.FC = () => {
       </button>
     </div>
   );
+  };
 
   const renderPlanContentsPage = () => {
     const isTrust = formType.includes('trustBased');
@@ -2488,11 +2618,46 @@ const POAForm: React.FC = () => {
     const secondPersonLabel = isPOA ? 'Second Principal' : 'Spouse';
     const getSecondPersonName = () => formData.spouse_info.first_name || secondPersonLabel;
 
+    // Helper to get all selected agents for filtering (prevents duplicate selections)
+    const getSelectedAgents = (poaType: 'fpoa' | 'spouse_fpoa', excludeField?: string) => {
+      const selected: string[] = [];
+      const poa = poaType === 'fpoa' ? formData.fpoa : formData.spouse_fpoa;
+
+      if (excludeField !== 'initial_primary' && poa.fpoa_initial_agents.person_to_serve) {
+        selected.push(poa.fpoa_initial_agents.person_to_serve);
+      }
+      if (excludeField !== 'initial_coagent' && poa.fpoa_initial_agents.second_coagent_person_to_serve) {
+        selected.push(poa.fpoa_initial_agents.second_coagent_person_to_serve);
+      }
+      (poa.successor_agents || []).forEach((agent, idx) => {
+        if (excludeField !== `successor_${idx}_primary` && agent.successor_agent_to_serve) {
+          selected.push(agent.successor_agent_to_serve);
+        }
+        if (excludeField !== `successor_${idx}_coagent` && agent.second_successor_coagent_to_serve) {
+          selected.push(agent.second_successor_coagent_to_serve);
+        }
+      });
+      return selected;
+    };
+
+    // Filter parties to exclude already selected agents
+    const getAvailableParties = (poaType: 'fpoa' | 'spouse_fpoa', excludeField: string) => {
+      const selected = getSelectedAgents(poaType, excludeField);
+      return parties.filter(party => !selected.includes(getPartyDisplayName(party)));
+    };
+
+    // Check if there are any agents available for a new successor
+    const hasAvailableAgentsForNewSuccessor = (poaType: 'fpoa' | 'spouse_fpoa') => {
+      const selected = getSelectedAgents(poaType);
+      const available = parties.filter(party => !selected.includes(getPartyDisplayName(party)));
+      return available.length > 0;
+    };
+
     return (
       <div className="poa-page">
         <h2>5. Financial Power of Attorney for {getPrincipalFullName()}</h2>
         <p className="text-muted mb-3">
-          <em><strong>A Financial Power of Attorney (FPOA) is a legal document that allows an individual (the "Principal") to designate another person (an "Agent") to make financial decisions for him or her when he or she cannot make decisions for himself or herself.</strong></em>
+          <em><strong>A Financial Power of Attorney (FPOA) is a legal document that allows an individual (the "Principal") to designate another person (an "Agent") to make financial decisions for them when they cannot make decisions for themselves.</strong></em>
         </p>
         <p className="text-muted mb-3">
           The Financial Power of Attorney will be effective immediately upon execution by the Principal and Agent.
@@ -2522,38 +2687,71 @@ const POAForm: React.FC = () => {
             <span>−</span>
           </div>
           <div className="card-body">
-            <div className="row">
-              <div className="col-md-6 mb-3">
-                <label className="form-label">Select the person you want to serve:</label>
-                <select
-                  className="form-select"
-                  value={formData.fpoa.fpoa_initial_agents.person_to_serve}
-                  onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
-                >
-                  <option value="">Select Agent...</option>
-                  {isTwoPerson && (
-                    <option value="spouse">My Spouse</option>
-                  )}
-                  {parties.map((party) => (
-                    <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
-                  ))}
-                </select>
+            <div className="mb-3">
+              <label className="form-label">Select the person you want to serve:</label>
+              <select
+                className="form-select"
+                value={formData.fpoa.fpoa_initial_agents.person_to_serve}
+                onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
+              >
+                <option value="">Select Agent...</option>
+                {isTwoPerson && !getSelectedAgents('fpoa', 'initial_primary').includes('spouse') && (
+                  <option value="spouse">My Spouse</option>
+                )}
+                {getAvailableParties('fpoa', 'initial_primary').map((party) => (
+                  <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Do you want to appoint a Co-Agent to serve at the same time as the Initial Agent?</label>
+              <div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="fpoa_wants_coagent"
+                    value="Yes"
+                    checked={wantsFpoaCoAgent === 'Yes'}
+                    onChange={() => setWantsFpoaCoAgent('Yes')}
+                  />
+                  <label className="form-check-label">Yes</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="fpoa_wants_coagent"
+                    value="No"
+                    checked={wantsFpoaCoAgent === 'No'}
+                    onChange={() => {
+                      setWantsFpoaCoAgent('No');
+                      updateNestedFormData('fpoa.fpoa_initial_agents.second_coagent_person_to_serve', '');
+                    }}
+                  />
+                  <label className="form-check-label">No</label>
+                </div>
               </div>
-              <div className="col-md-6 mb-3">
-                <label className="form-label">If you want to appoint a second person (a Co-Agent) to serve at the same time as the Initial Agent, select them here:</label>
+            </div>
+
+            {wantsFpoaCoAgent === 'Yes' && (
+              <div className="mb-3">
+                <label className="form-label">Select the Co-Agent:</label>
                 <select
                   className="form-select"
                   value={formData.fpoa.fpoa_initial_agents.second_coagent_person_to_serve}
                   onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                 >
-                  <option value="">None</option>
-                  {parties.map((party) => (
+                  <option value="">Select Co-Agent...</option>
+                  {getAvailableParties('fpoa', 'initial_coagent').map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
               </div>
-            </div>
-            {formData.fpoa.fpoa_initial_agents.second_coagent_person_to_serve && (
+            )}
+
+            {wantsFpoaCoAgent === 'Yes' && formData.fpoa.fpoa_initial_agents.second_coagent_person_to_serve && (
               <div className="mb-3">
                 <label className="form-label">Can each agent act independently?</label>
                 <div>
@@ -2638,34 +2836,64 @@ const POAForm: React.FC = () => {
                   </div>
                 </div>
                 <div className="card-body">
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label className="form-label">Select the person you want to serve:</label>
-                      <select
-                        className="form-select"
-                        value={agent.successor_agent_to_serve || ''}
-                        onChange={(e) => updateSuccessorAgent('fpoa', index, 'successor_agent_to_serve', e.target.value)}
-                      >
-                        <option value="">Select Agent...</option>
-                        {parties.map((party) => (
-                          <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
-                        ))}
-                      </select>
+                  <div className="mb-3">
+                    <label className="form-label">Select the person you want to serve:</label>
+                    <select
+                      className="form-select"
+                      value={agent.successor_agent_to_serve || ''}
+                      onChange={(e) => updateSuccessorAgent('fpoa', index, 'successor_agent_to_serve', e.target.value)}
+                    >
+                      <option value="">Select Agent...</option>
+                      {getAvailableParties('fpoa', `successor_${index}_primary`).map((party) => (
+                        <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Do you want to appoint a Co-Agent to serve at the same time as this Successor Agent?</label>
+                    <div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name={`fpoa_successor_${index}_wants_coagent`}
+                          value="Yes"
+                          checked={agent.wants_coagent === 'Yes'}
+                          onChange={() => updateSuccessorAgent('fpoa', index, 'wants_coagent', 'Yes')}
+                        />
+                        <label className="form-check-label">Yes</label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          name={`fpoa_successor_${index}_wants_coagent`}
+                          value="No"
+                          checked={agent.wants_coagent === 'No' || !agent.wants_coagent}
+                          onChange={() => {
+                            updateSuccessorAgent('fpoa', index, 'wants_coagent', 'No');
+                            updateSuccessorAgent('fpoa', index, 'second_successor_coagent_to_serve', '');
+                          }}
+                        />
+                        <label className="form-check-label">No</label>
+                      </div>
                     </div>
-                    <div className="col-md-6 mb-3">
-                      <label className="form-label">If you want to appoint a second person (a Co-Agent) to serve as Successor Agent, select them here:</label>
+                  </div>
+                  {agent.wants_coagent === 'Yes' && (
+                    <div className="mb-3">
+                      <label className="form-label">Select the Co-Agent:</label>
                       <select
                         className="form-select"
                         value={agent.second_successor_coagent_to_serve || ''}
                         onChange={(e) => updateSuccessorAgent('fpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                       >
-                        <option value="">None</option>
-                        {parties.map((party) => (
+                        <option value="">Select Co-Agent...</option>
+                        {getAvailableParties('fpoa', `successor_${index}_coagent`).map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
                       </select>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -2674,6 +2902,8 @@ const POAForm: React.FC = () => {
               type="button"
               className="btn btn-outline-primary mb-3"
               onClick={() => addSuccessorAgent('fpoa')}
+              disabled={!hasAvailableAgentsForNewSuccessor('fpoa')}
+              title={!hasAvailableAgentsForNewSuccessor('fpoa') ? 'No more agents available' : ''}
             >
               + Add {getOrdinalLabel((formData.fpoa.successor_agents || []).length)} Successor Agent(s)
             </button>
@@ -2702,36 +2932,71 @@ const POAForm: React.FC = () => {
                 <span>−</span>
               </div>
               <div className="card-body">
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Select the person you want to serve:</label>
-                    <select
-                      className="form-select"
-                      value={formData.spouse_fpoa.fpoa_initial_agents.person_to_serve}
-                      onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
-                    >
-                      <option value="">Select Agent...</option>
-                      <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
-                      {parties.map((party) => (
-                        <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
-                      ))}
-                    </select>
+                <div className="mb-3">
+                  <label className="form-label">Select the person you want to serve:</label>
+                  <select
+                    className="form-select"
+                    value={formData.spouse_fpoa.fpoa_initial_agents.person_to_serve}
+                    onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
+                  >
+                    <option value="">Select Agent...</option>
+                    {!getSelectedAgents('spouse_fpoa', 'initial_primary').includes('client') && (
+                      <option value="client">{[formData.personal_info.first_name, formData.personal_info.middle_name, formData.personal_info.surname].filter(Boolean).join(' ') || 'First Principal'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
+                    )}
+                    {getAvailableParties('spouse_fpoa', 'initial_primary').map((party) => (
+                      <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Do you want to appoint a Co-Agent to serve at the same time as the Initial Agent?</label>
+                  <div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        name="spouse_fpoa_wants_coagent"
+                        value="Yes"
+                        checked={wantsSpouseFpoaCoAgent === 'Yes'}
+                        onChange={() => setWantsSpouseFpoaCoAgent('Yes')}
+                      />
+                      <label className="form-check-label">Yes</label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        name="spouse_fpoa_wants_coagent"
+                        value="No"
+                        checked={wantsSpouseFpoaCoAgent === 'No'}
+                        onChange={() => {
+                          setWantsSpouseFpoaCoAgent('No');
+                          updateNestedFormData('spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve', '');
+                        }}
+                      />
+                      <label className="form-check-label">No</label>
+                    </div>
                   </div>
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">If you want to appoint a second person (a Co-Agent) to serve at the same time as the Initial Agent, select them here:</label>
+                </div>
+
+                {wantsSpouseFpoaCoAgent === 'Yes' && (
+                  <div className="mb-3">
+                    <label className="form-label">Select the Co-Agent:</label>
                     <select
                       className="form-select"
                       value={formData.spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve}
                       onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                     >
-                      <option value="">None</option>
-                      {parties.map((party) => (
+                      <option value="">Select Co-Agent...</option>
+                      {getAvailableParties('spouse_fpoa', 'initial_coagent').map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
                   </div>
-                </div>
-                {formData.spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve && (
+                )}
+
+                {wantsSpouseFpoaCoAgent === 'Yes' && formData.spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve && (
                   <div className="mb-3">
                     <label className="form-label">Can each agent act independently?</label>
                     <div>
@@ -2822,8 +3087,10 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_fpoa', index, 'successor_agent_to_serve', e.target.value)}
                           >
                             <option value="">Select Agent...</option>
-                            <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
-                            {parties.map((party) => (
+                            {!getSelectedAgents('spouse_fpoa', `successor_${index}_primary`).includes('client') && (
+                              <option value="client">{[formData.personal_info.first_name, formData.personal_info.middle_name, formData.personal_info.surname].filter(Boolean).join(' ') || 'First Principal'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
+                            )}
+                            {getAvailableParties('spouse_fpoa', `successor_${index}_primary`).map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -2836,7 +3103,7 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_fpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                           >
                             <option value="">None</option>
-                            {parties.map((party) => (
+                            {getAvailableParties('spouse_fpoa', `successor_${index}_coagent`).map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -2850,6 +3117,8 @@ const POAForm: React.FC = () => {
                   type="button"
                   className="btn btn-outline-primary mb-3"
                   onClick={() => addSuccessorAgent('spouse_fpoa')}
+                  disabled={!hasAvailableAgentsForNewSuccessor('spouse_fpoa')}
+                  title={!hasAvailableAgentsForNewSuccessor('spouse_fpoa') ? 'No more agents available' : ''}
                 >
                   + Add {getOrdinalLabel((formData.spouse_fpoa.successor_agents || []).length)} Successor Agent(s)
                 </button>
@@ -2868,11 +3137,46 @@ const POAForm: React.FC = () => {
     const secondPersonLabel = isPOA ? 'Second Principal' : 'Spouse';
     const getSecondPersonName = () => formData.spouse_info.first_name || secondPersonLabel;
 
+    // Helper to get all selected agents for filtering (prevents duplicate selections)
+    const getSelectedAgents = (poaType: 'hcpoa' | 'spouse_hcpoa', excludeField?: string) => {
+      const selected: string[] = [];
+      const poa = poaType === 'hcpoa' ? formData.hcpoa : formData.spouse_hcpoa;
+
+      if (excludeField !== 'initial_primary' && poa.hcpoa_initial_agents.person_to_serve) {
+        selected.push(poa.hcpoa_initial_agents.person_to_serve);
+      }
+      if (excludeField !== 'initial_coagent' && poa.hcpoa_initial_agents.second_coagent_person_to_serve) {
+        selected.push(poa.hcpoa_initial_agents.second_coagent_person_to_serve);
+      }
+      (poa.successor_agents || []).forEach((agent, idx) => {
+        if (excludeField !== `successor_${idx}_primary` && agent.successor_agent_to_serve) {
+          selected.push(agent.successor_agent_to_serve);
+        }
+        if (excludeField !== `successor_${idx}_coagent` && agent.second_successor_coagent_to_serve) {
+          selected.push(agent.second_successor_coagent_to_serve);
+        }
+      });
+      return selected;
+    };
+
+    // Filter parties to exclude already selected agents
+    const getAvailableParties = (poaType: 'hcpoa' | 'spouse_hcpoa', excludeField: string) => {
+      const selected = getSelectedAgents(poaType, excludeField);
+      return parties.filter(party => !selected.includes(getPartyDisplayName(party)));
+    };
+
+    // Check if there are any agents available for a new successor
+    const hasAvailableAgentsForNewSuccessor = (poaType: 'hcpoa' | 'spouse_hcpoa') => {
+      const selected = getSelectedAgents(poaType);
+      const available = parties.filter(party => !selected.includes(getPartyDisplayName(party)));
+      return available.length > 0;
+    };
+
     return (
       <div className="poa-page">
         <h2>6. Healthcare Power of Attorney For {getPrincipalFullName()}</h2>
         <p className="text-muted mb-3">
-          <em><strong>A Healthcare Power of Attorney (HCPOA) is a legal document that allows an individual (the "Principal") to designate another person (an "Agent") to make medical decisions for him or her when he or she cannot make decisions for himself or herself.</strong></em>
+          <em><strong>A Healthcare Power of Attorney (HCPOA) is a legal document that allows an individual (the "Principal") to designate another person (an "Agent") to make medical decisions for them when they cannot make decisions for themselves.</strong></em>
         </p>
         <p className="text-muted mb-3">
           Healthcare decisions include the power to consent, refuse to consent, or withdraw consent to any type of medical care, treatment, service or procedure, as well as accessing protected health information, and making care arrangements.
@@ -2962,38 +3266,71 @@ const POAForm: React.FC = () => {
             <span>−</span>
           </div>
           <div className="card-body">
-            <div className="row">
-              <div className="col-md-6 mb-3">
-                <label className="form-label">Select the person you want to serve:</label>
-                <select
-                  className="form-select"
-                  value={formData.hcpoa.hcpoa_initial_agents.person_to_serve}
-                  onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
-                >
-                  <option value="">Select Agent...</option>
-                  {isTwoPerson && (
-                    <option value="spouse">My Spouse</option>
-                  )}
-                  {parties.map((party) => (
-                    <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
-                  ))}
-                </select>
+            <div className="mb-3">
+              <label className="form-label">Select the person you want to serve:</label>
+              <select
+                className="form-select"
+                value={formData.hcpoa.hcpoa_initial_agents.person_to_serve}
+                onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
+              >
+                <option value="">Select Agent...</option>
+                {isTwoPerson && !getSelectedAgents('hcpoa', 'initial_primary').includes('spouse') && (
+                  <option value="spouse">My Spouse</option>
+                )}
+                {getAvailableParties('hcpoa', 'initial_primary').map((party) => (
+                  <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Do you want to appoint a Co-Agent to serve at the same time as the Initial Agent?</label>
+              <div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="hcpoa_wants_coagent"
+                    value="Yes"
+                    checked={wantsHcpoaCoAgent === 'Yes'}
+                    onChange={() => setWantsHcpoaCoAgent('Yes')}
+                  />
+                  <label className="form-check-label">Yes</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    name="hcpoa_wants_coagent"
+                    value="No"
+                    checked={wantsHcpoaCoAgent === 'No'}
+                    onChange={() => {
+                      setWantsHcpoaCoAgent('No');
+                      updateNestedFormData('hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', '');
+                    }}
+                  />
+                  <label className="form-check-label">No</label>
+                </div>
               </div>
-              <div className="col-md-6 mb-3">
-                <label className="form-label">If you want to appoint a second person (a Co-Agent) to serve at the same time as the Initial Agent, select them here:</label>
+            </div>
+
+            {wantsHcpoaCoAgent === 'Yes' && (
+              <div className="mb-3">
+                <label className="form-label">Select the Co-Agent:</label>
                 <select
                   className="form-select"
                   value={formData.hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve}
                   onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                 >
-                  <option value="">None</option>
-                  {parties.map((party) => (
+                  <option value="">Select Co-Agent...</option>
+                  {getAvailableParties('hcpoa', 'initial_coagent').map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
               </div>
-            </div>
-            {formData.hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve && (
+            )}
+
+            {wantsHcpoaCoAgent === 'Yes' && formData.hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve && (
               <div className="mb-3">
                 <label className="form-label">Can each agent act independently?</label>
                 <div>
@@ -3087,7 +3424,7 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateSuccessorAgent('hcpoa', index, 'successor_agent_to_serve', e.target.value)}
                       >
                         <option value="">Select Agent...</option>
-                        {parties.map((party) => (
+                        {getAvailableParties('hcpoa', `successor_${index}_primary`).map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
                       </select>
@@ -3100,7 +3437,7 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateSuccessorAgent('hcpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                       >
                         <option value="">None</option>
-                        {parties.map((party) => (
+                        {getAvailableParties('hcpoa', `successor_${index}_coagent`).map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
                       </select>
@@ -3114,6 +3451,8 @@ const POAForm: React.FC = () => {
               type="button"
               className="btn btn-outline-primary mb-3"
               onClick={() => addSuccessorAgent('hcpoa')}
+              disabled={!hasAvailableAgentsForNewSuccessor('hcpoa')}
+              title={!hasAvailableAgentsForNewSuccessor('hcpoa') ? 'No more agents available' : ''}
             >
               + Add {getOrdinalLabel((formData.hcpoa.successor_agents || []).length)} Successor Agent(s)
             </button>
@@ -3127,8 +3466,8 @@ const POAForm: React.FC = () => {
             <h2>Healthcare Power of Attorney For {getSecondPersonName()}</h2>
             <p className="text-muted mb-3">
               A Healthcare Power of Attorney (HCPOA) is a legal document that allows an individual (the "Principal") to
-              designate another person (an "Agent") to make medical decisions for him or her when he or she cannot make
-              decisions for himself or herself.
+              designate another person (an "Agent") to make medical decisions for them when they cannot make
+              decisions for themselves.
             </p>
             <p className="text-muted mb-3">
               Healthcare decisions include the power to consent, refuse to consent, or withdraw consent to any type of
@@ -3211,36 +3550,71 @@ const POAForm: React.FC = () => {
                 <span>−</span>
               </div>
               <div className="card-body">
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Select the person you want to serve:</label>
-                    <select
-                      className="form-select"
-                      value={formData.spouse_hcpoa.hcpoa_initial_agents.person_to_serve}
-                      onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
-                    >
-                      <option value="">Select Agent...</option>
-                      <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
-                      {parties.map((party) => (
-                        <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
-                      ))}
-                    </select>
+                <div className="mb-3">
+                  <label className="form-label">Select the person you want to serve:</label>
+                  <select
+                    className="form-select"
+                    value={formData.spouse_hcpoa.hcpoa_initial_agents.person_to_serve}
+                    onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
+                  >
+                    <option value="">Select Agent...</option>
+                    {!getSelectedAgents('spouse_hcpoa', 'initial_primary').includes('client') && (
+                      <option value="client">{[formData.personal_info.first_name, formData.personal_info.middle_name, formData.personal_info.surname].filter(Boolean).join(' ') || 'First Principal'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
+                    )}
+                    {getAvailableParties('spouse_hcpoa', 'initial_primary').map((party) => (
+                      <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Do you want to appoint a Co-Agent to serve at the same time as the Initial Agent?</label>
+                  <div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        name="spouse_hcpoa_wants_coagent"
+                        value="Yes"
+                        checked={wantsSpouseHcpoaCoAgent === 'Yes'}
+                        onChange={() => setWantsSpouseHcpoaCoAgent('Yes')}
+                      />
+                      <label className="form-check-label">Yes</label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        name="spouse_hcpoa_wants_coagent"
+                        value="No"
+                        checked={wantsSpouseHcpoaCoAgent === 'No'}
+                        onChange={() => {
+                          setWantsSpouseHcpoaCoAgent('No');
+                          updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', '');
+                        }}
+                      />
+                      <label className="form-check-label">No</label>
+                    </div>
                   </div>
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">If you want to appoint a second person (a Co-Agent) to serve at the same time as the Initial Agent, select them here:</label>
+                </div>
+
+                {wantsSpouseHcpoaCoAgent === 'Yes' && (
+                  <div className="mb-3">
+                    <label className="form-label">Select the Co-Agent:</label>
                     <select
                       className="form-select"
                       value={formData.spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve}
                       onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                     >
-                      <option value="">None</option>
-                      {parties.map((party) => (
+                      <option value="">Select Co-Agent...</option>
+                      {getAvailableParties('spouse_hcpoa', 'initial_coagent').map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
                   </div>
-                </div>
-                {formData.spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve && (
+                )}
+
+                {wantsSpouseHcpoaCoAgent === 'Yes' && formData.spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve && (
                   <div className="mb-3">
                     <label className="form-label">Can each agent act independently?</label>
                     <div>
@@ -3331,8 +3705,10 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_hcpoa', index, 'successor_agent_to_serve', e.target.value)}
                           >
                             <option value="">Select Agent...</option>
-                            <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
-                            {parties.map((party) => (
+                            {!getSelectedAgents('spouse_hcpoa', `successor_${index}_primary`).includes('client') && (
+                              <option value="client">{[formData.personal_info.first_name, formData.personal_info.middle_name, formData.personal_info.surname].filter(Boolean).join(' ') || 'First Principal'} ({isPOA ? 'First Principal' : 'My Spouse'})</option>
+                            )}
+                            {getAvailableParties('spouse_hcpoa', `successor_${index}_primary`).map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -3345,7 +3721,7 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_hcpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                           >
                             <option value="">None</option>
-                            {parties.map((party) => (
+                            {getAvailableParties('spouse_hcpoa', `successor_${index}_coagent`).map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -3359,6 +3735,8 @@ const POAForm: React.FC = () => {
                   type="button"
                   className="btn btn-outline-primary mb-3"
                   onClick={() => addSuccessorAgent('spouse_hcpoa')}
+                  disabled={!hasAvailableAgentsForNewSuccessor('spouse_hcpoa')}
+                  title={!hasAvailableAgentsForNewSuccessor('spouse_hcpoa') ? 'No more agents available' : ''}
                 >
                   + Add {getOrdinalLabel((formData.spouse_hcpoa.successor_agents || []).length)} Successor Agent(s)
                 </button>
@@ -3401,9 +3779,13 @@ const POAForm: React.FC = () => {
 
         {formData.hcd.life_support_option === 'CHOOSE' && (
           <div className="card mb-3">
-            <div className="card-header">Specific Preferences</div>
+            <div className="card-header">I Want to CONTINUE Receiving the Following</div>
             <div className="card-body">
-              <div className="form-check mb-2">
+              <p className="text-muted mb-3">
+                <em>Check the boxes below for any life-sustaining treatments you wish to continue receiving.
+                Unchecked items will be withheld.</em>
+              </p>
+              <div className="form-check mb-3">
                 <input
                   type="checkbox"
                   className="form-check-input"
@@ -3416,10 +3798,10 @@ const POAForm: React.FC = () => {
                   }}
                 />
                 <label className="form-check-label">
-                  <strong>Nutrition</strong> - I want to receive artificial nutrition (feeding tube)
+                  <strong>Nutrition</strong> - I want to CONTINUE receiving artificial nutrition (feeding tube)
                 </label>
               </div>
-              <div className="form-check mb-2">
+              <div className="form-check mb-3">
                 <input
                   type="checkbox"
                   className="form-check-input"
@@ -3432,39 +3814,7 @@ const POAForm: React.FC = () => {
                   }}
                 />
                 <label className="form-check-label">
-                  <strong>Hydration</strong> - I want to receive artificial hydration (IV fluids)
-                </label>
-              </div>
-              <div className="form-check mb-2">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  checked={formData.hcd.client_hcds.includes('Vent')}
-                  onChange={(e) => {
-                    const newHcds = e.target.checked
-                      ? [...formData.hcd.client_hcds, 'Vent']
-                      : formData.hcd.client_hcds.filter(h => h !== 'Vent');
-                    updateNestedFormData('hcd.client_hcds', newHcds);
-                  }}
-                />
-                <label className="form-check-label">
-                  <strong>Ventilator</strong> - I want to receive mechanical ventilation
-                </label>
-              </div>
-              <div className="form-check mb-2">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  checked={formData.hcd.client_hcds.includes('CPR')}
-                  onChange={(e) => {
-                    const newHcds = e.target.checked
-                      ? [...formData.hcd.client_hcds, 'CPR']
-                      : formData.hcd.client_hcds.filter(h => h !== 'CPR');
-                    updateNestedFormData('hcd.client_hcds', newHcds);
-                  }}
-                />
-                <label className="form-check-label">
-                  <strong>CPR</strong> - I want cardiopulmonary resuscitation attempted
+                  <strong>Hydration</strong> - I want to CONTINUE receiving artificial hydration (IV fluids)
                 </label>
               </div>
             </div>
@@ -3497,9 +3847,13 @@ const POAForm: React.FC = () => {
 
             {formData.spouse_hcd.life_support_option === 'CHOOSE' && (
               <div className="card mb-3">
-                <div className="card-header">Specific Preferences</div>
+                <div className="card-header">I Want to CONTINUE Receiving the Following</div>
                 <div className="card-body">
-                  <div className="form-check mb-2">
+                  <p className="text-muted mb-3">
+                    <em>Check the boxes below for any life-sustaining treatments you wish to continue receiving.
+                    Unchecked items will be withheld.</em>
+                  </p>
+                  <div className="form-check mb-3">
                     <input
                       type="checkbox"
                       className="form-check-input"
@@ -3511,9 +3865,11 @@ const POAForm: React.FC = () => {
                         updateNestedFormData('spouse_hcd.spouse_hcds', newHcds);
                       }}
                     />
-                    <label className="form-check-label"><strong>Nutrition</strong></label>
+                    <label className="form-check-label">
+                      <strong>Nutrition</strong> - I want to CONTINUE receiving artificial nutrition (feeding tube)
+                    </label>
                   </div>
-                  <div className="form-check mb-2">
+                  <div className="form-check mb-3">
                     <input
                       type="checkbox"
                       className="form-check-input"
@@ -3525,35 +3881,9 @@ const POAForm: React.FC = () => {
                         updateNestedFormData('spouse_hcd.spouse_hcds', newHcds);
                       }}
                     />
-                    <label className="form-check-label"><strong>Hydration</strong></label>
-                  </div>
-                  <div className="form-check mb-2">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      checked={formData.spouse_hcd.spouse_hcds.includes('Vent')}
-                      onChange={(e) => {
-                        const newHcds = e.target.checked
-                          ? [...formData.spouse_hcd.spouse_hcds, 'Vent']
-                          : formData.spouse_hcd.spouse_hcds.filter(h => h !== 'Vent');
-                        updateNestedFormData('spouse_hcd.spouse_hcds', newHcds);
-                      }}
-                    />
-                    <label className="form-check-label"><strong>Ventilator</strong></label>
-                  </div>
-                  <div className="form-check mb-2">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      checked={formData.spouse_hcd.spouse_hcds.includes('CPR')}
-                      onChange={(e) => {
-                        const newHcds = e.target.checked
-                          ? [...formData.spouse_hcd.spouse_hcds, 'CPR']
-                          : formData.spouse_hcd.spouse_hcds.filter(h => h !== 'CPR');
-                        updateNestedFormData('spouse_hcd.spouse_hcds', newHcds);
-                      }}
-                    />
-                    <label className="form-check-label"><strong>CPR</strong></label>
+                    <label className="form-check-label">
+                      <strong>Hydration</strong> - I want to CONTINUE receiving artificial hydration (IV fluids)
+                    </label>
                   </div>
                 </div>
               </div>
@@ -3561,17 +3891,37 @@ const POAForm: React.FC = () => {
           </>
         )}
 
-        <div className="alert alert-success mt-4">
-          <h5><i className="fas fa-check-circle me-2"></i>Review and Submit</h5>
-          <p>You have completed all sections of the form. Please review your information and click "Submit Form" when ready.</p>
-          <p className="mb-0"><strong>After submission, your documents will be generated and available for download.</strong></p>
-        </div>
       </div>
     );
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const renderOtherPartiesPage = () => (
+  const renderOtherPartiesPage = () => {
+    const isTwoPerson = formType.includes('2Person');
+    const getSecondPersonFullName = () => {
+      const si = formData.spouse_info;
+      return [si.first_name, si.middle_name, si.surname].filter(Boolean).join(' ') || 'Principal 2';
+    };
+
+    // Handle address source change
+    const handleAddressSourceChange = (partyIndex: number, source: string) => {
+      if (source === '') {
+        updateParty(partyIndex, 'same_address_as_person_granting_power_of_attorney', false);
+        updateParty(partyIndex, 'address_source', '');
+      } else {
+        updateParty(partyIndex, 'same_address_as_person_granting_power_of_attorney', true);
+        updateParty(partyIndex, 'address_source', source);
+        const sourceInfo = source === 'principal' ? formData.personal_info : formData.spouse_info;
+        updateParty(partyIndex, 'street_address', sourceInfo.street_address);
+        updateParty(partyIndex, 'street_address_2', sourceInfo.street_address_2);
+        updateParty(partyIndex, 'city', sourceInfo.city);
+        updateParty(partyIndex, 'state', sourceInfo.state);
+        updateParty(partyIndex, 'zip', sourceInfo.zip);
+        updateParty(partyIndex, 'parish', sourceInfo.parish);
+      }
+    };
+
+    return (
     <div className="poa-page">
       <h2>3. Other Parties</h2>
       <p className="text-muted">
@@ -3728,6 +4078,7 @@ const POAForm: React.FC = () => {
                           <option value="">Select...</option>
                           <option value="Male">Male</option>
                           <option value="Female">Female</option>
+                          <option value="Non-Binary">Non-Binary</option>
                         </select>
                       </div>
                       <div className="col-md-4">
@@ -3888,16 +4239,40 @@ const POAForm: React.FC = () => {
                   </>
                 )}
 
+                {/* Same address checkboxes */}
                 <div className="mb-3">
                   <div className="form-check">
                     <input
                       type="checkbox"
                       className="form-check-input"
-                      checked={party.same_address_as_person_granting_power_of_attorney}
-                      onChange={(e) => updateParty(index, 'same_address_as_person_granting_power_of_attorney', e.target.checked)}
+                      checked={party.same_address_as_person_granting_power_of_attorney && party.address_source === 'principal'}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          handleAddressSourceChange(index, 'principal');
+                        } else {
+                          handleAddressSourceChange(index, '');
+                        }
+                      }}
                     />
                     <label className="form-check-label">Same address as {getPrincipalFullName()}</label>
                   </div>
+                  {isTwoPerson && (
+                    <div className="form-check">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        checked={party.same_address_as_person_granting_power_of_attorney && party.address_source === 'spouse'}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            handleAddressSourceChange(index, 'spouse');
+                          } else {
+                            handleAddressSourceChange(index, '');
+                          }
+                        }}
+                      />
+                      <label className="form-check-label">Same address as {getSecondPersonFullName()}</label>
+                    </div>
+                  )}
                 </div>
 
                 {!party.same_address_as_person_granting_power_of_attorney && (
@@ -3948,7 +4323,7 @@ const POAForm: React.FC = () => {
                         type="text"
                         className="form-control"
                         value={party.zip}
-                        onChange={(e) => updateParty(index, 'zip', e.target.value)}
+                        onChange={(e) => updateParty(index, 'zip', formatZipCode(e.target.value))}
                         maxLength={5}
                       />
                     </div>
@@ -3986,6 +4361,7 @@ const POAForm: React.FC = () => {
       )}
     </div>
   );
+  };
 
   const renderTrustInfoPage = () => (
     <div className="poa-page">
@@ -4069,7 +4445,7 @@ const POAForm: React.FC = () => {
             id="hasChildrenYes"
             value="yes"
             checked={formData.children_as_agents === true}
-            onChange={() => updateFormData('', 'children_as_agents', true)}
+            onChange={() => setFormData(prev => ({ ...prev, children_as_agents: true }))}
           />
           <label className="form-check-label" htmlFor="hasChildrenYes">Yes</label>
         </div>
@@ -4081,7 +4457,7 @@ const POAForm: React.FC = () => {
             id="hasChildrenNo"
             value="no"
             checked={formData.children_as_agents === false}
-            onChange={() => updateFormData('', 'children_as_agents', false)}
+            onChange={() => setFormData(prev => ({ ...prev, children_as_agents: false }))}
           />
           <label className="form-check-label" htmlFor="hasChildrenNo">No</label>
         </div>
@@ -4586,12 +4962,10 @@ const POAForm: React.FC = () => {
     // Helper to get HCD choices
     const getHCDChoices = (choices: string[]) => {
       const labels: Record<string, string> = {
-        'Nutr': 'Nutrition/Feeding Tube',
-        'Hydr': 'Hydration',
-        'Vent': 'Ventilator/Breathing Machine',
-        'CPR': 'CPR/Resuscitation',
+        'Nutr': 'Continue Nutrition (Feeding Tube)',
+        'Hydr': 'Continue Hydration (IV Fluids)',
       };
-      return choices.map(c => labels[c] || c).join(', ') || 'None selected';
+      return choices.map(c => labels[c] || c).join(', ') || 'None selected (all life support withheld)';
     };
 
     // Helper to get trust type label
@@ -5124,19 +5498,36 @@ const POAForm: React.FC = () => {
           <div className="col-lg-10">
             {/* Editing Submission Notice */}
             {submissionId ? (
-              <div className="alert alert-info mb-4">
-                <strong onClick={handleTitleClick} style={{ cursor: 'default' }}>Editing Submission</strong>
-                <p className="mb-0 mt-1">
-                  You are editing an existing form submission. Your progress is automatically saved as you move between pages.
-                  Changes will be finalized when you complete the form. <a href="/dashboard">Back to Dashboard</a>
-                </p>
+              <div className="alert alert-info mb-4 d-flex justify-content-between align-items-center">
+                <div onClick={handleTitleClick} style={{ cursor: 'default' }}>
+                  <strong>Editing Submission</strong>
+                  <p className="mb-0 mt-1">
+                    You are editing an existing form submission. Your progress is automatically saved as you move between pages.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={() => navigate('/my-account/my-estate-plans')}
+                >
+                  <i className="fas fa-arrow-left me-2"></i>Get back to dashboard
+                </button>
               </div>
             ) : (
-              <div className="alert alert-light border mb-4" onClick={handleTitleClick} style={{ cursor: 'default' }}>
-                <strong>New Submission</strong>
-                <p className="mb-0 mt-1">
-                  Your progress will be saved as you move between pages.
-                </p>
+              <div className="alert alert-light border mb-4 d-flex justify-content-between align-items-center" onClick={handleTitleClick} style={{ cursor: 'default' }}>
+                <div>
+                  <strong>New Submission</strong>
+                  <p className="mb-0 mt-1">
+                    Your progress will be saved as you move between pages.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
+                  onClick={(e) => { e.stopPropagation(); navigate('/my-account/my-estate-plans'); }}
+                >
+                  <i className="fas fa-arrow-left me-2"></i>Get back to dashboard
+                </button>
               </div>
             )}
 
@@ -5188,13 +5579,13 @@ const POAForm: React.FC = () => {
                   <button
                     type="button"
                     className="btn btn-outline-primary"
-                    onClick={() => handleSave('inprogress')}
+                    onClick={handleFinishLater}
                     disabled={isSaving}
                   >
                     {isSaving ? (
                       <><span className="spinner-border spinner-border-sm me-2"></span>Saving...</>
                     ) : (
-                      <><i className="fas fa-save me-2"></i>Save Progress</>
+                      <><i className="fas fa-save me-2"></i>Finish Later</>
                     )}
                   </button>
 

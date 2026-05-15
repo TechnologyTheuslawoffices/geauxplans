@@ -1,19 +1,63 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
 import './ViewPlans.css';
 
+// Product configurations for modal
+const PRODUCT_CONFIG: Record<string, {
+  name: string;
+  description: string;
+  productId: number;
+  soloPrice: number;
+  couplePrice: number;
+  avgTime: string;
+}> = {
+  powerOfAttorneyForm: {
+    name: 'Power of Attorney Plan',
+    description: 'Create durable powers of attorney and other important documents for your college student, an aging parent, or any other person you need to assist if something happens.',
+    productId: 614,
+    soloPrice: 99,
+    couplePrice: 149,
+    avgTime: '5 minutes',
+  },
+  trustBasedEstatePlanSolo: {
+    name: 'Trust-Based Estate Plan',
+    description: 'Create a comprehensive trust-based estate plan to avoid probate and ensure your assets are distributed according to your wishes.',
+    productId: 676,
+    soloPrice: 399,
+    couplePrice: 499,
+    avgTime: '15 minutes',
+  },
+  willBasedEstatePlan: {
+    name: 'Will-Based Estate Plan',
+    description: 'Create a will-based estate plan with essential documents to protect your family and control your legacy.',
+    productId: 673,
+    soloPrice: 199,
+    couplePrice: 299,
+    avgTime: '10 minutes',
+  },
+  minorChildEstatePlan: {
+    name: 'Minor Child-Centered Estate Plan',
+    description: 'Protect your children with guardian nominations and children\'s trusts to ensure they are cared for if something happens to you.',
+    productId: 606,
+    soloPrice: 199,
+    couplePrice: 299,
+    avgTime: '10 minutes',
+  },
+};
+
 // Form type configurations
 const FORM_TYPES: Record<string, { name: string; description: string }> = {
-  powerOfAttorneyForm: { name: 'Power of Attorney', description: 'Individual POA documents' },
-  powerOfAttorneyForm2Person: { name: 'Power of Attorney 2 Persons', description: 'Couple POA documents' },
-  trustBasedEstatePlanSolo: { name: 'Trust-Based Estate Plan', description: 'Individual trust documents' },
-  trustBasedEstatePlan2Person: { name: 'Trust-Based Estate Plan for 2 Persons', description: 'Couple trust documents' },
-  willBasedEstatePlan: { name: 'Will-Based Estate Plan', description: 'Will and related documents' },
-  willBasedEstatePlan2Person: { name: 'Will-Based Estate Plan for 2 Persons', description: 'Couple will documents' },
-  minorChildEstatePlan: { name: 'Minor-Child Centered Estate Plan', description: 'Guardian and trust provisions' },
-  minorChildEstatePlan2Person: { name: 'Minor-Child Centered Estate Plan for 2 Persons', description: 'Couple guardian provisions' },
+  powerOfAttorneyForm: { name: 'Power of Attorney Plan', description: 'Financial and healthcare POA documents' },
+  powerOfAttorneyForm2Person: { name: 'Power of Attorney Plan', description: 'Financial and healthcare POA documents' },
+  trustBasedEstatePlanSolo: { name: 'Trust-Based Estate Plan', description: 'Comprehensive trust-based planning' },
+  trustBasedEstatePlan2Person: { name: 'Trust-Based Estate Plan', description: 'Comprehensive trust-based planning' },
+  willBasedEstatePlan: { name: 'Will-Based Estate Plan', description: 'Essential will and POA documents' },
+  willBasedEstatePlan2Person: { name: 'Will-Based Estate Plan', description: 'Essential will and POA documents' },
+  minorChildEstatePlan: { name: 'Minor Child-Centered Estate Plan', description: 'Guardian nominations and children\'s trusts' },
+  minorChildEstatePlan2Person: { name: 'Minor Child-Centered Estate Plan', description: 'Guardian nominations and children\'s trusts' },
 };
 
 // Status colors matching WordPress
@@ -64,24 +108,38 @@ interface AllProducts {
   formType: string;
 }
 
+// Available products - users can purchase multiple times
+// Users select 1 or 2 persons on the product page before checkout
 const allProducts: AllProducts[] = [
-  { id: 614, name: 'Power of Attorney Plan', price: 99, shortDescription: 'Financial and healthcare POA documents for individuals', url: '/checkout?product=614&type=solo', formType: 'powerOfAttorneyForm' },
-  { id: 614, name: 'Power of Attorney Plan for 2 Persons', price: 99, shortDescription: 'Financial and healthcare POA documents for couples', url: '/checkout?product=614&type=2person', formType: 'powerOfAttorneyForm2Person' },
-  { id: 676, name: 'Trust-Based Estate Plan', price: 399, shortDescription: 'Comprehensive trust-based planning for individuals', url: '/checkout?product=676&type=solo', formType: 'trustBasedEstatePlanSolo' },
-  { id: 676, name: 'Trust-Based Estate Plan for 2 Persons', price: 399, shortDescription: 'Comprehensive trust-based planning for couples', url: '/checkout?product=676&type=2person', formType: 'trustBasedEstatePlan2Person' },
-  { id: 673, name: 'Will-Based Estate Plan', price: 199, shortDescription: 'Essential will and POA documents', url: '/checkout?product=673&type=solo', formType: 'willBasedEstatePlan' },
-  { id: 673, name: 'Will-Based Estate Plan for 2 Persons', price: 199, shortDescription: 'Essential will and POA documents for couples', url: '/checkout?product=673&type=2person', formType: 'willBasedEstatePlan2Person' },
-  { id: 606, name: 'Minor Child-Centered Estate Plan', price: 199, shortDescription: 'Guardian nominations and children\'s trusts', url: '/checkout?product=606&type=solo', formType: 'minorChildEstatePlan' },
-  { id: 606, name: 'Minor Child-Centered Estate Plan for 2 Persons', price: 199, shortDescription: 'Guardian nominations and children\'s trusts for couples', url: '/checkout?product=606&type=2person', formType: 'minorChildEstatePlan2Person' },
+  { id: 614, name: 'Power of Attorney Plan', price: 99, shortDescription: 'Financial and healthcare POA documents', url: '/power-of-attorney-plan', formType: 'powerOfAttorneyForm' },
+  { id: 676, name: 'Trust-Based Estate Plan', price: 399, shortDescription: 'Comprehensive trust-based planning', url: '/trust-based-estate-plan', formType: 'trustBasedEstatePlanSolo' },
+  { id: 673, name: 'Will-Based Estate Plan', price: 199, shortDescription: 'Essential will and POA documents', url: '/will-based-estate-plan', formType: 'willBasedEstatePlan' },
+  { id: 606, name: 'Minor Child-Centered Estate Plan', price: 199, shortDescription: 'Guardian nominations and children\'s trusts', url: '/minor-child-centered-estate-plan', formType: 'minorChildEstatePlan' },
 ];
+
+// Form type mapping for matching submissions to products
+const PRODUCT_FORM_TYPES: Record<string, string[]> = {
+  powerOfAttorneyForm: ['powerOfAttorneyForm', 'powerOfAttorneyForm2Person'],
+  trustBasedEstatePlanSolo: ['trustBasedEstatePlanSolo', 'trustBasedEstatePlan2Person'],
+  willBasedEstatePlan: ['willBasedEstatePlan', 'willBasedEstatePlan2Person'],
+  minorChildEstatePlan: ['minorChildEstatePlan', 'minorChildEstatePlan2Person'],
+};
 
 const ViewPlans: React.FC = () => {
   const { session } = useAuth();
+  const { addEstatePlan } = useCart();
+  const navigate = useNavigate();
   const [submissions, setSubmissions] = useState<ApiSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState<number | null>(null);
   const [downloading, setDownloading] = useState<number | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
+
+  // Purchase modal state
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
+  const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
   // Cache for full document data (fetched on demand)
   const [documentCache, setDocumentCache] = useState<Record<number, KnacklyDocument[]>>({});
 
@@ -473,14 +531,18 @@ const ViewPlans: React.FC = () => {
   );
 
   // Get active plans (submissions that exist)
+  // Match both solo and 2-person form types to the consolidated product
   const activePlans = submissions.map(s => {
-    const product = allProducts.find(p => p.formType === s.formType);
+    // Find product where this submission's form type is in the product's form types
+    const product = allProducts.find(p => {
+      const relatedFormTypes = PRODUCT_FORM_TYPES[p.formType] || [p.formType];
+      return relatedFormTypes.includes(s.formType);
+    });
     return { submission: s, product };
   }).filter(p => p.product);
 
-  // Get not purchased products (no submission exists)
-  const submittedFormTypes = submissions.map(s => s.formType);
-  const notPurchasedProducts = allProducts.filter(p => !submittedFormTypes.includes(p.formType));
+  // Show all available products (users can purchase multiple times)
+  const availableProducts = allProducts;
 
   if (loading) {
     return (
@@ -608,19 +670,34 @@ const ViewPlans: React.FC = () => {
         </div>
       )}
 
-      {/* Not Purchased Yet Section */}
-      {notPurchasedProducts.length > 0 && (
+      {/* Available Plans Section */}
+      {availableProducts.length > 0 && (
         <>
           <hr />
           <div>
-            <p><span className="gpx_highlight gpx_warning">Not purchased yet:</span></p>
+            <p><span className="gpx_highlight">Start a New Plan:</span></p>
           </div>
 
-          {notPurchasedProducts.map((product, index) => (
+          {availableProducts.map((product, index) => (
             <div key={`${product.formType}-${index}`} className="mb-2">
-              <Link className="plan_not_purchased" to={product.url}>
+              <button
+                className="plan_not_purchased"
+                onClick={() => {
+                  setSelectedProduct(product.formType);
+                  setNumPersons('1');
+                  setSubscribeLEP('1');
+                  setShowPurchaseModal(true);
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
                 {product.name}
-              </Link>
+              </button>
               <span className="ma_starting_at"> from ${product.price}</span>
               <br />
               <em style={{ color: '#666' }}>{product.shortDescription}</em>
@@ -642,6 +719,144 @@ const ViewPlans: React.FC = () => {
           Contact Support <i className="fas fa-arrow-right ms-1"></i>
         </Link>
       </div>
+
+      {/* Purchase Modal */}
+      {showPurchaseModal && selectedProduct && PRODUCT_CONFIG[selectedProduct] && (
+        <div
+          className="modal-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={() => setShowPurchaseModal(false)}
+        >
+          <div
+            className="modal-content purchase-modal"
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: '8px',
+              padding: '30px',
+              maxWidth: '500px',
+              width: '90%',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              position: 'relative',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="modal-close"
+              onClick={() => setShowPurchaseModal(false)}
+              style={{
+                position: 'absolute',
+                top: '15px',
+                right: '15px',
+                background: 'none',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                color: '#666',
+              }}
+            >
+              &times;
+            </button>
+
+            <div className="text-center mb-4">
+              <img
+                src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
+                alt="Plan Builder"
+                style={{ width: '48px', marginBottom: '20px' }}
+              />
+              <h2 style={{ color: '#0000ff' }}>{PRODUCT_CONFIG[selectedProduct].name}</h2>
+              <p className="text-muted fst-italic">
+                {PRODUCT_CONFIG[selectedProduct].description}
+              </p>
+              <p className="mb-4">
+                Average time to build a plan: <strong style={{ color: '#0000ff' }}>{PRODUCT_CONFIG[selectedProduct].avgTime}</strong>
+              </p>
+            </div>
+
+            <h4 className="mb-3">Build your plan</h4>
+            <p className="text-muted fst-italic mb-4">
+              After the purchase at your convenience, you will answer a series of questions to prepare your documents.
+            </p>
+
+            <div className="mb-3">
+              <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
+              <select
+                className="form-select"
+                value={numPersons}
+                onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                }}
+              >
+                <option value="1">For one person</option>
+                <option value="2">For two people</option>
+              </select>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                <strong>2.</strong> Would you like to subscribe to the{' '}
+                <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+                  Legal Edge Plan
+                </a>{' '}
+                for $9.99/month to be protected from any mistakes?
+              </label>
+              <select
+                className="form-select"
+                value={subscribeLEP}
+                onChange={(e) => setSubscribeLEP(e.target.value as '1' | '0')}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                }}
+              >
+                <option value="1">Yes, sure!</option>
+                <option value="0">No, thank you</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <strong>Final Price:</strong>{' '}
+              <strong style={{ fontSize: '1.25rem' }}>
+                ${numPersons === '1' ? PRODUCT_CONFIG[selectedProduct].soloPrice : PRODUCT_CONFIG[selectedProduct].couplePrice}
+                {subscribeLEP === '1' ? ' + $9.99/mo' : ''}
+              </strong>
+            </div>
+
+            <button
+              onClick={async () => {
+                const config = PRODUCT_CONFIG[selectedProduct];
+                const formType = numPersons === '1' ? 'solo' : '2person';
+                await addEstatePlan(config.productId, formType, subscribeLEP === '1');
+                setShowPurchaseModal(false);
+                navigate('/checkout');
+              }}
+              className="btn btn-primary btn-lg"
+              style={{ width: '100%' }}
+            >
+              Purchase
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
