@@ -789,3 +789,24 @@
     font-size: 1rem;
   }
 }
+
+/* Spam honeypot. Positioned off-screen rather than `display: none`, which some
+   bots detect and skip. Real users never see or tab into it. */
+.webinar-page .honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.webinar-page .form-error {
+  background-color: #fdecea;
+  border: 1px solid #c62828;
+  color: #b71c1c;
+  padding: 15px 20px;
+  border-radius: 4px;
+  margin: 0 auto 20px;
+  max-width: 500px;
+  text-align: center;
+}

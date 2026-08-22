@@ -65,6 +65,11 @@ const submissionsRoutes = require('../src/routes/submissions-supabase');
 app.use('/api/submissions', submissionsRoutes);
 console.log('Loaded Supabase submissions routes');
 
+// Public lead capture — Supabase + Keap only, no SQLite.
+const leadsRoutes = require('../src/routes/leads');
+app.use('/api/leads', leadsRoutes);
+console.log('Loaded leads routes');
+
 // Mount Stripe routes — uses Supabase for subscriptions and guards SQLite
 // access via `if (db)` checks, so it's safe in the serverless environment.
 try {

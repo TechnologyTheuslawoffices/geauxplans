@@ -138,7 +138,7 @@ const Header: React.FC = () => {
                     </div>
                     <ul>
                       <li><Link to="/my-account/my-estate-planning">My Estate Plans</Link></li>
-                      <li><Link to="/my-account/my-business-planning">My Companies</Link></li>
+                      <li><Link to="/my-account/business-planning">My Companies</Link></li>
                       <li><Link to="/my-account/edit-account">Edit Profile</Link></li>
                       <li><Link to="/my-account/orders">View Orders</Link></li>
                       <li>

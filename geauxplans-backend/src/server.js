@@ -106,8 +106,10 @@ function loadSqliteRoutes() {
 // These routes work in both modes
 const knacklyRoutes = require('./routes/knackly');
 const stripeRoutes = require('./routes/stripe');
+const leadsRoutes = require('./routes/leads');
 app.use('/api/knackly', knacklyRoutes);
 app.use('/api/stripe', stripeRoutes);
+app.use('/api/leads', leadsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
