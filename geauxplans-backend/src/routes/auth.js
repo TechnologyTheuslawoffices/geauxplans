@@ -210,12 +210,17 @@ router.post(
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
       const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
-      // Log reset URL for development (replace with email service in production)
+      // Logging the URL is sufficient here and no email service is needed: this
+      // route is local-dev only. It is mounted from src/server.js, which the
+      // Vercel entry point (api/index.js) does not use, and it reads the SQLite
+      // `users` table that production does not have.
+      //
+      // Production password reset runs entirely through Supabase Auth —
+      // authService.requestPasswordReset() calls supabase.auth
+      // .resetPasswordForEmail(), and Supabase sends the mail. Do NOT wire an
+      // email provider in here expecting it to affect production.
       console.log(`\n📧 Password reset requested for: ${email}`);
       console.log(`🔗 Reset URL: ${resetUrl}\n`);
-
-      // TODO: In production, send email here using nodemailer or similar
-      // await sendPasswordResetEmail(user.email, resetUrl);
 
       res.json({
         success: true,

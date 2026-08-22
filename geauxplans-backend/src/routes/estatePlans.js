@@ -216,39 +216,6 @@ router.post('/:id/documents', authenticate, (req, res) => {
 });
 
 /**
- * GET /api/estate-plans/:id/knackly-url
- * Get Knackly interview URL for estate plan
- */
-router.get('/:id/knackly-url', authenticate, (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const plan = db.prepare('SELECT * FROM estate_plans WHERE id = ? AND user_id = ?').get(id, req.user.id);
-    if (!plan) {
-      return res.status(404).json({ success: false, error: 'Plan not found' });
-    }
-
-    // In production, this would call the Knackly API to get the interview URL
-    // For now, return a placeholder
-    const knacklyUrl = plan.knackly_token
-      ? `https://knackly.io/interview/${plan.knackly_token}`
-      : null;
-
-    res.json({
-      success: true,
-      data: {
-        url: knacklyUrl,
-        planId: plan.id,
-        planType: plan.type,
-      },
-    });
-  } catch (error) {
-    console.error('Get Knackly URL error:', error);
-    res.status(500).json({ success: false, error: 'Failed to get Knackly URL' });
-  }
-});
-
-/**
  * GET /api/estate-plans/types
  * Get available estate plan types
  */

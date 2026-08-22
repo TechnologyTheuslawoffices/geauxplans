@@ -68,6 +68,8 @@ tmpclaude-*/
 # Backup files
 *.backup
 *.stackdump
+*.bak
+*.bak.json
 .env.backup
 .env.check
 .env.old*
