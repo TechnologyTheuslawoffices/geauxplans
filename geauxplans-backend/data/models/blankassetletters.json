@@ -1,0 +1,137 @@
+{
+  "_id": "63727d4b44c9e80c0f3f72ab",
+  "summary": "",
+  "label": "",
+  "type": "object",
+  "name": "blankassetletters",
+  "formulas": [
+    {
+      "_id": "63c04fac8e1ba4139dcfd595",
+      "name": "SecondFooter",
+      "isList": false,
+      "label": "",
+      "expression": "AssetName && (AssetName == \"Retirement\" || AssetName == \"RetirementSpouse\" || AssetName == \"LifeInsureWithCash\" || AssetName == \"LifeInsureNoCash\" || AssetName == \"LifeInsureWithCashSpouse\" || AssetName == \"LifeInsureNoCashSpouse\" || AssetName == \"POD\" || AssetName == \"PODClient\" || AssetName == \"PODSpouse\")",
+      "ref": "",
+      "type": "true/false"
+    }
+  ],
+  "templates": [
+    {
+      "filename": "BlankAssetLetters.docx",
+      "filesize": 88277,
+      "filepath": "templates/63727d4b44c9e80c0f3f72ab/63c0235a241c0b33192d3dcf/a306c910-a3be-11f0-86f9-33b126715916/template.docx",
+      "date": 1759869966136,
+      "output": "{[LetterTitleTemplate]}",
+      "label": "",
+      "type": "docx",
+      "name": "BlankAssetTemplate2",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2023-01-11T15:14:33.514Z",
+      "user": "63d46c67ad98ce943197d39a",
+      "_id": "63c0235a241c0b33192d3dcf"
+    },
+    {
+      "contentType": "",
+      "text": "{[if AssetName && (AssetName == \"POD\" || AssetName == \"PODClient\" || AssetName == \"PODSpouse\")]}POD ACCOUNT REQUEST{[elseif AssetName && (AssetName == \"SafeDeposit\" || AssetName == \"SafeDepositClient\" || AssetName == \"SafeDepositSpouse\")]}SAFE DEPOSIT BOX{[elseif AssetName && (AssetName == \"Stocks\" || AssetName == \"StocksClient\" || AssetName == \"StocksSpouse\")]}STOCK (CERTIFICATES OR COMPUTERSHARE){[elseif AssetName && (AssetName == \"Bonds\" || AssetName == \"BondsClient\" || AssetName == \"BondsSpouse\")]}BOND (CERTIFICATES OR COMPUTERSHARE){[elseif AssetName && (AssetName == \"Retirement\" || AssetName == \"RetirementSpouse\")]}RETIREMENT ACCOUNT - BENEFICIARY CHANGE REQUEST{[elseif AssetName && (AssetName == \"LifeInsureWithCash\" || AssetName == \"LifeInsureWithCashSpouse\")]}LIFE INSURANCE WITH CASH VALUE{[elseif AssetName && (AssetName == \"LifeInsureNoCash\" || AssetName == \"LifeInsureNoCashSpouse\")]}LIFE INSURANCE WITHOUT CASH VALUE{[elseif AssetName && (AssetName == \"NonQualAnnuity\" || AssetName == \"NonQualAnnuitySpouse\")]}NON-QUALIFIED ANNUITY{[elseif AssetName && AssetName == \"TimeShare\"]}TIME SHARE PROPERTY{[elseif AssetName && (AssetName == \"OutofStateRealEstate\" || AssetName == \"OutofStateMineral\")]}OUT OF STATE REAL PROPERTY{[elseif AssetName && (AssetName == \"Investment\" || AssetName == \"InvestLLC\" || AssetName == \"InvestmentClient\" || AssetName == \"InvestmentSpouse\" || AssetName == \"InvestLLCClient\" || AssetName == \"InvestLLCSpouse\")]}BROKER-HELD INVESTMENT ACCOUNTS TO {[(AssetName == \"InvestLLC\" || AssetName == \"InvestLLCClient\" || AssetName == \"InvestLLCSpouse\") ? \"LLC\" : \"TRUST\"]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "FooterTemplate",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2023-01-04T21:10:15.594Z",
+      "_id": "63c0235a241c0b33192d3dd0",
+      "content": "{[if AssetName && (AssetName == \"POD\" || AssetName == \"PODClient\" || AssetName == \"PODSpouse\")]}POD ACCOUNT REQUEST{[elseif AssetName && (AssetName == \"SafeDeposit\" || AssetName == \"SafeDepositClient\" || AssetName == \"SafeDepositSpouse\")]}SAFE DEPOSIT BOX{[elseif AssetName && (AssetName == \"Stocks\" || AssetName == \"StocksClient\" || AssetName == \"StocksSpouse\")]}STOCK (CERTIFICATES OR COMPUTERSHARE){[elseif AssetName && (AssetName == \"Bonds\" || AssetName == \"BondsClient\" || AssetName == \"BondsSpouse\")]}BOND (CERTIFICATES OR COMPUTERSHARE){[elseif AssetName && (AssetName == \"Retirement\" || AssetName == \"RetirementSpouse\")]}RETIREMENT ACCOUNT - BENEFICIARY CHANGE REQUEST{[elseif AssetName && (AssetName == \"LifeInsureWithCash\" || AssetName == \"LifeInsureWithCashSpouse\")]}LIFE INSURANCE WITH CASH VALUE{[elseif AssetName && (AssetName == \"LifeInsureNoCash\" || AssetName == \"LifeInsureNoCashSpouse\")]}LIFE INSURANCE WITHOUT CASH VALUE{[elseif AssetName && (AssetName == \"NonQualAnnuity\" || AssetName == \"NonQualAnnuitySpouse\")]}NON-QUALIFIED ANNUITY{[elseif AssetName && AssetName == \"TimeShare\"]}TIME SHARE PROPERTY{[elseif AssetName && (AssetName == \"OutofStateRealEstate\" || AssetName == \"OutofStateMineral\")]}OUT OF STATE REAL PROPERTY{[elseif AssetName && (AssetName == \"Investment\" || AssetName == \"InvestLLC\" || AssetName == \"InvestmentClient\" || AssetName == \"InvestmentSpouse\" || AssetName == \"InvestLLCClient\" || AssetName == \"InvestLLCSpouse\")]}BROKER-HELD INVESTMENT ACCOUNTS TO {[(AssetName == \"InvestLLC\" || AssetName == \"InvestLLCClient\" || AssetName == \"InvestLLCSpouse\") ? \"LLC\" : \"TRUST\"]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if MarriedTF && AssetName && (AssetName == \"RetirementSpouse\" || AssetName == \"LifeInsureWithCashSpouse\" || AssetName == \"LifeInsureNoCashSpouse\" || AssetName == \"NonQualAnnuitySpouse\" || AssetName == \"PODSpouse\" || AssetName == \"SafeDepositSpouse\" || AssetName == \"InvestmentSpouse\" || AssetName == \"InvestLLCSpouse\" || AssetName == \"StocksSpouse\" || AssetName == \"BondsSpouse\")]}{[Spouse.NameCO|upper]}{[elseif AssetName && (AssetName == \"Retirement\" || AssetName == \"LifeInsureWithCash\" || AssetName == \"LifeInsureNoCash\" || AssetName == \"NonQualAnnuity\" || AssetName == \"PODClient\" || AssetName == \"SafeDepositClient\" || AssetName == \"InvestmentClient\" || AssetName == \"InvestLLCClient\" || AssetName == \"StocksClient\" || AssetName == \"BondsClient\")]}{[Client.NameCO|upper]}{[elseif AssetName]}{[Client.NameCO|upper]}{[if MarriedTF && JointOrSinglePlan == \"Joint\"]} and {[Spouse.NameCO|upper]}{[endif]}{[endif]}\r\n{[if MarriedTF && AssetName && (AssetName == \"RetirementSpouse\" || AssetName == \"LifeInsureWithCashSpouse\" || AssetName == \"LifeInsureNoCashSpouse\" || AssetName == \"NonQualAnnuitySpouse\" || AssetName == \"PODSpouse\" || AssetName == \"SafeDepositSpouse\" || AssetName == \"InvestmentSpouse\" || AssetName == \"InvestLLCSpouse\" || AssetName == \"StocksSpouse\" || AssetName == \"BondsSpouse\")]}{[Spouse.PartyBlockAddress|upper]}{[else]}{[Client.PartyBlockAddress|upper]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "HeaderTemplate",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2023-01-04T20:09:33.377Z",
+      "_id": "63c0235a241c0b33192d3dd1",
+      "content": "{[if MarriedTF && AssetName && (AssetName == \"RetirementSpouse\" || AssetName == \"LifeInsureWithCashSpouse\" || AssetName == \"LifeInsureNoCashSpouse\" || AssetName == \"NonQualAnnuitySpouse\" || AssetName == \"PODSpouse\" || AssetName == \"SafeDepositSpouse\" || AssetName == \"InvestmentSpouse\" || AssetName == \"InvestLLCSpouse\" || AssetName == \"StocksSpouse\" || AssetName == \"BondsSpouse\")]}{[Spouse.NameCO|upper]}{[elseif AssetName && (AssetName == \"Retirement\" || AssetName == \"LifeInsureWithCash\" || AssetName == \"LifeInsureNoCash\" || AssetName == \"NonQualAnnuity\" || AssetName == \"PODClient\" || AssetName == \"SafeDepositClient\" || AssetName == \"InvestmentClient\" || AssetName == \"InvestLLCClient\" || AssetName == \"StocksClient\" || AssetName == \"BondsClient\")]}{[Client.NameCO|upper]}{[elseif AssetName]}{[Client.NameCO|upper]}{[if MarriedTF && JointOrSinglePlan == \"Joint\"]} and {[Spouse.NameCO|upper]}{[endif]}{[endif]}\r\n{[if MarriedTF && AssetName && (AssetName == \"RetirementSpouse\" || AssetName == \"LifeInsureWithCashSpouse\" || AssetName == \"LifeInsureNoCashSpouse\" || AssetName == \"NonQualAnnuitySpouse\" || AssetName == \"PODSpouse\" || AssetName == \"SafeDepositSpouse\" || AssetName == \"InvestmentSpouse\" || AssetName == \"InvestLLCSpouse\" || AssetName == \"StocksSpouse\" || AssetName == \"BondsSpouse\")]}{[Spouse.PartyBlockAddress|upper]}{[else]}{[Client.PartyBlockAddress|upper]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if MarriedTF && JointOrSinglePlan == \"Joint\" && (AssetName == \"Retirement\" || AssetName == \"LifeInsureWithCash\" || AssetName == \"LifeInsureNoCash\" || AssetName == \"NonQualAnnuity\" || AssetName == \"PODClient\" || AssetName == \"SafeDepositClient\" || AssetName == \"InvestmentClient\" || AssetName == \"InvestLLCClient\" || AssetName == \"StocksClient\" || AssetName == \"BondsClient\")]}{[Client.NameCO]}'s {[elseif MarriedTF && JointOrSinglePlan == \"Joint\" && (AssetName == \"RetirementSpouse\" || AssetName == \"LifeInsureWithCashSpouse\" || AssetName == \"LifeInsureNoCashSpouse\" || AssetName == \"NonQualAnnuitySpouse\" || AssetName == \"PODSpouse\" || AssetName == \"SafeDepositSpouse\" || AssetName == \"InvestmentSpouse\" || AssetName == \"InvestLLCSpouse\" || AssetName == \"StocksSpouse\" || AssetName == \"BondsSpouse\")]}{[Spouse.NameCO]}'s {[elseif MarriedTF && JointOrSinglePlan == \"Joint\" && (AssetName == \"POD\" || AssetName == \"SafeDeposit\" || AssetName == \"Investment\" || AssetName == \"InvestLLC\" || AssetName == \"Stocks\" || AssetName == \"Bonds\")]}Joint {[endif]}Blank {[LetterTitle]} Letter",
+      "label": "",
+      "type": "text",
+      "name": "LetterTitleTemplate",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2023-01-04T18:37:01.500Z",
+      "_id": "63c0235a241c0b33192d3dd2",
+      "content": "{[if MarriedTF && JointOrSinglePlan == \"Joint\" && (AssetName == \"Retirement\" || AssetName == \"LifeInsureWithCash\" || AssetName == \"LifeInsureNoCash\" || AssetName == \"NonQualAnnuity\" || AssetName == \"PODClient\" || AssetName == \"SafeDepositClient\" || AssetName == \"InvestmentClient\" || AssetName == \"InvestLLCClient\" || AssetName == \"StocksClient\" || AssetName == \"BondsClient\")]}{[Client.NameCO]}'s {[elseif MarriedTF && JointOrSinglePlan == \"Joint\" && (AssetName == \"RetirementSpouse\" || AssetName == \"LifeInsureWithCashSpouse\" || AssetName == \"LifeInsureNoCashSpouse\" || AssetName == \"NonQualAnnuitySpouse\" || AssetName == \"PODSpouse\" || AssetName == \"SafeDepositSpouse\" || AssetName == \"InvestmentSpouse\" || AssetName == \"InvestLLCSpouse\" || AssetName == \"StocksSpouse\" || AssetName == \"BondsSpouse\")]}{[Spouse.NameCO]}'s {[elseif MarriedTF && JointOrSinglePlan == \"Joint\" && (AssetName == \"POD\" || AssetName == \"SafeDeposit\" || AssetName == \"Investment\" || AssetName == \"InvestLLC\" || AssetName == \"Stocks\" || AssetName == \"Bonds\")]}Joint {[endif]}Blank {[LetterTitle]} Letter"
+    },
+    {
+      "contentType": "",
+      "text": "{[if AssetName == \"Retirement\" || AssetName == \"RetirementSpouse\"]}IRA/401(k), 403(b), Qualified Annuities, Etc.{[elseif AssetName == \"LifeInsureWithCash\" || AssetName == \"LifeInsureWithCashSpouse\"]}Whole Life, Split Dollar, Variable Life, Universal Life, Etc.{[elseif AssetName == \"LifeInsureNoCash\" || AssetName == \"LifeInsureNoCashSpouse\"]}Term or Group Term{[elseif AssetName == \"POD\" || AssetName == \"PODClient\" || AssetName == \"PODSpouse\"]}CHECKING, SAVINGS, CERTIFICATE OF DEPOSIT, MONEY MARKET ACCOUNTS{[endif]}",
+      "_id": "63c04fe18e1ba4139dcfd596",
+      "name": "SecondFooterTemplate",
+      "label": "",
+      "type": "text",
+      "content": "{[if AssetName == \"Retirement\" || AssetName == \"RetirementSpouse\"]}IRA/401(k), 403(b), Qualified Annuities, Etc.{[elseif AssetName == \"LifeInsureWithCash\" || AssetName == \"LifeInsureWithCashSpouse\"]}Whole Life, Split Dollar, Variable Life, Universal Life, Etc.{[elseif AssetName == \"LifeInsureNoCash\" || AssetName == \"LifeInsureNoCashSpouse\"]}Term or Group Term{[elseif AssetName == \"POD\" || AssetName == \"PODClient\" || AssetName == \"PODSpouse\"]}CHECKING, SAVINGS, CERTIFICATE OF DEPOSIT, MONEY MARKET ACCOUNTS{[endif]}"
+    }
+  ],
+  "layouts": [],
+  "apps": [],
+  "properties": [
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "AssetName",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-11-14T17:39:45.947Z",
+      "_id": "63c0235a241c0b33192d3dcc"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "LetterTitle",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2023-01-04T17:28:18.936Z",
+      "_id": "63c0235a241c0b33192d3dcd"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "NumberAlphabet",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2023-01-04T17:38:51.149Z",
+      "_id": "63c0235a241c0b33192d3dce"
+    }
+  ],
+  "__v": 29,
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}

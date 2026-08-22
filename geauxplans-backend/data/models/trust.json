@@ -1,0 +1,211 @@
+{
+  "_id": "5e963814888b726d40018bf0",
+  "summary": "Trust Information",
+  "label": "",
+  "type": "object",
+  "name": "trust",
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 2,
+      "rows": [
+        [
+          {
+            "content": "Name",
+            "list": [],
+            "class": "question"
+          }
+        ],
+        [
+          {
+            "content": "SpecificBequestsTF",
+            "list": [],
+            "class": "question"
+          }
+        ],
+        [
+          {
+            "content": "SpecificBequests",
+            "list": [],
+            "class": "question"
+          }
+        ],
+        [
+          {
+            "content": "SuccessorTees",
+            "list": [],
+            "class": "question"
+          }
+        ],
+        [
+          {
+            "content": "Residuary",
+            "list": [],
+            "class": "question"
+          }
+        ],
+        [
+          {
+            "content": "TrustIncludeTrustTutorTF",
+            "list": [],
+            "class": "question"
+          }
+        ],
+        [
+          {
+            "content": "TrustIncludeTutor",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "TrustIncludeUnderTutor",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-06-09T03:53:41.865Z",
+      "_id": "6508c79d50e217356772eb07"
+    }
+  ],
+  "properties": [
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "Name",
+      "_id": "6508c79d50e217356772eafe"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Check here if to leave specific property (a home, a car, jewelry, etc) to a person or entity in the Trust.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "SpecificBequestsTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-24T22:00:21.870Z",
+      "_id": "6508c79d50e217356772eaff"
+    },
+    {
+      "style": "popup",
+      "isList": true,
+      "label": "Enter information about the specific bequests below.",
+      "helpText": "",
+      "forceRelevance": "SpecificBequestsTF",
+      "type": "object",
+      "name": "SpecificBequests",
+      "typeName": "willresidual",
+      "typeDef": "5e84d28c2314690408e0de0f",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-24T22:00:21.870Z",
+      "_id": "6508c79d50e217356772eb00"
+    },
+    {
+      "style": "popup",
+      "isList": true,
+      "label": "Enter information on who the joint trust estate should go to:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "Residuary",
+      "typeName": "willresidual",
+      "typeDef": "5e84d28c2314690408e0de0f",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-24T22:00:21.870Z",
+      "_id": "6508c79d50e217356772eb01"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "isList": false,
+      "label": "If you have minor children, check this box to name the people who will care for your children if they are still minors when you{[if MarriedTF]} and your spouse{[endif]} pass away.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "TrustIncludeTrustTutorTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-06-09T03:52:14.098Z",
+      "_id": "6508c79d50e217356772eb02"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "First person who will care for your minor children:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "TrustIncludeTutor",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-06-09T03:52:55.072Z",
+      "_id": "6508c79d50e217356772eb03"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Second person who will care for your minor children:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "TrustIncludeUnderTutor",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-06-09T04:03:33.954Z",
+      "_id": "6508c79d50e217356772eb04"
+    },
+    {
+      "style": "popup",
+      "isList": true,
+      "label": "Select the people who will be the Trustees of your trust after you.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "SuccessorTees",
+      "typeName": "agent",
+      "typeDef": "5d7fb617d09dd97a37d5a60f",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-06-11T03:52:45.882Z",
+      "_id": "6508c79d50e217356772eb05"
+    }
+  ],
+  "formulas": [],
+  "templates": [
+    {
+      "text": "{[if MarriedTF]}{[if Client.Last == Spouse.Last]}{[Client.First]} & {[Spouse.First]} {[Client.Last]}{[else]}{[Client.NameCO]} and {[Spouse.NameCO]}{[endif]}{[else]}{[Client.NameCO]}{[endif]} Living Trust",
+      "label": "",
+      "type": "text",
+      "name": "TrustName",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-05-20T02:13:28.040Z",
+      "_id": "6508c79d50e217356772eb06",
+      "content": "{[if MarriedTF]}{[if Client.Last == Spouse.Last]}{[Client.First]} & {[Spouse.First]} {[Client.Last]}{[else]}{[Client.NameCO]} and {[Spouse.NameCO]}{[endif]}{[else]}{[Client.NameCO]}{[endif]} Living Trust"
+    }
+  ],
+  "__v": 133,
+  "apps": [],
+  "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+  "kind": "model"
+}

@@ -1,0 +1,1363 @@
+{
+  "_id": "622a7665d1cf5006553bccf5",
+  "summary": "{[this.NewPerson]}",
+  "label": " ",
+  "type": "object",
+  "name": "individual2",
+  "formulas": [
+    {
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.id$ == _.Client.id$ || this.id$ == _.Spouse.id$ || this.id$ == _.Client2.id$ || this.PartyType != \"Entity\" || (_.Children2TF && (_.Children2|map:id$|contains:id$)) || (_.ChildrenTF && (_.Children|map:id$|contains:id$)))",
+      "ref": "",
+      "type": "true/false",
+      "name": "IndividualTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-10T05:28:51.146Z",
+      "_id": "6478c8da3bf0704dd83a3809",
+      "metadata": {
+        "notes": "\n\n"
+      }
+    },
+    {
+      "contentType": "",
+      "_id": "6478cee3662855c9d5feb25d",
+      "name": "PartyAddress1",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.IsPredeceasedTF)\r\n   ? \"\"\r\n   : this.id$ == Client.id$ || peek(this.SameAddressTF)\r\n         ? Client.StreetAddress1\r\n         : this.StreetAddress1",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6478cef9662855c9d5feb25e",
+      "name": "PartyBlockAddress",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.IsPredeceasedTF)\r\n   ? \"\"\r\n   : this.id$ == Client.id$ || peek(this.SameAddressTF)\r\n         ? Client.BlockAddress\r\n         : this.BlockAddress",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6478cf06662855c9d5feb25f",
+      "name": "PartyCityStateZip",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.IsPredeceasedTF)\r\n   ? \"\"\r\n   : this.id$ == Client.id$ || peek(this.SameAddressTF)\r\n         ? Client.CityStateZip\r\n         : this.CityStateZip",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6478cf17662855c9d5feb260",
+      "name": "PartyInline",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.IsPredeceasedTF)\r\n   ? \"\"\r\n   : this.id$ == Client.id$ || peek(this.SameAddressTF)\r\n         ? Client.LineAddress\r\n         : this.LineAddress",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6478cf3c662855c9d5feb261",
+      "name": "PartyState",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.IsPredeceasedTF)\r\n   ? \"\"\r\n   : this.id$ == Client.id$ || peek(this.SameAddressTF)\r\n         ? Client.State.Name\r\n         : this.State.Name",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6479fb396b770881f05b8d97",
+      "name": "PartyParishCounty",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.IsPredeceasedTF)\r\n   ? \"\"\r\n   : this.id$ == Client.id$ || peek(this.SameAddressTF)\r\n         ? Client.ParishCounty\r\n         : this.ParishCounty",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6479fb576b770881f05b8d98",
+      "name": "PartyParish",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.IsPredeceasedTF)\r\n   ? \"\"\r\n   : this.id$ == Client.id$ || peek(this.SameAddressTF)\r\n         ? Client.Parish\r\n         : this.Parish",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6586184766402ab7f3a17dc9",
+      "name": "PartyCity",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.IsPredeceasedTF)\r\n   ? \"\"\r\n   : this.id$ == Client.id$ || peek(this.SameAddressTF)\r\n         ? Client.StreetAddress1\r\n         : this.StreetAddress1",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "666311bc6664b60007d0fa92",
+      "name": "ParishCounty",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.IsPredeceasedTF)\r\n   ? \"\"\r\n   : this.id$ == Client.id$ || peek(this.SameAddressTF)\r\n         ? (Client.State.ParishCounty|else: \"Parish or County\")\r\n         : (this.State.ParishCounty|else: \"Parish or County\")",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "name": "AsPetitioner",
+      "isList": false,
+      "label": "",
+      "expression": "{PetitionerName:$locals.NameCO,id$:id$.toString().endsWith(\"/individual2\")?$locals._link||id$.toString().slice(0,-12):id$.toString().includes(\"/\")||!$locals._link?id$.toString()+\"/petitioners_model\":$locals._link,_link:id$,PetitionerRole:\"individual\",PetitionerParish:$locals.PartyParish,PetitionerParishCounty:$locals.PartyParishCounty,PetitionerState:$locals.PartyState,PetitionerGenderHisHer:($locals.Gender.HisHer|else:\"his or her\"),PetitionerRelationship:$locals.PartyDecedentRelate,PetitionerBlockAddress:$locals.PartyBlockAddress}",
+      "ref": "petitioners_model",
+      "_id": "67ea13a31993b153f3bca79e",
+      "type": "object"
+    },
+    {
+      "name": "PartyStreetAddress",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.IsPredeceasedTF)\r\n   ? null\r\n   : this.id$ == Client.id$ || peek(this.SameAddressTF)\r\n         ? Client.StreetAddress1\r\n         : this.StreetAddress1",
+      "ref": "",
+      "_id": "682790c569f1c849feffb21d",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "NameCO",
+      "isList": false,
+      "label": "",
+      "expression": "this.IndividualTF\n   ? this.First && this.Last\n      ? this.Middle && this.Suffix\n         ? this.First + \" \" + this.Middle + \" \" + this.Last + \", \" + this.Suffix\n         : this.Middle\n            ? this.First + \" \" + this.Middle + \" \" + this.Last\n            : this.Suffix\n               ? this.First + \" \" + this.Last + \", \" + this.Suffix\n               : this.First + \" \" + this.Last\n      : null               \n   :  this.EntityName\n      ? this.EntityName\n      : null",
+      "ref": "",
+      "_id": "685c275d6aeb83ac6934031b",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "PartyAddress2",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.IsPredeceasedTF)\r\n   ? null\r\n   : this.id$ == Client.id$ || peek(this.SameAddressTF)\r\n         ? Client.StreetAddress2\r\n            ? Client.StreetAddress2\r\n            : null\r\n         : this.StreetAddress2\r\n            ? this.StreetAddress2\r\n            : null",
+      "ref": "",
+      "_id": "693080b5e6fa10c53a97960f",
+      "type": "text",
+      "contentType": ""
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[this.StreetAddress1|else: \"_____________________\"]}\n{[if this.StreetAddress2]}\n\n{[this.StreetAddress2]}\n{[else]}\n\n{[endif]}\n{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "BlockAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-03-17T14:38:52.366Z",
+      "_id": "6478c8da3bf0704dd83a380a",
+      "content": "{[this.StreetAddress1|else: \"_____________________\"]}\n{[if this.StreetAddress2]}\n\n{[this.StreetAddress2]}\n{[else]}\n\n{[endif]}\n{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.City]}, {[this.State.Abbrev]} {[this.Zip|else: \"\"]}",
+      "label": "",
+      "type": "text",
+      "name": "CityStateZip",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-13T18:07:26.088Z",
+      "_id": "6478c8da3bf0704dd83a380b",
+      "content": "{[this.City]}, {[this.State.Abbrev]} {[this.Zip|else: \"\"]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.StreetAddress1 && this.City && this.State]}{[this.StreetAddress1]}{[if this.StreetAddress2]}, {[this.StreetAddress2]}{[endif]}, {[this.City]}, {[this.State.Abbrev]} {[this.Zip|else: \"\"]}{[else]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "LineAddress",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-20T21:12:06.200Z",
+      "_id": "6478c8da3bf0704dd83a380c",
+      "content": "{[if this.StreetAddress1 && this.City && this.State]}{[this.StreetAddress1]}{[if this.StreetAddress2]}, {[this.StreetAddress2]}{[endif]}, {[this.City]}, {[this.State.Abbrev]} {[this.Zip|else: \"\"]}{[else]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.IndividualTF]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}{[this.EntityName]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "NameCO1",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-20T21:12:06.200Z",
+      "_id": "6478c8da3bf0704dd83a380d",
+      "content": "{[if this.IndividualTF]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}{[this.EntityName]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.IndividualTF]}{[if this.First && this.Last]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}New Party{[endif]}{[else]}{[if this.EntityName]}{[this.EntityName]}{[else]}New Party{[endif]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "NewPerson",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:42:38.812Z",
+      "_id": "6478c8da3bf0704dd83a380e",
+      "content": "{[if this.IndividualTF]}{[if this.First && this.Last]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}New Party{[endif]}{[else]}{[if this.EntityName]}{[this.EntityName]}{[else]}New Party{[endif]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.IndividualTF]}{[if this.First && this.Last]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}this person{[endif]}{[else]}{[if this.EntityName]}{[this.EntityName]}{[else]}this entity{[endif]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "UseName",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:41:14.483Z",
+      "_id": "6478c8da3bf0704dd83a3814",
+      "content": "{[if this.IndividualTF]}{[if this.First && this.Last]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}this person{[endif]}{[else]}{[if this.EntityName]}{[this.EntityName]}{[else]}this entity{[endif]}{[endif]}"
+    },
+    {
+      "filename": "AffidavitOlographic.docx",
+      "filesize": 18844,
+      "filepath": "templates/622a7665d1cf5006553bccf5/647a09bf6b770881f05b8d9e/53aa4290-6097-11ef-ac6e-5f8983e85cc1/template.docx",
+      "user": "63d46c67ad98ce943197d39a",
+      "date": 1724338855764,
+      "output": "Affidavit of Olographic Will for {[NameCO]}",
+      "_id": "647a09bf6b770881f05b8d9e",
+      "name": "AffidavitOlographic",
+      "label": "",
+      "lastModified": "2022-11-30T21:34:15.290Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "filename": "OathofOffice.docx",
+      "filesize": 20079,
+      "filepath": "templates/622a7665d1cf5006553bccf5/c5962e90-60ac-11ef-883d-cb6f86b56ed2.docx",
+      "user": "5fe2813610c19d0f6689bef9",
+      "date": 1724348066605,
+      "output": "Oath of Office for {[NameCO]}",
+      "_id": "647a0b6c9756ad98de781fdc",
+      "name": "OathofOffice",
+      "label": "",
+      "lastModified": "2022-11-30T21:33:24.946Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "filename": "VerificationAdminOnly.docx",
+      "filesize": 24426,
+      "filepath": "templates/622a7665d1cf5006553bccf5/647a0ca39756ad98de781fdf/69cd466d1c79de95e717b513/template.docx",
+      "user": "68b430b97de73c105ab38a17",
+      "date": 1775060615334,
+      "output": "Verification of {[NameCO]}",
+      "_id": "647a0ca39756ad98de781fdf",
+      "name": "VerificationAdminOnly",
+      "label": "",
+      "lastModified": "2022-11-30T21:37:10.945Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "filename": "VerificationOnly.docx",
+      "filesize": 25280,
+      "filepath": "templates/622a7665d1cf5006553bccf5/647a0ca39756ad98de781fe0/da16d5a0-fb5b-11ef-976b-ab777ee4e732/template.docx",
+      "user": "63d46c67ad98ce943197d39a",
+      "date": 1741355742648,
+      "output": "Verification of {[NameCO]}",
+      "_id": "647a0ca39756ad98de781fe0",
+      "name": "VerificationOnly",
+      "label": "",
+      "lastModified": "2022-11-30T21:32:17.002Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "filename": "AffidavitofDeath.docx",
+      "filesize": 28375,
+      "filepath": "templates/622a7665d1cf5006553bccf5/647a16339756ad98de781fe5/580e7c30-7f9e-11f0-afe2-bbe4bb5059e5/template.docx",
+      "user": "63d46c67ad98ce943197d39a",
+      "date": 1755897854568,
+      "output": "Affidavit of Death, Domicile, and Heirship of {[NameCO]}{[if JointSuccessionTF]} for {[Client.NameCO]}{[endif]}",
+      "_id": "647a16339756ad98de781fe5",
+      "name": "AffidavitofDeath",
+      "label": "",
+      "lastModified": "2022-11-30T21:36:21.701Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx",
+      "isTemplates": true
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.IndividualTF]}SSN: XXX-XX-{[this.SSN.slice(-4)|else: \"_______\"]}{[else]}EIN: XX-XXX{[if this.EIN]}{[this.EIN.slice(-4)]}{[else]}_______{[endif]}{[endif]}",
+      "_id": "65de10aad26350364d41d0b5",
+      "name": "SSNorEIN",
+      "label": "",
+      "lastModified": "2020-10-20T21:12:06.200Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text",
+      "content": "{[if this.IndividualTF]}SSN: XXX-XX-{[this.SSN.slice(-4)|else: \"_______\"]}{[else]}EIN: XX-XXX{[if this.EIN]}{[this.EIN.slice(-4)]}{[else]}_______{[endif]}{[endif]}"
+    },
+    {
+      "name": "PartyDecedentRelate",
+      "label": "",
+      "_id": "67522d89fc607ee4f2f198ad",
+      "type": "text",
+      "contentType": "",
+      "text": "{[if ChildrenTF && (Children|map: id$|contains: id$)]}{[if IsStepchildTF]}Step-{[endif]}{[Gender.SonDaughter|titlecaps|else: \"Child\"]}{[else]}{[RelateClient|titlecaps|else: \"\"]}{[endif]}",
+      "content": "{[if ChildrenTF && (Children|map: id$|contains: id$)]}{[if IsStepchildTF]}Step-{[endif]}{[Gender.SonDaughter|titlecaps|else: \"Child\"]}{[else]}{[RelateClient|titlecaps|else: \"\"]}{[endif]}"
+    },
+    {
+      "name": "LtrSignReturnDocs",
+      "label": "",
+      "_id": "6827972169f1c849feffb224",
+      "type": "docx",
+      "filename": "LtrSignReturnDocs 2025.12.19.docx",
+      "filesize": 29603,
+      "filepath": "templates/622a7665d1cf5006553bccf5/6827972169f1c849feffb224/695c1891bce25130d0de3b97/template.docx",
+      "user": "63d46c67ad98ce943197d39a",
+      "date": 1767643300241,
+      "output": "Sign and Return Ltr to {[NameCO]} Docs (Succession of {[Client.NameCO]})"
+    },
+    {
+      "name": "LtrNonSignersSSA",
+      "label": "",
+      "_id": "682f86a6cf3f84a0fef307f5",
+      "type": "docx",
+      "filename": "LtrNonSignersSSA 2025.12.19.docx",
+      "filesize": 27152,
+      "filepath": "templates/622a7665d1cf5006553bccf5/682f86a6cf3f84a0fef307f5/748c34d0-dd16-11f0-a7a6-e5ab90048765/template.docx",
+      "user": "66cf83c43c74fb2094e33277",
+      "date": 1766174899681,
+      "output": "Ltr to {[NameCO]} Notice of SSA Docs (Succession of {[Client.NameCO]})",
+      "isTemplates": true
+    },
+    {
+      "name": "AffidavitofDeath2",
+      "label": "",
+      "_id": "685c25546aeb83ac69340315",
+      "type": "docx",
+      "filename": "AffidavitofDeath2.docx",
+      "filesize": 28865,
+      "filepath": "templates/622a7665d1cf5006553bccf5/685c25546aeb83ac69340315/5e15e960-7f9e-11f0-afe2-bbe4bb5059e5/template.docx",
+      "date": 1755897864804,
+      "output": "Affidavit of Death, Domicile, and Heirship of {[NameCO]} for {[TrueSecondDecedent.NameCO]}",
+      "user": "63d46c67ad98ce943197d39a"
+    },
+    {
+      "name": "VerificationNoticeSellRealProp",
+      "label": "",
+      "_id": "68f7ef2a65589e448b1abef1",
+      "type": "docx",
+      "filename": "VerificationNoticeSellRealProp.docx",
+      "filesize": 21854,
+      "filepath": "templates/622a7665d1cf5006553bccf5/68f7ef2a65589e448b1abef1/dd605a40-ba98-11f0-a3ad-8bb20ed4b5d0/template.docx",
+      "date": 1762382619077,
+      "output": "Verification of {[NameCO]} re Selling Immovable Property",
+      "user": "63d46c67ad98ce943197d39a"
+    },
+    {
+      "name": "VerificationFinalAccting",
+      "label": "",
+      "_id": "6913a9692c5410c7caff794d",
+      "type": "docx",
+      "filename": "VerificationFinalAccting.docx",
+      "filesize": 21916,
+      "filepath": "templates/622a7665d1cf5006553bccf5/6913a9692c5410c7caff794d/d026cb10-bf44-11f0-a0f4-2fd3b7fc19c1/template.docx",
+      "date": 1762896276759,
+      "output": "Verification of {[NameCO]} re Final Accounting",
+      "user": "63d46c67ad98ce943197d39a"
+    },
+    {
+      "name": "AffLostWill",
+      "label": "",
+      "_id": "698d13477c32064ac6eaea10",
+      "type": "docx",
+      "filename": "AffLostWill.docx",
+      "filesize": 16806,
+      "filepath": "templates/622a7665d1cf5006553bccf5/698d13477c32064ac6eaea10/698d1364aa573ad3a06706c3/template.docx",
+      "date": 1770853239241,
+      "output": "Affidavit of Lost Will for {[Client.NameCO]} by {[NameCO]}",
+      "user": "63d46c67ad98ce943197d39a"
+    },
+    {
+      "name": "VerificationReopen",
+      "label": "",
+      "_id": "6996076cf30d535fc9d09085",
+      "type": "docx",
+      "filename": "VerificationReopen.docx",
+      "filesize": 21190,
+      "filepath": "templates/622a7665d1cf5006553bccf5/6996076cf30d535fc9d09085/6996077ed600086a19ea341d/template.docx",
+      "date": 1771440022412,
+      "output": "Verification of {[NameCO]}",
+      "user": "63d46c67ad98ce943197d39a"
+    }
+  ],
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 3,
+      "rows": [
+        [
+          {
+            "id": "165e55b0-00d1-11ee-936c-4db0daa821e9",
+            "content": "###<center>**Name {[if IndividualTF]}and Personal {[endif]}Information**</center>",
+            "list": [],
+            "class": "static",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "PartyType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "6bc59ae0-009a-11ee-940b-6d7bd4c85a24"
+          },
+          {
+            "content": "EntityName",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 2,
+            "id": "6bc59ae1-009a-11ee-940b-6d7bd4c85a24"
+          }
+        ],
+        [
+          {
+            "content": "First",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "6bc59ae2-009a-11ee-940b-6d7bd4c85a24"
+          },
+          {
+            "content": "Middle",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "6bc59ae3-009a-11ee-940b-6d7bd4c85a24"
+          },
+          {
+            "content": "Last",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "6bc59ae4-009a-11ee-940b-6d7bd4c85a24"
+          }
+        ],
+        [
+          {
+            "content": "Suffix",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "6bc59ae5-009a-11ee-940b-6d7bd4c85a24"
+          },
+          {
+            "content": "Gender",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "6bc59ae6-009a-11ee-940b-6d7bd4c85a24"
+          },
+          {
+            "content": "SSN",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "6bc59ae7-009a-11ee-940b-6d7bd4c85a24"
+          }
+        ],
+        [
+          {
+            "id": "e566c490-395b-11f0-bfee-394ec2612197",
+            "content": "Salutation",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "747062b0-009a-11ee-940b-6d7bd4c85a24",
+            "content": "Birthdate",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "833e84f0-2d0e-11f0-925e-6b338e17448f",
+            "content": "ChildAdoptedTF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "id": "d0b317f0-0155-11ee-90bc-b781e168ebad",
+            "content": "IsPredeceasedTF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "id": "2add7920-7ec5-11f0-9176-29865ee46bd1",
+            "content": "IsPredeceased2TF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "id": "7eb88d30-00a2-11ee-940b-6d7bd4c85a24",
+            "content": "IsChildOfSpouseTF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "id": "5879c490-5cd5-11f0-9a6c-296c498f7047",
+            "content": "IsChildOfSpouse2TF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "id": "7de97d60-00a2-11ee-940b-6d7bd4c85a24",
+            "content": "IsStepchildTF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "IsStepchild2TF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "6af1be70-a11f-11ee-b775-c31f31218b3b"
+          }
+        ],
+        [
+          {
+            "id": "3f9e9cc0-7ec2-11f0-9a5f-c974fca6a42b",
+            "content": "isStepchildOtherMarriage2TF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "id": "7534eb30-009a-11ee-940b-6d7bd4c85a24",
+            "content": "RelateClient",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2
+          }
+        ],
+        [
+          {
+            "id": "f3517610-7ec3-11f0-9176-29865ee46bd1",
+            "content": "RelateSecondDecedent",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2
+          }
+        ],
+        [
+          {
+            "id": "4a76aa80-73ae-11f0-8490-7f2d8e346211",
+            "content": "DeceasedParentTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "4ca6d0f0-73ae-11f0-8490-7f2d8e346211",
+            "content": "DeceasedParent",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "DeceasedParent2TF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "14d2c5e0-7ec5-11f0-9176-29865ee46bd1",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "f13dad10-7eca-11f0-ad53-4dbd219ad543",
+            "content": "DeceasedParent2",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "3ef62e30-00d1-11ee-936c-4db0daa821e9",
+            "content": "###<center>**Role Information**</center>",
+            "list": [
+              "Roles"
+            ],
+            "class": "static"
+          }
+        ],
+        [
+          {
+            "id": "93367a90-00d1-11ee-936c-4db0daa821e9",
+            "content": "Roles",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "id": "caa76c60-0152-11ee-90bc-b781e168ebad",
+            "content": "InterestType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2
+          }
+        ],
+        [
+          {
+            "id": "69474370-0155-11ee-90bc-b781e168ebad",
+            "content": "PercentageorFraction",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2
+          }
+        ],
+        [
+          {
+            "content": "EIN",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "f1199950-24d7-11ef-8679-0799233b340c",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "5a65eb90-08bf-11f0-bbb8-db8842c2b076",
+            "content": "###<center>**Signers**</center>",
+            "list": [
+              "EntitySigners"
+            ],
+            "class": "static"
+          }
+        ],
+        [
+          {
+            "id": "f44870d0-73ad-11f0-8490-7f2d8e346211",
+            "content": "####<center>**Enter the name and title of the person who will sign on behalf of the entity.**</center>",
+            "list": [
+              "EntitySigners"
+            ],
+            "class": "static"
+          }
+        ],
+        [
+          {
+            "content": "EntitySigners",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "4e5b08d0-08bf-11f0-bbb8-db8842c2b076",
+            "offset": 0,
+            "span": 2
+          }
+        ],
+        [
+          {
+            "id": "02b19060-7906-11ee-843e-3d01f3a9fe8c",
+            "content": "###<center>**Address Information**</center>",
+            "list": [
+              "StreetAddress1",
+              "SameAddressTF"
+            ],
+            "class": "static",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "SameAddressTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "6bc59aea-009a-11ee-940b-6d7bd4c85a24"
+          }
+        ],
+        [
+          {
+            "content": "StreetAddress1",
+            "list": [],
+            "class": "question",
+            "id": "6bc59aeb-009a-11ee-940b-6d7bd4c85a24"
+          }
+        ],
+        [
+          {
+            "content": "StreetAddress2",
+            "list": [],
+            "class": "question",
+            "id": "6bc59aec-009a-11ee-940b-6d7bd4c85a24"
+          }
+        ],
+        [
+          {
+            "content": "City",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "6bc59aed-009a-11ee-940b-6d7bd4c85a24"
+          },
+          {
+            "content": "State",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "6bc59aee-009a-11ee-940b-6d7bd4c85a24"
+          },
+          {
+            "content": "Zip",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "6bc59aef-009a-11ee-940b-6d7bd4c85a24"
+          }
+        ],
+        [
+          {
+            "id": "f2d5ef50-24d7-11ef-8679-0799233b340c",
+            "content": "Parish",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "###<center>**Notary**</center>",
+            "expr": "",
+            "id": "1fbd4e60-b806-11f0-842d-f389686caed6",
+            "list": [],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "id": "bb0bfac0-0150-11ee-90bc-b781e168ebad",
+            "content": "SelectNotary",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-04-25T15:35:01.770Z",
+      "_id": "6478c8da3bf0704dd83a3815"
+    }
+  ],
+  "apps": [],
+  "properties": [
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "First name:",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "text",
+      "name": "First",
+      "_id": "6478c8da3bf0704dd83a37f6"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Middle name (or initial with period):",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "text",
+      "name": "Middle",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-06-12T16:02:00.867Z",
+      "_id": "6478c8da3bf0704dd83a37f7"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Last name:",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "text",
+      "name": "Last",
+      "_id": "6478c8da3bf0704dd83a37f8"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "suffixes|map: Name",
+      "isList": false,
+      "label": "Suffix, if any:",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "text",
+      "name": "Suffix",
+      "_id": "6478c8da3bf0704dd83a37f9"
+    },
+    {
+      "style": "",
+      "options": "gender",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "Gender:",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "selection",
+      "name": "Gender",
+      "_id": "6478c8da3bf0704dd83a37fa"
+    },
+    {
+      "style": "dropdown",
+      "options": "[{\"Name\":\"Entity\"},{\"Name\":\"Individual\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select the type of party this is:",
+      "helpText": "",
+      "forceRelevance": "(OtherParties|map: id$|contains: id$)",
+      "type": "selection",
+      "name": "PartyType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-06-15T19:19:44.597Z",
+      "_id": "6478c8da3bf0704dd83a37fb"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Entity name:",
+      "helpText": "",
+      "forceRelevance": "(OtherParties|map: id$|contains: id$) && PartyType == \"Entity\"",
+      "type": "text",
+      "name": "EntityName",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-10T05:53:46.596Z",
+      "_id": "6478c8da3bf0704dd83a37fc"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Street address{[if id$ == Client.id$]} at death{[endif]}:",
+      "helpText": "",
+      "forceRelevance": "(id$ == Client.id$ || !SameAddressTF) && !IsPredeceasedTF",
+      "type": "text",
+      "name": "StreetAddress1",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-10T22:12:23.079Z",
+      "_id": "6478c8da3bf0704dd83a37fd"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Second line of street address, if any (Apt or Suite number, etc):",
+      "helpText": "",
+      "forceRelevance": "(id$ == Client.id$ || !SameAddressTF) && !IsPredeceasedTF",
+      "type": "text",
+      "name": "StreetAddress2",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-16T20:11:57.052Z",
+      "_id": "6478c8da3bf0704dd83a37fe"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "City:",
+      "helpText": "",
+      "forceRelevance": "(id$ == Client.id$ || !SameAddressTF) && !IsPredeceasedTF",
+      "type": "text",
+      "name": "City",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-16T20:11:57.052Z",
+      "_id": "6478c8da3bf0704dd83a37ff"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "State:",
+      "helpText": "",
+      "forceRelevance": "(id$ == Client.id$ || !SameAddressTF) && !IsPredeceasedTF",
+      "type": "selection",
+      "name": "State",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-16T20:11:57.052Z",
+      "_id": "6478c8da3bf0704dd83a3800"
+    },
+    {
+      "style": "textbox",
+      "pattern": "99999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Zip:",
+      "helpText": "",
+      "forceRelevance": "(id$ == Client.id$ || !SameAddressTF) && !IsPredeceasedTF",
+      "type": "text",
+      "name": "Zip",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-16T20:11:57.052Z",
+      "_id": "6478c8da3bf0704dd83a3801"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "{[if peek(ParishCounty == \"Parish\")]}Parish{[elseif peek(ParishCounty == \"County\")]}County{[else]}Parish or county{[endif]} name; do not include the word {[if peek(ParishCounty == \"Parish\")]}\"Parish\"{[elseif peek(ParishCounty == \"County\")]}\"County\"{[else]}\"Parish\" or \"County\"{[endif]}:",
+      "helpText": "",
+      "forceRelevance": "(id$ == Client.id$ || !SameAddressTF) && !IsPredeceasedTF",
+      "type": "text",
+      "name": "Parish",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-04-25T15:33:56.958Z",
+      "_id": "6478c8da3bf0704dd83a3802"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "relationships|map: Name",
+      "isList": false,
+      "label": "Select or type in this person's relationship to {[Client.NameCO]}:",
+      "helpText": "",
+      "forceRelevance": "PartyType == \"Individual\" && !(Children|map:id$|contains:id$)",
+      "type": "text",
+      "name": "RelateClient",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:20:40.509Z",
+      "_id": "6478c8da3bf0704dd83a3803"
+    },
+    {
+      "style": "",
+      "options": "_.AllNotaries",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Select a notary option for this party:",
+      "helpText": "",
+      "forceRelevance": "id$ != Client.id$ && id$ != Client2.id$ && !IsPredeceasedTF",
+      "type": "selection",
+      "name": "SelectNotary",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-11T21:32:34.056Z",
+      "_id": "6478c8da3bf0704dd83a3804"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Check here if {[UseName]} has the same address as {[Client.NameCO]}",
+      "helpText": "",
+      "forceRelevance": "id$ == Client2.id$ || (id$ != Client.id$ && !IsPredeceasedTF)",
+      "type": "true/false",
+      "name": "SameAddressTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:40:19.909Z",
+      "_id": "6478c8da3bf0704dd83a3805"
+    },
+    {
+      "style": "textbox",
+      "isList": false,
+      "label": "Date of birth:",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "date",
+      "name": "Birthdate",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-07T21:17:20.182Z",
+      "_id": "6478c8da3bf0704dd83a3806"
+    },
+    {
+      "style": "textbox",
+      "pattern": "999-99-9999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "SSN; enter 0s for other digits if only last four known.",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "text",
+      "name": "SSN",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:25:17.770Z",
+      "_id": "6478c8da3bf0704dd83a3807"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6478c8de662855c9d5feb259",
+      "name": "IsStepchildTF",
+      "isList": false,
+      "label": "{[peek(IsPredeceasedTF) ? \"Was\" : \"Is\"]} {[if peek(this.First)]}{[First]}{[else]}this{[endif]} a *stepchild* of {[Client.NameCO]}?",
+      "helpText": "",
+      "forceRelevance": "ChildrenTF && (Children|map:id$|contains:id$)",
+      "type": "true/false"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6478cd9f662855c9d5feb25c",
+      "name": "IsPredeceasedTF",
+      "isList": false,
+      "label": "Did {[if peek(this.First)]}{[First]}{[elseif peek(Children|map:id$|contains:id$)]}this child{[else]}this party{[endif]} predecease {[Client.NameCO]}?",
+      "helpText": "",
+      "forceRelevance": "(Children|map:id$|contains:id$) || (OtherParties|map: id$|contains: id$)",
+      "type": "true/false"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6478d49e662855c9d5feb263",
+      "name": "IsChildOfSpouseTF",
+      "isList": false,
+      "label": "Is {[if peek(this.First)]}{[First]}{[else]}this{[endif]} a *child* of {[Spouse.NameCO]}?",
+      "helpText": "",
+      "forceRelevance": "MarriedTF && ChildrenTF && (Children|map:id$|contains:id$)",
+      "type": "true/false"
+    },
+    {
+      "style": "checkbox columns",
+      "options": "[{\"Name\":\"HeirLegatee\",\"Description\":\"Heir or remainder legatee\"},{\"Name\":\"ExecAdmin\",\"Description\":\"Executor or administrator\"},{\"Name\":\"Petitioner\",\"Description\":\"Petitioner\"},{\"Name\":\"CreateVerification\",\"Description\":\"Create verification for\"},{\"Name\":\"DescripListAffiant\",\"Description\":\"Descriptive List affiant; only select this for one person\"},{\"Name\":\"Small succession affiant\",\"Description\":\"Small succession affiant\"},{\"Name\":\"AffidavitAffiant\",\"Description\":\"Death, domicile, and heirship affiant\"},{\"Name\":\"OlographicAffiant\",\"Description\":\"Olographic will affiant\"},{\"Name\":\"Oath of office required\",\"Description\":\"Oath of office required\"},{\"Name\":\"Trustee\",\"Description\":\"Trustee of a trust in the pourover will\"},{\"Name\":\"Appearer\",\"Description\":\"Appearer\"},{\"Name\":\"Agent\",\"Description\":\"Power of Attorney Agent\"},{\"Name\":\"AdditionalDecedent\",\"Description\":\"Additional Decedent (or purposes of a Joint Succession)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6479253f9c19632bf3dae9bc",
+      "name": "Roles",
+      "isList": true,
+      "label": "Select the role(s) {[if peek(this.First)]}{[First]}{[elseif peek(Children|map:id$|contains:id$)]}this child{[else]}this party{[endif]} has in the succession:    \n{[if MarriedTF && id$ == Spouse.id$]}\nIf Spouse is not an heir or remainder beneficiary/legatee, do not select 'heir'   \n{[endif]}",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "6479fc146b770881f05b8d99",
+      "name": "PercentageorFraction",
+      "isList": false,
+      "label": "Complete percentage or fraction of inherited interest, i.e. \"one-half (1/2)\" or \"thirty-three percent (33%)\" or \"All\":",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-09-21T20:04:52.864Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Outright\",\"Description\":\"Outright of Decedent’s Interest\"},{\"Name\":\"Usufruct\",\"Description\":\"Usufruct of Decedent's Interest\"},{\"Name\":\"Naked\",\"Description\":\"Naked Ownership of Decedent’s Interest\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6479fc146b770881f05b8d9a",
+      "name": "InterestType",
+      "isList": false,
+      "label": "How interest is inherited:",
+      "helpText": "Select the inherited interest: Outright will include the Decedent's interest in both CP + SP; Usufruct will include a \"legal\" usufruct of Decedent's interest in CP (only) if intestate, and conventional usufruct of both CP + SP if testate; Naked ownership will include CP (only) and SP (outright) if intestate, or CP + SP if testate.",
+      "forceRelevance": "",
+      "lastModified": "2022-09-21T19:53:39.391Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "PredeceasedChildren",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "647a020a6b770881f05b8d9d",
+      "name": "DeceasedParent",
+      "isList": false,
+      "label": "Select the deceased parent:",
+      "helpText": "",
+      "forceRelevance": "(RelateClient|contains: (\"grand\" || \"Grand\")) && DeceasedParentTF",
+      "type": "selection"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "657ca23c67b58482720f2aca",
+      "name": "IsStepchild2TF",
+      "isList": false,
+      "label": "{[peek(IsPredeceasedTF) ? \"Was\" : \"Is\"]} {[if peek(this.First)]}{[First]}{[else]}this{[endif]} a *stepchild* of {[TrueSecondDecedent.NameCO]}?",
+      "helpText": "",
+      "forceRelevance": "(ChildrenTF && (Children|map:id$|contains:id$) && MarriedTF && JointSuccessionTF && SpouseIsDecedentMC == \"Yes\") || (UseClient2TF && Children2TF && (Children2|map:id$|contains:id$))",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65de1131d26350364d41d0b6",
+      "name": "EIN",
+      "isList": false,
+      "label": "EIN",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text"
+    },
+    {
+      "name": "EntitySigners",
+      "isList": true,
+      "label": "Signers for the entity (trustees for a trust, signers for a corporation or LLC). Enter name and title. ",
+      "helpText": "",
+      "forceRelevance": "PartyType == \"Entity\"",
+      "_id": "67e172098ae179209b862619",
+      "type": "object",
+      "style": "inline",
+      "typeDef": "67e171c9ae1f02496ead86ee",
+      "useImport": false,
+      "typeName": "successionsigners"
+    },
+    {
+      "name": "ChildAdoptedTF",
+      "isList": false,
+      "label": "Select if this is an ADOPTED rather than natural child",
+      "helpText": "",
+      "forceRelevance": "(Children|map: id$|contains: id$) || (Children2|map: id$|contains: id$)",
+      "_id": "681e5bd3885956b928a30cb2",
+      "type": "true/false",
+      "style": "switch"
+    },
+    {
+      "name": "Salutation",
+      "isList": false,
+      "label": "Enter salutation (Mr., Dr., Mrs., etc.; include period)",
+      "helpText": "",
+      "forceRelevance": "id$ != Client.id$ && IndividualTF",
+      "_id": "6832ff8d3ff228c71fcdd10c",
+      "type": "text",
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]"
+    },
+    {
+      "name": "IsChildOfSpouse2TF",
+      "isList": false,
+      "label": "Is {[if peek(this.First)]}{[First]}{[else]}this{[endif]} a *child* of {[Spouse2.NameCO]}?",
+      "helpText": "",
+      "forceRelevance": "Married2TF && Children2TF && (Children2|map:id$|contains:id$)",
+      "_id": "686e839fbe5e87758d925f3e",
+      "type": "true/false",
+      "style": "checkbox"
+    },
+    {
+      "name": "DeceasedParentTF",
+      "isList": false,
+      "label": "Did this grandchild's parent predecease {[Client.NameCO]}?",
+      "helpText": "",
+      "forceRelevance": "(RelateClient|contains: (\"grand\" || \"Grand\"))",
+      "_id": "6894d898e1a337fe9f6476f9",
+      "type": "true/false",
+      "style": "radiobutton columns"
+    },
+    {
+      "name": "isStepchildOtherMarriage2TF",
+      "isList": false,
+      "label": "Check to confirm that this is a *stepchild* of {[Spouse.NameCO]} from a previous relationship, not a child or stepchild of {[Client.NameCO]}",
+      "helpText": "",
+      "forceRelevance": "ChildrenTF && (Children|map:id$|contains:id$) && MarriedTF && JointSuccessionTF && SpouseIsDecedentMC == \"Yes\" && !IsStepchildTF && !IsChildOfSpouseTF && IsStepchild2TF",
+      "_id": "68a76dfa93f59da5f7618d3a",
+      "type": "true/false",
+      "style": "checkbox"
+    },
+    {
+      "name": "RelateSecondDecedent",
+      "isList": false,
+      "label": "Select or type in this person's relationship to {[TrueSecondDecedent.NameCO|else: \"the Second Decedent\"]}:",
+      "helpText": "",
+      "forceRelevance": "PartyType == \"Individual\" && !(Children|map:id$|contains:id$) && !(Children2|map:id$|contains:id$) && JointSuccessionTF",
+      "_id": "68a770fc6e1bdca538fd529b",
+      "type": "text",
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "relationships|map: Name"
+    },
+    {
+      "name": "DeceasedParent2TF",
+      "isList": false,
+      "label": "Did this grandchild's parent predecease {[TrueSecondDecedent.NameCO]}?",
+      "helpText": "",
+      "forceRelevance": "JointSuccessionTF && (RelateSecondDecedent|contains: (\"grand\" || \"Grand\"))",
+      "_id": "68a771f06e1bdca538fd529c",
+      "type": "true/false",
+      "style": "radiobutton columns"
+    },
+    {
+      "name": "DeceasedParent2",
+      "isList": false,
+      "label": "Select the deceased parent:",
+      "helpText": "",
+      "forceRelevance": "JointSuccessionTF && (RelateSecondDecedent|contains: (\"grand\" || \"Grand\")) && DeceasedParent2TF",
+      "_id": "68a772586e1bdca538fd529d",
+      "type": "selection",
+      "style": "",
+      "options": "PredeceasedChildren2",
+      "optionTemplate": "",
+      "typeOfVariable": "userData"
+    },
+    {
+      "name": "IsPredeceased2TF",
+      "isList": false,
+      "label": "Did {[if peek(this.First)]}{[First]}{[elseif peek(Children2|map:id$|contains:id$)]}this child{[else]}this party{[endif]} predecease {[TrueSecondDecedent.NameCO|else: \"the second Decedent\"]}?",
+      "helpText": "",
+      "forceRelevance": "JointSuccessionTF && ((Children2|map:id$|contains:id$) || (OtherParties|map: id$|contains: id$))",
+      "_id": "68a773366e1bdca538fd529e",
+      "type": "true/false",
+      "style": "checkbox"
+    }
+  ],
+  "__v": 31,
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}

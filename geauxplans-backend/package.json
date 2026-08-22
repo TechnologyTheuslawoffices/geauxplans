@@ -7,7 +7,13 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "db:init": "node src/config/initDb.js",
-    "db:seed": "node src/config/seedDb.js"
+    "db:seed": "node src/config/seedDb.js",
+    "docgen:build": "node docgen/build.mjs",
+    "docgen:check": "tsc --noEmit -p docgen/tsconfig.json",
+    "docgen:verify": "node docgen/verify-templates.mjs && node docgen/verify-preconditions.mjs && node docgen/verify-residuary.mjs && node docgen/verify-apps.mjs && node docgen/verify-request-path.mjs",
+    "keap:verify-tags": "node -r dotenv/config docgen/verify-keap-tags.mjs dotenv_config_path=.env.production.local",
+    "keap:verify-schema": "node -r dotenv/config docgen/verify-keap-schema.mjs dotenv_config_path=.env.production.local",
+    "vercel-build": "npm run docgen:build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.97.0",
@@ -18,11 +24,16 @@
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
+    "jszip": "^3.10.1",
+    "pizzip": "^3.2.0",
     "sql.js": "^1.9.0",
     "stripe": "^20.1.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "@types/node": "^26.2.0",
+    "esbuild": "^0.28.2",
+    "nodemon": "^3.0.2",
+    "typescript": "^7.0.2"
   }
 }

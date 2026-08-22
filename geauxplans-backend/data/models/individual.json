@@ -1,0 +1,2343 @@
+{
+  "_id": "5d6813a06db0fe770048a689",
+  "summary": "{[this.NewPerson]}{[if this.IndividualTF]}{[endif]}",
+  "label": " ",
+  "type": "object",
+  "name": "individual",
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 3,
+      "rows": [
+        [
+          {
+            "id": "e6c515f0-8b5d-11ef-8a5f-1188ffa738bb",
+            "content": "###<center>**Individual or Entity**</center>",
+            "list": [
+              "PartyType"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "PartyType",
+            "list": [],
+            "class": "question",
+            "id": "4e51ca10-6d23-11ee-9b37-411866b8181f",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "cb682230-a1a1-11ee-8134-97b8415d7aaa",
+            "content": "EntityType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "0073caf0-8b5e-11ef-8a5f-1188ffa738bb",
+            "content": "###<center>**Entity Information**</center>",
+            "list": [
+              "EntityName"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "ca308c90-a1a1-11ee-8134-97b8415d7aaa",
+            "content": "EntityName",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "isSelected": false
+          },
+          {
+            "id": "cd1276d0-a1a1-11ee-8134-97b8415d7aaa",
+            "content": "TrustDate",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "ce36d290-a1a1-11ee-8134-97b8415d7aaa",
+            "content": "EIN",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "cf4f9590-a1a1-11ee-8134-97b8415d7aaa",
+            "content": "OrgState",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "05ea42c0-8b5e-11ef-8a5f-1188ffa738bb",
+            "content": "###<center>**Entity Signers**</center>",
+            "list": [
+              "Owners",
+              "SignersLvl1"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "3b9d6420-9eaf-11ee-a62a-a73380e44d64",
+            "content": "Owners",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "58fd7920-5eba-11f0-908a-4f839279f348",
+            "content": "SignersLvl1",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "6e5b4580-3ff8-11f0-9b43-474998f8120f",
+            "content": "GeauxSigners",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "ClientEntityRole",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "4e51ca13-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          },
+          {
+            "content": "SpouseEntityRole",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "4e51ca14-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "1dda57d0-8b5e-11ef-8a5f-1188ffa738bb",
+            "content": "###<center>**Parentage**</center>",
+            "list": [
+              "Parentage"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "Parentage",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "id": "4e51ca15-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><accent red>**WARNING: You must enter the parentage for this child above**</accent></center>",
+            "list": [],
+            "class": "static",
+            "expr": "ChildrenTF && (Children|map: id$|contains: id$) && MarriedTF && !Parentage",
+            "id": "4e51ca16-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "26839900-8b5e-11ef-8a5f-1188ffa738bb",
+            "content": "###<center>**Name and Personal Information**</center>",
+            "list": [
+              "First"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "First",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "4e51ca17-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          },
+          {
+            "content": "Middle",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "4e51ca18-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          },
+          {
+            "content": "Last",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "4e51ca19-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "Suffix",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "4e51ca1a-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          },
+          {
+            "content": "Gender",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "4e51ca1b-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          },
+          {
+            "content": "Birthdate",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "4e51ca1c-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "3309ed50-8b5e-11ef-8a5f-1188ffa738bb",
+            "content": "###<center>**Power of Attorney**</center>",
+            "list": [
+              "AttorneyInFactTF"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "AttorneyInFactTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0e2fab52-888f-11ee-b656-8f538245f11e",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "4146ea20-9ec0-11ee-982c-9fca653ff3e8",
+            "content": "POADate",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "427cab00-9ec0-11ee-982c-9fca653ff3e8",
+            "content": "AttorneyInFact",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "42889a10-8b5e-11ef-8a5f-1188ffa738bb",
+            "content": "###<center>**Address and Contact**</center>",
+            "list": [
+              "RequireAddressTF",
+              "SameAddressTF",
+              "StreetAddress1"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "RequireAddressTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "4e51ca1d-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SameAddressTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "4e51ca20-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "StreetAddress1",
+            "list": [],
+            "class": "question",
+            "id": "4e51ca21-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "StreetAddress2",
+            "list": [],
+            "class": "question",
+            "id": "4e51ca22-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "City",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "4e51ca23-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          },
+          {
+            "content": "State",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "4e51ca24-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          },
+          {
+            "content": "Zip",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "4e51ca25-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "eac36fe0-24d7-11ef-8679-0799233b340c",
+            "content": "Parish",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SSN",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 2,
+            "id": "4e51ca1e-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "53f397a0-6d23-11ee-9b37-411866b8181f",
+            "content": "GeauxSSN",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "DifferentRegisteredOfficeTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "2f77a662-9eaf-11ee-a62a-a73380e44d64",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "31e264d0-9eaf-11ee-a62a-a73380e44d64",
+            "content": "LLCRegisteredOffice",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "JointRelationship",
+            "list": [],
+            "class": "question",
+            "id": "4e51ca2b-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "ExecutionDateTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "4e51ca2d-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "Phone",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "id": "4e51ca2e-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "4565b6a0-9ebf-11ee-982c-9fca653ff3e8",
+            "content": "Cell",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "Email",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "id": "4e51ca30-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "64f3ca20-8b5e-11ef-8a5f-1188ffa738bb",
+            "content": "###<center>**Relationship**</center>",
+            "list": [
+              "RelateClient"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "RelateClient",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "4e51ca31-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          },
+          {
+            "content": "RelateSpouse",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "4e51ca32-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SpouseName",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "4e51ca33-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "###<center>**Notary**</center>",
+            "expr": "",
+            "id": "cf7feca0-b805-11f0-842d-f389686caed6",
+            "list": [],
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SelectNotary",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "4e51ca28-6d23-11ee-9b37-411866b8181f",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "CourtneyNotaryTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "4e51ca29-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "78d338f0-8b5e-11ef-8a5f-1188ffa738bb",
+            "content": "###<center>**Miscellaneous**</center>",
+            "list": [
+              "DisabledTF",
+              "DeceasedTF",
+              "DisinheritTF",
+              "CommentsTF",
+              "Comment",
+              "WhichMarriage",
+              "PreviouslyMarriedTF"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "DeceasedTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "4e51ca34-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "DisabledTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "4e51ca35-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "DisinheritTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "4e51ca36-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "CommentsTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "4e51ca37-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "Comment",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "4e51ca38-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "PreviouslyMarriedTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "4e51ca39-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          },
+          {
+            "content": "WhichMarriage",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "4e51ca3a-6d23-11ee-9b37-411866b8181f",
+            "isSelected": false
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T16:57:01.209Z",
+      "_id": "642c623f4d79d5adbe590abd"
+    }
+  ],
+  "properties": [
+    {
+      "style": "dropdown",
+      "options": "[{\"Name\":\"Entity\",\"Description\":\"Any kind of entity, including a trust or estate\"},{\"Name\":\"Individual\",\"Description\":\"An individual person\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select the type of party this is:",
+      "helpText": "",
+      "forceRelevance": "id$ != Client.id$ && id$ != Spouse.id$ && !(ChildrenTF && (Children|map:id$|contains:id$))",
+      "type": "selection",
+      "name": "PartyType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-06-15T19:19:44.597Z",
+      "_id": "642c623f4d79d5adbe590a65"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "{[if EntityType == \"trust\"]}Name of trust; do not include 'the' at the beginning or the date{[else]}Complete name of entity, including suffix (\"LLC\", \"L.L.C.\", \"LP\", \"Inc.\", etc.){[endif]}:",
+      "helpText": "",
+      "forceRelevance": "PartyType == \"Entity\"",
+      "type": "text",
+      "name": "EntityName",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-10T05:53:46.596Z",
+      "_id": "642c623f4d79d5adbe590a66"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "First name:",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "text",
+      "name": "First",
+      "_id": "642c623f4d79d5adbe590a67"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Middle name (or initial with period):",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "text",
+      "name": "Middle",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-06-12T16:02:00.867Z",
+      "_id": "642c623f4d79d5adbe590a68"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Last name:",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "text",
+      "name": "Last",
+      "_id": "642c623f4d79d5adbe590a69"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "suffixes|map: Name",
+      "isList": false,
+      "label": "Suffix, if any:",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "text",
+      "name": "Suffix",
+      "_id": "642c623f4d79d5adbe590a6a"
+    },
+    {
+      "style": "",
+      "options": "gender",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "Gender:",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "type": "selection",
+      "name": "Gender",
+      "_id": "642c623f4d79d5adbe590a6b"
+    },
+    {
+      "style": "textbox",
+      "isList": false,
+      "label": "Date of birth:",
+      "helpText": "",
+      "forceRelevance": "(Children|map:id$|contains:id$) || id$ == Client.id$ || (MarriedTF && id$ == Spouse.id$)",
+      "type": "date",
+      "name": "Birthdate",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-07T21:17:20.182Z",
+      "_id": "642c623f4d79d5adbe590a6c"
+    },
+    {
+      "style": "textbox",
+      "pattern": "999-99-9999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Social Security Number: If you only know the last four digits, enter the rest of the digits as 0. Last four digits are required.",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && (id$ == Client.id$ || id$ == Spouse.id$ || ((Children|map: id$|contains:id$) && RequireAddressTF) || ((OtherParties|map: id$|contains:id$) && PartyType == \"Individual\" && RequireAddressTF))",
+      "type": "text",
+      "name": "SSN",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:03:53.525Z",
+      "_id": "642c623f4d79d5adbe590a6d"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Street address:",
+      "helpText": "",
+      "forceRelevance": "id$ == Client.id$ || (id$ == Spouse.id$ && !IsGeauxAppTF && !SameAddressTF) || ((Children|map: id$|contains:id$) && RequireAddressTF && !SameAddressTF) || ((OtherParties|map: id$|contains:id$) && (!IndividualTF || (IndividualTF && RequireAddressTF)) && !SameAddressTF)",
+      "type": "text",
+      "name": "StreetAddress1",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "_id": "642c623f4d79d5adbe590a6e"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Second line of street address, if any (Apt or Suite number, etc):",
+      "helpText": "",
+      "forceRelevance": "id$ == Client.id$ || (id$ == Spouse.id$ && !IsGeauxAppTF && !SameAddressTF) || ((Children|map: id$|contains:id$) && RequireAddressTF && !SameAddressTF) || ((OtherParties|map: id$|contains:id$) && (!IndividualTF || (IndividualTF && RequireAddressTF)) && !SameAddressTF)",
+      "type": "text",
+      "name": "StreetAddress2",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "_id": "642c623f4d79d5adbe590a6f"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "City:",
+      "helpText": "",
+      "forceRelevance": "id$ == Client.id$ || (id$ == Spouse.id$ && !IsGeauxAppTF && !SameAddressTF) || ((Children|map: id$|contains:id$) && RequireAddressTF && !SameAddressTF) || ((OtherParties|map: id$|contains:id$) && (!IndividualTF || (IndividualTF && RequireAddressTF)) && !SameAddressTF)",
+      "type": "text",
+      "name": "City",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "_id": "642c623f4d79d5adbe590a70"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "State:",
+      "helpText": "",
+      "forceRelevance": "id$ == Client.id$ || (id$ == Spouse.id$ && !IsGeauxAppTF && !SameAddressTF) || ((Children|map: id$|contains:id$) && RequireAddressTF && !SameAddressTF) || ((OtherParties|map: id$|contains:id$) && (!IndividualTF || (IndividualTF && RequireAddressTF)) && !SameAddressTF)",
+      "type": "selection",
+      "name": "State",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "_id": "642c623f4d79d5adbe590a71"
+    },
+    {
+      "style": "textbox",
+      "pattern": "99999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Zip:",
+      "helpText": "",
+      "forceRelevance": "id$ == Client.id$ || (id$ == Spouse.id$ && !IsGeauxAppTF && !SameAddressTF) || ((Children|map: id$|contains:id$) && RequireAddressTF && !SameAddressTF) || ((OtherParties|map: id$|contains:id$) && (!IndividualTF || (IndividualTF && RequireAddressTF)) && !SameAddressTF)",
+      "type": "text",
+      "name": "Zip",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "_id": "642c623f4d79d5adbe590a72"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Joint\"},{\"Name\":\"Client\"},{\"Name\":\"Spouse\"}]",
+      "optionTemplate": "{[this == \"Client\" ? Client.NameCO : this == \"Spouse\" ? (MarriedTF ? Spouse.NameCO : \"Spouse\") : this == \"Joint\" ? (Client.NameCO + \" and \" + (MarriedTF ? Spouse.NameCO : \"Spouse\") + \" together\") : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select whether this is a child of {[Client.NameCO]} only, {[Spouse.NameCO]} only, or both spouses together:",
+      "helpText": "",
+      "forceRelevance": "MarriedTF && (ChildrenTF && (Children|map:id$|contains:id$))",
+      "type": "selection",
+      "name": "Parentage",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-11-04T15:18:54.627Z",
+      "_id": "642c623f4d79d5adbe590a73"
+    },
+    {
+      "style": "",
+      "options": "relationships",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "Relationship to Grantors together (ie, our \"son\", our \"nephew\", etc):",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "JointRelationship",
+      "_id": "642c623f4d79d5adbe590a75"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "false",
+      "isList": false,
+      "label": "Should this child be disinherited?",
+      "helpText": "",
+      "forceRelevance": "(ChildrenTF && (Children|map:id$|contains:id$)) && !IsGeauxAppTF",
+      "type": "true/false",
+      "name": "DisinheritTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:19:31.184Z",
+      "_id": "642c623f4d79d5adbe590a77"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "ParishSuggestions",
+      "isList": false,
+      "label": "{[ParishCounty|else: \"Parish\"]}; do not include the word \"{[ParishCounty|else: \"Parish\"]}\".",
+      "helpText": "",
+      "forceRelevance": "id$ == Client.id$ || (id$ == Spouse.id$ && !IsGeauxAppTF && !SameAddressTF) || ((Children|map: id$|contains:id$) && RequireAddressTF && !SameAddressTF) || ((OtherParties|map: id$|contains:id$) && (!IndividualTF || (IndividualTF && RequireAddressTF)) && !SameAddressTF)",
+      "type": "text",
+      "name": "Parish",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "_id": "642c623f4d79d5adbe590a78"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Check to use a blank date for this party's signature; uncheck to have the global Execution Date come in.",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && (id$ != Client.id$) && (id$ != Spouse.id$)",
+      "type": "true/false",
+      "name": "ExecutionDateTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:19:31.184Z",
+      "_id": "642c623f4d79d5adbe590a7a"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Phone:",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF",
+      "type": "text",
+      "name": "Phone",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:27:49.683Z",
+      "_id": "642c623f4d79d5adbe590a7b"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is this person deceased?",
+      "helpText": "",
+      "forceRelevance": "(id$ != Client.id$) && id$ != Spouse.id$ && IndividualTF",
+      "type": "true/false",
+      "name": "DeceasedTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:19:31.185Z",
+      "_id": "642c623f4d79d5adbe590a7c"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "relationships|map: Name",
+      "isList": false,
+      "label": "Select or type in this person's relationship to {[Client.NameCO]}:",
+      "helpText": "",
+      "forceRelevance": "id$ != Client.id$ && id$ != Spouse.id$ && (PartyType == \"Individual\" && !(Children|map:id$|contains:id$))\r\n",
+      "type": "text",
+      "name": "RelateClient",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:20:40.509Z",
+      "_id": "642c623f4d79d5adbe590a7d"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "relationships|map: Name",
+      "isList": false,
+      "label": "Select or type in this person's relationship to {[Spouse.NameCO]}:",
+      "helpText": "",
+      "forceRelevance": "MarriedTF && id$ != Client.id$ && peek(id$ != Spouse.id$) && (PartyType == \"Individual\" && !(Children|map:id$|contains:id$))\r\n",
+      "type": "text",
+      "name": "RelateSpouse",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:20:40.509Z",
+      "_id": "642c623f4d79d5adbe590a7e"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Email:",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF",
+      "type": "text",
+      "name": "Email",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:27:49.683Z",
+      "_id": "642c623f4d79d5adbe590a7f"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Spouse's name, if married:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "SpouseName",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:19:31.185Z",
+      "_id": "642c623f4d79d5adbe590a80"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is this person disabled?",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && IndividualTF",
+      "type": "true/false",
+      "name": "DisabledTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-12-18T15:47:09.149Z",
+      "_id": "642c623f4d79d5adbe590a81"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Check here to add other comments.",
+      "helpText": "",
+      "forceRelevance": "((ChildrenTF && (Children|map:id$|contains:id$)) || ((OtherParties|map: id$|contains: id$) && PartyType == \"Individual\")) && !IsGeauxAppTF",
+      "type": "true/false",
+      "name": "CommentsTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:33:59.011Z",
+      "_id": "642c623f4d79d5adbe590a82"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 3,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Additional comments:",
+      "helpText": "",
+      "forceRelevance": "CommentsTF",
+      "type": "text",
+      "name": "Comment",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:19:31.185Z",
+      "_id": "642c623f4d79d5adbe590a83"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Which marriage is this for {[NameCO|else: \"you\"]}? (i.e., 1 for first, 2 for second, 3 for third, etc.) ",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && MarriedTF && PreviouslyMarriedTF && (id$ == Client.id$ || id$ == Spouse.id$)",
+      "type": "number",
+      "name": "WhichMarriage",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T18:14:03.149Z",
+      "_id": "642c623f4d79d5adbe590a84"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Cell phone:",
+      "helpText": "",
+      "forceRelevance": "IndividualTF && !IsGeauxAppTF",
+      "type": "text",
+      "name": "Cell",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:27:49.684Z",
+      "_id": "642c623f4d79d5adbe590a86"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Have you previously been married?",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && (id$ == Client.id$ || id$ == Spouse.id$)",
+      "type": "true/false",
+      "name": "PreviouslyMarriedTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T18:14:43.746Z",
+      "_id": "642c623f4d79d5adbe590a87"
+    },
+    {
+      "style": "textbox",
+      "pattern": "9999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Last four digits of EIN:",
+      "helpText": "",
+      "forceRelevance": "(OtherParties|map: id$|contains:id$) && PartyType == \"Entity\"",
+      "type": "text",
+      "name": "EIN",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:00:34.209Z",
+      "_id": "642c623f4d79d5adbe590a88"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Check to use Courtney as the notary for this person; leave this and the Graves notary checkbox blank to use a blank notary block.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "CourtneyNotaryTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-16T19:40:43.828Z",
+      "_id": "642c623f4d79d5adbe590a89"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "entityroles|map: Name",
+      "isList": false,
+      "label": "Type or select {[Client.NameCO]}'s role in {[EntityName|else: \"this entity\"]}, if any:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "ClientEntityRole",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:19:31.187Z",
+      "_id": "642c623f4d79d5adbe590a8b"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "entityroles|map: Name",
+      "isList": false,
+      "label": "Type or select {[Spouse.NameCO]}'s role in {[EntityName|else: \"this entity\"]}, if any:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "SpouseEntityRole",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:19:31.187Z",
+      "_id": "642c623f4d79d5adbe590a8c"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Check here if {[UseName]} has the same address as {[Client.NameCO]}",
+      "helpText": "",
+      "forceRelevance": "id$ == Spouse.id$ || ((Children|map: id$|contains:id$) && RequireAddressTF) || ((OtherParties|map: id$|contains:id$) && (!IndividualTF || (IndividualTF && RequireAddressTF)))",
+      "type": "true/false",
+      "name": "SameAddressTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:27:31.023Z",
+      "_id": "642c623f4d79d5adbe590a8e"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Will this {[if (OtherParties|map: id$|contains:id$) && PartyType == \"Entity\"]}entity{[else]}person{[endif]} be named as a Financial Agent or Healthcare Agent, or be the recipient of a transfer, whether a donation or sale?",
+      "helpText": "",
+      "forceRelevance": "(Children|map: id$|contains: id$) || ((OtherParties|map: id$|contains:id$) && IndividualTF)",
+      "type": "true/false",
+      "name": "RequireAddressTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T16:56:41.145Z",
+      "_id": "642c623f4d79d5adbe590a8f"
+    },
+    {
+      "style": "textbox",
+      "pattern": "9999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "652edff4e07da021ad35c9d2",
+      "name": "GeauxSSN",
+      "isList": false,
+      "label": "Enter the last 4 digits of the SSN:",
+      "helpText": "",
+      "forceRelevance": "IsGeauxAppTF && (id$ == Client.id$ || id$ == Spouse.id$ || ((Children|map: id$|contains:id$) && RequireAddressTF) || ((OtherParties|map: id$|contains:id$) && PartyType == \"Individual\" && RequireAddressTF))",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "_id": "655cda037cf76b315a703cbe",
+      "name": "POADate",
+      "isList": false,
+      "label": "Enter the Date of execution of the Power of Attorney",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && IndividualTF && AttorneyInFactTF",
+      "type": "date"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "655cda1c7cf76b315a703cbf",
+      "name": "AttorneyInFact",
+      "isList": false,
+      "label": "Enter the FULL NAME of the Agent for this person",
+      "helpText": "Make sure the name matches EXACTLY the name reflected in the Power of Attorney. ",
+      "forceRelevance": "!IsGeauxAppTF && IndividualTF && AttorneyInFactTF",
+      "type": "text"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "655cda397cf76b315a703cc0",
+      "name": "AttorneyInFactTF",
+      "isList": false,
+      "label": "Is this person represented by an Agent through a Power of Attorney?",
+      "helpText": "If the transferor or transferee are represented by an attorney-in-fact, the appearance langauge should indicate such. ",
+      "forceRelevance": "!IsGeauxAppTF && IndividualTF",
+      "type": "true/false"
+    },
+    {
+      "style": "hybrid",
+      "options": "PotentialAgentsWithTrust",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6581fd7aa63052e9a6e13808",
+      "name": "Owners",
+      "isList": true,
+      "label": "{[if EntityType == \"trust\"]}Trustees{[else]}Signers{[endif]} - *these must be individuals*:",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && !IndividualTF && Owners.length > 0",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "_id": "6581fdffa63052e9a6e13809",
+      "name": "OrgState",
+      "isList": false,
+      "label": "What is {[NameCO|else: \"this entity\"]}'s state of organization?",
+      "helpText": "",
+      "forceRelevance": "!IndividualTF && EntityType && EntityType != \"trust\"",
+      "lastModified": "2021-08-17T20:23:12.221Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6581ff6ca63052e9a6e13810",
+      "name": "DifferentRegisteredOfficeTF",
+      "isList": false,
+      "label": "Does the entity have registered office and mailing address different than what is entered above?",
+      "helpText": "",
+      "forceRelevance": "!IndividualTF && EntityType && EntityType != \"trust\"",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "6581ffc0a63052e9a6e13811",
+      "name": "LLCRegisteredOffice",
+      "isList": false,
+      "label": "Enter the address (Street, City, State Zip) of the Registered Office for {[NameCO|else: \"this entity\"]}:",
+      "helpText": "",
+      "forceRelevance": "!IndividualTF && EntityType && EntityType != \"trust\" && DifferentRegisteredOfficeTF",
+      "lastModified": "2020-11-04T22:21:36.262Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "entitytypes|filter: this.Name != \"individual\"",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6586edf1826bca15d4216f48",
+      "name": "EntityType",
+      "isList": false,
+      "label": "Type of entity:",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && !IndividualTF",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "_id": "6586f098826bca15d4216f49",
+      "name": "TrustDate",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "!IndividualTF && EntityType == \"trust\"",
+      "type": "date"
+    },
+    {
+      "style": "",
+      "options": "firmInfo.AttorneysAndStaff",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "66db0f1d47592905a044c3c4",
+      "name": "SelectNotary",
+      "isList": false,
+      "label": "Select a notary option for this person:",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && IndividualTF",
+      "type": "selection"
+    },
+    {
+      "name": "GeauxSigners",
+      "isList": true,
+      "label": "{[if EntityType == \"trust\"]}Trustees{[else]}Signers{[endif]} - *these must be individuals*:",
+      "helpText": "",
+      "forceRelevance": "IsGeauxAppTF && !IndividualTF",
+      "_id": "683e164da80995ec90d0ee63",
+      "type": "object",
+      "style": "inline",
+      "typeDef": "683e15f9648b3f42b4169861",
+      "useImport": false,
+      "typeName": "geaux_signers"
+    },
+    {
+      "name": "SignersLvl1",
+      "isList": true,
+      "label": "{[if !peek(SignersLvl1.length > 0)]}<accent red>**WARNING: Required**</accent>    {[endif]}{[if peek(Owners.length > 0)]}<accent red>**NEW**</accent> version; transfer information from above.   {[endif]}Signers for {[NameCO|else: \"this entity\"]}:",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && !IndividualTF",
+      "_id": "6871ab8267c615a9bdae0580",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "6871a9297d7944275be5af5f",
+      "useImport": false,
+      "typeName": "signers_lvl_1"
+    },
+    {
+      "name": "ClioEmails",
+      "isList": true,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-12-13T23:33:33.416Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d74e01cd3f36e3822e4e",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "6973b0019729cd2fbaf76c8f",
+      "useImport": false,
+      "typeName": "clio:EmailAddress"
+    },
+    {
+      "name": "ClioCustom",
+      "isList": false,
+      "label": "Clio Contact Custom Fields",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-12-13T23:34:19.110Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d74e01cd3f36e3822e4d",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "6973b0019729cd2fbaf76cc5",
+      "useImport": false,
+      "typeName": "clio:ContactCustom"
+    },
+    {
+      "name": "ClioPhones",
+      "isList": true,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-12-13T23:33:55.691Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d74e01cd3f36e3822e4f",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "6973b0019729cd2fbaf76c99",
+      "useImport": false,
+      "typeName": "clio:PhoneNumber"
+    },
+    {
+      "name": "ClioRelationship",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-12-13T23:32:59.131Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d74e01cd3f36e3822e50",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "6973b0019729cd2fbaf76ce6",
+      "useImport": false,
+      "typeName": "clio:Relationship"
+    }
+  ],
+  "formulas": [
+    {
+      "isList": false,
+      "label": "",
+      "expression": "{id$:id$+\"WEORUWER3497\",PoALetterSubject:Client.NameCO,PoARecipientName:$locals.NameCO,PoARecipientBlockAddress:$locals.PartyBlockAddress,PoARecipientGenderMrMs:peek($locals.IndividualTF?$locals.Gender.MrMs:null),PoARecipientIndividualTF:$locals.IndividualTF,PoARecipientLast:peek($locals.IndividualTF?$locals.Last:null),PoAIncludeMedicalTF:$locals.IsClientInitialHPOA||$locals.IsClientHPOA?true:false,PoAIncludeFinancialTF:$locals.IsClientInitialFPOA||$locals.IsClientFPOA?true:false,PoASpouseIncludeFinancialTF:false,PoASpouseIncludeMedicalTF:false,_link:id$}",
+      "ref": "poaletter",
+      "name": "ClientAsSingleLetter",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-25T20:31:05.772Z",
+      "_id": "642c623f4d79d5adbe590a90"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "PartyType == \"Entity\" ? false : (ChildrenTF && (Children|map:id$|contains:id$)) ? true : BeneficiaryRelationship ? true : false",
+      "ref": "",
+      "type": "true/false",
+      "name": "IncludeRelationship",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-06-15T19:18:54.076Z",
+      "_id": "642c623f4d79d5adbe590a91"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.id$ == Client.id$ || this.id$ == Spouse.id$ || (Children|map:id$|contains: this.id$) || this.PartyType != \"Entity\")",
+      "ref": "",
+      "type": "true/false",
+      "name": "IndividualTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-10T05:28:51.146Z",
+      "_id": "642c623f4d79d5adbe590a92"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "((ClientFPOASuccAgents|map: AgentSelect.id$)|contains: this.id$) || ((ClientFPOASuccAgents|map: CoAgentSelect.id$)|contains: this.id$) || ((ClientFPOASuccAgents|map: CoAgent3Select.id$)|contains: this.id$) || ((ClientFPOASuccAgents|map: CoAgent4Select.id$)|contains: this.id$)",
+      "ref": "",
+      "type": "true/false",
+      "name": "IsClientFPOA",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-06-20T20:44:20.125Z",
+      "_id": "642c623f4d79d5adbe590a93"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "((ClientHPOASuccAgents|map: AgentSelect.id$)|contains: this.id$) || ((ClientHPOASuccAgents|map: CoAgentSelect.id$)|contains: this.id$) || ((ClientHPOASuccAgents|map: CoAgent3Select.id$)|contains: this.id$) || ((ClientHPOASuccAgents|map: CoAgent4Select.id$)|contains: this.id$)",
+      "ref": "",
+      "type": "true/false",
+      "name": "IsClientHPOA",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-06-20T20:44:20.125Z",
+      "_id": "642c623f4d79d5adbe590a94"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "(ClientAgentsFPOA.AgentSelect.id$ == this.id$) || (ClientAgentsFPOA.CoAgentSelect.id$ == this.id$) || (ClientAgentsFPOA.CoAgent3Select.id$ == this.id$) || (ClientAgentsFPOA.CoAgent4Select.id$ == this.id$)",
+      "ref": "",
+      "type": "true/false",
+      "name": "IsClientInitialFPOA",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-06-20T20:44:20.125Z",
+      "_id": "642c623f4d79d5adbe590a95"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "(ClientAgentsHPOA.AgentSelect.id$ == this.id$) || (ClientAgentsHPOA.CoAgentSelect.id$ == this.id$) || (ClientAgentsHPOA.CoAgent3Select.id$ == this.id$) || (ClientAgentsHPOA.CoAgent4Select.id$ == this.id$)",
+      "ref": "",
+      "type": "true/false",
+      "name": "IsClientInitialHPOA",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-06-20T20:44:20.125Z",
+      "_id": "642c623f4d79d5adbe590a96"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF && (((SpouseFPOASuccAgents|map: AgentSelect.id$)|contains: this.id$) || ((SpouseFPOASuccAgents|map: CoAgentSelect.id$)|contains: this.id$) || ((SpouseFPOASuccAgents|map: CoAgent3Select.id$)|contains: this.id$) || ((SpouseFPOASuccAgents|map: CoAgent4Select.id$)|contains: this.id$))",
+      "ref": "",
+      "type": "true/false",
+      "name": "IsSpouseFPOA",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-06-20T20:45:46.558Z",
+      "_id": "642c623f4d79d5adbe590a97"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF && (((SpouseHPOASuccAgents|map: AgentSelect.id$)|contains: this.id$) || ((SpouseHPOASuccAgents|map: CoAgentSelect.id$)|contains: this.id$) || ((SpouseHPOASuccAgents|map: CoAgent3Select.id$)|contains: this.id$) || ((SpouseHPOASuccAgents|map: CoAgent4Select.id$)|contains: this.id$))",
+      "ref": "",
+      "type": "true/false",
+      "name": "IsSpouseHPOA",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-06-20T20:45:46.558Z",
+      "_id": "642c623f4d79d5adbe590a98"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF && ((SpouseAgentsFPOA.AgentSelect.id$ == this.id$) || (SpouseAgentsFPOA.CoAgentSelect.id$ == this.id$) || (SpouseAgentsFPOA.CoAgent3Select.id$ == this.id$) || (SpouseAgentsFPOA.CoAgent4Select.id$ == this.id$))",
+      "ref": "",
+      "type": "true/false",
+      "name": "IsSpouseInitialFPOA",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-06-20T20:45:46.558Z",
+      "_id": "642c623f4d79d5adbe590a99"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF && ((SpouseAgentsHPOA.AgentSelect.id$ == this.id$) || (SpouseAgentsHPOA.CoAgentSelect.id$ == this.id$) || (SpouseAgentsHPOA.CoAgent3Select.id$ == this.id$) || (SpouseAgentsHPOA.CoAgent4Select.id$ == this.id$))",
+      "ref": "",
+      "type": "true/false",
+      "name": "IsSpouseInitialHPOA",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-06-20T20:45:46.558Z",
+      "_id": "642c623f4d79d5adbe590a9a"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "{id$:id$+\"WERUI29347\",PoALetterSubject:IsClientFPOA||IsClientHPOA||IsClientInitialFPOA||IsClientInitialHPOA?Client.NameCO+(IsSpouseFPOA||IsSpouseHPOA||IsSpouseInitialFPOA||IsSpouseInitialHPOA?\" and \"+Spouse.NameCO:\"\"):Spouse.NameCO,PoARecipientName:NameCO,PoARecipientBlockAddress:PartyBlockAddress,PoARecipientGenderMrMs:peek(Gender.MrMs),PoARecipientIndividualTF:IndividualTF,PoARecipientLast:peek(IndividualTF?Last:null),PoAIncludeMedicalTF:IsClientInitialHPOA||IsClientHPOA?true:false,PoAIncludeFinancialTF:IsClientInitialFPOA||IsClientFPOA?true:false,PoASpouseIncludeFinancialTF:IsSpouseInitialFPOA||IsSpouseFPOA?true:false,PoASpouseIncludeMedicalTF:IsSpouseInitialHPOA||IsSpouseHPOA?true:false,_link:id$}",
+      "ref": "poaletter",
+      "name": "PartyAsInitialLetter",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T21:09:13.790Z",
+      "_id": "642c623f4d79d5adbe590a9b"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "{id$:id$+\"34WEWEROI8\",PoALetterSubject:IsClientFPOA||IsClientHPOA?Client.NameCO+(IsSpouseFPOA||IsSpouseHPOA?\" and \"+Spouse.NameCO:\"\"):Spouse.NameCO,PoARecipientName:NameCO,PoARecipientBlockAddress:PartyBlockAddress,PoARecipientGenderMrMs:peek(IndividualTF?Gender.MrMs:null),PoARecipientIndividualTF:IndividualTF,PoARecipientLast:peek(IndividualTF?Last:null),PoAIncludeMedicalTF:IsClientHPOA,PoAIncludeFinancialTF:IsClientFPOA,PoASpouseIncludeFinancialTF:IsSpouseFPOA,PoASpouseIncludeMedicalTF:IsSpouseHPOA,_link:id$}",
+      "ref": "poaletter",
+      "name": "PartyAsLetter",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T21:09:13.791Z",
+      "_id": "642c623f4d79d5adbe590a9c"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF\n   ? id$ == Spouse.id$\n      ? Client\n      : Spouse\n   : Client",
+      "ref": "individual",
+      "name": "SpouseMirror",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-11T15:55:42.451Z",
+      "_id": "642c623f4d79d5adbe590a9d"
+    },
+    {
+      "contentType": "",
+      "_id": "657a00a50c076ece99d02d69",
+      "name": "EntityCO",
+      "isList": false,
+      "label": "",
+      "expression": "this.AAn + \" \" + (this.OrgState|else: \"_________________\") + \" \" + (this.EntityType|else: \"______________\")",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "657a00b50c076ece99d02d6a",
+      "name": "AAn",
+      "isList": false,
+      "label": "",
+      "expression": "((\"AIO\"|contains: this.OrgState.Name.first(1)) ? \"an\" : \"a\")",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "_id": "6629422ca3b5bab3738c7c6e",
+      "name": "AsMultipleBene",
+      "isList": false,
+      "label": "",
+      "expression": "{Benef:$locals,id$:id$.toString().endsWith(\"/individual\")?$locals._link||id$.toString().slice(0,-11):id$.toString().includes(\"/\")||!$locals._link?id$.toString()+\"/benefssplit\":$locals._link,_link:id$}",
+      "ref": "benefssplit",
+      "type": "object"
+    },
+    {
+      "contentType": "",
+      "_id": "6663111f6664b60007d0fa91",
+      "name": "ParishCounty",
+      "isList": false,
+      "label": "",
+      "expression": "this.id$ == Client.id$ || (MarriedTF && this.id$ == Spouse.id$ && this.SameAddressTF) || peek(this.SameAddressTF)\n    ? (Client.State.ParishCounty|else: \"Parish or County\")\n    : (this.State.ParishCounty|else: \"Parish or County\")",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6733b52fb5419c0e8d340e52",
+      "name": "FirstNoSpaces",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.First.strip(\" \"))",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6733b53bb5419c0e8d340e53",
+      "name": "MiddleNoSpaces",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.Middle.strip(\" \"))",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6733b54eb5419c0e8d340e54",
+      "name": "LastNoSpaces",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.Last.strip(\" \"))",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6733b59cb5419c0e8d340e55",
+      "name": "EntityNoEndSpace",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.EntityName.strip(\" \"))",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "name": "NotaryOptions",
+      "isList": true,
+      "label": "",
+      "expression": "[\"firmInfo.AttorneysAndStaff\"]",
+      "ref": "attorneysandstaff",
+      "_id": "679813c60c852fbf826693fe",
+      "type": "object"
+    },
+    {
+      "name": "AsParty",
+      "isList": false,
+      "label": "",
+      "expression": "{PartyType:peek($locals.IndividualTF?\"Individual\":$locals.PartyType),id$:id$.toString().endsWith(\"/individual\")?$locals._link||id$.toString().slice(0,-11):id$.toString().includes(\"/\")||!$locals._link?id$.toString()+\"/party\":$locals._link,_link:id$,First:peek($locals.First),Middle:peek($locals.Middle),Last:peek($locals.Last),Suffix:peek($locals.Suffix),EntityName:peek($locals.EntityName),Gender:peek($locals.Gender),EntityTypeLLC:peek($locals.EntityType),EntityStateLLC:peek($locals.OrgState),Street:peek($locals.PartyStreetAddress1),Street2:peek($locals.PartyStreetAddress2),City:peek($locals.PartyCity),State:peek($locals.PartyState),Zip:peek($locals.PartyZip),SignersLvl1:peek(($locals.SignersLvl1|map:AsBusinessSigner1)),AttorneyInFactTF:peek(AttorneyInFactTF),AttorneyInFact:peek(AttorneyInFact),OrgState:peek(OrgState),EntityType:peek(EntityType)}",
+      "ref": "party",
+      "_id": "68d20670a02713b668bf2e19",
+      "type": "object"
+    },
+    {
+      "name": "AsSignerTrusteeLvl1",
+      "isList": false,
+      "label": "",
+      "expression": "{Signer1EntityType:\"Individual\",id$:id$.toString().endsWith(\"/individual\")?$locals._link||id$.toString().slice(0,-11):id$.toString().includes(\"/\")||!$locals._link?id$.toString()+\"/signers_lvl_1\":$locals._link,_link:id$,Signer1Title:\"Trustee\",Signer1ID:$locals.id$}",
+      "ref": "business_signers_lvl_1",
+      "_id": "68d431cf9e20ddc0e58eecfe",
+      "type": "object"
+    },
+    {
+      "name": "PartyStreetAddress2",
+      "isList": false,
+      "label": "",
+      "expression": "this.id$ == Client.id$ || peek(this.SameAddressTF)\n   ? Client.StreetAddress2\n   : this.StreetAddress2",
+      "ref": "",
+      "_id": "68d44a1a305260d70af501ab",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "ParishSuggestions",
+      "isList": true,
+      "label": "",
+      "expression": "[\"this.State == \\\"Louisiana\\\"\\n   ? (parishes|map: Name)\\n   : []\"]",
+      "ref": "",
+      "_id": "68f54a0e23e3a68af0007a4f",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "SaveClioAddresses",
+      "isList": true,
+      "label": "",
+      "expression": "[\"ClioAddresses.length > 0\\n  ? {\\n    id: ClioAddresses[0].id,\\n    name: ClioAddresses[0].name || \\\"Work\\\",\\n    street: StreetAddress1 + (StreetAddress2 ? (\\\"\\\\n\\\" + StreetAddress2) : \\\"\\\"),\\n    city: City,\\n    province: State.Abbrev,\\n    postal_code: Zip,\\n  }\\n  : (StreetAddress1 || StreetAddress2 || City || State || Zip)\\n    ? {\\n      name: \\\"Work\\\",\\n      street: StreetAddress1 + (StreetAddress2 ? (\\\"\\\\n\\\" + StreetAddress2) : \\\"\\\"),\\n      city: City,\\n      province: State.Abbrev,\\n      postal_code: Zip,\\n    }\\n    : null\",\"ClioAddresses.slice(1)\"]",
+      "ref": "clio:Address",
+      "lastModified": "2022-12-13T23:39:52.381Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e51",
+      "type": "object"
+    },
+    {
+      "name": "SaveClioPhones",
+      "isList": true,
+      "label": "",
+      "expression": "[\"Phone\\n  ? ToClioPhoneHome\\n  : null\",\"Cell\\n  ? ToClioPhoneMobile\\n  : null\",\"WorkPhone\\n  ? ToClioPhoneWork\\n  : null\",\"ClioPhones|filter:name!=\\\"Home\\\"&&name!=\\\"Mobile\\\"&&name!=\\\"Work\\\"\"]",
+      "ref": "clio:PhoneNumber",
+      "lastModified": "2022-12-13T23:41:47.787Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e53",
+      "type": "object"
+    },
+    {
+      "name": "ToClioDecedent",
+      "isList": false,
+      "label": "",
+      "expression": "{type:\"Person\",id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Decedent\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Decedent\"}),custom:ClioCustom}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:47:50.971Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e56",
+      "type": "object"
+    },
+    {
+      "name": "ToClioHeirs",
+      "isList": false,
+      "label": "",
+      "expression": "{type:\"Person\",id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Heir\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Heir\"}),custom:ClioCustom}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:46:30.292Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e57",
+      "type": "object"
+    },
+    {
+      "name": "ToClioContact",
+      "isList": false,
+      "label": "",
+      "expression": "{type:PartyType,id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:(RelateClient|initcap),phone_numbers:SaveClioPhones,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:(RelateClient|initcap)}),custom:ClioCustom,email_addresses:SaveClioEmails,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-15T16:25:59.331Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e55",
+      "type": "object"
+    },
+    {
+      "name": "ToClioManagers",
+      "isList": false,
+      "label": "",
+      "expression": "{type:PartyType,id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Manger\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Manger\"}),custom:ClioCustom,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:48:40.210Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e58",
+      "type": "object"
+    },
+    {
+      "name": "ToClioChild",
+      "isList": false,
+      "label": "",
+      "expression": "{type:\"Person\",id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Child\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Child\"}),custom:ClioCustom}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:43:13.150Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e54",
+      "type": "object"
+    },
+    {
+      "name": "SaveClioEmails",
+      "isList": true,
+      "label": "",
+      "expression": "[\"Email && (ClioEmails|any:primary)\\r\\n  ? {\\r\\n    id: (ClioEmails|find:primary).id,\\r\\n    name: (ClioEmails|find:primary).name || \\\"Work\\\",\\r\\n    address: Email,\\r\\n    primary: true,\\r\\n  }\\r\\n  : Email\\r\\n    ? {\\r\\n      name: \\\"Work\\\",\\r\\n      address: Email,\\r\\n      primary: true,\\r\\n    }\\r\\n    : null\",\"ClioEmails|filter:!primary\"]",
+      "ref": "clio:EmailAddress",
+      "lastModified": "2022-12-13T23:39:52.381Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e52",
+      "type": "object"
+    },
+    {
+      "name": "ToClioOpposingCounsel",
+      "isList": false,
+      "label": "",
+      "expression": "{type:PartyType,id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Opposing Counsel\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Opposing Counsel\"}),custom:ClioCustom,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:44:30.672Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e5a",
+      "type": "object"
+    },
+    {
+      "name": "ToClioOpposingParty",
+      "isList": false,
+      "label": "",
+      "expression": "{id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Opposing Party\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Opposing Party\"}),custom:ClioCustom,type:PartyType,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:44:59.094Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e5b",
+      "type": "object"
+    },
+    {
+      "name": "ToClioPhoneHome",
+      "isList": false,
+      "label": "",
+      "expression": "{id:(ClioPhones|find:name==\"Home\").id,_link:id$,number:Phone,name:\"Home\",primary:(ClioPhones|find:name==\"Home\").primary,id$:$locals._link.toString()}",
+      "ref": "clio:PhoneNumber",
+      "lastModified": "2022-12-13T23:41:47.787Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e5d",
+      "type": "object"
+    },
+    {
+      "name": "ToClioPhoneMobile",
+      "isList": false,
+      "label": "",
+      "expression": "{id:(ClioPhones|find:name==\"Mobile\").id,_link:id$,name:\"Mobile\",number:CellPhone,primary:(ClioPhones|find:name==\"Mobile\").primary}",
+      "ref": "clio:PhoneNumber",
+      "lastModified": "2022-12-13T23:42:13.709Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e5e",
+      "type": "object"
+    },
+    {
+      "name": "ToClioOtherParty",
+      "isList": false,
+      "label": "",
+      "expression": "{id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Other Party\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Other Party\"}),custom:ClioCustom,type:PartyType,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:45:24.854Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e5c",
+      "type": "object"
+    },
+    {
+      "name": "ToClioSpouse",
+      "isList": false,
+      "label": "",
+      "expression": "{type:\"Person\",id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Spouse\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Spouse\"}),custom:ClioCustom}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:47:33.468Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e60",
+      "type": "object"
+    },
+    {
+      "name": "ToClioPhoneWork",
+      "isList": false,
+      "label": "",
+      "expression": "{id:(ClioPhones|find:name==\"Work\").id,_link:id$,name:\"Work\",number:WorkPhone,primary:(ClioPhones|find:name==\"Work\").primary}",
+      "ref": "clio:PhoneNumber",
+      "lastModified": "2022-12-13T23:42:34.096Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e5f",
+      "type": "object"
+    },
+    {
+      "name": "ToClioTest",
+      "isList": false,
+      "label": "",
+      "expression": "{type:\"Person\",id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Child\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Child\"}),custom:ClioCustom}",
+      "ref": "clio:Contact",
+      "_id": "6973d77501cd3f36e3822e61",
+      "type": "object"
+    },
+    {
+      "name": "ToClioMembers",
+      "isList": false,
+      "label": "",
+      "expression": "{type:PartyType,id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Member\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Member\"}),custom:ClioCustom,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:49:16.961Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d77501cd3f36e3822e59",
+      "type": "object"
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[if this.StreetAddress1]}{[this.StreetAddress1]}{[if this.StreetAddress2]}, {[this.StreetAddress2]}{[endif]}{[else]} {[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "Address1and2",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T18:48:01.121Z",
+      "_id": "642c623f4d79d5adbe590a9f",
+      "content": "{[if this.StreetAddress1]}{[this.StreetAddress1]}{[if this.StreetAddress2]}, {[this.StreetAddress2]}{[endif]}{[else]} {[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.StreetAddress1|else: \"_____________________\"]}\n{[if this.StreetAddress2]}\n\n{[this.StreetAddress2]}\n{[else]}\n\n{[endif]}\n{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "BlockAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-03-17T14:38:52.366Z",
+      "_id": "642c623f4d79d5adbe590aa0",
+      "content": "{[this.StreetAddress1|else: \"_____________________\"]}\n{[if this.StreetAddress2]}\n\n{[this.StreetAddress2]}\n{[else]}\n\n{[endif]}\n{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}"
+    },
+    {
+      "filename": "PartyBurialInstructions.docx",
+      "filesize": 60359,
+      "filepath": "templates/5d6813a06db0fe770048a689/642c623f4d79d5adbe590aa1/627872e0-a3be-11f0-86f9-33b126715916/template.docx",
+      "date": 1759869856400,
+      "output": "Funeral and Burial Instructions for {[this.NameCO]}",
+      "label": "",
+      "type": "docx",
+      "name": "Burial",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-20T21:12:06.200Z",
+      "user": "63d46c67ad98ce943197d39a",
+      "_id": "642c623f4d79d5adbe590aa1"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.City|else: \"________________\"]}, {[this.State.Abbrev|else: \"________________\"]} {[this.Zip|else: \"\"]}",
+      "label": "",
+      "type": "text",
+      "name": "CityStateZip",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T19:25:55.041Z",
+      "_id": "642c623f4d79d5adbe590aa2",
+      "content": "{[this.City|else: \"________________\"]}, {[this.State.Abbrev|else: \"________________\"]} {[this.Zip|else: \"\"]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.City && this.State && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]} {[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "CityStateZipBlank",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T18:46:54.624Z",
+      "_id": "642c623f4d79d5adbe590aa3",
+      "content": "{[if this.City && this.State && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]} {[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.FirstNoSpaces]}{[if this.Middle]} {[this.MiddleNoSpaces]}{[endif]} {[this.LastNoSpaces]}{[if this.Suffix]}, {[this.Suffix]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "FullName",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-20T21:12:06.200Z",
+      "_id": "642c623f4d79d5adbe590aa4",
+      "content": "{[this.FirstNoSpaces]}{[if this.Middle]} {[this.MiddleNoSpaces]}{[endif]} {[this.LastNoSpaces]}{[if this.Suffix]}, {[this.Suffix]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[Gender.SonDaughter]}",
+      "label": "",
+      "type": "text",
+      "name": "FullRelate",
+      "_id": "642c623f4d79d5adbe590aa5",
+      "content": "{[Gender.SonDaughter]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.StreetAddress1 && this.City && this.State]}{[this.StreetAddress1]}{[if this.StreetAddress2]}, {[this.StreetAddress2]}{[endif]}, {[this.City]}, {[this.State.Abbrev]} {[this.Zip|else: \"\"]}{[else]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "LineAddress",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-20T21:12:06.200Z",
+      "_id": "642c623f4d79d5adbe590aa6",
+      "content": "{[if this.StreetAddress1 && this.City && this.State]}{[this.StreetAddress1]}{[if this.StreetAddress2]}, {[this.StreetAddress2]}{[endif]}, {[this.City]}, {[this.State.Abbrev]} {[this.Zip|else: \"\"]}{[else]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.StreetAddress1]}{[this.StreetAddress1]}{[if this.StreetAddress2]}, {[this.StreetAddress2]}{[endif]}, {[this.City|else: \"____________\"]}, {[this.State.Name|else: \"____________\"]} {[this.Zip|else: \"________\"]}{[else]}________________________{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "LineAddressFullState",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T18:00:59.184Z",
+      "_id": "642c623f4d79d5adbe590aa7",
+      "content": "{[if this.StreetAddress1]}{[this.StreetAddress1]}{[if this.StreetAddress2]}, {[this.StreetAddress2]}{[endif]}, {[this.City|else: \"____________\"]}, {[this.State.Name|else: \"____________\"]} {[this.Zip|else: \"________\"]}{[else]}________________________{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.IndividualTF]}{[if this.First && this.Last]}{[this.FirstNoSpaces]}{[if this.Middle]} {[this.MiddleNoSpaces]}{[endif]} {[this.LastNoSpaces]}{[endif]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}{[this.EntityNoEndSpace]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "NameCO",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-20T21:12:06.200Z",
+      "_id": "642c623f4d79d5adbe590aa8",
+      "content": "{[if this.IndividualTF]}{[if this.First && this.Last]}{[this.FirstNoSpaces]}{[if this.Middle]} {[this.MiddleNoSpaces]}{[endif]} {[this.LastNoSpaces]}{[endif]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}{[this.EntityNoEndSpace]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.IndividualTF]}{[if this.First && this.Last]}{[this.First]}{[if this.Middle]} {[this.MiddleNoSpaces]}{[endif]} {[this.LastNoSpaces]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}New Party{[endif]}{[else]}{[if this.EntityName]}{[this.EntityNoEndSpace]}{[else]}New Party{[endif]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "NewPerson",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:42:38.812Z",
+      "_id": "642c623f4d79d5adbe590aa9",
+      "content": "{[if this.IndividualTF]}{[if this.First && this.Last]}{[this.First]}{[if this.Middle]} {[this.MiddleNoSpaces]}{[endif]} {[this.LastNoSpaces]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}New Party{[endif]}{[else]}{[if this.EntityName]}{[this.EntityNoEndSpace]}{[else]}New Party{[endif]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.BlockAddress]}{[else]}{[this.BlockAddress]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyBlockAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.720Z",
+      "_id": "642c623f4d79d5adbe590aaa",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.BlockAddress]}{[else]}{[this.BlockAddress]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.City]}{[else]}{[this.City]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyCity",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.720Z",
+      "_id": "642c623f4d79d5adbe590aab",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.City]}{[else]}{[this.City]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.CityStateZip]}{[else]}{[this.CityStateZip]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyCityStateZip",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.720Z",
+      "_id": "642c623f4d79d5adbe590aac",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.CityStateZip]}{[else]}{[this.CityStateZip]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if MarriedTF && id$ == Spouse.id$]}my {[if LifePartners]}partner{[else]}{[this.Gender.HusbandWife|else: \"spouse\"]}{[endif]}{[elseif ChildrenTF && (Children|map:id$|contains: id$)]}{[if MarriedTF && this.Parentage == \"Spouse\"]}my step-{[else]}my {[endif]}{[this.Gender.SonDaughter|else: \"child\"]}{[else]}{[if peek(this.RelateClient)]}my {[peek(this.RelateClient)]}{[endif]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyClientRelate",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-06-17T15:32:01.019Z",
+      "_id": "642c623f4d79d5adbe590aad",
+      "content": "{[if MarriedTF && id$ == Spouse.id$]}my {[if LifePartners]}partner{[else]}{[this.Gender.HusbandWife|else: \"spouse\"]}{[endif]}{[elseif ChildrenTF && (Children|map:id$|contains: id$)]}{[if MarriedTF && this.Parentage == \"Spouse\"]}my step-{[else]}my {[endif]}{[this.Gender.SonDaughter|else: \"child\"]}{[else]}{[if peek(this.RelateClient)]}my {[peek(this.RelateClient)]}{[endif]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.LineAddress]}{[else]}{[this.LineAddress]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyInline",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.720Z",
+      "_id": "642c623f4d79d5adbe590aae",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.LineAddress]}{[else]}{[this.LineAddress]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.LineAddress]}{[else]}{[this.LineAddress]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyLineAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.720Z",
+      "_id": "642c623f4d79d5adbe590aaf",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.LineAddress]}{[else]}{[this.LineAddress]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.LineAddressFullState]}{[else]}{[this.LineAddressFullState]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyLineAddressFullState",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.721Z",
+      "_id": "642c623f4d79d5adbe590ab0",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.LineAddressFullState]}{[else]}{[this.LineAddressFullState]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.Parish]}{[else]}{[this.Parish]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyParish",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.721Z",
+      "_id": "642c623f4d79d5adbe590ab1",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.Parish]}{[else]}{[this.Parish]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.ParishCounty]}{[else]}{[this.ParishCounty]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyParishCounty",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.721Z",
+      "_id": "642c623f4d79d5adbe590ab2",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.ParishCounty]}{[else]}{[this.ParishCounty]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if MarriedTF && id$ == Client.id$]}my {[if LifePartners]}partner{[else]}{[this.Gender.HusbandWife|else: \"spouse\"]}{[endif]}{[elseif ChildrenTF && (Children|map:id$|contains: id$)]}{[if MarriedTF && this.Parentage == \"Client\"]}my step-{[else]}my {[endif]}{[this.Gender.SonDaughter|else: \"child\"]}{[else]}{[if peek(this.RelateSpouse)]}my {[peek(this.RelateSpouse)]}{[endif]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartySpouseRelate",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-06-17T15:32:30.996Z",
+      "_id": "642c623f4d79d5adbe590ab3",
+      "content": "{[if MarriedTF && id$ == Client.id$]}my {[if LifePartners]}partner{[else]}{[this.Gender.HusbandWife|else: \"spouse\"]}{[endif]}{[elseif ChildrenTF && (Children|map:id$|contains: id$)]}{[if MarriedTF && this.Parentage == \"Client\"]}my step-{[else]}my {[endif]}{[this.Gender.SonDaughter|else: \"child\"]}{[else]}{[if peek(this.RelateSpouse)]}my {[peek(this.RelateSpouse)]}{[endif]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.State]}{[else]}{[this.State]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyState",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.721Z",
+      "_id": "642c623f4d79d5adbe590ab4",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.State]}{[else]}{[this.State]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.State.Abbrev]}{[else]}{[this.State.Abbrev]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyStateAbbrev",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.721Z",
+      "_id": "642c623f4d79d5adbe590ab5",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.State.Abbrev]}{[else]}{[this.State.Abbrev]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.StreetAddress1]}{[else]}{[this.StreetAddress1]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyStreetAddress1",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.721Z",
+      "_id": "642c623f4d79d5adbe590ab6",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.StreetAddress1]}{[else]}{[this.StreetAddress1]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.Zip]}{[else]}{[this.Zip]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "PartyZip",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-29T17:38:31.721Z",
+      "_id": "642c623f4d79d5adbe590ab7",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.Zip]}{[else]}{[this.Zip]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.IndividualTF]}SSN: XXX-XX-{[if IsGeauxAppTF]}{[this.GeauxSSN|else: \"______\"]}{[else]}{[this.SSN.slice(-4)|else: \"_______\"]}{[endif]}{[else]}EIN: XX-XXX{[if this.EIN]}{[this.EIN]}{[else]}_______{[endif]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "SSNorEIN",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-20T21:12:06.200Z",
+      "_id": "642c623f4d79d5adbe590ab8",
+      "content": "{[if this.IndividualTF]}SSN: XXX-XX-{[if IsGeauxAppTF]}{[this.GeauxSSN|else: \"______\"]}{[else]}{[this.SSN.slice(-4)|else: \"_______\"]}{[endif]}{[else]}EIN: XX-XXX{[if this.EIN]}{[this.EIN]}{[else]}_______{[endif]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if !IsGeauxAppTF && JointOrSinglePlan == \"Single\" && MarriedTF && id$ == Spouse.id$]}my {[if LifePartners]}partner{[else]}{[this.Gender.HusbandWife|else: \"spouse\"]}{[endif]}{[elseif ChildrenTF && (Children|map:id$|contains: id$)]}{[if MarriedTF && (IsGeauxMarriedTF || (!IsGeauxAppTF && JointOrSinglePlan == \"Joint\")) && this.Parentage == \"Joint\"]}our {[elseif MarriedTF && (IsGeauxMarriedTF || (!IsGeauxAppTF && JointOrSinglePlan == \"Joint\"))]}{[if this.Parentage == \"Spouse\"]}{[Spouse.First]}'s {[else]}{[Client.First]}'s {[endif]}{[else]}{[if MarriedTF && ((IsGeauxAppTF && !IsGeauxMarriedTF) || (!IsGeauxAppTF && JointOrSinglePlan == \"Single\")) && this.Parentage == \"Spouse\"]}my step-{[else]}my {[endif]}{[endif]}{[this.Gender.SonDaughter|else: \"child\"]}{[else]}{[if MarriedTF && (IsGeauxMarriedTF || (!IsGeauxAppTF && JointOrSinglePlan == \"Joint\")) && this.RelateClient == this.RelateSpouse]}our {[this.RelateClient]}{[elseif MarriedTF && ((IsGeauxAppTF && !IsGeauxMarriedTF) || (!IsGeauxAppTF && JointOrSinglePlan == \"Single\"))]}{[if this.RelateClient]}{[Client.First]}'s {[this.RelateClient]}{[elseif this.RelateSpouse]}{[Spouse.First]}'s {[this.RelateSpouse]}{[endif]}{[elseif this.RelateClient]}my {[this.RelateClient]}{[endif]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "TrustRelationship",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-10-12T16:56:30.921Z",
+      "_id": "642c623f4d79d5adbe590ab9",
+      "content": "{[if !IsGeauxAppTF && JointOrSinglePlan == \"Single\" && MarriedTF && id$ == Spouse.id$]}my {[if LifePartners]}partner{[else]}{[this.Gender.HusbandWife|else: \"spouse\"]}{[endif]}{[elseif ChildrenTF && (Children|map:id$|contains: id$)]}{[if MarriedTF && (IsGeauxMarriedTF || (!IsGeauxAppTF && JointOrSinglePlan == \"Joint\")) && this.Parentage == \"Joint\"]}our {[elseif MarriedTF && (IsGeauxMarriedTF || (!IsGeauxAppTF && JointOrSinglePlan == \"Joint\"))]}{[if this.Parentage == \"Spouse\"]}{[Spouse.First]}'s {[else]}{[Client.First]}'s {[endif]}{[else]}{[if MarriedTF && ((IsGeauxAppTF && !IsGeauxMarriedTF) || (!IsGeauxAppTF && JointOrSinglePlan == \"Single\")) && this.Parentage == \"Spouse\"]}my step-{[else]}my {[endif]}{[endif]}{[this.Gender.SonDaughter|else: \"child\"]}{[else]}{[if MarriedTF && (IsGeauxMarriedTF || (!IsGeauxAppTF && JointOrSinglePlan == \"Joint\")) && this.RelateClient == this.RelateSpouse]}our {[this.RelateClient]}{[elseif MarriedTF && ((IsGeauxAppTF && !IsGeauxMarriedTF) || (!IsGeauxAppTF && JointOrSinglePlan == \"Single\"))]}{[if this.RelateClient]}{[Client.First]}'s {[this.RelateClient]}{[elseif this.RelateSpouse]}{[Spouse.First]}'s {[this.RelateSpouse]}{[endif]}{[elseif this.RelateClient]}my {[this.RelateClient]}{[endif]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.IndividualTF]}{[if this.First && this.Last]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}this person{[endif]}{[else]}{[if this.EntityName]}{[this.EntityName]}{[else]}this entity{[endif]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "UseName",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-13T18:41:14.483Z",
+      "_id": "642c623f4d79d5adbe590aba",
+      "content": "{[if this.IndividualTF]}{[if this.First && this.Last]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}this person{[endif]}{[else]}{[if this.EntityName]}{[this.EntityName]}{[else]}this entity{[endif]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if MarriedTF && id$ == Spouse.id$]}my {[if LifePartners]}partner{[else]}{[this.Gender.HusbandWife|else: \"spouse\"]}{[endif]}{[elseif ChildrenTF && (Children|map:id$|contains:id$)]}{[if MarriedTF]}{[if this.Parentage == \"Joint\" || this.Parentage == \"Client\"]}my {[this.Gender.SonDaughter|else: \"child\"]}{[elseif this.Parentage == \"Spouse\"]}my step-{[this.Gender.SonDaughter|else: \"child\"]}{[endif]}{[else]}my {[this.Gender.SonDaughter|else: \"child\"]}{[endif]}{[else]}{[this.RelateClient|else: \"\"]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "WillRelationshipClient",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-20T21:12:06.200Z",
+      "_id": "642c623f4d79d5adbe590abb",
+      "content": "{[if MarriedTF && id$ == Spouse.id$]}my {[if LifePartners]}partner{[else]}{[this.Gender.HusbandWife|else: \"spouse\"]}{[endif]}{[elseif ChildrenTF && (Children|map:id$|contains:id$)]}{[if MarriedTF]}{[if this.Parentage == \"Joint\" || this.Parentage == \"Client\"]}my {[this.Gender.SonDaughter|else: \"child\"]}{[elseif this.Parentage == \"Spouse\"]}my step-{[this.Gender.SonDaughter|else: \"child\"]}{[endif]}{[else]}my {[this.Gender.SonDaughter|else: \"child\"]}{[endif]}{[else]}{[this.RelateClient|else: \"\"]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if MarriedTF && id$ == Client.id$]}my {[if LifePartners]}partner{[else]}{[this.Gender.HusbandWife|else: \"spouse\"]}{[endif]}{[elseif ChildrenTF && (Children|map:id$|contains:id$)]}{[if MarriedTF]}{[if this.Parentage == \"Joint\" || this.Parentage == \"Spouse\"]}my {[this.Gender.SonDaughter|else: \"child\"]}{[elseif this.Parentage == \"Client\"]}my step-{[this.Gender.SonDaughter|else: \"child\"]}{[endif]}{[else]}my {[this.Gender.SonDaughter|else: \"child\"]}{[endif]}{[else]}{[this.RelateClient]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "WillRelationshipSpouse",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-20T21:12:06.200Z",
+      "_id": "642c623f4d79d5adbe590abc",
+      "content": "{[if MarriedTF && id$ == Client.id$]}my {[if LifePartners]}partner{[else]}{[this.Gender.HusbandWife|else: \"spouse\"]}{[endif]}{[elseif ChildrenTF && (Children|map:id$|contains:id$)]}{[if MarriedTF]}{[if this.Parentage == \"Joint\" || this.Parentage == \"Spouse\"]}my {[this.Gender.SonDaughter|else: \"child\"]}{[elseif this.Parentage == \"Client\"]}my step-{[this.Gender.SonDaughter|else: \"child\"]}{[endif]}{[else]}my {[this.Gender.SonDaughter|else: \"child\"]}{[endif]}{[else]}{[this.RelateClient]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if !peek(DifferentRegisteredOfficeTF)]}{[this.LineAddress]}{[elseif peek(DifferentRegisteredOfficeTF)]}{[LLCRegisteredOffice]}{[endif]}",
+      "_id": "6582001ea63052e9a6e13812",
+      "name": "TrueRegisteredOffice",
+      "label": "",
+      "type": "text",
+      "content": "{[if !peek(DifferentRegisteredOfficeTF)]}{[this.LineAddress]}{[elseif peek(DifferentRegisteredOfficeTF)]}{[LLCRegisteredOffice]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.Address1and2]}{[else]}{[this.Address1and2]}{[endif]}",
+      "_id": "6671c1be78f65710f914bd48",
+      "name": "PartyAddress1and2",
+      "label": "",
+      "type": "text",
+      "content": "{[if this.id$ == Client.id$ || peek(this.SameAddressTF)]}{[Client.Address1and2]}{[else]}{[this.Address1and2]}{[endif]}"
+    },
+    {
+      "filename": "Donation of Body to Science.docx",
+      "filesize": 65698,
+      "filepath": "templates/5d6813a06db0fe770048a689/66febb9bd5b4356eb5ee1d1f/e3b4a600-81b7-11ef-9a8d-23debdb6793a/template.docx",
+      "user": "66cf83c43c74fb2094e33277",
+      "date": 1727981229755,
+      "output": "Anatomical Gift of {[this.NameCO]}",
+      "_id": "66febb9bd5b4356eb5ee1d1f",
+      "name": "PartyAnatomicalGift",
+      "label": "",
+      "type": "docx"
+    }
+  ],
+  "__v": 1461,
+  "apps": [],
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model",
+  "productSources": [],
+  "reservedNames": []
+}

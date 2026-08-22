@@ -1,0 +1,1214 @@
+{
+  "_id": "5d6813a56db0fe770048a68a",
+  "summary": "{[NewPerson|else: \"New party\"]}",
+  "properties": [
+    {
+      "style": "dropdown",
+      "options": "[{\"Name\":\"Entity\",\"Description\":\"Any kind of entity, including a trust or estate\"},{\"Name\":\"Individual\",\"Description\":\"An individual person\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "642c623b4d79d5adbe5909ae",
+      "name": "PartyType",
+      "isList": false,
+      "label": "Select whether this is an entity or an individual:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2021-12-21T19:45:52.946Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "642c623b4d79d5adbe5909af",
+      "name": "First",
+      "isList": false,
+      "label": "First name{[if PartyType == \"Entity\"]} of addressee for mail{[endif]}: ",
+      "helpText": "",
+      "forceRelevance": "PartyType",
+      "lastModified": "2022-02-15T15:10:35.162Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "642c623b4d79d5adbe5909b0",
+      "name": "Middle",
+      "isList": false,
+      "label": "Middle name or initial including period, if any{[if PartyType == \"Entity\"]} of addressee for mail{[endif]}:",
+      "helpText": "",
+      "forceRelevance": "PartyType",
+      "lastModified": "2022-02-15T15:10:35.163Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "642c623b4d79d5adbe5909b1",
+      "name": "Last",
+      "isList": false,
+      "label": "Last name{[if PartyType == \"Entity\"]} of addressee for mail{[endif]}:",
+      "helpText": "",
+      "forceRelevance": "PartyType",
+      "lastModified": "2022-02-15T15:10:35.163Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Jr.\"},{\"Name\":\"Sr.\"},{\"Name\":\"II\"},{\"Name\":\"III\"},{\"Name\":\"Esq.\"},{\"Name\":\"M.D.\"},{\"Name\":\"O.D.\"},{\"Name\":\"Ph.D\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "642c623b4d79d5adbe5909b2",
+      "name": "Suffix",
+      "isList": false,
+      "label": "Suffix, if any{[if PartyType == \"Entity\"]}, of addressee for mail{[endif]}:",
+      "helpText": "",
+      "forceRelevance": "PartyType",
+      "lastModified": "2022-02-15T15:10:35.163Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "642c623b4d79d5adbe5909b3",
+      "name": "EntityName",
+      "isList": false,
+      "label": "Entity name:",
+      "helpText": "",
+      "forceRelevance": "PartyType == \"Entity\"",
+      "lastModified": "2021-12-21T19:45:52.947Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "gender",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "_id": "642c623b4d79d5adbe5909b4",
+      "name": "Gender",
+      "isList": false,
+      "label": "Gender{[if PartyType == \"Entity\"]} of addressee for mail{[endif]}:",
+      "helpText": "",
+      "forceRelevance": "PartyType",
+      "lastModified": "2022-02-15T15:10:35.163Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "_id": "642c623b4d79d5adbe5909b5",
+      "name": "OrgState",
+      "isList": false,
+      "label": "{[EntityName|else: \"Entity\"]}'s organization state:",
+      "helpText": "",
+      "forceRelevance": "PartyType == \"Entity\"",
+      "lastModified": "2022-11-04T20:57:17.436Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "entitytypes|filter: this.Name != \"individual\"",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "642c623b4d79d5adbe5909b6",
+      "name": "EntityType",
+      "isList": false,
+      "label": "{[EntityName|else: \"Entity\"]}'s type:",
+      "helpText": "",
+      "forceRelevance": "PartyType == \"Entity\"",
+      "lastModified": "2021-12-21T22:18:20.713Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "popup",
+      "typeDef": "61c2267dcbea6f0852053935",
+      "useImport": false,
+      "typeName": "signers",
+      "_id": "642c623b4d79d5adbe5909b7",
+      "name": "EntitySigners",
+      "isList": true,
+      "label": "Signers for {[EntityName|else: \"the entity\"]}:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2021-12-21T19:45:52.947Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "object"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "642c623b4d79d5adbe5909b8",
+      "name": "Street",
+      "isList": false,
+      "label": "Street address; cannot be a P.O. box:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2022-11-04T20:58:12.491Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "642c623b4d79d5adbe5909b9",
+      "name": "Street2",
+      "isList": false,
+      "label": "Second line of street address, if any:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2022-11-04T20:58:12.491Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "642c623b4d79d5adbe5909ba",
+      "name": "City",
+      "isList": false,
+      "label": "City:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2022-11-04T20:58:12.491Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "_id": "642c623b4d79d5adbe5909bb",
+      "name": "State",
+      "isList": false,
+      "label": "State:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2022-11-04T20:58:12.491Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "99999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "642c623b4d79d5adbe5909bc",
+      "name": "Zip",
+      "isList": false,
+      "label": "Zip:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2022-11-04T20:58:12.491Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "_id": "642c623b4d79d5adbe5909bd",
+      "name": "MarriedTF",
+      "isList": false,
+      "label": "Is {[FullName|else: \"this person\"]} married to another member of the LLC?",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-02-15T15:09:56.546Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "true/false"
+    },
+    {
+      "name": "SignersLvl1",
+      "isList": true,
+      "label": "Signers:",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d20744a9e5ecf0df1ae911",
+      "type": "object",
+      "style": "hidden",
+      "typeDef": "68d45114cebfcfd1ab21087a",
+      "useImport": false,
+      "typeName": "business_signers_lvl_1"
+    },
+    {
+      "name": "AttorneyInFactTF",
+      "isList": false,
+      "label": "Is represented by an Agent via a Power of Attorney?",
+      "helpText": "",
+      "forceRelevance": "IndividualTF",
+      "_id": "68d433509e20ddc0e58eed02",
+      "type": "true/false",
+      "style": "radiobutton columns",
+      "isDefault": "none"
+    },
+    {
+      "name": "AttorneyInFact",
+      "isList": false,
+      "label": "Enter the FULL NAME of the Agent for this person",
+      "helpText": "Make sure the name matches EXACTLY the name reflected in the Power of Attorney. ",
+      "forceRelevance": "IndividualTF && AttorneyInFactTF",
+      "_id": "68d433509e20ddc0e58eed03",
+      "type": "text",
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]"
+    },
+    {
+      "name": "NewBusinessSignersLvl1",
+      "isList": true,
+      "label": "{[if peek(HasSelectedBusinessTF && CheckToChangeTF && SignersLvl1.length > 0)]}New signers{[else]}Signers{[endif]}:",
+      "helpText": "",
+      "forceRelevance": "PartyType == \"Entity\" && (!HasSelectedBusinessTF || (HasSelectedBusinessTF && ((SignersLvl1.length > 0 && CheckToChangeTF) || !(SignersLvl1.length > 0))))",
+      "_id": "68d46475573c112b6af7f258",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "68d45114cebfcfd1ab21087a",
+      "useImport": false,
+      "typeName": "business_signers_lvl_1"
+    },
+    {
+      "name": "CheckToChangeTF",
+      "isList": false,
+      "label": "Check here to enter *different* signers than those listed above (or to enter signers if none are listed)",
+      "helpText": "",
+      "forceRelevance": "PartyType == \"Entity\" && HasSelectedBusinessTF && SignersLvl1.length > 0",
+      "_id": "68d46497573c112b6af7f259",
+      "type": "true/false",
+      "style": "checkbox"
+    },
+    {
+      "name": "ClioPhones",
+      "isList": true,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-12-13T23:33:55.691Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d5e7eebf704627c04ded",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "6973b0019729cd2fbaf76c99",
+      "useImport": false,
+      "typeName": "clio:PhoneNumber"
+    },
+    {
+      "name": "ClioRelationship",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-12-13T23:32:59.131Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d5e7eebf704627c04dee",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "6973b0019729cd2fbaf76ce6",
+      "useImport": false,
+      "typeName": "clio:Relationship"
+    },
+    {
+      "name": "ClioEmails",
+      "isList": true,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-12-13T23:33:33.416Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d5e7eebf704627c04dec",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "6973b0019729cd2fbaf76c8f",
+      "useImport": false,
+      "typeName": "clio:EmailAddress"
+    },
+    {
+      "name": "RelateClient",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "6973d5e7eebf704627c04def",
+      "type": "text",
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]"
+    },
+    {
+      "name": "ClioCustom",
+      "isList": false,
+      "label": "Clio Contact Custom Fields",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-12-13T23:34:19.110Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d5f4eebf704627c04df0",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "6973b0019729cd2fbaf76cc5",
+      "useImport": false,
+      "typeName": "clio:ContactCustom"
+    }
+  ],
+  "formulas": [
+    {
+      "name": "FirstNoSpaces",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.First.strip(\" \"))",
+      "ref": "",
+      "_id": "68d2bc61a7b88525a4761d7a",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "MiddleNoSpaces",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.Middle.strip(\" \"))",
+      "ref": "",
+      "_id": "68d2bc61a7b88525a4761d7c",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "LastNoSpaces",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.Last.strip(\" \"))",
+      "ref": "",
+      "_id": "68d2bc61a7b88525a4761d7b",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "EntityNoEndSpace",
+      "isList": false,
+      "label": "",
+      "expression": "peek(this.EntityName.strip(\" \"))",
+      "ref": "",
+      "_id": "68d2bc61a7b88525a4761d78",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "ParishCounty",
+      "isList": false,
+      "label": "",
+      "expression": "this.id$ == Client.id$ || (MarriedTF && this.id$ == Spouse.id$ && this.SameAddressTF) || peek(this.SameAddressTF)\n    ? (Client.State.ParishCounty|else: \"Parish or County\")\n    : (this.State.ParishCounty|else: \"Parish or County\")",
+      "ref": "",
+      "_id": "68d2bc61a7b88525a4761d7d",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "EntityCO",
+      "isList": false,
+      "label": "",
+      "expression": "this.AAn + \" \" + (this.OrgState|else: \"_________________\") + \" \" + (this.EntityType|else: \"______________\")",
+      "ref": "",
+      "_id": "68d2bc61a7b88525a4761d79",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "IndividualTF",
+      "isList": false,
+      "label": "",
+      "expression": "this.PartyType && this.PartyType != \"Entity\"",
+      "ref": "",
+      "lastModified": "2020-11-10T05:28:51.146Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "_id": "68d2bd41a7b88525a4761d7f",
+      "type": "true/false"
+    },
+    {
+      "name": "AAn",
+      "isList": false,
+      "label": "",
+      "expression": "((\"AIO\"|contains: this.OrgState.Name.first(1)) ? \"an\" : \"a\")",
+      "ref": "",
+      "_id": "68d438985671975f6c38bdd7",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "PartyStreetAddress2",
+      "isList": false,
+      "label": "",
+      "expression": "this.StreetAddress2",
+      "ref": "",
+      "_id": "68d44a4c305260d70af501ac",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "TrueBusinessSigners",
+      "isList": true,
+      "label": "",
+      "expression": "[\"peek(HasSelectedBusinessTF && !this.CheckToChangeTF && SignersLvl1.length > 0)\\r\\n   ? this.SignersLvl1\\r\\n   : this.NewBusinessSignersLvl1\"]",
+      "ref": "business_signers_lvl_1",
+      "_id": "68d4644f573c112b6af7f257",
+      "type": "object"
+    },
+    {
+      "name": "SaveClioPhones",
+      "isList": true,
+      "label": "",
+      "expression": "[\"HomePhone\\n  ? ToClioPhoneHome\\n  : null\",\"CellPhone\\n  ? ToClioPhoneMobile\\n  : null\",\"WorkPhone\\n  ? ToClioPhoneWork\\n  : null\",\"ClioPhones|filter:name!=\\\"Home\\\"&&name!=\\\"Mobile\\\"&&name!=\\\"Work\\\"\"]",
+      "ref": "clio:PhoneNumber",
+      "lastModified": "2022-12-13T23:41:47.787Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04df2",
+      "type": "object"
+    },
+    {
+      "name": "ToClioChild",
+      "isList": false,
+      "label": "",
+      "expression": "{type:\"Person\",id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Child\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Child\"}),custom:ClioCustom}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:43:13.150Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04df3",
+      "type": "object"
+    },
+    {
+      "name": "SaveClioEmails",
+      "isList": true,
+      "label": "",
+      "expression": "[\"Email && (ClioEmails|any:primary)\\r\\n  ? {\\r\\n    id: (ClioEmails|find:primary).id,\\r\\n    name: (ClioEmails|find:primary).name || \\\"Work\\\",\\r\\n    address: Email,\\r\\n    primary: true,\\r\\n  }\\r\\n  : Email\\r\\n    ? {\\r\\n      name: \\\"Work\\\",\\r\\n      address: Email,\\r\\n      primary: true,\\r\\n    }\\r\\n    : null\",\"ClioEmails|filter:!primary\"]",
+      "ref": "clio:EmailAddress",
+      "lastModified": "2022-12-13T23:39:52.381Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04df1",
+      "type": "object"
+    },
+    {
+      "name": "ToClioContact",
+      "isList": false,
+      "label": "",
+      "expression": "{type:PartyType,id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:(RelateClient|initcap),phone_numbers:SaveClioPhones,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:(RelateClient|initcap)}),custom:ClioCustom,email_addresses:SaveClioEmails,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-15T16:25:59.331Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04df4",
+      "type": "object"
+    },
+    {
+      "name": "ToClioHeirs",
+      "isList": false,
+      "label": "",
+      "expression": "{type:\"Person\",id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Heir\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Heir\"}),custom:ClioCustom}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:46:30.292Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04df6",
+      "type": "object"
+    },
+    {
+      "name": "ToClioManagers",
+      "isList": false,
+      "label": "",
+      "expression": "{type:PartyType,id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Manger\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Manger\"}),custom:ClioCustom,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:48:40.210Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04df7",
+      "type": "object"
+    },
+    {
+      "name": "ToClioOpposingCounsel",
+      "isList": false,
+      "label": "",
+      "expression": "{type:PartyType,id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Opposing Counsel\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Opposing Counsel\"}),custom:ClioCustom,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:44:30.672Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04df9",
+      "type": "object"
+    },
+    {
+      "name": "ToClioMembers",
+      "isList": false,
+      "label": "",
+      "expression": "{type:PartyType,id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Member\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Member\"}),custom:ClioCustom,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:49:16.961Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04df8",
+      "type": "object"
+    },
+    {
+      "name": "ToClioOpposingParty",
+      "isList": false,
+      "label": "",
+      "expression": "{id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Opposing Party\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Opposing Party\"}),custom:ClioCustom,type:PartyType,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:44:59.094Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04dfa",
+      "type": "object"
+    },
+    {
+      "name": "ToClioOtherParty",
+      "isList": false,
+      "label": "",
+      "expression": "{id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Other Party\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Other Party\"}),custom:ClioCustom,type:PartyType,name:CompanyName}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:45:24.854Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04dfb",
+      "type": "object"
+    },
+    {
+      "name": "ToClioPhoneHome",
+      "isList": false,
+      "label": "",
+      "expression": "{id:(ClioPhones|find:name==\"Home\").id,_link:id$,number:HomePhone,name:\"Home\",primary:(ClioPhones|find:name==\"Home\").primary}",
+      "ref": "clio:PhoneNumber",
+      "lastModified": "2022-12-13T23:41:47.787Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04dfc",
+      "type": "object"
+    },
+    {
+      "name": "ToClioPhoneWork",
+      "isList": false,
+      "label": "",
+      "expression": "{id:(ClioPhones|find:name==\"Work\").id,_link:id$,name:\"Work\",number:WorkPhone,primary:(ClioPhones|find:name==\"Work\").primary}",
+      "ref": "clio:PhoneNumber",
+      "lastModified": "2022-12-13T23:42:34.096Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04dfe",
+      "type": "object"
+    },
+    {
+      "name": "ToClioPhoneMobile",
+      "isList": false,
+      "label": "",
+      "expression": "{id:(ClioPhones|find:name==\"Mobile\").id,_link:id$,name:\"Mobile\",number:CellPhone,primary:(ClioPhones|find:name==\"Mobile\").primary}",
+      "ref": "clio:PhoneNumber",
+      "lastModified": "2022-12-13T23:42:13.709Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04dfd",
+      "type": "object"
+    },
+    {
+      "name": "ToClioSpouse",
+      "isList": false,
+      "label": "",
+      "expression": "{type:\"Person\",id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Spouse\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Spouse\"}),custom:ClioCustom}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:47:33.468Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04dff",
+      "type": "object"
+    },
+    {
+      "name": "ToClioTest",
+      "isList": false,
+      "label": "",
+      "expression": "{type:\"Person\",id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Child\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Child\"}),custom:ClioCustom}",
+      "ref": "clio:Contact",
+      "_id": "6973d60aeebf704627c04e00",
+      "type": "object"
+    },
+    {
+      "name": "ToClioDecedent",
+      "isList": false,
+      "label": "",
+      "expression": "{type:\"Person\",id:number.parseInt($locals._link),_link:id$,first_name:FirstName,middle_name:MiddleName,last_name:LastName,relationship_name:\"Decedent\",phone_numbers:SaveClioPhones,email_addresses:SaveClioEmails,addresses:SaveClioAddresses,relationship:ClioRelationship&&({id:ClioRelationship.id,description:\"Decedent\"}),custom:ClioCustom}",
+      "ref": "clio:Contact",
+      "lastModified": "2022-12-13T23:47:50.971Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d60aeebf704627c04df5",
+      "type": "object"
+    },
+    {
+      "name": "SaveClioAddresses",
+      "isList": true,
+      "label": "",
+      "expression": "[\"ClioAddresses.length > 0\\n  ? {\\n    id: ClioAddresses[0].id,\\n    name: ClioAddresses[0].name || \\\"Work\\\",\\n    street: Street + (Street2 ? (\\\"\\\\n\\\" + Street2) : \\\"\\\"),\\n    city: City,\\n    province: State.Abbrev,\\n    postal_code: Zip,\\n  }\\n  : (Street || Street2 || City || State || Zip)\\n    ? {\\n      name: \\\"Work\\\",\\n      street: Street + (Street2 ? (\\\"\\\\n\\\" + Street2) : \\\"\\\"),\\n      city: City,\\n      province: State.Abbrev,\\n      postal_code: Zip,\\n    }\\n    : null\",\"ClioAddresses.slice(1)\"]",
+      "ref": "clio:Address",
+      "lastModified": "2022-12-13T23:39:52.381Z",
+      "lastModifiedBy": "639908c79f43f90d959ee1a7",
+      "_id": "6973d616eebf704627c04e01",
+      "type": "object"
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[if this.PartyType == \"Individual\"]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[elseif this.PartyType == \"Entity\"]}{[this.EntityName]}{[endif]}",
+      "_id": "642c623b4d79d5adbe5909be",
+      "name": "FullName",
+      "label": "",
+      "lastModified": "2021-12-21T19:48:28.436Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text",
+      "content": "{[if this.PartyType == \"Individual\"]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[elseif this.PartyType == \"Entity\"]}{[this.EntityName]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.Street]}, {[if this.Street2]}{[this.Street2]}, {[endif]}{[this.City]}, {[this.State]} {[this.Zip]}",
+      "_id": "642c623b4d79d5adbe5909bf",
+      "name": "Inline",
+      "label": "",
+      "lastModified": "2021-12-21T21:31:37.591Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text",
+      "content": "{[this.Street]}, {[if this.Street2]}{[this.Street2]}, {[endif]}{[this.City]}, {[this.State]} {[this.Zip]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.Street|else: \"_____________________\"]}\n{[if this.Street2]}\n\n{[this.Street2]}\n{[else]}\n\n{[endif]}\n{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}",
+      "_id": "642c623b4d79d5adbe5909c0",
+      "name": "BlockAddress",
+      "label": "",
+      "lastModified": "2022-02-15T15:03:37.380Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text",
+      "content": "{[this.Street|else: \"_____________________\"]}\n{[if this.Street2]}\n\n{[this.Street2]}\n{[else]}\n\n{[endif]}\n{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}"
+    },
+    {
+      "filename": "GeauxBusinessSigning.docx",
+      "filesize": 115971,
+      "filepath": "templates/5d6813a56db0fe770048a68a/3e036020-8e71-11ec-9f85-a5f675bad506.docx",
+      "user": "5fe0c5547241dc6f81146408",
+      "date": "2022-02-15T15:09:17.998Z",
+      "output": "READ THIS FIRST - Signing Instructions for {[FullName]}",
+      "_id": "642c623b4d79d5adbe5909c1",
+      "name": "SigningLetterGeaux",
+      "label": "",
+      "lastModified": "2022-02-15T15:09:20.976Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}",
+      "_id": "642c623b4d79d5adbe5909c2",
+      "name": "MailRecipientName",
+      "label": "",
+      "lastModified": "2022-02-15T15:09:11.384Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text",
+      "content": "{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if PartyType == \"Entity\"]}{[EntityName]}{[else]}{[LastName]}{[endif]}",
+      "_id": "642c623b4d79d5adbe5909c3",
+      "name": "FileName",
+      "label": "",
+      "lastModified": "2020-07-30T20:22:49.173Z",
+      "lastModifiedBy": "5f23071ee5028834210bdd89",
+      "type": "text",
+      "content": "{[if PartyType == \"Entity\"]}{[EntityName]}{[else]}{[LastName]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if PartyType == \"Entity\"]}{[EntityName]}{[else]}{[FullName]}{[endif]}",
+      "_id": "642c623b4d79d5adbe5909c4",
+      "name": "PartyName",
+      "label": "",
+      "lastModified": "2020-07-30T20:23:08.466Z",
+      "lastModifiedBy": "5f23071ee5028834210bdd89",
+      "type": "text",
+      "content": "{[if PartyType == \"Entity\"]}{[EntityName]}{[else]}{[FullName]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "",
+      "_id": "642c623b4d79d5adbe5909c5",
+      "name": "SampleText",
+      "label": "",
+      "lastModified": "2021-03-16T16:56:57.666Z",
+      "lastModifiedBy": "6039341f5c08503920ddf33f",
+      "type": "text"
+    },
+    {
+      "filename": "",
+      "filesize": 0,
+      "filepath": "",
+      "date": "2021-03-19T14:26:45.209Z",
+      "output": "",
+      "_id": "642c623b4d79d5adbe5909c6",
+      "name": "Testing",
+      "label": "",
+      "lastModified": "2021-03-19T14:44:09.747Z",
+      "lastModifiedBy": "6039341f5c08503920ddf33f",
+      "type": "docx"
+    },
+    {
+      "name": "NewPerson",
+      "label": "",
+      "lastModified": "2021-12-13T18:42:38.812Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "68d2bceba7b88525a4761d7e",
+      "type": "text",
+      "contentType": "",
+      "text": "{[if PartyType == \"Individual\"]}{[if this.First && this.Last]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}New Party{[endif]}{[elseif PartyType == \"Entity\"]}{[if this.EntityName]}{[this.EntityName]}{[else]}New Party{[endif]}{[endif]}",
+      "content": "{[if PartyType == \"Individual\"]}{[if this.First && this.Last]}{[this.First]}{[if this.Middle]} {[this.Middle]}{[endif]} {[this.Last]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[else]}New Party{[endif]}{[elseif PartyType == \"Entity\"]}{[if this.EntityName]}{[this.EntityName]}{[else]}New Party{[endif]}{[endif]}"
+    },
+    {
+      "name": "LineAddressFullState",
+      "label": "",
+      "_id": "68d42c46cba2e2e1851c5d07",
+      "type": "text",
+      "contentType": "",
+      "text": "{[if this.Street]}{[this.Street]}{[if this.Street2]}, {[this.Street2]}{[endif]}, {[this.City|else: \"____________\"]}, {[this.State.Name|else: \"____________\"]} {[this.Zip|else: \"________\"]}{[else]}________________________{[endif]}",
+      "content": "{[if this.Street]}{[this.Street]}{[if this.Street2]}, {[this.Street2]}{[endif]}, {[this.City|else: \"____________\"]}, {[this.State.Name|else: \"____________\"]} {[this.Zip|else: \"________\"]}{[else]}________________________{[endif]}"
+    },
+    {
+      "name": "NameCO",
+      "label": "",
+      "_id": "68d432be9e20ddc0e58eed01",
+      "type": "text",
+      "contentType": "",
+      "text": "{[if PartyType == \"Individual\"]}{[if this.First && this.Last]}{[this.FirstNoSpaces]}{[if this.Middle]} {[this.MiddleNoSpaces]}{[endif]} {[this.LastNoSpaces]}{[endif]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[elseif PartyType == \"Entity\"]}{[this.EntityNoEndSpace]}{[endif]}",
+      "content": "{[if PartyType == \"Individual\"]}{[if this.First && this.Last]}{[this.FirstNoSpaces]}{[if this.Middle]} {[this.MiddleNoSpaces]}{[endif]} {[this.LastNoSpaces]}{[endif]}{[if this.Suffix]} {[this.Suffix]}{[endif]}{[elseif PartyType == \"Entity\"]}{[this.EntityNoEndSpace]}{[endif]}"
+    },
+    {
+      "name": "Address1and2",
+      "label": "",
+      "lastModified": "2021-11-29T18:48:01.121Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "68d43d065671975f6c38bddc",
+      "type": "text",
+      "contentType": "",
+      "text": "{[if this.Street]}{[this.Street]}{[if this.Street2]}, {[this.Street2]}{[endif]}{[else]} {[endif]}",
+      "content": "{[if this.Street]}{[this.Street]}{[if this.Street2]}, {[this.Street2]}{[endif]}{[else]} {[endif]}"
+    },
+    {
+      "name": "CityStateZipBlank",
+      "label": "",
+      "lastModified": "2021-11-29T18:46:54.624Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "68d43d065671975f6c38bddb",
+      "type": "text",
+      "contentType": "",
+      "text": "{[if this.City && this.State && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]} {[endif]}",
+      "content": "{[if this.City && this.State && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]} {[endif]}"
+    },
+    {
+      "name": "PartyState",
+      "label": "",
+      "lastModified": "2022-09-29T17:38:31.721Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "68d44a63305260d70af501ae",
+      "type": "text",
+      "contentType": "",
+      "text": "{[this.State]}",
+      "content": "{[this.State]}"
+    },
+    {
+      "name": "PartyStreetAddress1",
+      "label": "",
+      "lastModified": "2022-09-29T17:38:31.721Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "68d44a63305260d70af501b0",
+      "type": "text",
+      "contentType": "",
+      "text": "{[this.StreetAddress1]}",
+      "content": "{[this.StreetAddress1]}"
+    },
+    {
+      "name": "PartyCity",
+      "label": "",
+      "lastModified": "2022-09-29T17:38:31.720Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "68d44a63305260d70af501af",
+      "type": "text",
+      "contentType": "",
+      "text": "{[this.City]}",
+      "content": "{[this.City]}"
+    },
+    {
+      "name": "PartyZip",
+      "label": "",
+      "lastModified": "2022-09-29T17:38:31.721Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "68d44a63305260d70af501ad",
+      "type": "text",
+      "contentType": "",
+      "text": "{[this.Zip]}",
+      "content": "{[this.Zip]}"
+    }
+  ],
+  "layouts": [
+    {
+      "name": "(default)",
+      "label": "",
+      "columnCount": 3,
+      "rows": [
+        [
+          {
+            "class": "question",
+            "content": "PartyType",
+            "expr": "",
+            "list": [],
+            "_id": "65e33770a1cd4096931bc7ee",
+            "id": "20f47480-996a-11f0-a74c-79be3feae89c",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "###<center>**Name and {[if PartyType == \"Individual\"]}Personal{[elseif PartyType == \"Entity\"]}Entity{[else]}Other{[endif]} Information**</center>",
+            "list": [
+              "First",
+              "EntityName"
+            ],
+            "_id": "65e33770a1cd4096931bc7ef",
+            "id": "20f47481-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "EntityName",
+            "expr": "",
+            "list": [],
+            "offset": 0,
+            "span": 1,
+            "_id": "65e33770a1cd4096931bc7f0",
+            "id": "20f47482-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          },
+          {
+            "content": "OrgState",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0a3f1240-997e-11f0-8001-797da298c1d2",
+            "isSelected": false,
+            "offset": 1
+          },
+          {
+            "content": "EntityType",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0a3f1241-997e-11f0-8001-797da298c1d2",
+            "isSelected": false,
+            "offset": 2
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "####<center>**Addressee for Mail**</center>",
+            "id": "7d04e020-996a-11f0-a74c-79be3feae89c",
+            "list": [
+              "EntityName"
+            ],
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "First",
+            "expr": "",
+            "list": [],
+            "offset": 0,
+            "span": 1,
+            "_id": "65e33770a1cd4096931bc7f3",
+            "id": "20f47485-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          },
+          {
+            "class": "question",
+            "content": "Middle",
+            "expr": "",
+            "list": [],
+            "offset": 1,
+            "span": 1,
+            "_id": "65e33770a1cd4096931bc7f4",
+            "id": "20f47486-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          },
+          {
+            "class": "question",
+            "content": "Last",
+            "expr": "",
+            "list": [],
+            "offset": 2,
+            "span": 1,
+            "_id": "65e33770a1cd4096931bc7f5",
+            "id": "20f47487-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "Suffix",
+            "expr": "",
+            "list": [],
+            "offset": 0,
+            "span": 1,
+            "_id": "65e33770a1cd4096931bc7f6",
+            "id": "20f47488-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          },
+          {
+            "class": "question",
+            "content": "Gender",
+            "expr": "",
+            "list": [],
+            "offset": 1,
+            "span": 1,
+            "_id": "65e33770a1cd4096931bc7f7",
+            "id": "20f47489-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "AttorneyInFactTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0a3f1242-997e-11f0-8001-797da298c1d2",
+            "isSelected": false,
+            "offset": 0
+          },
+          {
+            "content": "AttorneyInFact",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0a3f1243-997e-11f0-8001-797da298c1d2",
+            "isSelected": false,
+            "offset": 1
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "MarriedTF",
+            "expr": "",
+            "list": [],
+            "_id": "65e33770a1cd4096931bc7f8",
+            "id": "20f4748a-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "###<center>**Signers**</center>",
+            "list": [
+              "EntitySigners",
+              "SignersLvl1"
+            ],
+            "_id": "65e33770a1cd4096931bc7ff",
+            "id": "20f47491-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "EntitySigners",
+            "expr": "",
+            "list": [],
+            "offset": 0,
+            "span": 1,
+            "_id": "65e33770a1cd4096931bc800",
+            "id": "20f47492-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SignersLvl1",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "20f47493-996a-11f0-a74c-79be3feae89c",
+            "offset": 0,
+            "isSelected": false,
+            "span": 2
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if PartyType == \"Entity\" && EntityType == \"trust\"]}\n{[list SignersLvl1]}\n{[if Signer1IndividualTF]}\n**{[TrueSigner.NameCO|upper]}**, {[if SignersLvl1.length > 1]}Co-{[endif]}Trustee     \n{[elseif Signer1EntityType]}\n**{[TrueSigner.NameCO|upper]}**, {[if SignersLvl1.length > 1]}Co-{[endif]}Trustee, by        \n{[list Signer1Signers]}\n*{[TrueSigner2.NameCO]}*      \n*Its: {[Signer2Title]}*\n{[endlist]}\n{[endif]}\n{[endlist]}\n     \n{[elseif PartyType == \"Entity\"]}   \n{[list SignersLvl1]}\n{[if Signer1IndividualTF]}\n**{[TrueSigner.NameCO|upper]}**, {[Signer1Title]}        \n{[elseif Signer1EntityType]}\n**{[TrueSigner.NameCO|upper]}**, {[Signer1Title]}, by        \n{[list Signer1Signers]}\n*{[TrueSigner2.NameCO]}*      \n*Its: {[Signer2Title]}*     \n{[endlist]}\n{[endif]}\n{[endlist]} \n     \n{[endif]}",
+            "id": "3e7db380-9989-11f0-8f30-87bd980b0dad",
+            "list": [
+              "SignersLvl1"
+            ],
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "CheckToChangeTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "b81dc591-998e-11f0-8f30-87bd980b0dad",
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "NewBusinessSignersLvl1",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "b81dc590-998e-11f0-8f30-87bd980b0dad",
+            "isSelected": false,
+            "span": 2,
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "###<center>**Address Information**</center>",
+            "expr": "",
+            "list": [],
+            "_id": "65e33770a1cd4096931bc7f9",
+            "id": "20f4748b-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "Street",
+            "expr": "",
+            "list": [],
+            "_id": "65e33770a1cd4096931bc7fa",
+            "id": "20f4748c-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "Street2",
+            "expr": "",
+            "list": [],
+            "_id": "65e33770a1cd4096931bc7fb",
+            "id": "20f4748d-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "City",
+            "list": [],
+            "offset": 0,
+            "span": 1,
+            "_id": "65e33770a1cd4096931bc7fc",
+            "id": "20f4748e-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          },
+          {
+            "class": "question",
+            "content": "State",
+            "expr": "",
+            "list": [],
+            "offset": 1,
+            "span": 1,
+            "_id": "65e33770a1cd4096931bc7fd",
+            "id": "20f4748f-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          },
+          {
+            "class": "question",
+            "content": "Zip",
+            "expr": "",
+            "list": [],
+            "offset": 2,
+            "span": 1,
+            "_id": "65e33770a1cd4096931bc7fe",
+            "id": "20f47490-996a-11f0-a74c-79be3feae89c",
+            "isSelected": false
+          }
+        ]
+      ],
+      "lastModified": "2022-11-04T20:56:56.069Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "642c623b4d79d5adbe5909c7"
+    }
+  ],
+  "apps": [],
+  "name": "party",
+  "type": "object",
+  "label": "",
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model",
+  "__v": 1,
+  "productSources": [],
+  "reservedNames": []
+}

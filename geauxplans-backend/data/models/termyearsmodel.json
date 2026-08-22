@@ -1,0 +1,77 @@
+{
+  "_id": "62c71197bd128b17a4fde642",
+  "summary": "{[_index|ordinal|initcap]} Distribution Upon {[AnniversaryYear|ordinal|initcap]} Anniversary of Settlor's Death",
+  "label": "",
+  "type": "object",
+  "name": "termyearsmodel",
+  "formulas": [
+    {
+      "contentType": "",
+      "isList": false,
+      "label": "",
+      "expression": "AnniversaryYear == 11 || AnniversaryYear == 12 || AnniversaryYear == 13\r\n   ? \"th\"\r\n   : (AnniversaryYear|ordsuffix)",
+      "ref": "",
+      "type": "text",
+      "name": "TrueAnnOrdinalSuffix",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-21T16:29:53.421Z",
+      "_id": "6508c79c50e217356772eaf4"
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[if _index == 1]}a{[elseif _index == 2]}b{[elseif _index == 3]}c{[elseif _index == 4]}d{[elseif _index == 5]}e{[elseif _index == 6]}f{[elseif _index == 7]}g{[elseif _index == 8]}h{[elseif _index == 9]}i{[elseif _index == 10]}j{[elseif _index == 11]}k{[elseif _index == 12]}l{[elseif _index == 13]}m{[elseif _index == 14]}n{[elseif _index == 15]}o{[elseif _index == 16]}p{[elseif _index == 17]}q{[elseif _index == 18]}r{[elseif _index == 19]}s{[elseif _index == 20]}t{[elseif _index == 21]}u{[elseif _index == 22]}v{[elseif _index == 23]}w{[elseif _index == 24]}x{[elseif _index == 25]}y{[elseif _index == 26]}z{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "Letter",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T17:06:13.044Z",
+      "_id": "6508c79c50e217356772eaf5",
+      "content": "{[if _index == 1]}a{[elseif _index == 2]}b{[elseif _index == 3]}c{[elseif _index == 4]}d{[elseif _index == 5]}e{[elseif _index == 6]}f{[elseif _index == 7]}g{[elseif _index == 8]}h{[elseif _index == 9]}i{[elseif _index == 10]}j{[elseif _index == 11]}k{[elseif _index == 12]}l{[elseif _index == 13]}m{[elseif _index == 14]}n{[elseif _index == 15]}o{[elseif _index == 16]}p{[elseif _index == 17]}q{[elseif _index == 18]}r{[elseif _index == 19]}s{[elseif _index == 20]}t{[elseif _index == 21]}u{[elseif _index == 22]}v{[elseif _index == 23]}w{[elseif _index == 24]}x{[elseif _index == 25]}y{[elseif _index == 26]}z{[endif]}"
+    }
+  ],
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 2,
+      "rows": [
+        [
+          {
+            "content": "AnniversaryYear",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "afc666c0-a3c7-11f0-a3ce-bd9fd9cc3d89"
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T17:03:36.795Z",
+      "_id": "6508c79c50e217356772eaf6"
+    }
+  ],
+  "apps": [],
+  "properties": [
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Enter the number of years after the {[if PlanType == \"StandaloneSNT\"]}Primary Beneficiary's{[else]}Settlor's{[endif]} death that the beneficiary should receive a distribution",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "number",
+      "name": "AnniversaryYear",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T17:14:26.483Z",
+      "_id": "6508c79c50e217356772eaf3"
+    }
+  ],
+  "__v": 5,
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}

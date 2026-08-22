@@ -1,0 +1,1 @@
+{"_id":"690d00b5fd3a941e189de256","name":"standalonetrust","type":"table","label":"","kind":"table","properties":[{"type":"text","name":"Name","label":"Name"},{"type":"text","name":"Description","label":"Description"},{"type":"text","name":"InternalOnly","label":"InternalOnly"}],"key":"Name","data":[{"Name":"SNT","Description":"Special Needs Trust","InternalOnly":"No"}],"__v":0}

@@ -1,0 +1,2931 @@
+{
+  "_id": "5edad8137e43d8182e6cfc43",
+  "summary": "{[SumTemp]} ",
+  "label": " ",
+  "type": "object",
+  "name": "actoftransfer",
+  "layouts": [
+    {
+      "name": "(default)",
+      "label": "",
+      "columnCount": 3,
+      "rows": [
+        [
+          {
+            "id": "c30fa3a0-a1a2-11ee-b8dd-51097772cc42",
+            "content": "###<center>**Transfer**</center>",
+            "list": [],
+            "class": "static",
+            "expr": "",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "TransferType",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "ac0954c0-9ea1-11ee-a62a-a73380e44d64",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "afdf8a10-9ea1-11ee-a62a-a73380e44d64",
+            "content": "OnlyToTrust",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SelectLLC",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "3b6ff160-9e36-11f0-9f1c-9bdf8b9e1ea2",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "62dce2f0-6987-11f0-b6a3-4ff692d6b844",
+            "content": "TransferOf",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "63c7b820-6987-11f0-b6a3-4ff692d6b844",
+            "content": "DeedState",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "6489a890-6987-11f0-b6a3-4ff692d6b844",
+            "content": "LandParish",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "105482f0-81f5-11f0-a77f-19289f5f786b",
+            "content": "DeedSignOtherTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "UseClientNotary",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "d8b0c2c0-9e3a-11f0-97d1-9324deefdeb7",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "DeedSigningState",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "9506f5b1-81f4-11f0-a77f-19289f5f786b",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "97a37280-81f4-11f0-a77f-19289f5f786b",
+            "content": "DeedSigningParish",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "11a741b0-81f5-11f0-a77f-19289f5f786b",
+            "content": "DeedSignCountyOther",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "047635e0-6f65-11ee-8d3f-0110ca7600d9",
+            "content": "TrustDonationType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "LLCDonationType",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc30",
+            "id": "03500562-6f65-11ee-8d3f-0110ca7600d9",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "9405ac30-68e3-11f0-9417-f1c9ebe54821",
+            "content": "isHome",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "71145c30-68e3-11f0-9417-f1c9ebe54821",
+            "content": "MineralnterestOnlyTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "6dc33de0-674d-11f0-9e77-ade47f2423e3",
+            "content": "WarrantyTitleTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "4beda4c0-65a5-11f0-a9b5-f137a715a12e",
+            "content": "WarrantyType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "Consideration",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "905bd700-bcf6-11f0-a266-b9f01058f3c1",
+            "isSelected": false,
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "8c7cb090-674d-11f0-9e77-ade47f2423e3",
+            "content": "PurchasePriceTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "65eb2280-68c5-11f0-b9d6-7987a4510dd9",
+            "content": "SalePrice",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "DebtAmount",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "905bd701-bcf6-11f0-a266-b9f01058f3c1",
+            "isSelected": false,
+            "span": 1,
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "id": "e5761e30-670b-11f0-92de-abffab688923",
+            "content": "###<center>{[if peek(DeedState == \"Louisiana\")]}**Usufruct**{[else]}**Life Estate**{[endif]}</center>",
+            "list": [
+              "UsufructTerm",
+              "Usufruct"
+            ],
+            "class": "static",
+            "expr": "",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "e99b84f0-670b-11f0-92de-abffab688923",
+            "content": "DonationOfResidenceTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "Usufruct",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "e9fe6f42-6407-11f0-b0f7-eddeb9b65678",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "2cfb0a80-68e3-11f0-9417-f1c9ebe54821",
+            "content": "UsufructTerm",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "e7fdb2b0-68e8-11f0-b6bc-dd878c6e8153",
+            "content": "<accent red><strong>NOTE: {[if !peek(Usufruct)]}Retention of a {[if peek(DeedState == \"Louisiana\")]}usufruct{[else]}life estate{[endif]}{[if peek(DeedState == \"Louisiana\")]} is required to maintain the homestead exemption and \"senior freeze\" with respect to a Principal Residence in Louisiana.  It is recommended that the transfer of a Principal Residence be reflected in a *single and separate* Act of Transfer, distinct from other property transfers if maintaining the homestead exemption is a goal. Unless selected, this transfer will be OUTRIGHT without a retained interest.{[elseif peek(DeedState != \"Louisiana\")]} may be required to maintain the homestead exemption and /or any available \"senior freeze\" with respect to a Principal Residence in {[peek(DeedState.Name)]}. It is recommended that the transfer of a Principal Residence be reflected in a *single and separate* Act of Transfer, distinct from other property transfers if maintaining the homestead exemption is a goal. Unless selected, this transfer will be OUTRIGHT without a retained interest.{[endif]}{[else]}This transfer will be subject to a retained {[if peek(DeedState == \"Louisiana\")]}usufruct{[else]}life estate{[endif]} in favor of the Transferor(s), which will maintain the homestead exemption and \"senior freeze\" in Louisiana. This may NOT be required in other states for homestead exemption purposes.{[endif]}.</strong></accent>",
+            "list": [
+              "Usufruct"
+            ],
+            "class": "static",
+            "expr": "",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "b0e58380-4aa7-11ef-910e-3d7a6703aa75",
+            "content": "###<center>**Act of Correction**</center>",
+            "list": [
+              "ActofCorrectionTF"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "45b2d830-6408-11f0-b0f7-eddeb9b65678",
+            "content": "ActofCorrectionTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "4b754d20-6408-11f0-b0f7-eddeb9b65678",
+            "content": "NotarialActofCorrectionTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "6c5dcd70-68ed-11f0-b396-95c66815a3d9",
+            "content": "<accent red><strong>CAUTION: A Notarial Act of Correction may only be used for clerical errors, such as typographical errors. Substantive errors require the joinder of all parties to the original Act of Transfer/Sale/Donation.</strong></accent>",
+            "list": [
+              "NotarialActofCorrectionTF"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "08867840-4b72-11ef-8dce-d92f773e3b5b",
+            "content": "ActOfCorrectionNotary",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "2100d680-4b73-11ef-8dce-d92f773e3b5b",
+            "content": "ActOfCorrectionNotarizingNotary",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "dd8e33e0-4aa8-11ef-8bce-cfc6ec167992",
+            "content": "OriginalActDT",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "8deea850-4f54-11ef-838a-6baea6f94b97",
+            "content": "CorrectedDocumentTitle",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "9543cb30-4f54-11ef-838a-6baea6f94b97",
+            "content": "CorrectedDocumentTitleOther",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "BookPageTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "ef59c6a0-4eb5-11ef-9958-ef10daab1356",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "332ccd30-4aa8-11ef-8bb0-5fe4252e53a4",
+            "content": "OriginalActInstrumentNo",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "OriginalActCOB",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "20e5ce21-4aa7-11ef-910e-3d7a6703aa75",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "31e754e0-4aa8-11ef-8bb0-5fe4252e53a4",
+            "content": "OriginalActPage",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MaterialErrorDescription",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "20e5ce27-4aa7-11ef-910e-3d7a6703aa75",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "bef98a70-4aac-11ef-b9a1-cb3c33a6bf48",
+            "content": "OtherErrorDescription",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "7da6b640-4b71-11ef-bb85-51a6180edb80",
+            "content": "NotarialErrorDescription",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "3bcc9540-4b68-11ef-9b61-7f3afcd4ed9f",
+            "content": "ClericalErrorDescription",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "46c9bf50-4aa9-11ef-b842-9dcecc9d7f8e",
+            "content": "IndividualDonationType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "f34d5710-a1a2-11ee-b8dd-51097772cc42",
+            "content": "SaleType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "fdfc7a60-a1a2-11ee-b8dd-51097772cc42",
+            "content": "###<center>**Transferor(s)**</center>",
+            "list": [
+              "SelectOwner",
+              "SelectTrust"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "6ea415a0-a1af-11ee-800c-f54c37de93cc",
+            "content": "SelectTrust",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SelectOwner",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "016574c4-99e9-11ee-97b8-83de764b053c",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "a9ee88a0-a1a2-11ee-b8dd-51097772cc42",
+            "content": "PluralOwnersTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "AdditionalOwners",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "016574c6-99e9-11ee-97b8-83de764b053c",
+            "offset": 0,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "06088780-772d-11ee-856d-2da3cc9c372f",
+            "content": "AoDOwner",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "0bd454f0-a1a3-11ee-b8dd-51097772cc42",
+            "content": "###<center>**Transferee(s)**</center>",
+            "list": [
+              "RecipientPerson",
+              "SelectLLC"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "19a45b70-d91f-11ef-a68e-97365723a975",
+            "content": "MedicaidCureTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "2140e790-d91f-11ef-a68e-97365723a975",
+            "content": "MedicaidCureRecipient",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "b29b9a60-a1a2-11ee-b8dd-51097772cc42",
+            "content": "RecipientPerson",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "AsIsLandTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0350057d-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "MembershipInterest",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc36",
+            "id": "03500568-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "LLCName",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc37",
+            "id": "03500569-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "LLCMembership",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc38",
+            "id": "0350056a-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "LLCTIN",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc39",
+            "id": "0350056b-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "ClientHomeAddressTF",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc3a",
+            "id": "0350056c-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "LLCStreet",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc3b",
+            "id": "0350056d-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "LLCStreet2",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc3c",
+            "id": "0350056e-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "LLCCity",
+            "expr": "",
+            "list": [],
+            "offset": 0,
+            "span": 1,
+            "_id": "65329ceeb669f0e056ddcc3d",
+            "id": "0350056f-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          },
+          {
+            "class": "question",
+            "content": "LLCState",
+            "expr": "",
+            "list": [],
+            "offset": 1,
+            "span": 1,
+            "_id": "65329ceeb669f0e056ddcc3e",
+            "id": "03500570-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          },
+          {
+            "class": "question",
+            "content": "LLCZip",
+            "expr": "",
+            "list": [],
+            "offset": 2,
+            "span": 1,
+            "_id": "65329ceeb669f0e056ddcc3f",
+            "id": "03500571-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "LLCParish",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc40",
+            "id": "03500572-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "ClientManagerLLCTF",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc41",
+            "id": "03500573-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "LLCManagers",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc42",
+            "id": "03500574-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "aaad6180-698d-11f0-a34f-89605941757f",
+            "content": "###<center>**Indexing Instructions for Recorder**</center>",
+            "list": [],
+            "class": "static",
+            "expr": "peek(TransferType != \"TransferAndJoinder\" && TransferOf == \"Land\" && DeedState != \"Louisiana\" && !ActofCorrectionTF)",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "34d4f420-68eb-11f0-b6bc-dd878c6e8153",
+            "content": "Acreage",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "4766fb60-68eb-11f0-b6bc-dd878c6e8153",
+            "content": "SecTownshipRange",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "024f1110-670c-11f0-92de-abffab688923",
+            "content": "###<center>**Exhibit A**</center>",
+            "list": [
+              "ListMovableTF"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "ListMovableTF",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc43",
+            "id": "03500575-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "MovableProperty",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc45",
+            "id": "03500577-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "e1cf4aa0-68ea-11f0-b6bc-dd878c6e8153",
+            "content": "###<center><strong>Legal Description</strong></center>\n\nThe Act of Donation must include a full and complete legal description; note that the abbreviated legal description, such as the one that normally appears on your tax assessor notice, is not sufficient. \n\nThe full legal description can be found in the deed, act of sale, judgment of possession, act of donation, or other conveyance document for your home. \n\nIf you don't know the legal description, answer \"No\" below and you can add the legal description to your documents once you receive them.",
+            "list": [],
+            "class": "static",
+            "expr": "GeauxTrustTF",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "GeauxHaveLegalDescriptionTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "e9fe6f41-6407-11f0-b0f7-eddeb9b65678",
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "ExhibitALegalDesc",
+            "expr": "",
+            "list": [],
+            "_id": "65329ceeb669f0e056ddcc48",
+            "id": "0350057a-6f65-11ee-8d3f-0110ca7600d9",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MoveablePropertyList",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "016574c1-99e9-11ee-97b8-83de764b053c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "RecipientSale1",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "d752e2f1-9ea5-11ee-a62a-a73380e44d64",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "GeauxAoDHomeAddress",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "e9fe6f40-6407-11f0-b0f7-eddeb9b65678",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "1TransferOf",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "fcf84ab0-6986-11f0-b6a3-4ff692d6b844",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "1TransferType",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "5c5f5b60-6987-11f0-b6a3-4ff692d6b844",
+            "isSelected": false
+          }
+        ]
+      ],
+      "lastModified": "2021-01-12T19:37:56.114Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "63c1b6e35e677d2c8c54a77f"
+    }
+  ],
+  "apps": [],
+  "properties": [
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Land\",\"Description\":\"Residence or Land\"},{\"Name\":\"Financial Assets\",\"Description\":\"Financial Assets\"},{\"Name\":\"Movable Property\",\"Description\":\"Movable Property\"},{\"Name\":\"Personal Property\",\"Description\":\"Personal Property\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "63c1b6e35e677d2c8c54a756",
+      "name": "TrustDonationType",
+      "isList": false,
+      "label": "What is being transferred? (WRONG)",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2021-04-13T20:25:45.121Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Land\"},{\"Name\":\"Movable Property\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "63c1b6e35e677d2c8c54a757",
+      "name": "LLCDonationType",
+      "isList": false,
+      "label": "What is being transferred to the LLC?",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2021-04-13T20:30:39.584Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Client\"},{\"Name\":\"Spouse\"},{\"Name\":\"Both\"}]",
+      "optionTemplate": "{[this == \"Client\" ? (Client.NameCO) : this == \"Spouse\" ? (Spouse.NameCO) : this == \"Both\" ? (Client.NameCO + \" and \" +  Spouse.NameCO + \", jointly\") : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "63c1b6e35e677d2c8c54a758",
+      "name": "AoDOwner",
+      "isList": false,
+      "label": "{[if IsGeauxAppTF]}\nSelect the owner of the home - if this is a home that was inherited or owned prior to marriage, select the person who inherited or owned it; otherwise, for a home acquired during your marriage, select the \"jointly\" option.\n{[else]}\nSelect the one owner of the property to be donated, transfered, or sold. If separate property select one person, otherwise if community property select {[Client.NameCO]} and {[Spouse.NameCO]}.\n{[endif]}",
+      "helpText": "",
+      "forceRelevance": "IsGeauxAppTF && MarriedTF",
+      "lastModified": "2021-04-13T20:30:39.584Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "ParishSuggestions",
+      "_id": "63c1b6e35e677d2c8c54a759",
+      "name": "LandParish",
+      "isList": false,
+      "label": "In which {[DeedState.ParishCounty|else: \"Parish or County\"]} is the  {[if GeauxTrustTF]}the home{[else]}the land{[endif]} located? Do NOT include the word \"{[DeedState.ParishCounty|else: \"Parish/County\"]}\".",
+      "helpText": "",
+      "forceRelevance": "IsGeauxAppTF || ((EstateAppTF || BinderAppTF) && TransferOf == \"Land\")",
+      "lastModified": "2021-11-02T14:03:22.224Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text",
+      "metadata": {
+        "notes": "((EstateAppTF || BinderAppTF) && (TransferOf == \"Home\" || TransferOf == \"Land\")) || IsGeauxAppTF"
+      }
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 9,
+      "allowBreaks": true,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "63c1b6e35e677d2c8c54a75a",
+      "name": "ExhibitALegalDesc",
+      "isList": false,
+      "label": "{[if GeauxTrustTF]}Full legal description:{[else]}Legal description for Exhibit A:{[endif]}",
+      "helpText": "",
+      "forceRelevance": "GeauxTrustTF && GeauxHaveLegalDescriptionTF",
+      "lastModified": "2021-11-02T14:01:47.093Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text",
+      "metadata": {
+        "notes": "((EstateAppTF || BinderAppTF) && (TransferOf == \"Home\" || TransferOf == \"Land\"))  || (GeauxTrustTF && GeauxHaveLegalDescriptionTF)"
+      }
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "63c1b6e35e677d2c8c54a75b",
+      "name": "LLCName",
+      "isList": false,
+      "label": "Name of LLC:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2021-04-13T20:30:39.584Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "0",
+      "maximum": "100",
+      "_id": "63c1b6e35e677d2c8c54a75c",
+      "name": "MembershipInterest",
+      "isList": false,
+      "label": "Percent of membership interest to transfer:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-08T18:09:19.161Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "number"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "63c1b6e35e677d2c8c54a75d",
+      "name": "MovableProperty",
+      "isList": true,
+      "label": "List the property for Exhibit A.",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2021-04-13T20:25:45.122Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "99-9999999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "63c1b6e35e677d2c8c54a75e",
+      "name": "LLCTIN",
+      "isList": false,
+      "label": "LLC Tax ID Number (use zeros for the first 5 if you don't know the full number)",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:03:01.178Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "_id": "63c1b6e35e677d2c8c54a75f",
+      "name": "ClientHomeAddressTF",
+      "isList": false,
+      "label": "Check to use {[Owner1.NameCO]}'s parish and address as the LLC's domicile and registred agent office and mailing address.",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-08T23:25:34.938Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "63c1b6e35e677d2c8c54a760",
+      "name": "LLCStreet",
+      "isList": false,
+      "label": "LLC Street address:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:11:53.379Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "63c1b6e35e677d2c8c54a761",
+      "name": "LLCStreet2",
+      "isList": false,
+      "label": "LLC Street second line, if any (Apt, Suite, etc):",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:11:53.379Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "63c1b6e35e677d2c8c54a762",
+      "name": "LLCCity",
+      "isList": false,
+      "label": "LLC City:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:11:53.379Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "_id": "63c1b6e35e677d2c8c54a763",
+      "name": "LLCState",
+      "isList": false,
+      "label": "LLC State:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:11:53.379Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "99999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "63c1b6e35e677d2c8c54a764",
+      "name": "LLCZip",
+      "isList": false,
+      "label": "LLC Zip:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:11:08.640Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "_id": "63c1b6e35e677d2c8c54a765",
+      "name": "ClientManagerLLCTF",
+      "isList": false,
+      "label": "Check if {[Owner1.NameCO]} is the sole Manager of the LLC.",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-08T23:27:21.103Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "true/false"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "63c1b6e35e677d2c8c54a766",
+      "name": "LLCManagers",
+      "isList": true,
+      "label": "Select the managers of the LLC:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:15:05.794Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "63c1b6e35e677d2c8c54a767",
+      "name": "LLCParish",
+      "isList": false,
+      "label": "LLC Parish:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:18:39.691Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "63c1b6e35e677d2c8c54a768",
+      "name": "ListMovableTF",
+      "isList": false,
+      "label": "Select to enter the description of property (whether land or personal property); Otherwise, Exhibit A will just have \"(assets)\" on it to be filled in later.",
+      "helpText": "NOTE: If you are transfering **financial assets or accounts**, you can itemize the financial assets to be transferred with this selection. Otherwise, you may attached a schedule as Exhibit A. **If you are transfering select financial assets listed on a Financial Asset Worksheet, do not elect to itemize. You will attach excerpts of the Financial Asset Worksheet.**",
+      "forceRelevance": "",
+      "lastModified": "2020-06-08T17:50:22.903Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "63c1b6e35e677d2c8c54a769",
+      "name": "LLCMembership",
+      "isList": false,
+      "label": "Fill in the space between the brackets: \"Donor wishes to gift a [...] Membership Interest\" (i.e., \"thirty-three percent (33%)\" or \"one-third (1/3)\".",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-11-02T23:00:09.600Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "SuggestionsforHome|map: TextVar",
+      "_id": "63c1b6e35e677d2c8c54a76a",
+      "name": "GeauxAoDHomeAddress",
+      "isList": false,
+      "label": "What is your home's address? You can select from the dropdown below or type in:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2021-01-12T19:49:37.436Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "63c1b6e35e677d2c8c54a76b",
+      "name": "GeauxHaveLegalDescriptionTF",
+      "isList": false,
+      "label": "Do you have your home's legal description as described above?",
+      "helpText": "",
+      "forceRelevance": "GeauxTrustTF",
+      "lastModified": "2021-01-12T19:43:44.745Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "true/false"
+    },
+    {
+      "style": "checkbox columns",
+      "options": "PotentialAgentsWithTrustFirst",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6504cebf676c560b43d0c84a",
+      "name": "RecipientPerson",
+      "isList": true,
+      "label": "Select the recipients of the Transfer:",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && TransferType != \"TransferAndJoinder\"",
+      "type": "selection",
+      "metadata": {
+        "notes": "!IsGeauxAppTF && TransferType && TransferType != \"Deed of Distribution\" && (TransferType != \"Donation\" || (TransferType == \"Donation\" && OnlyToTrust != \"Clients to Trust\"))"
+      }
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "6504d732e82a5cedcc3fe636",
+      "name": "Usufruct",
+      "isList": false,
+      "label": "Select to reserve a {[if peek(DeedState == \"Louisiana\")]}**Usufruct**{[else]}**right of use** for a defined term{[endif]} in favor of the Transferor?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Donation\"},{\"Name\":\"Sale\"}]",
+      "optionTemplate": "{[this == \"Donation\" ? \"Act of Donation (Movable or Immovable Property)\" : this == \"Sale\" ? \"Act of Sale (Movable or Immovable Property)\" : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6504de5ce9996971781ea3ea",
+      "name": "IndividualDonationType",
+      "isList": false,
+      "label": "Select the type of transfer to an individual, whether a donation or sale:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Life\"},{\"Name\":\"Until remarriage\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "65202dc2d53afde98aadb881",
+      "name": "UsufructTerm",
+      "isList": false,
+      "label": "Term of reserved {[if peek(DeedState == \"Louisiana\")]}usufruct{[else]}tenancy{[endif]} for life or until remarriage (if sooner)?",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2021-05-11T17:26:41.571Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 2,
+      "minimum": "",
+      "maximum": "",
+      "_id": "6522e4eccc729cf5ab477cc1",
+      "name": "SalePrice",
+      "isList": false,
+      "label": "What is the Purchase Price?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "_id": "6522ee278db7c17701cf0cd5",
+      "name": "AsIsLandTF",
+      "isList": false,
+      "label": "Check this box if the sale will be \"As Is\" waiving claims for hidden defects (e.g., Rehibition)?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "6523184fc4674289bcb9ecbf",
+      "name": "WarrantyTitleTF",
+      "isList": false,
+      "label": "Select if the transfer will be with **Warranty of Title**.",
+      "helpText": "Otherwise, the transfer will be WITHOUT Warranty of Title and may be styled as a \"Quitclaim Deed\".",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Individual\"},{\"Name\":\"Trust\"},{\"Name\":\"LLC\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "65231d62ab6706530921787c",
+      "name": "RecipientSale1",
+      "isList": false,
+      "label": "Is the recipient a Trust, LLC, or an Individual?",
+      "helpText": "For a sale, the recipient will be the buyer(s). For a donation, the recipient will be the donee(s). For a distribution an entity such as a trust or LLC, the recipient will be the transferee(s). ",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Immovable (Real Estate)\"},{\"Name\":\"Moveable\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "653eb007daa9c329546d46ef",
+      "name": "SaleType",
+      "isList": false,
+      "label": "Select whether the property being transferred is movable or immovable property.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Louisiana\",\"ParishCounty\":\"Parish\",\"Grantor\":\"Vendor\",\"Grantee\":\"Vendee\",\"Donor\":\"Donor\",\"Donee\":\"Donee\",\"Transferor\":\"Transferor\",\"Transferee\":\"Transferee\",\"Seller\":\"Seller\",\"Buyer\":\"Buyer\",\"Abbreviation\":\"LA\"},{\"Name\":\"Arkansas\",\"ParishCounty\":\"County\",\"Grantor\":\"Grantor\",\"Grantee\":\"Grantee\",\"Donor\":\"Grantor\",\"Donee\":\"Grantee\",\"Transferor\":\"Grantor\",\"Transferee\":\"Grantee\",\"Seller\":\"Grantor\",\"Buyer\":\"Grantee\",\"Abbreviation\":\"AR\"},{\"Name\":\"Florida\",\"ParishCounty\":\"County\",\"Grantor\":\"Grantor\",\"Grantee\":\"Grantee\",\"Donor\":\"Grantor\",\"Donee\":\"Grantee\",\"Transferor\":\"Grantor\",\"Transferee\":\"Grantee\",\"Seller\":\"Grantor\",\"Buyer\":\"Grantee\",\"Abbreviation\":\"FL\"},{\"Name\":\"Michigan\",\"ParishCounty\":\"County\",\"Grantor\":\"Grantor\",\"Grantee\":\"Grantee\",\"Donor\":\"Grantor\",\"Donee\":\"Grantee\",\"Transferor\":\"Grantor\",\"Transferee\":\"Grantee\",\"Seller\":\"Grantor\",\"Buyer\":\"Grantee\",\"Abbreviation\":\"MI\"},{\"Name\":\"Mississippi\",\"ParishCounty\":\"County\",\"Grantor\":\"Grantor\",\"Grantee\":\"Grantee\",\"Donor\":\"Grantor\",\"Donee\":\"Grantee\",\"Transferor\":\"Grantor\",\"Transferee\":\"Grantee\",\"Seller\":\"Grantor\",\"Buyer\":\"Grantee\",\"Abbreviation\":\"MS\"},{\"Name\":\"South Carolina\",\"ParishCounty\":\"County\",\"Grantor\":\"Grantor\",\"Grantee\":\"Grantee\",\"Donor\":\"Grantor\",\"Donee\":\"Grantee\",\"Transferor\":\"Grantor\",\"Transferee\":\"Grantee\",\"Seller\":\"Grantor\",\"Buyer\":\"Grantee\",\"Abbreviation\":\"SC\"},{\"Name\":\"Texas\",\"ParishCounty\":\"County\",\"Grantor\":\"Grantor\",\"Grantee\":\"Grantee\",\"Donor\":\"Grantor\",\"Donee\":\"Grantee\",\"Transferor\":\"Grantor\",\"Transferee\":\"Grantee\",\"Seller\":\"Grantor\",\"Buyer\":\"Grantee\",\"Abbreviation\":\"TX\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6545563cfe3143ba0c87dfc4",
+      "name": "DeedState",
+      "isList": false,
+      "label": "In which State is the property located?",
+      "helpText": "",
+      "forceRelevance": "IsGeauxAppTF || ((EstateAppTF || BinderAppTF) && TransferOf == \"Land\")",
+      "type": "selection",
+      "metadata": {
+        "notes": "((EstateAppTF || BinderAppTF) && (TransferOf == \"Home\" || TransferOf == \"Land\")) || IsGeauxAppTF"
+      }
+    },
+    {
+      "style": "popup",
+      "typeDef": "621fc1f512baec611d66a320",
+      "useImport": false,
+      "typeName": "geauxbequests",
+      "_id": "6557d38a66b18a013034ebce",
+      "name": "MoveablePropertyList",
+      "isList": true,
+      "label": "Enter Property:",
+      "helpText": "",
+      "forceRelevance": "(EstateAppTF || BinderAppTF) && (TransferOf == \"Movable Property\" || TransferOf == \"Land\") && ListMovableTF",
+      "type": "object",
+      "metadata": {
+        "notes": "(EstateAppTF || BinderAppTF) && TransferOf2 == \"Movable Property\" && ListMovableTF && !(TransferType == \"Donation\" && OnlyToTrust == \"Clients to Trust\")"
+      }
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": true,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65638d86d53d565471ce7dad",
+      "name": "SecTownshipRange",
+      "isList": false,
+      "label": "Enter the Section, Township and Range for indexing purposes.",
+      "helpText": "For example, \"Section 48, T9N, R1E\".  NOTE: This information is required by applicable statute to be included in addition to the full legal description.",
+      "forceRelevance": "",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "isDeedDistribTF ? PotentialTrustsOnly : PotentialAgentsWithTrust",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6579fb0d0c076ece99d02d66",
+      "name": "SelectOwner",
+      "isList": false,
+      "label": "Select the transferor:",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && TransferType",
+      "type": "selection",
+      "metadata": {
+        "notes": "!IsGeauxAppTF && TransferType && TransferType != \"Deed of Distribution\" && (TransferType != \"Donation\" || (TransferType == \"Donation\" && OnlyToTrust != \"Clients to Trust\"))"
+      }
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6579fdb60c076ece99d02d67",
+      "name": "PluralOwnersTF",
+      "isList": false,
+      "label": "Are there additional transferors?",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && TransferOf",
+      "type": "true/false"
+    },
+    {
+      "style": "checkbox columns",
+      "options": "PotentialAgentsWithTrust|filter: id$ != SelectOwner.id$",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6579fdc90c076ece99d02d68",
+      "name": "AdditionalOwners",
+      "isList": true,
+      "label": "Additional transferors",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && TransferOf && PluralOwnersTF",
+      "type": "selection",
+      "metadata": {
+        "notes": "!IsGeauxAppTF && TransferType && TransferType != \"Deed of Distribution\" && (TransferType != \"Donation\" || (TransferType == \"Donation\" && OnlyToTrust != \"Clients to Trust\")) && PluralOwnersTF"
+      }
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Donation\"},{\"Name\":\"Transfer\"},{\"Name\":\"Sale\"},{\"Name\":\"Deed of Distribution\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6581deae16bedc9b0493e042",
+      "name": "1TransferType",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "metadata": {
+        "notes": "!IsGeauxAppTF"
+      }
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Land\",\"Description\":\"Residence or Land\",\"BasicDescription\":\"Real Property\"},{\"Name\":\"Movable Property\",\"Description\":\"Moveable Property\",\"BasicDescription\":\"Moveable Property\"},{\"Name\":\"Financial Assets\",\"Description\":\"Financial Assets\",\"BasicDescription\":\"Financial Assets\"},{\"Name\":\"Personal Property\",\"Description\":\"Personal Property\",\"BasicDescription\":\"Personal Property\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6581e0f716bedc9b0493e043",
+      "name": "1TransferOf",
+      "isList": false,
+      "label": "What is being transferred?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "metadata": {
+        "notes": "!IsGeauxAppTF && TransferType && TransferType != \"Deed of Distribution\""
+      }
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Clients to Trust\"},{\"Name\":\"Other Donation\"}]",
+      "optionTemplate": "{[this == \"Clients to Trust\" ? (MarriedTF ? \"From both or either Client\" : \"From the Client\") + \" to the Trust being created\" : this == \"Other Donation\" ? \"Any other kind of donation\" : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6581e97ea63052e9a6e13806",
+      "name": "OnlyToTrust",
+      "isList": false,
+      "label": "Is this a donation solely from {[if MarriedTF]}one or both Clients{[else]}the Client{[endif]} to the Trust *being created or amended here*, or is it another type of donation (i.e., to a different trust, or between someone who is not a client, etc.)",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "PotentialTrustsOnly",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "658706d1c060f56d4ab99d3d",
+      "name": "SelectTrust",
+      "isList": false,
+      "label": "Select the trust or entity transferor:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "65eb93859e414c0dc5cf80ab",
+      "name": "MineralnterestOnlyTF",
+      "isList": false,
+      "label": "Select if ONLY Mineral Interests are being transferred.",
+      "helpText": "",
+      "forceRelevance": "TransferOf == \"Land\" && DeedState == \"Louisiana\"",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 2,
+      "minimum": "",
+      "maximum": "",
+      "_id": "65fe1222694c8dce11079b92",
+      "name": "Acreage",
+      "isList": false,
+      "label": "Enter the approximate acreage of the parcel to be transfered.",
+      "helpText": "If the beneficiaries, trustees, terms, or conditions of a Trust as reflected on an Extract change, it may be restated and refiled in the conveyance records.",
+      "forceRelevance": "",
+      "type": "text",
+      "height": 1
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "664632c8dd64ea373b0e96c9",
+      "name": "ActofCorrectionTF",
+      "isList": false,
+      "label": "Select if this document should be an Act of Correction.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "_id": "6695597e566c2c6a66e0ab52",
+      "name": "OriginalActDT",
+      "isList": false,
+      "label": "Enter the date of execution of the ORIGINAL Act of Transfer or Donation to be corrected.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "date"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "_id": "66955a2f566c2c6a66e0ab53",
+      "name": "OriginalActCOB",
+      "isList": false,
+      "label": "Enter the Conveyance Book where the original Act of Donation or Transfer was recorded. ",
+      "helpText": "Formatting will be: COB XXX Page YYY",
+      "forceRelevance": "",
+      "type": "number"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "_id": "66955a9c566c2c6a66e0ab54",
+      "name": "OriginalActPage",
+      "isList": false,
+      "label": "Enter the PAGE where the original Act of Donation or Transfer was recorded.",
+      "helpText": "Formatting will be: COB XXX Page YYY",
+      "forceRelevance": "",
+      "type": "text",
+      "height": 1
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": "",
+      "minimum": "",
+      "maximum": "",
+      "_id": "66955b66566c2c6a66e0ab55",
+      "name": "OriginalActInstrumentNo",
+      "isList": false,
+      "label": "Enter the Instrument Number of the original Act of Donation or Transfer. ",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "height": 1
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Donation\",\"Description\":\"Act of Donation\"},{\"Name\":\"Sale\",\"Description\":\"Act of Sale\"},{\"Name\":\"Transfer\",\"Description\":\"Act of Transfer\"},{\"Name\":\"Exchange\",\"Description\":\"Act of Exchange\"},{\"Name\":\"Other\",\"Description\":\"Other\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "66955d4b566c2c6a66e0ab56",
+      "name": "CorrectedDocumentTitle",
+      "isList": false,
+      "label": "What was the title of the Act to be corrected?",
+      "helpText": "If the selections do not match exactly, select \"Other\" and fill in the precise name of the document to be correctged.",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "66955ed0566c2c6a66e0ab57",
+      "name": "CorrectedDocumentTitleOther",
+      "isList": false,
+      "label": "Enter the exact title of the Document to be corrected pursusant to this Act of Correction",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "669560d6566c2c6a66e0ab58",
+      "name": "ClericalErrorDescription",
+      "isList": false,
+      "label": "Describe the clerical error that occured WITHOUT punctuation or capitalized first letter of description (See Question Help for formatting suggestion):",
+      "helpText": "Example: \"the social security of XXX was transposed and should instead read as follows: XXX-XX-XXXX\" ",
+      "forceRelevance": "",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Legal Description\",\"Description\":\"Legal Description (a material error)\"},{\"Name\":\"Terms\",\"Description\":\"Terms of Transfer (e.g., Erroneous reservation of rights)\"},{\"Name\":\"Other\",\"Description\":\"Other (Describe the error)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "66a26adaaf871f7c1a394548",
+      "name": "MaterialErrorDescription",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "66a26d11af871f7c1a394549",
+      "name": "OtherErrorDescription",
+      "isList": false,
+      "label": "Describe the clerical error that occured WITHOUT punctuation or capitalized first letter of description (See Question Help for formatting suggestion):",
+      "helpText": "Example: \"the Original Act of Donation did not include a reserved usufruct\" ",
+      "forceRelevance": "",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Omitted Exhibit\",\"Description\":\"Omitted Exhibit (with Legal Description)\"},{\"Name\":\"Name\",\"Description\":\"Erroneous Name of Person\"},{\"Name\":\"Trust Title\",\"Description\":\"Erroneous Trust Name\"},{\"Name\":\"Other\",\"Description\":\"Other\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "66a3c9591f7236dfd1885858",
+      "name": "NotarialErrorDescription",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "switch",
+      "_id": "66a3caa46b97570ccbd129a5",
+      "name": "NotarialActofCorrectionTF",
+      "isList": false,
+      "label": "Select if this document should be a \"Notarial\" Act of Correction{[if DeedState && DeedState != \"Louisiana\"]} (aka Scrivenor’s Error){[endif]}",
+      "helpText": "A Notarial Act of Correction may be used in the event of a \"clerical\" error as opposed to a substantive error. This is a grey area. For substantive errors, the original donor and donee must execute the act of correction. ",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "",
+      "options": "NotaryList",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "66a3d8786c11c722e09e1372",
+      "name": "ActOfCorrectionNotary",
+      "isList": false,
+      "label": "Original notary:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "NotaryList",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "66a3da636c11c722e09e1373",
+      "name": "ActOfCorrectionNotarizingNotary",
+      "isList": false,
+      "label": "Notarizing notary:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "switch",
+      "_id": "66a9517dc0c6d780e1c160ff",
+      "name": "BookPageTF",
+      "isList": false,
+      "label": "Select if the Parish / County indexes recorded Acts of Transfer by Conveyance Book and Page Number.",
+      "helpText": "Most Parishes / Counties index recording information by Book and Page number. For example, Conveyance Book XXXX, Page, YYY, Records of Orleans Parish, State of Louisiana.",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "switch",
+      "_id": "66aa71024bf5d3dea5ff7f00",
+      "name": "DonationOfResidenceTF",
+      "isList": false,
+      "label": "**Select to retain {[if peek(DeedState == \"Louisiana\")]}a Usufruct{[else]}a Life Estate{[endif]} of the property being transferred.**",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "switch",
+      "_id": "671b1c816573150806829af9",
+      "name": "isHome",
+      "isList": false,
+      "label": "Select if this the client's Principal Residence to include a statement regarding continuation of the \"homestead\" exemption.",
+      "helpText": "This selection will include langauge indicating whether or not the property is \"homestead\" property for purposes of state and local property taxes.",
+      "forceRelevance": "(EstateAppTF || BinderAppTF) && TransferOf == \"Land\" && DeedState && DeedState != \"Louisiana\"",
+      "type": "true/false",
+      "metadata": {
+        "notes": "(EstateAppTF || BinderAppTF) && (TransferOf == \"Home\" || TransferOf == \"Land\")"
+      }
+    },
+    {
+      "name": "MedicaidCureTF",
+      "isList": false,
+      "label": "Select if this Transfer made a \"give back\" to cure a penalty imposed by Medicaid for a gift within the Medicaid \"look-back\" period?  ",
+      "helpText": "Additional precatory language will be added to the document to clarify that the intent of the transfer is to cure penalty.",
+      "forceRelevance": "",
+      "_id": "67917a5e7f12827366409a43",
+      "type": "true/false",
+      "style": "switch"
+    },
+    {
+      "name": "MedicaidCureRecipient",
+      "isList": false,
+      "label": "Select the Person seeking eligibility for Medicaid.",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "679181987f12827366409a44",
+      "type": "selection",
+      "style": "",
+      "options": "PotentialAgentsWithTrust",
+      "optionTemplate": "",
+      "typeOfVariable": "userData"
+    },
+    {
+      "name": "TransferOf",
+      "isList": false,
+      "label": "What is being transferred?",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68766cf3886295c9bb8860f0",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Land\",\"Description\":\"Real Estate (including Mineral Interests)\",\"BasicDescription\":\"Real Property\"},{\"Name\":\"Personal\",\"Description\":\"Personal Property (Tangible or Intangible)\",\"BasicDescription\":\"Movable Property\"},{\"Name\":\"Financial\",\"Description\":\"Financial Assets and Accounts\",\"BasicDescription\":\"Financial Assets\"},{\"Name\":\"Catchall\",\"Description\":\"Catchall (Miscellanous Belongings)\",\"BasicDescription\":\"Personal Property\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "metadata": {
+        "notes": "!IsGeauxAppTF && TransferType != \"TransferAndJoinder\""
+      }
+    },
+    {
+      "name": "TransferType",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF",
+      "_id": "68766e26886295c9bb8860f1",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Donation\",\"Description\":\"Act of Donation\",\"LATransferor\":\"Donor\",\"LATransferee\":\"Donee\",\"NonLATransferor\":\"Grantor\",\"NonLATransferee\":\"Grantee\",\"TransferReference\":\"donated\"},{\"Name\":\"TransferAndJoinder\",\"Description\":\"Transfer / Joinder (Business Entity)\",\"LATransferor\":\"Transferor\",\"LATransferee\":\"Transferee\",\"NonLATransferor\":\"Grantor\",\"NonLATransferee\":\"Grantee\",\"TransferReference\":\"transferred\"},{\"Name\":\"Contribution\",\"Description\":\"Capital Contribution to Business Entity\",\"LATransferor\":\"Transferor\",\"LATransferee\":\"Transferee\",\"NonLATransferor\":\"Grantor\",\"NonLATransferee\":\"Grantee\",\"TransferReference\":\"transferred\"},{\"Name\":\"Distribution\",\"Description\":\"Deed of Distribution from Trust or Entity\",\"LATransferor\":\"Transferor\",\"LATransferee\":\"Transferee\",\"NonLATransferor\":\"Grantor\",\"NonLATransferee\":\"Grantee\",\"TransferReference\":\"transferred\"},{\"Name\":\"Sale\",\"Description\":\"Sale\",\"LATransferor\":\"Seller\",\"LATransferee\":\"Purchaser\",\"NonLATransferor\":\"Grantor\",\"NonLATransferee\":\"Grantee\",\"TransferReference\":\"transferred\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "WarrantyType",
+      "isList": false,
+      "label": "Select the **Warranty of Title** to be provided by the Transferor.",
+      "helpText": "GENERAL WARRANTY DEED:\r\nA general warranty deed provides the highest level of protection to the buyer, guaranteeing against title defects and third-party claims from the property's entire history, even those that existed before the current seller owned the property. This type of deed includes six specific covenants that the grantor makes to the grantee. These covenants cover the grantor's ownership and right to sell, the absence of undisclosed encumbrances, the buyer's quiet enjoyment of the property, the grantor's promise to defend the title forever, and the grantor's commitment to take future actions if needed to perfect the title. \r\n\r\nSPECIAL WARRANTY DEED:\r\nA special warranty deed offers more limited protection compared to a general warranty deed. The grantor only guarantees against title issues or encumbrances that arose during their period of ownership. This means the grantor is only responsible for issues caused by their own actions or omissions while they held the property. Special warranty deeds are often used in situations where the grantor hasn't owned the property for a long time, such as in bank sales or foreclosures. \r\n\r\nQUITCLAIM DEED:\r\nIt's also important to understand quitclaim deeds, which are different because they do not offer any warranty of title. With a quitclaim deed, the grantor simply transfers whatever interest they may have in the property, without making any guarantees about the title's validity or whether any claims exist. These deeds are typically used in specific situations, such as transfers between family members or in divorce settlements, where the parties involved have a high level of trust and the risk of title issues is accepted by the grantee. ",
+      "forceRelevance": "",
+      "_id": "687ce1cf6ad4c9caf415701d",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"General\",\"Description\":\"General Warranty\"},{\"Name\":\"Special\",\"Description\":\"Special Warranty\"},{\"Name\":\"Quitclaim\",\"Description\":\"Quitclaim\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "PurchasePriceTF",
+      "isList": false,
+      "label": "Select to state the Purchase Price in the Deed.",
+      "helpText": "If NOT selected, the consideration will be \"Ten Dollars ($10.00), and other valuable consideration\". ",
+      "forceRelevance": "",
+      "_id": "687ce5e56ad4c9caf415701e",
+      "type": "true/false",
+      "style": "switch"
+    },
+    {
+      "name": "DeedSigningParish",
+      "isList": false,
+      "label": "In which {[DeedSigningState.ParishCounty|else: \"parish/county\"]} will the deed be signed?",
+      "helpText": "Leave blank if the signing City and Parish are not listed, or contact us and we will add your City / Parish as an option. ",
+      "forceRelevance": "",
+      "lastModified": "2022-06-23T14:08:57.045Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "68accac3060b68b9685dc9f1",
+      "type": "selection",
+      "style": "dropdown",
+      "options": "[{\"Name\":\"Rapides\",\"Label\":\"Rapides\"},{\"Name\":\"Lafayette\",\"Label\":\"Lafayette\"},{\"Name\":\"Caddo\",\"Label\":\"Caddo\"},{\"Name\":\"East Baton Rouge\",\"Label\":\"East Baton Rouge\"},{\"Name\":\"Calcasieu\",\"Label\":\"Calcasieu\"},{\"Name\":\"St. Tammany\",\"Label\":\"St. Tammany\"},{\"Name\":\"Jefferson\",\"Label\":\"Jefferson\"},{\"Name\":\"Ouachita\",\"Label\":\"Ouachita\"},{\"Name\":\"Orleans\",\"Label\":\"Orleans\"},{\"Name\":\"Other\",\"Label\":\"Other; enter to right\"}]",
+      "optionTemplate": "{[Label]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "DeedSigningState",
+      "isList": false,
+      "label": "In which State will the deed be signed?",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68accb8cf1800a402a4e4e34",
+      "type": "selection",
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable"
+    },
+    {
+      "name": "DeedSignOtherTF",
+      "isList": false,
+      "label": "**This deed being signed somewhere** ***DIFFERENT*** **than the rest of the documents for this client**",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68accc0af1800a402a4e4e35",
+      "type": "true/false",
+      "style": "switch"
+    },
+    {
+      "name": "DeedSignCountyOther",
+      "isList": false,
+      "label": "{[DeedSigningState.ParishCounty|else: \"Parish/county\"]} (do not include the word \"{[DeedSigningState.ParishCounty|titlecaps|else: \"Parish/County\"]}\"):",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68accc5bf1800a402a4e4e36",
+      "type": "text",
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]"
+    },
+    {
+      "name": "SelectLLC",
+      "isList": false,
+      "label": "Select the business entity *being transferred*:",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && TransferType == \"TransferAndJoinder\"",
+      "_id": "68dc310f1d066e69d55062c3",
+      "type": "selection",
+      "style": "",
+      "options": "PotentialEntities",
+      "optionTemplate": "",
+      "typeOfVariable": "userData"
+    },
+    {
+      "name": "UseClientNotary",
+      "isList": false,
+      "label": "Select the Signing Location",
+      "helpText": "",
+      "forceRelevance": "(ExistingLLCs|map: id$|contains: id$)",
+      "lastModified": "2021-08-17T20:24:35.152Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "68dc3b6c1e7a6688d6b87305",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Alexandria\",\"SigningLine\":\"Alexandria, Rapides Parish, Louisiana\"},{\"Name\":\"Baton Rouge\",\"SigningLine\":\"Baton Rouge, __________ Parish, Louisiana\"},{\"Name\":\"Lafayette\",\"SigningLine\":\"Lafayette, Lafayette Parish, Louisiana\"},{\"Name\":\"Lake Charles\",\"SigningLine\":\"Lake Charles, Calcasieu Parish, Louisiana\"},{\"Name\":\"Monroe\",\"SigningLine\":\"Monroe, Ouachita Parish, Louisiana\"},{\"Name\":\"New Orleans\",\"SigningLine\":\"New Orleans, __________ Parish, Louisiana\"},{\"Name\":\"Shreveport\",\"SigningLine\":\"Shreveport, Caddo Parish, Louisiana\"},{\"Name\":\"Blank signing location\",\"SigningLine\":\"_______________(city), _______________________(parish/county), _________________(state)\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "Consideration",
+      "isList": false,
+      "label": "What is the consideration for the Sale?",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "690fc20b709ac23b89653fa5",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Cash\",\"Description\":\"Cash\"},{\"Name\":\"Dation\",\"Description\":\"Dation En Paiement\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "DebtAmount",
+      "isList": false,
+      "label": "What is the amount of the indebtedness to be relieved in exchange for the transfer?",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "690fc545709ac23b89653fa6",
+      "type": "number",
+      "style": "textbox",
+      "decimalPlaces": 2,
+      "minimum": "",
+      "maximum": ""
+    }
+  ],
+  "formulas": [
+    {
+      "_id": "63c1b6e35e677d2c8c54a76c",
+      "name": "ActofHome",
+      "isList": false,
+      "label": "",
+      "expression": "(EstateAppTF || BinderAppTF)\n  ? this\n  : {id$: this.id$ + \"WE89734J\",\n     RecipientEntity: \"Trust\",\n     TrustDonationType: \"Home\",\n     AoDOwner: peek(AoDOwner),\n     LandParish: LandParish,\n     ExhibitALegalDesc: peek(GeauxHaveLegalDescriptionTF ? ExhibitALegalDesc : null),\n     PluralTF: peek(PluralTF),\n     Owner1: peek(Owner1),\n     Owner2: peek(Owner2),\n     GeauxAoDHomeAddress: peek(GeauxAoDHomeAddress),\n     GeauxHaveLegalDescriptionTF: peek(GeauxHaveLegalDescriptionTF)\n  }\n  ",
+      "ref": "actoftransfer",
+      "lastModified": "2021-04-13T20:26:20.262Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "object"
+    },
+    {
+      "contentType": "",
+      "_id": "63c1b6e35e677d2c8c54a76d",
+      "name": "GeauxHomeSuggestions",
+      "isList": true,
+      "label": "",
+      "expression": "[\"Client.LineAddress\"]",
+      "ref": "",
+      "lastModified": "2021-01-12T19:49:14.391Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "_id": "63c1b6e35e677d2c8c54a76e",
+      "name": "Owner1",
+      "isList": false,
+      "label": "",
+      "expression": "IsGeauxAppTF || (!IsGeauxAppTF && TransferType == \"Donation\" && OnlyToTrust == \"Clients to Trust\")\n   ? MarriedTF\n      ? (AoDOwner == \"Client\") || (AoDOwner == \"Both\")\n          ? Client\n          : Spouse\n      : Client\n   : SelectOwner",
+      "ref": "individual",
+      "lastModified": "2020-06-06T00:00:49.852Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "object",
+      "metadata": {
+        "notes": "IsGeauxAppTF || (!IsGeauxAppTF && TransferType == \"Donation\" && OnlyToTrust == \"Clients to Trust\")\n   ? MarriedTF\n      ? (AoDOwner == \"Client\") || (AoDOwner == \"Both\")\n          ? Client\n          : Spouse\n      : Client\n   : SelectOwner\n  "
+      }
+    },
+    {
+      "_id": "63c1b6e35e677d2c8c54a76f",
+      "name": "Owner2",
+      "isList": false,
+      "label": "",
+      "expression": "Spouse",
+      "ref": "individual",
+      "lastModified": "2020-06-06T00:00:54.372Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "object"
+    },
+    {
+      "_id": "63c1b6e35e677d2c8c54a770",
+      "name": "PluralTF",
+      "isList": false,
+      "label": "",
+      "expression": "IsGeauxAppTF\n   ? MarriedTF && this.AoDOwner == \"Both\"\n   : this.PluralOwnersTF",
+      "ref": "",
+      "lastModified": "2020-06-06T02:21:49.339Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "true/false",
+      "metadata": {
+        "notes": "IsGeauxAppTF || (!IsGeauxAppTF && TransferType == \"Donation\" && OnlyToTrust == \"Clients to Trust\")\n   ? MarriedTF && AoDOwner == \"Both\"\n   : PluralOwnersTF"
+      }
+    },
+    {
+      "_id": "63c1b6e35e677d2c8c54a771",
+      "name": "SuggestionsforHome",
+      "isList": true,
+      "label": "",
+      "expression": "[\"{id: \\\"HomeGeaux23984\\\",\\nTextVar: Client.LineAddress\\n}\"]",
+      "ref": "textforlists",
+      "lastModified": "2021-01-12T19:49:37.448Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "object"
+    },
+    {
+      "_id": "657a05c2eada230cec898418",
+      "name": "AllSellers",
+      "isList": true,
+      "label": "",
+      "expression": "[\"SelectOwner\",\"PluralOwnersTF\\n   ? AdditionalOwners\\n   : []\"]",
+      "ref": "individual",
+      "type": "object"
+    },
+    {
+      "_id": "66d7911b3311152a1112c776",
+      "name": "TrueRecipientPerson",
+      "isList": true,
+      "label": "",
+      "expression": "[\"RecipientPerson\"]",
+      "ref": "individual",
+      "type": "object"
+    },
+    {
+      "contentType": "",
+      "_id": "671b1e316573150806829afa",
+      "name": "BinderMarriedNote",
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF\r\n   ? AllSellers.length > 2\r\n       ? null\r\n       : PluralOwnersTF\r\n           ? (SelectOwner.id$ == Client.id$ && (AdditionalOwners|any: id$ == Spouse.id$)) || (SelectOwner.id$ == Spouse.id$ && (AdditionalOwners|any: id$ == Client.id$))\r\n                ? \" (Joint)\"\r\n                : null\r\n           : SelectOwner.id$ == Client.id$\r\n              ? \" (\" + Client.First + \"'s separate)\"\r\n              : SelectOwner.id$ == Spouse.id$\r\n                   ? \" (\" + Spouse.First + \"'s separate)\"\r\n                   : null\r\n   : null\r\n",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "name": "isDeedDistribTF",
+      "isList": false,
+      "label": "",
+      "expression": "peek(TransferType == \"Deed of Distribution\")",
+      "ref": "",
+      "_id": "68790f4f946e6c160a8a9fa3",
+      "type": "true/false"
+    },
+    {
+      "name": "ParishSuggestions",
+      "isList": true,
+      "label": "",
+      "expression": "[\"this.DeedState == \\\"Louisiana\\\"\\n  ? (parishes|map: Name)\\n  : []\"]",
+      "ref": "",
+      "_id": "68cc6410cba2732980417cb6",
+      "type": "text",
+      "contentType": ""
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "Act of Transfer (Land to {[LLCName|else: \"________________\"]})",
+      "_id": "63c1b6e35e677d2c8c54a772",
+      "name": "BinderAoTLand",
+      "label": "",
+      "lastModified": "2022-02-16T16:55:51.673Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text",
+      "content": "Act of Transfer (Land to {[LLCName|else: \"________________\"]})"
+    },
+    {
+      "contentType": "",
+      "text": "Act of Transfer (Movables to {[LLCName|else: \"________________\"]})",
+      "_id": "63c1b6e35e677d2c8c54a773",
+      "name": "BinderAoTMovable",
+      "label": "",
+      "lastModified": "2022-02-16T16:55:51.673Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text",
+      "content": "Act of Transfer (Movables to {[LLCName|else: \"________________\"]})"
+    },
+    {
+      "filename": "GeauxExtractJoint.docx",
+      "filesize": 25216,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/f2a3e370-3be1-11ec-9f22-531610fc92e0.docx",
+      "user": "5fe0c5547241dc6f81146408",
+      "date": "2021-11-02T13:37:01.048Z",
+      "output": "Extract of Trust",
+      "_id": "63c1b6e35e677d2c8c54a774",
+      "name": "JointExtractGeaux",
+      "label": "",
+      "lastModified": "2021-11-02T13:37:03.680Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "contentType": "",
+      "text": "{[LLCStreet]}{[if LLCStreet2]}, {[LLCStreet2]}{[endif]}, {[LLCCity]}, {[LLCState.Name]} {[LLCZip]}",
+      "_id": "63c1b6e35e677d2c8c54a775",
+      "name": "LLCInline",
+      "label": "",
+      "lastModified": "2020-06-06T02:13:02.226Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text",
+      "content": "{[LLCStreet]}{[if LLCStreet2]}, {[LLCStreet2]}{[endif]}, {[LLCCity]}, {[LLCState.Name]} {[LLCZip]}"
+    },
+    {
+      "filename": "LLCLand.docx",
+      "filesize": 42494,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/63c1b6e35e677d2c8c54a776/93012bf0-f39c-11ef-9506-6ba41ae89c43/template.docx",
+      "user": "63d46c67ad98ce943197d39a",
+      "date": 1740503931625,
+      "output": "Act of Transfer {[if TransferOf == \"Home\" || TransferOf == \"Land\"]}of Land{[else]}of Movable Property{[endif]} from {[SelectOwner.NameCO]}{[if PluralOwnersTF]}, and cont.{[endif]} to {[RecipientPerson[0].NameCO]}{[if RecipientPerson.length > 1]}, and cont.{[endif]}",
+      "_id": "63c1b6e35e677d2c8c54a776",
+      "name": "LLCLand",
+      "label": "",
+      "lastModified": "2022-09-21T01:06:09.479Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "filename": "GeauxExtractSingle.docx",
+      "filesize": 24218,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/fb3dbb50-3be1-11ec-9f22-531610fc92e0.docx",
+      "user": "5fe0c5547241dc6f81146408",
+      "date": "2021-11-02T13:37:14.340Z",
+      "output": "Extract of Trust",
+      "_id": "63c1b6e35e677d2c8c54a778",
+      "name": "SingleExtractGeaux",
+      "label": "",
+      "lastModified": "2021-11-02T13:37:16.599Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "contentType": "",
+      "text": "{[if IsGeauxAppTF]}Donation to Trust (Home){[else]}{[TransferType.Description|else: \"Act of `__________`\"]} from {[AllSellers[0].NameCO]}{[if AllSellers.length > 1]}, and cont.{[endif]} to {[RecipientPerson[0].NameCO]}{[if RecipientPerson.length > 1]}, and cont.{[endif]}{[if this.TransferType == \"TransferAndJoinder\"]} - {[SelectLLC.NameCO]}{[elseif this.TransferType != \"TransferAndJoinder\" && this.TransferOf == \"Land\"]} – {[this.LandParish]} {[this.DeedState.ParishCounty|else: \"Parish\"]}{[elseif this.TransferType != \"TransferAndJoinder\"]} - {[this.TransferOf.BasicDescription]}{[endif]}{[endif]}",
+      "_id": "63c1b6e35e677d2c8c54a779",
+      "name": "SumTemp",
+      "label": "",
+      "lastModified": "2021-04-13T20:26:03.449Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text",
+      "metadata": {
+        "notes": "\n{[if !IsGeauxAppTF && TransferType == \"Deed of Distribution\"]}Deed of Distribution from {[SelectTrust.NameCO]} to {[RecipientPerson[0].NameCO]}{[if RecipientPerson.length > 1]}, and cont.{[endif]}{[else]}{[if !IsGeauxAppTF && TransferType]}Act of {[TransferType]} ({[TransferOf.Description]}) - {[SelectOwner.NameCO]}{[if PluralOwnersTF]}, and cont.{[endif]} to {[RecipientPerson[0].NameCO]}{[if RecipientPerson.length > 1]}, and cont.{[endif]}{[if this.TransferOf == \"Land\"]} – {[this.LandParish]} {[this.DeedState.ParishCounty|else: \"Parish or County\"]}{[endif]}{[elseif IsGeauxAppTF]}Donation to Trust (Home){[endif]}{[endif]}\n\n{[if !IsGeauxAppTF && TransferType == \"Deed of Distribution\"]}{[else]}{[if !IsGeauxAppTF && TransferType]}Act of {[TransferType]} ({[TransferOf.Description]}) - {[SelectOwner.NameCO]}{[if PluralOwnersTF]}, and cont.{[endif]} to {[RecipientPerson[0].NameCO]}{[if RecipientPerson.length > 1]}, and cont.{[endif]}{[if this.TransferOf == \"Land\"]} – {[this.LandParish]} {[this.DeedState.ParishCounty|else: \"Parish or County\"]}{[endif]}{[elseif IsGeauxAppTF]}Donation to Trust (Home){[endif]}{[endif]}"
+      },
+      "content": "{[if IsGeauxAppTF]}Donation to Trust (Home){[else]}{[TransferType.Description|else: \"Act of `__________`\"]} from {[AllSellers[0].NameCO]}{[if AllSellers.length > 1]}, and cont.{[endif]} to {[RecipientPerson[0].NameCO]}{[if RecipientPerson.length > 1]}, and cont.{[endif]}{[if this.TransferType == \"TransferAndJoinder\"]} - {[SelectLLC.NameCO]}{[elseif this.TransferType != \"TransferAndJoinder\" && this.TransferOf == \"Land\"]} – {[this.LandParish]} {[this.DeedState.ParishCounty|else: \"Parish\"]}{[elseif this.TransferType != \"TransferAndJoinder\"]} - {[this.TransferOf.BasicDescription]}{[endif]}{[endif]}"
+    },
+    {
+      "filename": "TrustHome (1).docx",
+      "filesize": 63972,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/63c1b6e35e677d2c8c54a77a/c2b494b0-e8af-11ef-8f6a-e3e6753d760d/template.docx",
+      "user": "63d46c67ad98ce943197d39a",
+      "date": 1739302711120,
+      "output": "Act of{[if !IsGeauxAppTF && ActofCorrectionTF]} Correction to{[endif]} Donation of{[if IsGeauxAppTF || (EstateAppTF && DonationOfResidenceTF)]} Residence{[else]} Immovable Property{[endif]} to Trust",
+      "_id": "63c1b6e35e677d2c8c54a77a",
+      "name": "TrustHome",
+      "label": "",
+      "lastModified": "2022-09-21T01:09:26.684Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "filename": "AoD LLC (1).docx",
+      "filesize": 30866,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/63c1b6e35e677d2c8c54a77b/2b484760-e8b0-11ef-8f6a-e3e6753d760d/template.docx",
+      "user": "63d46c67ad98ce943197d39a",
+      "date": 1739302884622,
+      "output": "Act of Donation to Trust (LLC) - {[LLCName]}",
+      "_id": "63c1b6e35e677d2c8c54a77b",
+      "name": "TrustLLC",
+      "label": "",
+      "lastModified": "2021-12-20T18:32:01.224Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "filename": "AoD Land (1).docx",
+      "filesize": 30347,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/63c1b6e35e677d2c8c54a77c/45ec58e0-e8b0-11ef-8f6a-e3e6753d760d/template.docx",
+      "user": "63d46c67ad98ce943197d39a",
+      "date": 1739302928968,
+      "output": "Act of Donation to Trust (Land)",
+      "_id": "63c1b6e35e677d2c8c54a77c",
+      "name": "TrustLand",
+      "label": "",
+      "lastModified": "2022-09-21T01:06:59.978Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "filename": "AoD Movable (1).docx",
+      "filesize": 30081,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/63c1b6e35e677d2c8c54a77d/1547a640-e8b0-11ef-8f6a-e3e6753d760d/template.docx",
+      "user": "63d46c67ad98ce943197d39a",
+      "date": 1739302848708,
+      "output": "Act of Donation to Trust (Movable Property)",
+      "_id": "63c1b6e35e677d2c8c54a77d",
+      "name": "TrustMove",
+      "label": "",
+      "lastModified": "2021-12-22T23:46:41.194Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "filename": "TrustPersonal.docx",
+      "filesize": 28360,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/e2c841a0-0a58-11f0-a925-774fad185bf8.docx",
+      "user": "66cf83c43c74fb2094e33277",
+      "date": 1743003735370,
+      "output": "Act of Donation to Trust (Personal Property)",
+      "_id": "63c1b6e35e677d2c8c54a77e",
+      "name": "TrustPersonal",
+      "label": "",
+      "lastModified": "2021-12-20T19:18:19.151Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "docx"
+    },
+    {
+      "filename": "AoD Financial Assets.docx",
+      "filesize": 30331,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/64e9f28b71703a5abfd4d778/13b865a0-e8ae-11ef-8f6a-e3e6753d760d/template.docx",
+      "user": "63d46c67ad98ce943197d39a",
+      "date": 1739301987169,
+      "output": "Act of Donation of Financial Assets",
+      "_id": "64e9f28b71703a5abfd4d778",
+      "name": "TrustFinancial",
+      "label": "",
+      "type": "docx"
+    },
+    {
+      "filename": "ActofSale 2025.04.17.docx",
+      "filesize": 52537,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/6522e1e2cc729cf5ab477cc0/0c266f60-1bc8-11f0-abaf-a94b834b04ff/template.docx",
+      "user": "66cf83c43c74fb2094e33277",
+      "date": 1744920650073,
+      "output": "Act of Sale{[if TransferOf == \"Home\"]} of Home{[elseif TransferOf == \"Land\"]} of Land{[else]} of Movable Property{[endif]} from {[SelectOwner.NameCO]}{[if PluralOwnersTF]}, and cont.{[endif]} to {[RecipientPerson[0].NameCO]}{[if RecipientPerson.length > 1]}, and cont.{[endif]}",
+      "_id": "6522e1e2cc729cf5ab477cc0",
+      "name": "ActofSale",
+      "label": "",
+      "type": "docx"
+    },
+    {
+      "filename": "ActofDonation.docx",
+      "filesize": 79038,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/b48c1de0-3cc9-11f0-a191-9d2c56009eed.docx",
+      "date": 1748549751272,
+      "output": "Act of {[if ActofCorrectionTF]}Correction and {[endif]}Donation{[if TransferOf == \"Home\"]} of Residence{[elseif TransferOf == \"Land\"]} of Land{[else]} of Movable Property{[endif]} from {[SelectOwner.NameCO]}{[if PluralOwnersTF]}, and cont.{[endif]} to {[RecipientPerson[0].NameCO]}{[if RecipientPerson.length > 1]}, and cont.{[endif]}",
+      "_id": "6557e0e97b67b1144962d52a",
+      "name": "ActofDonation",
+      "label": "",
+      "type": "docx",
+      "user": "66cf83c43c74fb2094e33277",
+      "isTemplates": true
+    },
+    {
+      "filename": "DeedOfDistribution.docx",
+      "filesize": 48428,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/655cf3bb849480cd9d475b8f/e0378a90-e8ac-11ef-8f6a-e3e6753d760d/template.docx",
+      "date": 1739301471969,
+      "output": "{[if !IsGeauxAppTF && ActofCorrectionTF]}Act of Correction to {[endif]}Deed of Distribution{[if TransferOf == \"Home\" || TransferOf == \"Land\"]} of Land{[else]} of Movable Property{[endif]} from {[SelectTrust.NameCO]} to {[RecipientPerson[0].NameCO]}{[if RecipientPerson.length > 1]}, and cont.{[endif]}",
+      "_id": "655cf3bb849480cd9d475b8f",
+      "name": "DeedOfDistribution",
+      "label": "",
+      "type": "docx",
+      "user": "63d46c67ad98ce943197d39a"
+    },
+    {
+      "contentType": "",
+      "text": "{[if TransferType == \"Deed of Distribution\"]}Deed of Distribution{[else]}   Act of {[TransferType]} ({[if this.TransferOf == \"Land\"]}Land{[else]}{[TransferOf.BasicDescription]}{[endif]}){[if TransferType == \"Donation\"]}{[BinderMarriedNote|else: \"\"]}{[if this.TransferOf == \"Land\"]} – {[this.LandParish]} {[this.DeedState.ParishCounty|else: \"Parish\"]}{[endif]}{[endif]}{[endif]}",
+      "_id": "65b90fb6d05afaae77d8bda0",
+      "name": "BasicName",
+      "label": "",
+      "type": "text",
+      "metadata": {
+        "notes": "{[if TransferType == \"Deed of Distribution\"]}Deed of Distribution{[else]}Act of {[TransferType]} ({[if this.TransferOf == \"Land\"]}{[if this.isHome]}Home{[else]}Land{[endif]}{[else]}{[TransferOf.BasicDescription]}{[endif]}){[if TransferType == \"Donation\" && OnlyToTrust == \"Clients to Trust\"]}{[if MarriedTF && AoDOwner == \"Spouse\"]} ({[Spouse.First]}'s separate){[elseif MarriedTF && AoDOwner == \"Client\"]} ({[Client.First]}'s separate){[elseif MarriedTF && AoDOwner == \"Both\"]} (Joint){[endif]} to Trust{[else]}{[BinderMarriedNote|else: \"\"]}{[endif]}{[if this.TransferOf == \"Land\"]} – {[this.LandParish]} {[this.DeedState.ParishCounty|else: \"Parish\"]}{[endif]}{[endif]}"
+      },
+      "content": "{[if TransferType == \"Deed of Distribution\"]}Deed of Distribution{[else]}   Act of {[TransferType]} ({[if this.TransferOf == \"Land\"]}Land{[else]}{[TransferOf.BasicDescription]}{[endif]}){[if TransferType == \"Donation\"]}{[BinderMarriedNote|else: \"\"]}{[if this.TransferOf == \"Land\"]} – {[this.LandParish]} {[this.DeedState.ParishCounty|else: \"Parish\"]}{[endif]}{[endif]}{[endif]}"
+    },
+    {
+      "filename": "TrustHomeGeauxPlans 2024.07.30 (1).docx",
+      "filesize": 41833,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/66aa903cb701500d168f74d9/0c7bf050-73d6-11f0-b051-9b56bd0c29f3/template.docx",
+      "user": "63d46c67ad98ce943197d39a",
+      "date": 1754602367147,
+      "output": "Act of Donation of Residence to Trust",
+      "_id": "66aa903cb701500d168f74d9",
+      "name": "GeauxHome",
+      "label": "",
+      "type": "docx"
+    },
+    {
+      "contentType": "",
+      "text": "{[list TrueRecipientPerson]}\r\nName: {[this.NameCO]}        \r\nEntityType: {[this.EntityType]}      \r\nOwners:      \r\n{[list this.Owners]}\r\nName: {[this.NameCO]}        \r\nOwners of owner:    \r\n{[list this.Owners]}\r\n{[this.NameCO]}      \r\n{[endlist]}\r\n{[endlist]}\r\n{[endlist]}",
+      "_id": "66d7905c3311152a1112c775",
+      "name": "TestDevTemplate",
+      "label": "",
+      "type": "text",
+      "content": "{[list TrueRecipientPerson]}\r\nName: {[this.NameCO]}        \r\nEntityType: {[this.EntityType]}      \r\nOwners:      \r\n{[list this.Owners]}\r\nName: {[this.NameCO]}        \r\nOwners of owner:    \r\n{[list this.Owners]}\r\n{[this.NameCO]}      \r\n{[endlist]}\r\n{[endlist]}\r\n{[endlist]}"
+    },
+    {
+      "name": "UniversalAoT",
+      "label": "",
+      "_id": "6865a5fc49db0e414aca447f",
+      "type": "docx",
+      "filename": "UniversalAoT.docx",
+      "filesize": 138778,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/3c3c7c40-c2ed-11f0-995c-e11bf054efd4.docx",
+      "date": 1763298478264,
+      "output": "{[AoTDocTitle]}",
+      "user": "66cf83c43c74fb2094e33277",
+      "isTemplates": true,
+      "metadata": {
+        "notes": ""
+      }
+    },
+    {
+      "name": "ScrivenerErrorAffidavit",
+      "label": "",
+      "_id": "687128795711e7e3561c2338",
+      "type": "docx",
+      "filename": "Scrivener's Error Affidavit (rev. 2025.07.10).docx",
+      "filesize": 28559,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/687128795711e7e3561c2338/548591f0-5e80-11f0-bea2-eba59b6c95f4/template.docx",
+      "date": 1752256573961,
+      "output": "Scrivener's Error Affidavit",
+      "user": "66cf83c43c74fb2094e33277"
+    },
+    {
+      "name": "TestAppearance",
+      "label": "",
+      "_id": "6871af9d67c615a9bdae0581",
+      "type": "docx",
+      "filename": "Testing.docx",
+      "filesize": 30455,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/6871af9d67c615a9bdae0581/5913bc10-5ec1-11f0-bea2-eba59b6c95f4/template.docx",
+      "date": 1752284500153,
+      "output": "",
+      "user": "63d46c67ad98ce943197d39a"
+    },
+    {
+      "name": "AoTFooter",
+      "label": "",
+      "_id": "689362b4e1a337fe9f6476f7",
+      "type": "text",
+      "contentType": "",
+      "text": "{[if this.TransferType == \"TransferAndJoinder\"]}Act of Transfer and Joinder Agreement - {[SelectLLC.NameCO]}{[elseif this.TransferType != \"TransferAndJoinder\"]}{[if (this.TransferOf == \"Land\" && DeedState == \"Louisiana\") || TransferOf != \"Land\"]}{[if TransferOf == \"Land\" && ActofCorrectionTF]}Act of Correction to {[endif]}{[if TransferType != \"Distribution\" && TransferType != \"Sale\"]}Act of {[elseif TransferType != \"Sale\"]}Deed of {[endif]}{[if TransferType == \"Donation\"]}Donation{[elseif TransferType == \"Contribution\"]}Contribution{[elseif TransferType == \"Distribution\"]}Distribution{[elseif TransferType == \"Sale\" && Consideration == \"Cash\"]}Act of Sale{[elseif TransferType == \"Sale\" && Consideration == \"Dation\"]}Dation En Paiement{[endif]} of {[if TransferOf == \"Land\"]}Immovable Property{[else]}{[TransferOf.BasicDescription]}{[endif]}{[elseif TransferOf == \"Land\" && DeedState != \"Louisiana\"]}{[if TransferOf == \"Land\" && ActofCorrectionTF && !NotarialActofCorrectionTF]}Act of Correction to {[endif]}{[if TransferType == \"Donation\"]}{[if DeedState == \"Mississippi\"]}Gift{[elseif DeedState != \"Mississippi\"]}{[if WarrantyType == \"General\"]}Warranty{[elseif WarrantyType == \"Special\"]}Special Warranty{[elseif WarrantyType == \"Quitclaim\"]}Quitclaim{[endif]}{[endif]}{[if MineralnterestOnlyTF]} Mineral{[endif]} Deed{[elseif TransferOf == \"Land\" && TransferType == \"Contribution\"]}Act of Contribution{[elseif TransferType == \"Distribution\"]}Distribution{[elseif TransferType == \"Sale\"]}{[if WarrantyType == \"General\"]}Warranty{[elseif WarrantyType == \"Special\"]}Special Warranty{[elseif WarrantyType == \"Quitclaim\"]}Quitclaim{[endif]}{[if MineralnterestOnlyTF]} Mineral{[endif]}Deed{[endif]}{[elseif TransferOf == \"Land\" && DeedState != \"Louisiana\" && ActofCorrectionTF && NotarialActofCorrectionTF]}Scrivener’s Error Affidavit{[endif]}{[if !peek(ActofCorrectionTF)]} to {[list RecipientPerson|punc: \"1, 2, and 3\"]}{[if id$ == \"TheTrust\"]}The {[TrustName]}{[elseif !IndividualTF && EntityType == \"trust\"]}The {[NameCO|initcap]}{[else]}{[NameCO|initcap]}{[endif]}{[endlist]}{[endif]}{[endif]}",
+      "content": "{[if this.TransferType == \"TransferAndJoinder\"]}Act of Transfer and Joinder Agreement - {[SelectLLC.NameCO]}{[elseif this.TransferType != \"TransferAndJoinder\"]}{[if (this.TransferOf == \"Land\" && DeedState == \"Louisiana\") || TransferOf != \"Land\"]}{[if TransferOf == \"Land\" && ActofCorrectionTF]}Act of Correction to {[endif]}{[if TransferType != \"Distribution\" && TransferType != \"Sale\"]}Act of {[elseif TransferType != \"Sale\"]}Deed of {[endif]}{[if TransferType == \"Donation\"]}Donation{[elseif TransferType == \"Contribution\"]}Contribution{[elseif TransferType == \"Distribution\"]}Distribution{[elseif TransferType == \"Sale\" && Consideration == \"Cash\"]}Act of Sale{[elseif TransferType == \"Sale\" && Consideration == \"Dation\"]}Dation En Paiement{[endif]} of {[if TransferOf == \"Land\"]}Immovable Property{[else]}{[TransferOf.BasicDescription]}{[endif]}{[elseif TransferOf == \"Land\" && DeedState != \"Louisiana\"]}{[if TransferOf == \"Land\" && ActofCorrectionTF && !NotarialActofCorrectionTF]}Act of Correction to {[endif]}{[if TransferType == \"Donation\"]}{[if DeedState == \"Mississippi\"]}Gift{[elseif DeedState != \"Mississippi\"]}{[if WarrantyType == \"General\"]}Warranty{[elseif WarrantyType == \"Special\"]}Special Warranty{[elseif WarrantyType == \"Quitclaim\"]}Quitclaim{[endif]}{[endif]}{[if MineralnterestOnlyTF]} Mineral{[endif]} Deed{[elseif TransferOf == \"Land\" && TransferType == \"Contribution\"]}Act of Contribution{[elseif TransferType == \"Distribution\"]}Distribution{[elseif TransferType == \"Sale\"]}{[if WarrantyType == \"General\"]}Warranty{[elseif WarrantyType == \"Special\"]}Special Warranty{[elseif WarrantyType == \"Quitclaim\"]}Quitclaim{[endif]}{[if MineralnterestOnlyTF]} Mineral{[endif]}Deed{[endif]}{[elseif TransferOf == \"Land\" && DeedState != \"Louisiana\" && ActofCorrectionTF && NotarialActofCorrectionTF]}Scrivener’s Error Affidavit{[endif]}{[if !peek(ActofCorrectionTF)]} to {[list RecipientPerson|punc: \"1, 2, and 3\"]}{[if id$ == \"TheTrust\"]}The {[TrustName]}{[elseif !IndividualTF && EntityType == \"trust\"]}The {[NameCO|initcap]}{[else]}{[NameCO|initcap]}{[endif]}{[endlist]}{[endif]}{[endif]}"
+    },
+    {
+      "name": "AoTDocTitle",
+      "label": "",
+      "_id": "689362f5e1a337fe9f6476f8",
+      "type": "text",
+      "contentType": "",
+      "text": "{[if TransferType == \"TransferAndJoinder\"]}Act of Transfer and Joinder Agreement of {[SelectLLC.NameCO]} to {[list RecipientPerson|punc: \"1, 2, and 3\"]}{[if id$ == \"TheTrust\"]}The {[TrustName]}{[elseif !IndividualTF && EntityType == \"trust\"]}The {[NameCO]}{[else]}{[NameCO]}{[endif]}{[endlist]}{[elseif this.TransferType != \"TransferAndJoinder\"]}{[if TransferOf == \"Land\" && ActofCorrectionTF]}Act of Correction to {[endif]}{[if (TransferOf == \"Land\" && DeedState == \"Louisiana\") || TransferOf != \"Land\"]}{[if TransferType != \"Distribution\" && TransferType != \"Sale\"]}Act of {[elseif TransferType == \"Distribution\" && TransferType != \"Sale\"]}Deed of {[endif]}{[if TransferType == \"Donation\"]}Donation{[elseif TransferType == \"Contribution\"]}Contribution{[elseif TransferType == \"Distribution\"]}Distribution{[elseif TransferType == \"Sale\" && Consideration == \"Cash\"]}Act of Sale{[elseif TransferType == \"Sale\" && Consideration == \"Dation\"]}Dation En Paiement{[endif]} of{[if TransferOf == \"Land\" && DeedState == \"Louisiana\"]} Immovable Property{[elseif TransferOf == \"Personal\" && DeedState == \"Louisiana\"]} Movable Property{[elseif TransferOf == \"Personal\" && DeedState != \"Louisiana\"]} Personal Property{[elseif TransferOf == \"Financial\"]} Financial Assets{[elseif TransferOf == \"Catchall\"]} Tangible Personal Property{[endif]}{[elseif TransferOf == \"Land\" && DeedState == \"Mississippi\" && TransferType == \"Donation\"]}{[if ActofCorrectionTF && !NotarialActofCorrectionTF]}Act of Correction to {[endif]}Gift Deed{[elseif TransferOf == \"Land\" && ((DeedState == \"Mississippi\" && TransferType != \"Donation\") || DeedState != \"Louisiana\")]}{[if ActofCorrectionTF && !NotarialActofCorrectionTF]}Act of Correction to {[endif]}{[if !ActofCorrectionTF || (ActofCorrectionTF && !NotarialActofCorrectionTF)]}{[if WarrantyType == \"General\"]}General Warranty{[elseif WarrantyType == \"Special\"]}Special Warranty{[elseif WarrantyType == \"Quitclaim\"]}Quitclaim{[endif]}{[if MineralnterestOnlyTF]} Mineral{[endif]} Deed{[endif]}{[if TransferOf == \"Land\" && DeedState != \"Mississippi\" && ActofCorrectionTF && NotarialActofCorrectionTF]}Scrivenor's Error Affidavit{[endif]}{[endif]}{[if !peek(ActofCorrectionTF)]} to {[list RecipientPerson|punc: \"1, 2, and 3\"]}{[if id$ == \"TheTrust\"]}The {[TrustName]}{[elseif !IndividualTF && EntityType == \"trust\"]}The {[NameCO]}{[else]}{[NameCO]}{[endif]}{[endlist]}{[endif]}{[if TransferOf == \"Land\"]} ({[LandParish]} {[DeedState.ParishCounty]}, {[DeedState.Abbreviation]}){[elseif TransferOf == \"Catchall\"]} (Catchall){[endif]}{[endif]}",
+      "metadata": {
+        "notes": "{[if (TransferOf2 == \"Land\" && DeedState == \"Louisiana\") || (TransferOf2 && TransferOf2 != \"Land\")]}Act of {[if ActofCorrectionTF]}Correction And {[endif]}Donation of{[if TransferOf2 == \"Land\"]} Immovable{[else]} Movable{[endif]} Property{[elseif TransferOf2 == \"Land\" && DeedState == \"Mississippi\"]}{[if ActofCorrectionTF && !NotarialActofCorrectionTF]}Act of Correction To {[endif]}Gift Deed{[elseif TransferOf2 == \"Land\" && (DeedState == \"Texas\" || DeedState == \"Arkansas\")]}{[if ActofCorrectionTF && !NotarialActofCorrectionTF]}Act of Correction To {[endif]}{[if !ActofCorrectionTF || (ActofCorrectionTF && !NotarialActofCorrectionTF)]}Special Warranty{[if MineralnterestOnlyTF]} Mineral{[endif]} Deed{[endif]}{[if ActofCorrectionTF && NotarialActofCorrectionTF]}Scrivenor's Error Affidavit{[endif]}{[endif]}{[if !peek(ActofCorrectionTF)]} To {[list RecipientPerson|punc: \"1, 2, and 3\"]}{[if id$ == \"TheTrust\"]}The {[TrustName]}{[elseif !IndividualTF && EntityType == \"trust\"]}The {[NameCO]}{[else]}{[NameCO]}{[endif]}{[endlist]}{[endif]}\n\n{[if (TransferOf2 == \"Land\" && DeedState == \"Louisiana\") || TransferOf2 != \"Land\"]}Act of {[if ActofCorrectionTF]}Correction And {[endif]}Donation of{[if TransferOf2 == \"Land\"]} Immovable{[else]} Movable{[endif]} Property{[elseif TransferOf2 == \"Land\" && DeedState == \"Mississippi\"]}{[if ActofCorrectionTF && !NotarialActofCorrectionTF]}Act of Correction To {[endif]}Gift Deed{[elseif TransferOf2 == \"Land\" && (DeedState == \"Texas\" || DeedState == \"Arkansas\")]}{[if ActofCorrectionTF && !NotarialActofCorrectionTF]}Act of Correction To {[endif]}{[if !ActofCorrectionTF || (ActofCorrectionTF && !NotarialActofCorrectionTF)]}Special Warranty{[if MineralnterestOnlyTF]} Mineral{[endif]} Deed{[endif]}{[if ActofCorrectionTF && NotarialActofCorrectionTF]}Scrivenor's Error Affidavit{[endif]}{[endif]}{[if !peek(ActofCorrectionTF)]} TO {[list RecipientPerson|punc: \"1, 2, and 3\"]}{[if id$ == \"TheTrust\"]}The {[TrustName]}{[elseif !IndividualTF && EntityType == \"trust\"]}The {[NameCO]}{[else]}{[NameCO]}{[endif]}{[endlist]}{[endif]} "
+      },
+      "content": "{[if TransferType == \"TransferAndJoinder\"]}Act of Transfer and Joinder Agreement of {[SelectLLC.NameCO]} to {[list RecipientPerson|punc: \"1, 2, and 3\"]}{[if id$ == \"TheTrust\"]}The {[TrustName]}{[elseif !IndividualTF && EntityType == \"trust\"]}The {[NameCO]}{[else]}{[NameCO]}{[endif]}{[endlist]}{[elseif this.TransferType != \"TransferAndJoinder\"]}{[if TransferOf == \"Land\" && ActofCorrectionTF]}Act of Correction to {[endif]}{[if (TransferOf == \"Land\" && DeedState == \"Louisiana\") || TransferOf != \"Land\"]}{[if TransferType != \"Distribution\" && TransferType != \"Sale\"]}Act of {[elseif TransferType == \"Distribution\" && TransferType != \"Sale\"]}Deed of {[endif]}{[if TransferType == \"Donation\"]}Donation{[elseif TransferType == \"Contribution\"]}Contribution{[elseif TransferType == \"Distribution\"]}Distribution{[elseif TransferType == \"Sale\" && Consideration == \"Cash\"]}Act of Sale{[elseif TransferType == \"Sale\" && Consideration == \"Dation\"]}Dation En Paiement{[endif]} of{[if TransferOf == \"Land\" && DeedState == \"Louisiana\"]} Immovable Property{[elseif TransferOf == \"Personal\" && DeedState == \"Louisiana\"]} Movable Property{[elseif TransferOf == \"Personal\" && DeedState != \"Louisiana\"]} Personal Property{[elseif TransferOf == \"Financial\"]} Financial Assets{[elseif TransferOf == \"Catchall\"]} Tangible Personal Property{[endif]}{[elseif TransferOf == \"Land\" && DeedState == \"Mississippi\" && TransferType == \"Donation\"]}{[if ActofCorrectionTF && !NotarialActofCorrectionTF]}Act of Correction to {[endif]}Gift Deed{[elseif TransferOf == \"Land\" && ((DeedState == \"Mississippi\" && TransferType != \"Donation\") || DeedState != \"Louisiana\")]}{[if ActofCorrectionTF && !NotarialActofCorrectionTF]}Act of Correction to {[endif]}{[if !ActofCorrectionTF || (ActofCorrectionTF && !NotarialActofCorrectionTF)]}{[if WarrantyType == \"General\"]}General Warranty{[elseif WarrantyType == \"Special\"]}Special Warranty{[elseif WarrantyType == \"Quitclaim\"]}Quitclaim{[endif]}{[if MineralnterestOnlyTF]} Mineral{[endif]} Deed{[endif]}{[if TransferOf == \"Land\" && DeedState != \"Mississippi\" && ActofCorrectionTF && NotarialActofCorrectionTF]}Scrivenor's Error Affidavit{[endif]}{[endif]}{[if !peek(ActofCorrectionTF)]} to {[list RecipientPerson|punc: \"1, 2, and 3\"]}{[if id$ == \"TheTrust\"]}The {[TrustName]}{[elseif !IndividualTF && EntityType == \"trust\"]}The {[NameCO]}{[else]}{[NameCO]}{[endif]}{[endlist]}{[endif]}{[if TransferOf == \"Land\"]} ({[LandParish]} {[DeedState.ParishCounty]}, {[DeedState.Abbreviation]}){[elseif TransferOf == \"Catchall\"]} (Catchall){[endif]}{[endif]}"
+    },
+    {
+      "name": "TransferAffidavit",
+      "label": "",
+      "_id": "6894dc3ae64dff1dc1258814",
+      "type": "pdff",
+      "filename": "Property Transfer Affidavit.pdf",
+      "filesize": 165073,
+      "filepath": "templates/5edad8137e43d8182e6cfc43/6894dc3ae64dff1dc1258814/ec321970-73b0-11f0-b051-9b56bd0c29f3/template.pdf",
+      "date": 1754586249036,
+      "output": "Transfer Affidavit for {[this.LandParish]} {[this.DeedState.ParishCounty|else: \"Parish\"]}",
+      "fillable": true,
+      "fieldMap": {
+        "Reset": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "Reset",
+            "FieldFlags": 65536,
+            "FieldJustification": "Left"
+          }
+        },
+        "street address of property": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "street address of property",
+            "FieldFlags": 12582912,
+            "FieldValue": "",
+            "FieldJustification": "Left"
+          }
+        },
+        "county": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "county",
+            "FieldFlags": 12582912,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "LandParish|else: \"\""
+          }
+        },
+        "date of transfer": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "date of transfer",
+            "FieldFlags": 12582912,
+            "FieldJustification": "Left"
+          }
+        },
+        "location of real estate check": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "location of real estate check",
+            "FieldFlags": 0,
+            "FieldValue": "Off",
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "city",
+              "village",
+              "Off",
+              "township"
+            ]
+          }
+        },
+        "purchase price of RE": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "purchase price of RE",
+            "FieldFlags": 12582912,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "\"$1.00\""
+          }
+        },
+        "sellers name": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "sellers name",
+            "FieldFlags": 12582912,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "AllSellersList"
+          }
+        },
+        "pin": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "pin",
+            "FieldFlags": 12582912,
+            "FieldValue": "",
+            "FieldJustification": "Left"
+          }
+        },
+        "buyers name and address": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "buyers name and address",
+            "FieldFlags": 12587008,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "AllBuyersList"
+          }
+        },
+        "buyer's phone number": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "buyer's phone number",
+            "FieldFlags": 12582912,
+            "FieldJustification": "Left"
+          }
+        },
+        "type of transfer check": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "type of transfer check",
+            "FieldFlags": 0,
+            "FieldValue": "deed",
+            "FieldValueDefault": "deed",
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "other",
+              "landcontract",
+              "lease",
+              "Off",
+              "deed"
+            ]
+          }
+        },
+        "transfer other line": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "transfer other line",
+            "FieldFlags": 12582912,
+            "FieldJustification": "Left"
+          }
+        },
+        "line 11 checkbox": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "line 11 checkbox",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "no",
+              "yes",
+              "Off"
+            ]
+          }
+        },
+        "line 12 checkbox": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "line 12 checkbox",
+            "FieldFlags": 0,
+            "FieldValue": "Off",
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "no",
+              "yes",
+              "Off"
+            ]
+          }
+        },
+        "amount of down payment": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "amount of down payment",
+            "FieldFlags": 12582912,
+            "FieldJustification": "Left"
+          }
+        },
+        "line 14 checkbox": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "line 14 checkbox",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "no",
+              "yes",
+              "Off"
+            ]
+          }
+        },
+        "amount financed": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "amount financed",
+            "FieldFlags": 12582912,
+            "FieldJustification": "Left"
+          }
+        },
+        "exemptions checkbox 0": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 0",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 1": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 1",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 2": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 2",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 4": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 4",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 5": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 5",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 6": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 6",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 7": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 7",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 8": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 8",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 9": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 9",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 10": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 10",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 11": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 11",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 12": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 12",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 13": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 13",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 14": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 14",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 15": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 15",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions checkbox 16": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "exemptions checkbox 16",
+            "FieldFlags": 0,
+            "FieldValue": "",
+            "FieldValueDefault": "",
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "",
+              "Off"
+            ]
+          }
+        },
+        "exemptions other": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "exemptions other",
+            "FieldFlags": 12582912,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "\"Consideration less than $100.00\""
+          }
+        },
+        "Printed Name": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Printed Name",
+            "FieldFlags": 8388608,
+            "FieldJustification": "Left"
+          }
+        },
+        "date of signature": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "date of signature",
+            "FieldFlags": 12582912,
+            "FieldJustification": "Left"
+          }
+        },
+        "name and title": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "name and title",
+            "FieldFlags": 12582912,
+            "FieldJustification": "Left"
+          }
+        },
+        "signer daytime phone": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "signer daytime phone",
+            "FieldFlags": 12582912,
+            "FieldJustification": "Left"
+          }
+        },
+        "email address": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "email address",
+            "FieldFlags": 12582912,
+            "FieldJustification": "Left"
+          }
+        },
+        "exemptions checkbox 3": {
+          "0": {
+            "__props": {
+              "FieldType": "Button",
+              "FieldName": "exemptions checkbox 3.0",
+              "FieldFlags": 0,
+              "FieldJustification": "Left",
+              "FieldStateOption": [
+                "",
+                "Off"
+              ]
+            }
+          },
+          "1": {
+            "__props": {
+              "FieldType": "Button",
+              "FieldName": "exemptions checkbox 3.1",
+              "FieldFlags": 0,
+              "FieldJustification": "Left",
+              "FieldStateOption": [
+                "",
+                "Off"
+              ]
+            }
+          }
+        },
+        "citytownvillage": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "citytownvillage",
+            "FieldFlags": 12582912,
+            "FieldValue": "",
+            "FieldJustification": "Left"
+          }
+        }
+      },
+      "user": "63d46c67ad98ce943197d39a"
+    },
+    {
+      "name": "AllSellersList",
+      "label": "",
+      "_id": "6894dd05e64dff1dc1258815",
+      "type": "text",
+      "contentType": "",
+      "text": "{[list AllSellers|punc: \"1, 2, and 3\"]}{[NameCO]}{[endlist]}",
+      "content": "{[list AllSellers|punc: \"1, 2, and 3\"]}{[NameCO]}{[endlist]}"
+    },
+    {
+      "name": "AllBuyersList",
+      "label": "",
+      "_id": "6894dd19e64dff1dc1258816",
+      "type": "text",
+      "contentType": "",
+      "text": "{[list RecipientPerson|punc: \"1, 2, and 3\"]}{[NameCO]}{[endlist]}",
+      "content": "{[list RecipientPerson|punc: \"1, 2, and 3\"]}{[NameCO]}{[endlist]}"
+    }
+  ],
+  "__v": 328,
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}

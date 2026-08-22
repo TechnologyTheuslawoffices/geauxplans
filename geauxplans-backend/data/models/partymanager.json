@@ -1,0 +1,324 @@
+{
+  "_id": "61c22e76cbea6f0852054757",
+  "summary": "{[ManagerFullName]}",
+  "label": "",
+  "type": "object",
+  "name": "partymanager",
+  "formulas": [
+    {
+      "isList": false,
+      "label": "",
+      "expression": "{PartyType:IsNotMemberTF?ManagerPartyType:ManagingMember.PartyType,id$:id$.toString()+\":AsManager\",_link:id$,First:IsNotMemberTF?ManagerPartyType==\"Individual\"?ManagerFirst:null:ManagingMember.First,Middle:IsNotMemberTF?ManagerPartyType==\"Individual\"?ManagerMiddle:null:ManagingMember.Middle,Last:IsNotMemberTF?ManagerPartyType==\"Individual\"?ManagerLast:null:ManagingMember.Last,Suffix:IsNotMemberTF?ManagerPartyType==\"Individual\"?ManagerSuffix:null:ManagingMember.Suffix,EntityName:IsNotMemberTF?ManagerPartyType==\"Entity\"?ManagerEntityName:null:ManagingMember.EntityName,EntityStateLLC:IsNotMemberTF?ManagerPartyType==\"Entity\"?ManagerEntityStateLLC:null:ManagingMember.OrgState,EntityTypeLLC:IsNotMemberTF?ManagerPartyType==\"Entity\"?ManagerEntityTypeLLC:null:ManagingMember.EntityType,EntitySigners:IsNotMemberTF?ManagerPartyType==\"Entity\"?ManagerEntitySigners:null:ManagingMember.EntitySigners,Gender:null}",
+      "ref": "party",
+      "name": "AsManager",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T19:56:25.847Z",
+      "_id": "65319c07b669f0e056c64844"
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[if this.IsNotMemberTF]}{[if this.ManagerPartyType == \"Individual\"]}{[this.ManagerFirst]}{[if this.ManagerMiddle]} {[this.ManagerMiddle]}{[endif]} {[this.ManagerLast]}{[if this.ManagerSuffix]} {[this.ManagerSuffix]}{[endif]}{[elseif this.ManagerPartyType == \"Entity\"]}{[this.ManagerEntityName]}{[endif]}{[else]}{[this.ManagingMember.FullName]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "ManagerFullName",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T21:41:12.004Z",
+      "_id": "65319c07b669f0e056c64845",
+      "content": "{[if this.IsNotMemberTF]}{[if this.ManagerPartyType == \"Individual\"]}{[this.ManagerFirst]}{[if this.ManagerMiddle]} {[this.ManagerMiddle]}{[endif]} {[this.ManagerLast]}{[if this.ManagerSuffix]} {[this.ManagerSuffix]}{[endif]}{[elseif this.ManagerPartyType == \"Entity\"]}{[this.ManagerEntityName]}{[endif]}{[else]}{[this.ManagingMember.FullName]}{[endif]}"
+    }
+  ],
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 3,
+      "rows": [
+        [
+          {
+            "content": "IsNotMemberTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "ManagingMember",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "ManagerPartyType",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "ManagerEntityName",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "ManagerEntitySigners",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "ManagerEntityStateLLC",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "ManagerEntityTypeLLC",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "ManagerFirst",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "ManagerMiddle",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          },
+          {
+            "content": "ManagerLast",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "ManagerSuffix",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T21:52:04.272Z",
+      "_id": "65319c07b669f0e056c64846"
+    }
+  ],
+  "apps": [],
+  "properties": [
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Signers for {[ManagerEntityName|else: \"the entity\"]}:",
+      "helpText": "",
+      "forceRelevance": "IsNotMemberTF && ManagerPartyType == \"Entity\"",
+      "type": "object",
+      "name": "ManagerEntitySigners",
+      "typeName": "signers",
+      "typeDef": "61c2267dcbea6f0852053935",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T21:41:42.106Z",
+      "_id": "65319c07b669f0e056c64839"
+    },
+    {
+      "style": "",
+      "options": "LLCMembers",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Select the member:",
+      "helpText": "",
+      "forceRelevance": "!IsNotMemberTF",
+      "type": "selection",
+      "name": "ManagingMember",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T19:52:08.408Z",
+      "_id": "65319c07b669f0e056c6483a"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Check if this manager is **NOT** a member:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "true/false",
+      "name": "IsNotMemberTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T19:52:08.408Z",
+      "_id": "65319c07b669f0e056c6483b"
+    },
+    {
+      "style": "",
+      "options": "allentities",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "{[ManagerEntityName|else: \"Entity\"]}'s type:",
+      "helpText": "",
+      "forceRelevance": "IsNotMemberTF && ManagerPartyType == \"Entity\"",
+      "type": "selection",
+      "name": "ManagerEntityTypeLLC",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T22:18:31.121Z",
+      "_id": "65319c07b669f0e056c6483c"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "{[ManagerEntityName|else: \"Entity\"]}'s state:",
+      "helpText": "",
+      "forceRelevance": "IsNotMemberTF && ManagerPartyType == \"Entity\"",
+      "type": "selection",
+      "name": "ManagerEntityStateLLC",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T21:41:42.107Z",
+      "_id": "65319c07b669f0e056c6483d"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Entity name:",
+      "helpText": "",
+      "forceRelevance": "IsNotMemberTF && ManagerPartyType == \"Entity\"",
+      "type": "text",
+      "name": "ManagerEntityName",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T19:52:41.733Z",
+      "_id": "65319c07b669f0e056c6483e"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Jr.\"},{\"Name\":\"Sr.\"},{\"Name\":\"II\"},{\"Name\":\"III\"},{\"Name\":\"Esq.\"},{\"Name\":\"M.D.\"},{\"Name\":\"O.D.\"},{\"Name\":\"Ph.D\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Suffix, if any:",
+      "helpText": "",
+      "forceRelevance": "IsNotMemberTF && ManagerPartyType == \"Individual\"",
+      "type": "selection",
+      "name": "ManagerSuffix",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T19:52:41.733Z",
+      "_id": "65319c07b669f0e056c6483f"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Last name:",
+      "helpText": "",
+      "forceRelevance": "IsNotMemberTF && ManagerPartyType == \"Individual\"",
+      "type": "text",
+      "name": "ManagerLast",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T19:52:41.733Z",
+      "_id": "65319c07b669f0e056c64840"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Middle name or initial including period, if any:",
+      "helpText": "",
+      "forceRelevance": "IsNotMemberTF && ManagerPartyType == \"Individual\"",
+      "type": "text",
+      "name": "ManagerMiddle",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T19:52:41.733Z",
+      "_id": "65319c07b669f0e056c64841"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "First name: ",
+      "helpText": "",
+      "forceRelevance": "IsNotMemberTF && ManagerPartyType == \"Individual\"",
+      "type": "text",
+      "name": "ManagerFirst",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T19:52:41.733Z",
+      "_id": "65319c07b669f0e056c64842"
+    },
+    {
+      "style": "dropdown",
+      "options": "[{\"Name\":\"Entity\"},{\"Name\":\"Individual\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select whether this is an entity or an individual:",
+      "helpText": "",
+      "forceRelevance": "IsNotMemberTF",
+      "type": "selection",
+      "name": "ManagerPartyType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T19:52:08.409Z",
+      "_id": "65319c07b669f0e056c64843"
+    }
+  ],
+  "__v": 15,
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}

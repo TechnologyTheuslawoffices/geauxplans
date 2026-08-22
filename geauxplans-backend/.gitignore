@@ -1,2 +1,13 @@
 .vercel
 .env*.local
+
+# docgen/dist is NOT committed — the repo root .gitignore has a blanket `dist/`
+# rule, and Vercel rebuilds the bundle on deploy via the `vercel-build` script
+# (package.json -> docgen:build).
+#
+# Worth knowing when debugging: localDocgen.js require()s that bundle lazily, on
+# the first document generation rather than at boot. A deploy where the bundle
+# failed to build still starts, serves /api/health and logs "Document service:
+# local" perfectly happily; the failure only appears when a client first tries
+# to generate. Run `npm run docgen:build` locally before trusting a local run.
+

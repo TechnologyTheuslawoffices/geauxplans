@@ -510,8 +510,9 @@ interface FormData {
     primary_beneficiaries: string[];
     contingent_beneficiaries: string[];
     successor_trustees: string[];
-    specific_bequests: string;
-    residuary_distribution: string;
+    specific_bequests: BequestEntry[];
+    residuary_distribution: ResiduaryEntry[];
+    distributions_equal: boolean;
     special_instructions: string;
   };
   will_info: {
@@ -520,12 +521,48 @@ interface FormData {
     primary_guardian: string;
     backup_guardian: string;
     has_specific_bequests: boolean;
-    specific_bequests: string;
-    residuary_distribution: string;
+    specific_bequests: BequestEntry[];
+    residuary_distribution: ResiduaryEntry[];
+    distributions_equal: boolean;
     distribution_age: string;
     children_trustee: string;
     allow_education_distributions: boolean;
   };
+}
+
+/**
+ * One row of the catalog's `willresidual` list (`ClientWillResiduary`,
+ * `SpouseWillResiduary`, `ResidualBeneficiaries`).
+ *
+ * That model has 107 properties, but nearly all of them are gated behind
+ * `!IsGeauxAppTF`. Every GeauxPlans app sets `IsGeauxAppTF`, so the catalog
+ * itself only asks for the beneficiary and their percentage (`GeauxBequest`),
+ * which the `ClientWillResiduaryBenesTotal` formula reduces and compares
+ * against 100. These are exactly the fields collected here.
+ *
+ * Free text cannot be used: the will template renders a "Residuary Legatee
+ * Name / Relationship / Share" table by iterating this list, so an unstructured
+ * answer produces a will that devises the residuary to an unnamed legatee.
+ */
+interface ResiduaryEntry {
+  id: string;
+  /** -> `Recipient`; resolved against the agent list by display name. */
+  recipient: string;
+  /** -> `GeauxBequest`. Percent of the estate. All rows must total 100. */
+  share_percent: string;
+  /** -> `HowReceive`: 'Outright' | 'In Trust'. */
+  how_receive: string;
+  /** Age an "In Trust" share is paid outright. Ignored when Outright. */
+  trust_until_age: string;
+}
+
+/** One row of the catalog's specific-bequest list. */
+interface BequestEntry {
+  id: string;
+  /** -> `BequestRecipient`. */
+  recipient: string;
+  /** -> `SpecificBequestDescribe`. */
+  description: string;
 }
 
 const initialFormData: FormData = {
@@ -644,8 +681,9 @@ const initialFormData: FormData = {
     primary_beneficiaries: [],
     contingent_beneficiaries: [],
     successor_trustees: [],
-    specific_bequests: '',
-    residuary_distribution: '',
+    specific_bequests: [],
+    residuary_distribution: [],
+    distributions_equal: true,
     special_instructions: '',
   },
   will_info: {
@@ -654,8 +692,9 @@ const initialFormData: FormData = {
     primary_guardian: '',
     backup_guardian: '',
     has_specific_bequests: false,
-    specific_bequests: '',
-    residuary_distribution: '',
+    specific_bequests: [],
+    residuary_distribution: [],
+    distributions_equal: true,
     distribution_age: '25',
     children_trustee: '',
     allow_education_distributions: true,
@@ -933,8 +972,14 @@ const TEST_PREFILL_DATA: FormData = {
     primary_beneficiaries: ['Robert James Smith', 'Emily Rose Johnson'],
     contingent_beneficiaries: ['Grandchildren per stirpes'],
     successor_trustees: ['First National Trust Company'],
-    specific_bequests: 'Family home to children equally; Jewelry collection to daughter Emily.',
-    residuary_distribution: 'Equally among my children',
+    specific_bequests: [
+      { id: 'sb_demo_1', recipient: 'Emily Rose Johnson', description: 'my jewelry collection' },
+    ],
+    residuary_distribution: [
+      { id: 'rd_demo_1', recipient: 'Robert James Smith', share_percent: '50', how_receive: 'Outright', trust_until_age: '' },
+      { id: 'rd_demo_2', recipient: 'Emily Rose Johnson', share_percent: '50', how_receive: 'Outright', trust_until_age: '' },
+    ],
+    distributions_equal: true,
     special_instructions: 'Distribute trust assets to children at ages 25, 30, and 35 in equal portions.',
   },
   // Will info (for will-based plans)
@@ -944,8 +989,14 @@ const TEST_PREFILL_DATA: FormData = {
     primary_guardian: 'Michael Andrew Williams III',
     backup_guardian: 'Emily Rose Johnson',
     has_specific_bequests: true,
-    specific_bequests: 'My jewelry collection to my daughter Emily.',
-    residuary_distribution: 'Equally among my children per stirpes.',
+    specific_bequests: [
+      { id: 'sb_demo_1', recipient: 'Emily Rose Johnson', description: 'my jewelry collection' },
+    ],
+    residuary_distribution: [
+      { id: 'rd_demo_1', recipient: 'Robert James Smith', share_percent: '50', how_receive: 'Outright', trust_until_age: '' },
+      { id: 'rd_demo_2', recipient: 'Emily Rose Johnson', share_percent: '50', how_receive: 'In Trust', trust_until_age: '25' },
+    ],
+    distributions_equal: false,
     distribution_age: '25',
     children_trustee: 'First National Trust Company',
     allow_education_distributions: true,
@@ -1075,6 +1126,153 @@ const POAForm: React.FC = () => {
       ...prev,
       people_or_entities_who_will_serve_as_agents: {
         parties: (prev.people_or_entities_who_will_serve_as_agents?.parties || []).filter((_, i) => i !== index),
+      },
+    }));
+  };
+
+  // --------------------------------------------------------------------------
+  // Residuary beneficiaries and specific bequests
+  //
+  // `section` is 'will_info' or 'trust_info' — the two places the catalog reads
+  // a residuary list from. Both use the same shape, so they share these helpers.
+  // --------------------------------------------------------------------------
+  type DispositiveSection = 'will_info' | 'trust_info';
+
+  const addResiduaryEntry = (section: DispositiveSection) => {
+    setFormData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        residuary_distribution: [
+          ...(prev[section].residuary_distribution || []),
+          {
+            id: `resid_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+            recipient: '',
+            share_percent: '',
+            how_receive: 'Outright',
+            trust_until_age: '',
+          },
+        ],
+      },
+    }));
+  };
+
+  const updateResiduaryEntry = (
+    section: DispositiveSection,
+    index: number,
+    field: keyof ResiduaryEntry,
+    value: string
+  ) => {
+    setFormData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        residuary_distribution: (prev[section].residuary_distribution || []).map((entry, i) =>
+          i === index ? { ...entry, [field]: value } : entry
+        ),
+      },
+    }));
+  };
+
+  const removeResiduaryEntry = (section: DispositiveSection, index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        residuary_distribution: (prev[section].residuary_distribution || []).filter((_, i) => i !== index),
+      },
+    }));
+  };
+
+  const addBequestEntry = (section: DispositiveSection) => {
+    setFormData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        specific_bequests: [
+          ...(prev[section].specific_bequests || []),
+          { id: `beq_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, recipient: '', description: '' },
+        ],
+      },
+    }));
+  };
+
+  const updateBequestEntry = (
+    section: DispositiveSection,
+    index: number,
+    field: keyof BequestEntry,
+    value: string
+  ) => {
+    setFormData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        specific_bequests: (prev[section].specific_bequests || []).map((entry, i) =>
+          i === index ? { ...entry, [field]: value } : entry
+        ),
+      },
+    }));
+  };
+
+  const removeBequestEntry = (section: DispositiveSection, index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        specific_bequests: (prev[section].specific_bequests || []).filter((_, i) => i !== index),
+      },
+    }));
+  };
+
+  /**
+   * Mirrors the catalog's `ClientWillResiduaryBenesTotal` formula:
+   *   peek(ClientWillResiduary|reduce: _result + GeauxBequest : 0)
+   * The catalog warns when this is not exactly 100, so we do too.
+   */
+  const residuaryTotal = (entries: ResiduaryEntry[] = []): number =>
+    entries.reduce((sum, e) => sum + (parseFloat(e.share_percent) || 0), 0);
+
+  /** One-line-per-beneficiary summary for the review page. */
+  const summarizeResiduary = (entries: ResiduaryEntry[] = []): string[] =>
+    entries.map((e) => {
+      const who = e.recipient || 'Unnamed beneficiary';
+      const share = e.share_percent ? `${e.share_percent}%` : 'no share set';
+      const how =
+        e.how_receive === 'In Trust'
+          ? ` — in trust until age ${e.trust_until_age || '25'}`
+          : ' — outright';
+      return `${who}: ${share}${how}`;
+    });
+
+  const summarizeBequests = (entries: BequestEntry[] = []): string[] =>
+    entries.map(
+      (e) => `${e.description || 'Unspecified property'} to ${e.recipient || 'unnamed recipient'}`
+    );
+
+  /**
+   * When shares are declared equal the catalog does not ask for percentages, so
+   * fill them evenly. Any remainder from an indivisible split (e.g. 3 people)
+   * lands on the first row so the total is still exactly 100.
+   */
+  const applyEqualShares = (entries: ResiduaryEntry[] = []): ResiduaryEntry[] => {
+    if (entries.length === 0) return entries;
+    const even = Math.floor((100 / entries.length) * 100) / 100;
+    const remainder = Math.round((100 - even * entries.length) * 100) / 100;
+    return entries.map((e, i) => ({
+      ...e,
+      share_percent: String(i === 0 ? Math.round((even + remainder) * 100) / 100 : even),
+    }));
+  };
+
+  const setDistributionsEqual = (section: DispositiveSection, equal: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        distributions_equal: equal,
+        residuary_distribution: equal
+          ? applyEqualShares(prev[section].residuary_distribution)
+          : prev[section].residuary_distribution,
       },
     }));
   };
@@ -1273,9 +1471,50 @@ const POAForm: React.FC = () => {
     if (pageName === 'trust_info') {
       const ti = formData.trust_info;
       if (!ti.trust_type) newErrors['trust_info.trust_type'] = 'Trust type is required';
+      Object.assign(newErrors, validateDispositiveSection('trust_info'));
+    }
+
+    if (pageName === 'will_distribution') {
+      Object.assign(newErrors, validateDispositiveSection('will_info'));
     }
 
     return { valid: Object.keys(newErrors).length === 0, errors: newErrors };
+  };
+
+  /**
+   * The residuary must be complete before we let the user proceed.
+   *
+   * The templates render the residuary as a "Legatee / Relationship / Share"
+   * table driven by this list, and they will happily render that table empty —
+   * producing a will that gives away the whole residuary to a legatee who is
+   * never named. The backend refuses such submissions
+   * (`services/docPreconditions.js`); this catches it while it is still fixable.
+   */
+  const validateDispositiveSection = (section: 'will_info' | 'trust_info') => {
+    const errs: Record<string, string> = {};
+    const data = formData[section];
+    const entries = data.residuary_distribution || [];
+    const key = `${section}.residuary_distribution`;
+
+    if (entries.length === 0) {
+      errs[key] = 'Name at least one residuary beneficiary.';
+      return errs;
+    }
+    if (entries.some((e) => !e.recipient)) {
+      errs[key] = 'Every residuary beneficiary must be selected by name.';
+      return errs;
+    }
+    const total = residuaryTotal(entries);
+    if (Math.abs(total - 100) > 0.01) {
+      errs[key] = `Residuary shares total ${Math.round(total * 100) / 100}%. They must total exactly 100%.`;
+      return errs;
+    }
+
+    if (data.specific_bequests?.some((b) => !b.recipient || !b.description.trim())) {
+      errs[`${section}.specific_bequests`] =
+        'Each specific bequest needs both a recipient and a description of the property.';
+    }
+    return errs;
   };
 
   const validateCurrentPage = (): boolean => {
@@ -4397,15 +4636,14 @@ const POAForm: React.FC = () => {
       </div>
 
       <div className="mb-3">
-        <label className="form-label">Specific Bequests</label>
-        <textarea
-          className="form-control"
-          rows={4}
-          value={formData.trust_info.specific_bequests}
-          onChange={(e) => updateFormData('trust_info', 'specific_bequests', e.target.value)}
-          placeholder="List any specific items you wish to leave to specific people (e.g., 'My grandmother's ring to my daughter Jane')"
-        />
+        <label className="form-label"><strong>Specific Bequests</strong></label>
+        <p className="text-muted small">
+          Name each item and the person who should receive it.
+        </p>
+        {renderBequestEditor('trust_info')}
       </div>
+
+      {renderResiduaryEditor('trust_info')}
 
       <div className="mb-3">
         <label className="form-label">Special Instructions</label>
@@ -4626,27 +4864,14 @@ const POAForm: React.FC = () => {
         )}
 
         <div className="mb-3">
-          <label className="form-label">Specific Bequests</label>
-          <textarea
-            className="form-control"
-            rows={4}
-            value={formData.trust_info?.specific_bequests || ''}
-            onChange={(e) => updateFormData('trust_info', 'specific_bequests', e.target.value)}
-            placeholder="List any specific items you wish to leave to specific people (e.g., 'My grandmother's ring to my daughter Jane')"
-          />
+          <label className="form-label"><strong>Specific Bequests</strong></label>
+          <p className="text-muted small">
+            Name each item and the person who should receive it.
+          </p>
+          {renderBequestEditor('trust_info')}
         </div>
 
-        <div className="mb-3">
-          <label className="form-label">Residuary Distribution</label>
-          <p className="text-muted small">After specific bequests, how should the remainder be distributed?</p>
-          <textarea
-            className="form-control"
-            rows={3}
-            value={formData.trust_info?.residuary_distribution || ''}
-            onChange={(e) => updateFormData('trust_info', 'residuary_distribution', e.target.value)}
-            placeholder="e.g., Equally among my children, or specific percentages"
-          />
-        </div>
+        {renderResiduaryEditor('trust_info')}
       </div>
     );
   };
@@ -4752,6 +4977,251 @@ const POAForm: React.FC = () => {
   );
 
   // ============================================================================
+  // RESIDUARY / SPECIFIC BEQUEST EDITORS
+  //
+  // These replace the free-text questions that used to sit here. The will and
+  // trust templates iterate these as lists to build the "Residuary Legatee
+  // Name / Relationship / Share" table, so prose cannot be used — it produces a
+  // will that devises the residuary to a legatee who is never named.
+  // ============================================================================
+
+  /** Beneficiary dropdown, sourced from the parties already collected. */
+  const renderRecipientSelect = (value: string, onChange: (v: string) => void) => {
+    const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
+    return (
+      <select className="form-select" value={value} onChange={(e) => onChange(e.target.value)}>
+        <option value="">Select beneficiary...</option>
+        {parties.map((party) => (
+          <option key={party.id} value={getPartyDisplayName(party)}>
+            {getPartyDisplayName(party)}
+          </option>
+        ))}
+      </select>
+    );
+  };
+
+  const renderResiduaryEditor = (section: 'will_info' | 'trust_info') => {
+    const entries = formData[section].residuary_distribution || [];
+    const equal = formData[section].distributions_equal;
+    const total = residuaryTotal(entries);
+    const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
+    const noun = section === 'trust_info' ? 'trust' : 'estate';
+
+    return (
+      <div className="mb-4">
+        <label className="form-label">
+          <strong>Residuary Beneficiaries</strong> <span className="text-danger">*</span>
+        </label>
+        <p className="text-muted small">
+          These are the people who receive everything not given away as a specific bequest.
+          Anyone under the age you consider old enough to inherit outright can have their
+          share held in trust until they reach that age.
+        </p>
+
+        {parties.length === 0 && (
+          <div className="alert alert-warning">
+            <i className="fas fa-exclamation-triangle me-2"></i>
+            Add people on the earlier "People &amp; Entities" step first — beneficiaries are
+            chosen from that list.
+          </div>
+        )}
+
+        <div className="mb-3">
+          <label className="form-label">Will everyone receive an equal share?</label>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="radio"
+              name={`${section}_distributions_equal`}
+              checked={equal === true}
+              onChange={() => setDistributionsEqual(section, true)}
+            />
+            <label className="form-check-label">
+              Yes — divide my {noun} equally among the people below
+            </label>
+          </div>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="radio"
+              name={`${section}_distributions_equal`}
+              checked={equal === false}
+              onChange={() => setDistributionsEqual(section, false)}
+            />
+            <label className="form-check-label">No — I want to set each share myself</label>
+          </div>
+        </div>
+
+        {entries.map((entry, index) => (
+          <div key={entry.id} className="card card-body bg-light mb-2">
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <small className="text-muted">Beneficiary {index + 1}</small>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-danger"
+                onClick={() => removeResiduaryEntry(section, index)}
+                title="Remove this beneficiary"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            <div className="row mb-2">
+              <div className="col-md-5 mb-2">
+                <label className="form-label">Beneficiary</label>
+                {renderRecipientSelect(entry.recipient, (v) =>
+                  updateResiduaryEntry(section, index, 'recipient', v)
+                )}
+              </div>
+              <div className="col-md-3 mb-2">
+                <label className="form-label">Share of {noun}</label>
+                <div className="input-group">
+                  <input
+                    type="number"
+                    className="form-control"
+                    min={0}
+                    max={100}
+                    step="any"
+                    value={entry.share_percent}
+                    disabled={equal}
+                    onChange={(e) =>
+                      updateResiduaryEntry(section, index, 'share_percent', e.target.value)
+                    }
+                  />
+                  <span className="input-group-text">%</span>
+                </div>
+              </div>
+              <div className="col-md-4 mb-2">
+                <label className="form-label">How should they receive it?</label>
+                <select
+                  className="form-select"
+                  value={entry.how_receive}
+                  onChange={(e) =>
+                    updateResiduaryEntry(section, index, 'how_receive', e.target.value)
+                  }
+                >
+                  <option value="Outright">Outright</option>
+                  <option value="In Trust">Held in trust</option>
+                </select>
+              </div>
+            </div>
+
+            {entry.how_receive === 'In Trust' && (
+              <div className="row">
+                <div className="col-md-5">
+                  <label className="form-label">Hold in trust until age</label>
+                  <select
+                    className="form-select"
+                    value={entry.trust_until_age || '25'}
+                    onChange={(e) =>
+                      updateResiduaryEntry(section, index, 'trust_until_age', e.target.value)
+                    }
+                  >
+                    <option value="18">18 years old</option>
+                    <option value="21">21 years old</option>
+                    <option value="25">25 years old (Recommended)</option>
+                    <option value="30">30 years old</option>
+                    <option value="35">35 years old</option>
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+
+        <button
+          type="button"
+          className="btn btn-outline-primary"
+          onClick={() => addResiduaryEntry(section)}
+          disabled={parties.length === 0}
+        >
+          <i className="fas fa-plus me-2"></i> Add Beneficiary
+        </button>
+
+        {entries.length > 0 && !equal && Math.abs(total - 100) > 0.01 && (
+          <div className="alert alert-danger mt-3 mb-0">
+            <i className="fas fa-exclamation-circle me-2"></i>
+            These shares total <strong>{Math.round(total * 100) / 100}%</strong>. Adjust them
+            until they total exactly 100% — otherwise part of your {noun} would have no
+            named beneficiary.
+          </div>
+        )}
+        {entries.length > 0 && Math.abs(total - 100) <= 0.01 && (
+          <div className="alert alert-success mt-3 mb-0 py-2">
+            <i className="fas fa-check-circle me-2"></i>
+            Shares total 100%.
+          </div>
+        )}
+        {errors[`${section}.residuary_distribution`] && (
+          <div className="alert alert-danger mt-3 mb-0">
+            <i className="fas fa-exclamation-circle me-2"></i>
+            {errors[`${section}.residuary_distribution`]}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderBequestEditor = (section: 'will_info' | 'trust_info') => {
+    const entries = formData[section].specific_bequests || [];
+    return (
+      <div className="mb-4">
+        {entries.map((entry, index) => (
+          <div key={entry.id} className="card card-body bg-light mb-2">
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <small className="text-muted">Bequest {index + 1}</small>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-danger"
+                onClick={() => removeBequestEntry(section, index)}
+                title="Remove this bequest"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="row">
+              <div className="col-md-5 mb-2">
+                <label className="form-label">Give to</label>
+                {renderRecipientSelect(entry.recipient, (v) =>
+                  updateBequestEntry(section, index, 'recipient', v)
+                )}
+              </div>
+              <div className="col-md-7 mb-2">
+                <label className="form-label">What are you giving them?</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={entry.description}
+                  onChange={(e) =>
+                    updateBequestEntry(section, index, 'description', e.target.value)
+                  }
+                  placeholder="e.g., my jewelry collection"
+                />
+                <small className="text-muted">
+                  Completes the sentence "I give and bequeath …".
+                </small>
+              </div>
+            </div>
+          </div>
+        ))}
+        <button
+          type="button"
+          className="btn btn-outline-secondary btn-sm"
+          onClick={() => addBequestEntry(section)}
+        >
+          <i className="fas fa-plus me-1"></i> Add Bequest
+        </button>
+        {errors[`${section}.specific_bequests`] && (
+          <div className="alert alert-danger mt-3 mb-0">
+            <i className="fas fa-exclamation-circle me-2"></i>
+            {errors[`${section}.specific_bequests`]}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ============================================================================
   // WILL DISTRIBUTION PAGE (Will plans only)
   // ============================================================================
   const renderWillDistributionPage = () => (
@@ -4787,28 +5257,15 @@ const POAForm: React.FC = () => {
 
       {formData.will_info?.has_specific_bequests && (
         <div className="mb-3">
-          <label className="form-label">Specific Bequests</label>
-          <textarea
-            className="form-control"
-            rows={4}
-            value={formData.will_info?.specific_bequests || ''}
-            onChange={(e) => updateFormData('will_info', 'specific_bequests', e.target.value)}
-            placeholder="List specific items and recipients (e.g., 'My jewelry collection to my daughter Jane')"
-          />
+          <label className="form-label"><strong>Specific Bequests</strong></label>
+          <p className="text-muted small">
+            Name each item and the person who should receive it.
+          </p>
+          {renderBequestEditor('will_info')}
         </div>
       )}
 
-      <div className="mb-3">
-        <label className="form-label">Residuary Estate Distribution</label>
-        <textarea
-          className="form-control"
-          rows={3}
-          value={formData.will_info?.residuary_distribution || ''}
-          onChange={(e) => updateFormData('will_info', 'residuary_distribution', e.target.value)}
-          placeholder="e.g., Equally among my children, or specific percentages"
-        />
-        <small className="text-muted">This covers everything not specifically bequeathed above.</small>
-      </div>
+      {renderResiduaryEditor('will_info')}
     </div>
   );
 
@@ -5189,9 +5646,25 @@ const POAForm: React.FC = () => {
                   </div>
                   <div className="card-body">
                     <p className="mb-1"><strong>Successor Trustee:</strong> {formData.trust_info?.successor_trustee || 'Not selected'}</p>
-                    <p className="mb-1"><strong>Distribution Plan:</strong> {formData.trust_info?.residuary_distribution || 'Not specified'}</p>
-                    {formData.trust_info?.specific_bequests && (
-                      <p className="mb-0"><strong>Specific Bequests:</strong> {formData.trust_info.specific_bequests.substring(0, 100)}...</p>
+                    <p className="mb-1"><strong>Residuary Beneficiaries:</strong></p>
+                    {summarizeResiduary(formData.trust_info?.residuary_distribution).length > 0 ? (
+                      <ul className="mb-2">
+                        {summarizeResiduary(formData.trust_info?.residuary_distribution).map((line, i) => (
+                          <li key={i}>{line}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="mb-2 text-danger">Not specified</p>
+                    )}
+                    {summarizeBequests(formData.trust_info?.specific_bequests).length > 0 && (
+                      <>
+                        <p className="mb-1"><strong>Specific Bequests:</strong></p>
+                        <ul className="mb-0">
+                          {summarizeBequests(formData.trust_info?.specific_bequests).map((line, i) => (
+                            <li key={i}>{line}</li>
+                          ))}
+                        </ul>
+                      </>
                     )}
                   </div>
                 </div>
@@ -5251,7 +5724,26 @@ const POAForm: React.FC = () => {
                     <strong>Distribution</strong>
                   </div>
                   <div className="card-body">
-                    <p className="mb-1"><strong>Residuary Distribution:</strong> {formData.will_info?.residuary_distribution || 'Not specified'}</p>
+                    <p className="mb-1"><strong>Residuary Beneficiaries:</strong></p>
+                    {summarizeResiduary(formData.will_info?.residuary_distribution).length > 0 ? (
+                      <ul className="mb-2">
+                        {summarizeResiduary(formData.will_info?.residuary_distribution).map((line, i) => (
+                          <li key={i}>{line}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="mb-2 text-danger">Not specified</p>
+                    )}
+                    {summarizeBequests(formData.will_info?.specific_bequests).length > 0 && (
+                      <>
+                        <p className="mb-1"><strong>Specific Bequests:</strong></p>
+                        <ul className="mb-2">
+                          {summarizeBequests(formData.will_info?.specific_bequests).map((line, i) => (
+                            <li key={i}>{line}</li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
                     <p className="mb-1"><strong>Distribution Age:</strong> {formData.will_info?.distribution_age || '25'} years old</p>
                     <p className="mb-1"><strong>Children's Trustee:</strong> {formData.will_info?.children_trustee || 'Not selected'}</p>
                     <p className="mb-0"><strong>Allow Education Distributions:</strong> {formData.will_info?.allow_education_distributions ? 'Yes' : 'No'}</p>

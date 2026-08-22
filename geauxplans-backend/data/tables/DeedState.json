@@ -1,0 +1,1 @@
+{"_id":"654553393494fcc0ac7fb32d","properties":[{"type":"text","name":"Name","label":"Name"},{"type":"text","name":"LA","label":"LA"}],"key":"Name","data":[{"Name":"Louisiana","LA":"LA"},{"Name":"Mississippi","LA":"MS"},{"Name":"Texas","LA":"TX"}],"name":"DeedState","type":"table","label":"","kind":"table","__v":0}

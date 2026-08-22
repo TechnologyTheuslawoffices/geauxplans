@@ -1,0 +1,1897 @@
+{
+  "_id": "5f1aed2ffd8a4343963e4672",
+  "summary": "{[AcctType.Description|else: \"New Account\"]} ({[AssetFullDesc]})",
+  "label": "assets and accounts",
+  "type": "object",
+  "name": "fundingassets",
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 2,
+      "rows": [
+        [
+          {
+            "content": "###<center>**Asset Information**</center>",
+            "list": [],
+            "class": "static",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "AcctType",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "AcctBalance",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "PersPropDescription",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "AcctOwner",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "GiftType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "ValueType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "RetireType",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "BrokerType",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "BondType",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "PolicyType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "AcctInsured",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "CashType",
+            "list": [],
+            "class": "question"
+          }
+        ],
+        [
+          {
+            "content": "InsureCashValue",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "GiftGiver",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "GiftDescription",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "RealType",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "AnnuityQual",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "AcctBank",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "BrokerName",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "AcctNumber",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "AcctCusip",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "AnyoneElseNamedTF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "OthersNamed",
+            "list": [],
+            "class": "question"
+          }
+        ],
+        [
+          {
+            "content": "AcctNamesCorrectTF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "NamesAsOnAcct",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "NamesonPolicy",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "BondOther",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "InsureDeathBenefit",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "InsureCashSurrender",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "AcctBenes",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "RealParishorCounty",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "RealParish",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "RealPercentOwned",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "CompanyShares",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "RealAgency",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "RealAgent",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "AttorneyandFirm",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "RealStreetAddress",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "RealMailingDifferentTF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "RealMailingAddress",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "FarmType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "FarmItemLocation",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "FarmTypeOther",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "FarmPhysicalDesc",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "CompanyPhone",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "ProfessionalCompany",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "BuySell",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "SCorp",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "PartnershipType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "PartnershipPapers",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "BusinessOwnsProperty",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "SoleDescr",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "VehicleMake",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "VehicleModel",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "VehicleYear",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "VehicleVIN",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "DebtType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "PromNote",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "DebtDate",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "ScheduleorDate",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "DatePayable",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "PaymentSchedule",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "###<center>**Memo Information**</center>",
+            "list": [
+              "ConfirmationStatus"
+            ],
+            "class": "static"
+          }
+        ],
+        [
+          {
+            "content": "ConfirmationStatus",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "ResponsibleParty",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "OwnershipChange",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "###<center>**Notes**</center>",
+            "list": [],
+            "class": "static",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "AssetNotes",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "AssetInternalNotes",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-22T22:34:39.317Z",
+      "_id": "651198a6668575404131eb5f"
+    }
+  ],
+  "apps": [],
+  "properties": [
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Cash\",\"Description\":\"Cash Account or Safe Deposit Box\",\"CompanyType\":\"Bank or Credit Union\",\"AccountRef\":\"this account\",\"BalanceName\":\"account balance\",\"Number\":\"account\",\"Address\":\"\"},{\"Name\":\"Broker\",\"Description\":\"Broker-Held Investment Account\",\"CompanyType\":\"Brokerage Firm\",\"AccountRef\":\"this account\",\"BalanceName\":\"account balance\",\"Number\":\"account\",\"Address\":\"\"},{\"Name\":\"Retirement\",\"Description\":\"Retirement Account\",\"CompanyType\":\"Company Name\",\"AccountRef\":\"this account\",\"BalanceName\":\"account balance\",\"Number\":\"account\",\"Address\":\"\"},{\"Name\":\"Stocks\",\"Description\":\"Stock or Computershare Account\",\"CompanyType\":\"Stock/Computershare Name\",\"AccountRef\":\"these stocks\",\"BalanceName\":\"fair market value of the stock\",\"Number\":\"certificate\",\"Address\":\"\"},{\"Name\":\"Bonds\",\"Description\":\"Bond\",\"CompanyType\":\"\",\"AccountRef\":\"this bond\",\"BalanceName\":\"fair market value of the bond\",\"Number\":\"bond\",\"Address\":\"\"},{\"Name\":\"LifeInsure\",\"Description\":\"Life Insurance\",\"CompanyType\":\"Company Name\",\"AccountRef\":\"this insurance policy\",\"BalanceName\":\"\",\"Number\":\"policy\",\"Address\":\"\"},{\"Name\":\"Annuity\",\"Description\":\"Annuity\",\"CompanyType\":\"Company Name\",\"AccountRef\":\"this annuity\",\"BalanceName\":\"\",\"Number\":\"policy\",\"Address\":\"\"},{\"Name\":\"Real\",\"Description\":\"Real Estate\",\"CompanyType\":\"\",\"AccountRef\":\"this property\",\"BalanceName\":\"fair market value of the property\",\"Number\":\"\",\"Address\":\"property\"},{\"Name\":\"Timeshare\",\"Description\":\"Timeshare\",\"CompanyType\":\"\",\"AccountRef\":\"this property\",\"BalanceName\":\"fair market value of the property\",\"Number\":\"\",\"Address\":\"property\"},{\"Name\":\"Farm\",\"Description\":\"Farm or Ranch Interest\",\"CompanyType\":\"Farm or Ranch Name\",\"AccountRef\":\"this interest\",\"BalanceName\":\"fair market value of the interest\",\"Number\":\"\",\"Address\":\"property\"},{\"Name\":\"Corporate\",\"Description\":\"Corporate Business Interest\",\"CompanyType\":\"Company Name\",\"AccountRef\":\"this interest\",\"BalanceName\":\"value of the business interest\",\"Number\":\"\",\"Address\":\"business\"},{\"Name\":\"LLC\",\"Description\":\"LLC Interest\",\"CompanyType\":\"LLC Name\",\"AccountRef\":\"this interest\",\"BalanceName\":\"value of the limited liability company\",\"Number\":\"\",\"Address\":\"limited liability company\"},{\"Name\":\"Partnership\",\"Description\":\"Partnership\",\"CompanyType\":\"Partnership Name\",\"AccountRef\":\"this Partnership\",\"BalanceName\":\"value of the partnership\",\"Number\":\"\",\"Address\":\"partnership\"},{\"Name\":\"SoleProp\",\"Description\":\"Sole Proprietorship\",\"CompanyType\":\"Business Name\",\"AccountRef\":\"this Sole Proprietorship\",\"BalanceName\":\"value of the business\",\"Number\":\"\",\"Address\":\"business\"},{\"Name\":\"Vehicle\",\"Description\":\"Vehicle\",\"CompanyType\":\"\",\"AccountRef\":\"this vehicle\",\"BalanceName\":\"fair market value of the vehicle\",\"Number\":\"\",\"Address\":\"\"},{\"Name\":\"Receive\",\"Description\":\"Mortgage, Promissory Note, or other account receivable\",\"CompanyType\":\"name of the debtor\",\"AccountRef\":\"this debt\",\"BalanceName\":\"original amount of the debt\",\"Number\":\"\",\"Address\":\"debtor\"},{\"Name\":\"Gift\",\"Description\":\"Anticipated Inheritance, Gift, or Judgment\",\"CompanyType\":\"\",\"AccountRef\":\"this anticipated property\",\"BalanceName\":\"anticipated value of this asset\",\"Number\":\"\",\"Address\":\"attorney\"},{\"Name\":\"Personal Property\",\"Description\":\"Personal Property\",\"CompanyType\":\"\",\"AccountRef\":\"this property\",\"BalanceName\":\"value of this property\",\"Number\":\"\",\"Address\":\"\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "What kind of property or interest is this?",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "selection",
+      "name": "AcctType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-22T22:24:38.108Z",
+      "_id": "651198a6668575404131eb0a"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Checking\",\"Abbrev\":\"CA\"},{\"Name\":\"Savings\",\"Abbrev\":\"SA\"},{\"Name\":\"Certificate of Deposit\",\"Abbrev\":\"CD\"},{\"Name\":\"Money Market\",\"Abbrev\":\"MM\"},{\"Name\":\"Cash Management\",\"Abbrev\":\"CM\"},{\"Name\":\"Safe Deposit Box\",\"Abbrev\":\"Box\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "What kind of cash account is this?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Cash\"",
+      "type": "selection",
+      "name": "CashType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-24T22:27:24.811Z",
+      "_id": "651198a6668575404131eb0b"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "EntitySuggests",
+      "isList": false,
+      "label": "What is the {[AcctType.CompanyType]} for {[AcctType.AccountRef]}?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Cash\" || AcctType == \"Broker\" || AcctType == \"Retirement\" || AcctType == \"Stocks\" || AcctType == \"LifeInsure\" || AcctType == \"Annuity\" || AcctType == \"Corporate\" || AcctType == \"LLC\" || AcctType == \"SoleProp\" || AcctType == \"Receive\" || AcctType == \"Bonds\" || AcctType == \"Partnership\" || AcctType == \"Farm\"",
+      "type": "text",
+      "name": "AcctBank",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:08:41.869Z",
+      "_id": "651198a6668575404131eb0c"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What's the {[AcctType.Number]} number?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Cash\" || AcctType == \"Broker\" || AcctType == \"Retirement\" || AcctType == \"Stocks\" || AcctType == \"Bonds\" || AcctType == \"LifeInsure\" || AcctType == \"Annuity\"",
+      "type": "text",
+      "name": "AcctNumber",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:14:54.603Z",
+      "_id": "651198a6668575404131eb0d"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Client\"},{\"Name\":\"Spouse\"},{\"Name\":\"Both\"}]",
+      "optionTemplate": "{[this == \"Client\" ? (Client.NameCO) : this == \"Spouse\" ? (Spouse.NameCO) : this == \"Both\" ? (Client.NameCO + \" and \" + Spouse.NameCO + \" together\") : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Who is the owner of {[AcctType.AccountRef]}?",
+      "helpText": "",
+      "forceRelevance": "MarriedTF && AcctType",
+      "type": "selection",
+      "name": "AcctOwner",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-24T22:47:06.425Z",
+      "_id": "651198a6668575404131eb0e"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Select other people who own or are named on {[AcctType.AccountRef]} here. If the person you need to name is not in the dropdown, go back to the top of the main interview and add them as an additional party.",
+      "helpText": "",
+      "forceRelevance": "(AcctType == \"Cash\" || AcctType == \"Broker\" || AcctType == \"Bonds\" || AcctType == \"Real\" || AcctType == \"LLC\" || AcctType == \"Timeshare\") && AnyoneElseNamedTF",
+      "type": "object",
+      "name": "OthersNamed",
+      "typeName": "singleselection",
+      "typeDef": "5db8510d5f528a0c1a3a7fed",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.505Z",
+      "_id": "651198a6668575404131eb0f"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 2,
+      "minimum": "0",
+      "maximum": "",
+      "isList": false,
+      "label": "What is the {[AcctType.BalanceName]}?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Cash\" || AcctType == \"Broker\" || AcctType == \"Retirement\" || AcctType == \"Stocks\" || AcctType == \"Bonds\" || AcctType == \"Real\" || AcctType == \"Corporate\" || AcctType == \"LLC\" || AcctType == \"Partnership\" || AcctType == \"SoleProp\" || AcctType == \"Vehicle\" || AcctType == \"Receive\" || AcctType == \"Gift\" || AcctType == \"Farm\" || AcctType == \"Timeshare\"",
+      "type": "number",
+      "name": "AcctBalance",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:20:57.979Z",
+      "_id": "651198a6668575404131eb10"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "NamesQuestion2|map: TextVar",
+      "isList": false,
+      "label": "Enter the names of the account holder(s) exactly as they are on the account: ",
+      "helpText": "",
+      "forceRelevance": "(AcctType == \"Cash\" || AcctType == \"Broker\" || AcctType == \"Retirement\" || AcctType == \"Stocks\" || AcctType == \"Bonds\" || AcctType == \"LifeInsure\" || AcctType == \"Annuity\" || AcctType == \"Real\" || AcctType == \"LLC\" || AcctType == \"Partnership\" || AcctType == \"Timeshare\" || AcctType == \"Farm\") && !AcctNamesCorrectTF",
+      "type": "text",
+      "name": "NamesAsOnAcct",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.505Z",
+      "_id": "651198a6668575404131eb11"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Does \"{[AcctNamesList]}\" exactly match the name(s) on {[AcctType.AccountRef]}?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Cash\" || AcctType == \"Broker\" || AcctType == \"Retirement\" || AcctType == \"Stocks\" || AcctType == \"Bonds\" || AcctType == \"LifeInsure\" || AcctType == \"Annuity\" || AcctType == \"Real\" || AcctType == \"Farm\" || AcctType == \"LLC\" || AcctType == \"Partnership\" || AcctType == \"Timeshare\"",
+      "type": "true/false",
+      "name": "AcctNamesCorrectTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.505Z",
+      "_id": "651198a6668575404131eb12"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is there anyone else who owns or is named on {[AcctType.AccountRef]}?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Cash\" || AcctType == \"Broker\" || AcctType == \"Bonds\" || AcctType == \"Real\" || AcctType == \"LLC\" || AcctType == \"Partnership\" || AcctType == \"Timeshare\"",
+      "type": "true/false",
+      "name": "AnyoneElseNamedTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.505Z",
+      "_id": "651198a6668575404131eb13"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Investment\",\"Abbrev\":\"I\"},{\"Name\":\"Money Fund\",\"Abbrev\":\"MF\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "What kind of brokerage account is this?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Broker\"",
+      "type": "selection",
+      "name": "BrokerType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-24T22:40:02.268Z",
+      "_id": "651198a6668575404131eb14"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is the broker's name?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Broker\"",
+      "type": "text",
+      "name": "BrokerName",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:31:12.497Z",
+      "_id": "651198a6668575404131eb15"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"401(k)\",\"Abbrev\":\"401(k)\"},{\"Name\":\"IRA\",\"Abbrev\":\"IRA\"},{\"Name\":\"Roth IRA\",\"Abbrev\":\"Roth IRA\"},{\"Name\":\"SEP\",\"Abbrev\":\"SEP\"},{\"Name\":\"Profit Sharing\",\"Abbrev\":\"PS\"},{\"Name\":\"Keogh or HR-10\",\"Abbrev\":\"H.R. 10\"},{\"Name\":\"403(b)\",\"Abbrev\":\"403(b)\"},{\"Name\":\"Pension\",\"Abbrev\":\"Pension\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "What kind of retirement account is this?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Retirement\"",
+      "type": "selection",
+      "name": "RetireType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T21:00:16.383Z",
+      "_id": "651198a6668575404131eb16"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Select the beneficiary or beneficiaries:",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Retirement\" || AcctType == \"LifeInsure\" || AcctType == \"Annuity\"",
+      "type": "object",
+      "name": "AcctBenes",
+      "typeName": "singleselection",
+      "typeDef": "5db8510d5f528a0c1a3a7fed",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:14:54.603Z",
+      "_id": "651198a6668575404131eb17"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is the Cusip number?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Stocks\"",
+      "type": "text",
+      "name": "AcctCusip",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-24T23:26:36.865Z",
+      "_id": "651198a6668575404131eb18"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"U.S. Savings\"},{\"Name\":\"Treasury\"},{\"Name\":\"Corporate\"},{\"Name\":\"Municipal\"},{\"Name\":\"Other\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "What kind of bond is this?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Bonds\"",
+      "type": "selection",
+      "name": "BondType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T14:49:36.112Z",
+      "_id": "651198a6668575404131eb19"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Term\"},{\"Name\":\"Whole Life\"},{\"Name\":\"Split Dollar\"},{\"Name\":\"Group Term Life\"},{\"Name\":\"Universal Life\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "What type of policy is this?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"LifeInsure\"",
+      "type": "selection",
+      "name": "PolicyType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:07:34.544Z",
+      "_id": "651198a6668575404131eb1a"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Enter the bond type if not listed above:",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Bonds\" && BondType == \"Other\"",
+      "type": "text",
+      "name": "BondOther",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T14:49:36.112Z",
+      "_id": "651198a6668575404131eb1b"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Client\"},{\"Name\":\"Spouse\"}]",
+      "optionTemplate": "{[this == \"Client\" ? (Client.NameCO) : this == \"Spouse\" ? (Spouse.NameCO) : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Who is the insured?",
+      "helpText": "",
+      "forceRelevance": "MarriedTF && AcctType == \"LifeInsure\"",
+      "type": "selection",
+      "name": "AcctInsured",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T14:55:30.703Z",
+      "_id": "651198a6668575404131eb1c"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is this a cash value policy?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"LifeInsure\"",
+      "type": "true/false",
+      "name": "InsureCashValue",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-28T14:13:34.444Z",
+      "_id": "651198a6668575404131eb1d"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 2,
+      "minimum": "0",
+      "maximum": "",
+      "isList": false,
+      "label": "What is the death benefit amount?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"LifeInsure\" || AcctType == \"Annuity\"",
+      "type": "number",
+      "name": "InsureDeathBenefit",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:14:54.604Z",
+      "_id": "651198a6668575404131eb1e"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 2,
+      "minimum": "0",
+      "maximum": "",
+      "isList": false,
+      "label": "What is the cash surrender amount?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"LifeInsure\" || AcctType == \"Annuity\"",
+      "type": "number",
+      "name": "InsureCashSurrender",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:14:54.605Z",
+      "_id": "651198a6668575404131eb1f"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Enter the names of the policy holder(s) exactly as they are on the policy: ",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "NamesonPolicy",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:02:55.783Z",
+      "_id": "651198a6668575404131eb20"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Qualified\"},{\"Name\":\"Non-Qualified\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Is this a qualified or non-qualified annuity?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Annuity\"",
+      "type": "selection",
+      "name": "AnnuityQual",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:14:54.605Z",
+      "_id": "651198a6668575404131eb21"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Parish\"},{\"Name\":\"County\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Is the property located in a parish or a county?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Real\" || AcctType == \"Timeshare\"",
+      "type": "selection",
+      "name": "RealParishorCounty",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.506Z",
+      "_id": "651198a6668575404131eb22"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What {[RealParishorCounty|else: \"Parish\"]} is the property in? Do not include the word \"{[RealParishorCounty|else: \"Parish\"]}\".",
+      "helpText": "",
+      "forceRelevance": "(AcctType == \"Real\" || AcctType == \"Timeshare\") && RealParishorCounty",
+      "type": "text",
+      "name": "RealParish",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.506Z",
+      "_id": "651198a6668575404131eb23"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "0",
+      "maximum": "100",
+      "isList": false,
+      "label": "Percent of {[AcctType.Address]} you own:",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Real\" || AcctType == \"Corporate\"",
+      "type": "number",
+      "name": "RealPercentOwned",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.506Z",
+      "_id": "651198a6668575404131eb24"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is the insurance agency for the property?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Real\" || AcctType == \"Timeshare\"",
+      "type": "text",
+      "name": "RealAgency",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.506Z",
+      "_id": "651198a6668575404131eb25"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is the insurance agent's name?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Real\" || AcctType == \"Timeshare\"",
+      "type": "text",
+      "name": "RealAgent",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.506Z",
+      "_id": "651198a6668575404131eb26"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "RealPropSuggests",
+      "isList": false,
+      "label": "What is the {[AcctType.Address]}'s street address? Type in the following format: Street, City, State Zip",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Real\" || AcctType == \"Corporate\" || AcctType == \"LLC\" || AcctType == \"SoleProp\" || AcctType == \"Partnership\" || AcctType == \"Receive\" || (AcctType == \"Gift\" && (GiftType == \"Anticipated Inheritance\" || GiftType ==  \"Lawsuit Judgment\")) || AcctType == \"Farm\" || AcctType == \"Timeshare\"",
+      "type": "text",
+      "name": "RealStreetAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.506Z",
+      "_id": "651198a6668575404131eb27"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is the property's mailing address? Type in the following format: Street, City, State Zip",
+      "helpText": "",
+      "forceRelevance": "(AcctType == \"Real\" || AcctType == \"Timeshare\") && RealMailingDifferentTF",
+      "type": "text",
+      "name": "RealMailingAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.506Z",
+      "_id": "651198a6668575404131eb28"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is the property's mailing address different than the street address above?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Real\" || AcctType == \"Timeshare\"",
+      "type": "true/false",
+      "name": "RealMailingDifferentTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:25:52.506Z",
+      "_id": "651198a6668575404131eb29"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Primary Residence\"},{\"Name\":\"Second Home\"},{\"Name\":\"Camp\"},{\"Name\":\"Rental Property\"},{\"Name\":\"Business Property\"},{\"Name\":\"Land\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "What kind of property is this?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Real\"",
+      "type": "selection",
+      "name": "RealType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:40:48.296Z",
+      "_id": "651198a6668575404131eb2a"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Livestock\"},{\"Name\":\"Machinery\"},{\"Name\":\"Farm Equipment\"},{\"Name\":\"Tractors\"},{\"Name\":\"Leases\"},{\"Name\":\"Other\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "What type of farm or ranch interest is this?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Farm\"",
+      "type": "selection",
+      "name": "FarmType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:46:32.120Z",
+      "_id": "651198a6668575404131eb2b"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Enter the farm interest type if not listed above:",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Farm\" && FarmType == \"Other\"",
+      "type": "text",
+      "name": "FarmTypeOther",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:46:32.120Z",
+      "_id": "651198a6668575404131eb2c"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Where is this interest located?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Farm\"",
+      "type": "text",
+      "name": "FarmItemLocation",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-28T14:13:12.136Z",
+      "_id": "651198a6668575404131eb2d"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 3,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is a physical description of this interest?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Farm\"",
+      "type": "text",
+      "name": "FarmPhysicalDesc",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-28T14:21:58.932Z",
+      "_id": "651198a6668575404131eb2e"
+    },
+    {
+      "style": "textbox",
+      "pattern": "(999) 999-9999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is the {[AcctType.Address]}'s phone number?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Corporate\" || AcctType == \"LLC\" || AcctType == \"Partnership\" || AcctType == \"SoleProp\" || AcctType == \"Receive\" || (AcctType == \"Gift\" && (GiftType == \"Anticipated Inheritance\" || GiftType ==  \"Lawsuit Judgment\"))",
+      "type": "text",
+      "name": "CompanyPhone",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T20:35:41.484Z",
+      "_id": "651198a6668575404131eb2f"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "0",
+      "maximum": "",
+      "isList": false,
+      "label": "How many shares do you own?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Corporate\"",
+      "type": "number",
+      "name": "CompanyShares",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T16:04:38.212Z",
+      "_id": "651198a6668575404131eb30"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is there a buy/sell agreement?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Corporate\"",
+      "type": "true/false",
+      "name": "BuySell",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T16:04:38.212Z",
+      "_id": "651198a6668575404131eb31"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is this a Medical, Legal, or other Professional {[AcctType.Address]}?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Corporate\" || AcctType == \"LLC\" || AcctType == \"SoleProp\" || AcctType == \"Partnership\"",
+      "type": "true/false",
+      "name": "ProfessionalCompany",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T20:35:41.484Z",
+      "_id": "651198a6668575404131eb32"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is this an \"S\" Corporation?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Corporate\"",
+      "type": "true/false",
+      "name": "SCorp",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T16:04:38.213Z",
+      "_id": "651198a6668575404131eb33"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Who holds {[AcctType == \"LLC\" ? \"membership\" : AcctType == \"Partnership\" ? \"partnership\" : \"ownership\"]} papers?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"LLC\" || AcctType == \"Partnership\"",
+      "type": "object",
+      "name": "PartnershipPapers",
+      "typeName": "singleselection",
+      "typeDef": "5db8510d5f528a0c1a3a7fed",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T20:35:41.484Z",
+      "_id": "651198a6668575404131eb34"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"General Partnership\"},{\"Name\":\"Limited Partnership\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "What kind of partnership is this?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Partnership\"",
+      "type": "selection",
+      "name": "PartnershipType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T20:39:27.986Z",
+      "_id": "651198a6668575404131eb35"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Does this business own property?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"SoleProp\"",
+      "type": "true/false",
+      "name": "BusinessOwnsProperty",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-28T14:13:43.739Z",
+      "_id": "651198a6668575404131eb36"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Give a description of this business:",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"SoleProp\"",
+      "type": "text",
+      "name": "SoleDescr",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T16:42:45.251Z",
+      "_id": "651198a6668575404131eb37"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is the vehicle's make?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Vehicle\"",
+      "type": "text",
+      "name": "VehicleMake",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T16:53:32.761Z",
+      "_id": "651198a6668575404131eb38"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is the vehicle's model?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Vehicle\"",
+      "type": "text",
+      "name": "VehicleModel",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T16:53:32.761Z",
+      "_id": "651198a6668575404131eb39"
+    },
+    {
+      "style": "textbox",
+      "pattern": "9999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is the vehicle's year?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Vehicle\"",
+      "type": "text",
+      "name": "VehicleYear",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T16:53:32.762Z",
+      "_id": "651198a6668575404131eb3a"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is the vehicle's VIN/Serial Number?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Vehicle\"",
+      "type": "text",
+      "name": "VehicleVIN",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T16:53:32.762Z",
+      "_id": "651198a6668575404131eb3b"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Business\"},{\"Name\":\"Personal\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Is this a business debt or personal debt?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Receive\"",
+      "type": "selection",
+      "name": "DebtType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T17:07:42.584Z",
+      "_id": "651198a6668575404131eb3c"
+    },
+    {
+      "style": "datepicker",
+      "isList": false,
+      "label": "What date was the debt incurred on?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Receive\"",
+      "type": "date",
+      "name": "DebtDate",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T17:07:42.585Z",
+      "_id": "651198a6668575404131eb3d"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Date\",\"Merge\":\"Date Payable\"},{\"Name\":\"Payment Schedule\",\"Merge\":\"Payment Schedule\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Is this debt repayable on a certain date, or on a payment schedule?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Receive\"",
+      "type": "selection",
+      "name": "ScheduleorDate",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T17:05:45.214Z",
+      "_id": "651198a6668575404131eb3e"
+    },
+    {
+      "style": "datepicker",
+      "isList": false,
+      "label": "What date is the debt due on?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Receive\" && ScheduleorDate == \"Date\"",
+      "type": "date",
+      "name": "DatePayable",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T17:05:45.214Z",
+      "_id": "651198a6668575404131eb3f"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 3,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "What is the payment schedule for the debt?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Receive\" && ScheduleorDate == \"Payment Schedule\"",
+      "type": "text",
+      "name": "PaymentSchedule",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T17:05:45.215Z",
+      "_id": "651198a6668575404131eb40"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is this debt a promissory note?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Receive\"",
+      "type": "true/false",
+      "name": "PromNote",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T17:09:07.528Z",
+      "_id": "651198a6668575404131eb41"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Anticipated Inheritance\"},{\"Name\":\"Gift\"},{\"Name\":\"Lawsuit Judgment\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "What kind of anticipated future asset is this?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Gift\"",
+      "type": "selection",
+      "name": "GiftType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T17:23:25.319Z",
+      "_id": "651198a6668575404131eb42"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Who is providing or giving the {[GiftType|lower|else: \"asset\"]}?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Gift\"",
+      "type": "text",
+      "name": "GiftGiver",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T17:23:25.319Z",
+      "_id": "651198a6668575404131eb43"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Give a detailed description of the {[GiftType|lower|else: \"asset\"]}:",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Gift\"",
+      "type": "text",
+      "name": "GiftDescription",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T17:23:25.319Z",
+      "_id": "651198a6668575404131eb44"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Fair Market Value\"},{\"Name\":\"Appraisal Quote\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Is this a fair market value or an appraisal quote?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Gift\"",
+      "type": "selection",
+      "name": "ValueType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T17:23:25.319Z",
+      "_id": "651198a6668575404131eb45"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "List the attorney and law firm involved in the {[GiftType|lower|else: \"asset\"]}?",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Gift\" && (GiftType == \"Anticipated Inheritance\" || GiftType ==  \"Lawsuit Judgment\")",
+      "type": "text",
+      "name": "AttorneyandFirm",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-28T14:10:27.500Z",
+      "_id": "651198a6668575404131eb46"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Confirmed\"},{\"Name\":\"In process\"},{\"Name\":\"No confirmation to date\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Confirmation status:",
+      "helpText": "",
+      "forceRelevance": "AcctType && AcctType != \"Personal Property\"",
+      "type": "selection",
+      "name": "ConfirmationStatus",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-22T22:28:07.876Z",
+      "_id": "651198a6668575404131eb47"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Theus Law Offices\"},{\"Name\":\"Client\"},{\"Name\":\"Concierge Funding\"}]",
+      "optionTemplate": "{[this == \"Theus Law Offices\" ? \"Theus Law Offices\" : this == \"Client\" ? (Client.NameCO + (MarriedTF ? \" and \" + Spouse.NameCO : \"\")) : this == \"Concierge Funding\" ? \"Concierge Funding\" : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Responsible party:",
+      "helpText": "",
+      "forceRelevance": "AcctType && AcctType != \"Personal Property\"",
+      "type": "selection",
+      "name": "ResponsibleParty",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-22T22:28:07.876Z",
+      "_id": "651198a6668575404131eb48"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Ownership change:",
+      "helpText": "",
+      "forceRelevance": "AcctType && AcctType != \"Personal Property\"",
+      "type": "text",
+      "name": "OwnershipChange",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-22T22:28:07.876Z",
+      "_id": "651198a6668575404131eb49"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 4,
+      "allowBreaks": true,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "External Client Notes:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text",
+      "name": "AssetNotes",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-16T19:02:54.746Z",
+      "_id": "651198a6668575404131eb4a"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 5,
+      "allowBreaks": true,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Internal Firm Notes:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text",
+      "name": "AssetInternalNotes",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-16T19:02:54.746Z",
+      "_id": "651198a6668575404131eb4b"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 2,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Describe the personal property:",
+      "helpText": "",
+      "forceRelevance": "AcctType == \"Personal Property\"",
+      "type": "text",
+      "name": "PersPropDescription",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-22T22:25:38.242Z",
+      "_id": "651198a6668575404131eb4c"
+    }
+  ],
+  "formulas": [
+    {
+      "contentType": "",
+      "isList": true,
+      "label": "",
+      "expression": "[\"MarriedTF\\n  ? AcctOwner == \\\"Client\\\" || AcctOwner == \\\"Both\\\"\\n    ? Client.NameCO\\n    : null\\n  : Client.NameCO\",\"MarriedTF\\n  ? AcctOwner == \\\"Spouse\\\" || AcctOwner == \\\"Both\\\"\\n    ? Spouse.NameCO\\n    : null\\n  : null\",\"AnyoneElseNamedTF\\n  ? (OthersNamed|map: Selection.NameCO)\\n  : []\"]",
+      "ref": "",
+      "type": "text",
+      "name": "AcctNamesAs",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:05:29.385Z",
+      "_id": "651198a6668575404131eb4d"
+    },
+    {
+      "contentType": "",
+      "isList": true,
+      "label": "",
+      "expression": "[\"MarriedTF\\n  ? AcctOwner == \\\"Client\\\" || AcctOwner == \\\"Both\\\"\\n    ? Client.NameCO\\n    : null\\n  : Client.NameCO\",\"MarriedTF\\n  ? AcctOwner == \\\"Spouse\\\" || AcctOwner == \\\"Both\\\"\\n    ? Spouse.NameCO\\n    : null\\n  : null\"]",
+      "ref": "",
+      "type": "text",
+      "name": "AcctNamesAsPolicy",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:05:29.385Z",
+      "_id": "651198a6668575404131eb4e"
+    },
+    {
+      "contentType": "",
+      "isList": false,
+      "label": "",
+      "expression": "AcctNamesCorrectTF\n  ? AcctNamesList\n  : NamesAsOnAcct",
+      "ref": "",
+      "type": "text",
+      "name": "AcctNamesForOnAcct",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-24T21:21:35.353Z",
+      "_id": "651198a6668575404131eb4f"
+    },
+    {
+      "contentType": "",
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF\n  ? AcctInsured == \"Client\"\n    ? Client.First\n    : AcctInsured == \"Spouse\"\n      ? Spouse.First\n      : \"\"\n  : Client.First",
+      "ref": "",
+      "type": "text",
+      "name": "AcctTrueInsured",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-04-16T16:19:04.510Z",
+      "_id": "651198a6668575404131eb50"
+    },
+    {
+      "contentType": "",
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF\n  ? AcctOwner == \"Client\"\n    ? Client.First\n    : AcctOwner == \"Spouse\"\n      ? Spouse.First\n      : Client.First + \" and \" + Spouse.First\n  : Client.NameCO",
+      "ref": "",
+      "type": "text",
+      "name": "AcctTrueOwner",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-24T21:10:35.293Z",
+      "_id": "651198a6668575404131eb51"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "{LLCName:AcctBank,id$:id$.toString()+\":AsLLC\",_link:id$}",
+      "ref": "llcinfo",
+      "name": "AsLLC",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-06-16T19:14:39.785Z",
+      "_id": "651198a6668575404131eb52"
+    },
+    {
+      "contentType": "",
+      "isList": false,
+      "label": "",
+      "expression": "AcctType == \"Bonds\" && BondType != \"Other\"\n  ? BondType.Name\n  : BondOther",
+      "ref": "",
+      "type": "text",
+      "name": "BondTrueType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:16:26.057Z",
+      "_id": "651198a6668575404131eb53"
+    },
+    {
+      "contentType": "",
+      "isList": true,
+      "label": "",
+      "expression": "[\"(AcctType == \\\"Corporate\\\" || AcctType == \\\"LLC\\\" || AcctType == \\\"SoleProp\\\" || AcctType == \\\"Partnership\\\")\\n  ? peek(ExistingLLCs)\\n     ? (ExistingLLCs|map: SelectLLC.NameCO)\\n     : []\\n  : []\",\"(AcctType == \\\"Corporate\\\" || AcctType == \\\"LLC\\\" || AcctType == \\\"SoleProp\\\" || AcctType == \\\"Partnership\\\")\\n  ? peek(LLCs)\\n     ? (LLCs|map: SelectLLC.NameCO)\\n     : []\\n  : []\"]",
+      "ref": "",
+      "type": "text",
+      "name": "EntitySuggests",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T18:31:35.337Z",
+      "_id": "651198a6668575404131eb54"
+    },
+    {
+      "contentType": "",
+      "isList": false,
+      "label": "",
+      "expression": "AcctType == \"Farm\" && FarmType != \"Other\"\n  ? FarmType.Name\n  : FarmTypeOther",
+      "ref": "",
+      "type": "text",
+      "name": "FarmTrueType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:46:32.134Z",
+      "_id": "651198a6668575404131eb55"
+    },
+    {
+      "isList": true,
+      "label": "",
+      "expression": "[\"{id$: \\\"ClientOrBoth23948FJlSfj\\\",\\n TextVar: (MarriedTF ? (AcctOwner == \\\"Client\\\" || AcctOwner == \\\"Both\\\") ? Client.NameCO : null : Client.NameCO)\\n}\\n\\n\",\"MarriedTF && (AcctOwner == \\\"Spouse\\\" || AcctOwner == \\\"Both\\\")\\n ? {id$: \\\"SpouseOrBoth239AEW48FJlSfj\\\",\\n   TextVar: Spouse.NameCO\\n   }\\n : null\",\"AnyoneElseNamedTF\\n  ? {id$: (OthersNamed|map: Selection.NameCO) + \\\"283OUFD\\\",\\n     TextVar: (OthersNamed|map: Selection.NameCO)\\n    }\\n  : null\\n\"]",
+      "ref": "textforlists",
+      "name": "NamesforQuestion",
+      "type": "object",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-24T21:54:21.699Z",
+      "_id": "651198a6668575404131eb56"
+    },
+    {
+      "isList": true,
+      "label": "",
+      "expression": "[\"{id: \\\"NamesforPolicySSDFJ29SDFLJ3487SFJl\\\",\\n TextVar: AcctNamesPolicy\\n}\"]",
+      "ref": "textforlists",
+      "name": "NamesPolicyQuestion",
+      "type": "object",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:03:36.504Z",
+      "_id": "651198a6668575404131eb57"
+    },
+    {
+      "isList": true,
+      "label": "",
+      "expression": "[\"{id: \\\"Namesfor293487sFJl\\\",\\n TextVar: AcctNamesList\\n}\"]",
+      "ref": "textforlists",
+      "name": "NamesQuestion2",
+      "type": "object",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:02:55.794Z",
+      "_id": "651198a6668575404131eb58"
+    },
+    {
+      "contentType": "",
+      "isList": true,
+      "label": "",
+      "expression": "[\"Client.PartyLineAddress\",\"MarriedTF && !Spouse.SameAddressTF\\r\\n  ? Spouse.LineAddress\\r\\n  : null\"]",
+      "ref": "",
+      "type": "text",
+      "name": "RealPropSuggests",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-16T21:49:56.165Z",
+      "_id": "651198a6668575404131eb59"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF\n  ? AcctOwner == \"Client\"\n    ? Client\n    : AcctOwner == \"Spouse\"\n      ? Spouse\n      : null\n  : Client",
+      "ref": "individual",
+      "name": "RetireAcctOwner",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-06-15T19:14:10.581Z",
+      "_id": "651198a6668575404131eb5a"
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[list AcctNamesAs|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}",
+      "label": "",
+      "type": "text",
+      "name": "AcctNamesList",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-24T21:32:33.656Z",
+      "_id": "651198a6668575404131eb5b",
+      "content": "{[list AcctNamesAs|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[list AcctNamesAsPolicy|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}",
+      "label": "",
+      "type": "text",
+      "name": "AcctNamesPolicy",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-25T15:04:17.329Z",
+      "_id": "651198a6668575404131eb5c",
+      "content": "{[list AcctNamesAsPolicy|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if AcctType == \"Real\" || AcctType == \"Timeshare\"]}at {[RealStreetAddress|else: \"_______________________\"]}{[elseif AcctType == \"Vehicle\"]}{[if VehicleYear && VehicleMake && VehicleModel]}{[VehicleYear]} {[VehicleMake]} {[VehicleModel]}{[elseif VehicleYear && VehicleMake]}{[VehicleYear]} {[VehicleMake]} ____________{[elseif VehicleMake && VehicleModel]}_______ {[VehicleMake]} {[VehicleModel]}{[elseif VehicleYear && VehicleModel]}{[VehicleYear]} ____________ {[VehicleModel]}{[elseif VehicleYear]}{[VehicleYear]} ____________  ____________{[elseif VehicleMake]}_______ {[VehicleMake]} ____________{[elseif VehicleModel]}_______ ____________ {[VehicleModel]}{[else]}_______________________{[endif]}{[elseif AcctType == \"Cash\"]}at {[AcctBank|else: \"________________\"]} {[CashType|else: \"_______________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"LifeInsure\"]}at {[AcctBank|else: \"________________\"]} on {[AcctTrueInsured|else: \"_______________\"]}'s Life{[elseif AcctType == \"Retirement\"]}at {[AcctBank|else: \"________________\"]} for {[AcctTrueOwner|else: \"________________\"]}{[elseif AcctType == \"Broker\"]}at {[AcctBank|else: \"________________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"Stocks\"]}at {[AcctBank|else: \"________________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"Bonds\"]}{[BondTrueType|else: \"____________\"]} at {[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Corporate\" || AcctType == \"LLC\" || AcctType == \"SoleProp\" || AcctType == \"Partnership\"]}{[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Annuity\"]}at {[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Farm\"]}{[FarmTrueType|else: \"_______________\"]}{[elseif AcctType == \"Receive\"]}{[DebtType|else: \"________________\"]} debt incurred {[DebtDate|format: \"MMMM D, YYYY\"|else: \"_______________\"]}{[elseif AcctType == \"Gift\"]}{[GiftType|else: \"________________\"]} from {[GiftGiver|else: \"_______________\"]}{[else]}_______________________{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "AssetFullDesc",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:28:48.067Z",
+      "_id": "651198a6668575404131eb5d",
+      "content": "{[if AcctType == \"Real\" || AcctType == \"Timeshare\"]}at {[RealStreetAddress|else: \"_______________________\"]}{[elseif AcctType == \"Vehicle\"]}{[if VehicleYear && VehicleMake && VehicleModel]}{[VehicleYear]} {[VehicleMake]} {[VehicleModel]}{[elseif VehicleYear && VehicleMake]}{[VehicleYear]} {[VehicleMake]} ____________{[elseif VehicleMake && VehicleModel]}_______ {[VehicleMake]} {[VehicleModel]}{[elseif VehicleYear && VehicleModel]}{[VehicleYear]} ____________ {[VehicleModel]}{[elseif VehicleYear]}{[VehicleYear]} ____________  ____________{[elseif VehicleMake]}_______ {[VehicleMake]} ____________{[elseif VehicleModel]}_______ ____________ {[VehicleModel]}{[else]}_______________________{[endif]}{[elseif AcctType == \"Cash\"]}at {[AcctBank|else: \"________________\"]} {[CashType|else: \"_______________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"LifeInsure\"]}at {[AcctBank|else: \"________________\"]} on {[AcctTrueInsured|else: \"_______________\"]}'s Life{[elseif AcctType == \"Retirement\"]}at {[AcctBank|else: \"________________\"]} for {[AcctTrueOwner|else: \"________________\"]}{[elseif AcctType == \"Broker\"]}at {[AcctBank|else: \"________________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"Stocks\"]}at {[AcctBank|else: \"________________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"Bonds\"]}{[BondTrueType|else: \"____________\"]} at {[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Corporate\" || AcctType == \"LLC\" || AcctType == \"SoleProp\" || AcctType == \"Partnership\"]}{[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Annuity\"]}at {[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Farm\"]}{[FarmTrueType|else: \"_______________\"]}{[elseif AcctType == \"Receive\"]}{[DebtType|else: \"________________\"]} debt incurred {[DebtDate|format: \"MMMM D, YYYY\"|else: \"_______________\"]}{[elseif AcctType == \"Gift\"]}{[GiftType|else: \"________________\"]} from {[GiftGiver|else: \"_______________\"]}{[else]}_______________________{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if AcctType == \"Real\" || AcctType == \"Timeshare\"]}{[RealStreetAddress|else: \"_______________________\"]}{[elseif AcctType == \"Vehicle\"]}{[if VehicleYear && VehicleMake && VehicleModel]}{[VehicleYear]} {[VehicleMake]} {[VehicleModel]}{[elseif VehicleYear && VehicleMake]}{[VehicleYear]} {[VehicleMake]} ____________{[elseif VehicleMake && VehicleModel]}_______ {[VehicleMake]} {[VehicleModel]}{[elseif VehicleYear && VehicleModel]}{[VehicleYear]} ____________ {[VehicleModel]}{[elseif VehicleYear]}{[VehicleYear]} ____________  ____________{[elseif VehicleMake]}_______ {[VehicleMake]} ____________{[elseif VehicleModel]}_______ ____________ {[VehicleModel]}{[else]}_______________________{[endif]}{[elseif AcctType == \"Cash\"]}{[AcctBank|else: \"________________\"]} {[CashType|else: \"_______________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"LifeInsure\"]}{[AcctBank|else: \"________________\"]} on {[AcctTrueInsured|else: \"_______________\"]}'s Life{[elseif AcctType == \"Retirement\"]}{[AcctBank|else: \"________________\"]} for {[AcctTrueOwner|else: \"________________\"]}{[elseif AcctType == \"Broker\"]}{[AcctBank|else: \"________________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"Stocks\"]}{[AcctBank|else: \"________________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"Bonds\"]}{[BondTrueType|else: \"____________\"]} bond at {[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Corporate\" || AcctType == \"LLC\" || AcctType == \"SoleProp\" || AcctType == \"Partnership\"]}{[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Annuity\"]}{[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Farm\"]}{[FarmTrueType|else: \"_______________\"]}{[elseif AcctType == \"Receive\"]}{[DebtType|else: \"________________\"]} debt incurred {[DebtDate|format: \"MMMM D, YYYY\"|else: \"_______________\"]}{[elseif AcctType == \"Gift\"]}{[GiftType|else: \"________________\"]} from {[GiftGiver|else: \"_______________\"]}{[else]}_______________________{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "AssetLetterRef",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:29:24.508Z",
+      "_id": "651198a6668575404131eb5e",
+      "content": "{[if AcctType == \"Real\" || AcctType == \"Timeshare\"]}{[RealStreetAddress|else: \"_______________________\"]}{[elseif AcctType == \"Vehicle\"]}{[if VehicleYear && VehicleMake && VehicleModel]}{[VehicleYear]} {[VehicleMake]} {[VehicleModel]}{[elseif VehicleYear && VehicleMake]}{[VehicleYear]} {[VehicleMake]} ____________{[elseif VehicleMake && VehicleModel]}_______ {[VehicleMake]} {[VehicleModel]}{[elseif VehicleYear && VehicleModel]}{[VehicleYear]} ____________ {[VehicleModel]}{[elseif VehicleYear]}{[VehicleYear]} ____________  ____________{[elseif VehicleMake]}_______ {[VehicleMake]} ____________{[elseif VehicleModel]}_______ ____________ {[VehicleModel]}{[else]}_______________________{[endif]}{[elseif AcctType == \"Cash\"]}{[AcctBank|else: \"________________\"]} {[CashType|else: \"_______________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"LifeInsure\"]}{[AcctBank|else: \"________________\"]} on {[AcctTrueInsured|else: \"_______________\"]}'s Life{[elseif AcctType == \"Retirement\"]}{[AcctBank|else: \"________________\"]} for {[AcctTrueOwner|else: \"________________\"]}{[elseif AcctType == \"Broker\"]}{[AcctBank|else: \"________________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"Stocks\"]}{[AcctBank|else: \"________________\"]} Acct# {[AcctNumber|else: \"____________\"]}{[elseif AcctType == \"Bonds\"]}{[BondTrueType|else: \"____________\"]} bond at {[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Corporate\" || AcctType == \"LLC\" || AcctType == \"SoleProp\" || AcctType == \"Partnership\"]}{[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Annuity\"]}{[AcctBank|else: \"________________\"]}{[elseif AcctType == \"Farm\"]}{[FarmTrueType|else: \"_______________\"]}{[elseif AcctType == \"Receive\"]}{[DebtType|else: \"________________\"]} debt incurred {[DebtDate|format: \"MMMM D, YYYY\"|else: \"_______________\"]}{[elseif AcctType == \"Gift\"]}{[GiftType|else: \"________________\"]} from {[GiftGiver|else: \"_______________\"]}{[else]}_______________________{[endif]}"
+    }
+  ],
+  "__v": 220,
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}
