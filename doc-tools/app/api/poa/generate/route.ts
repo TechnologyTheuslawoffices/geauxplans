@@ -137,6 +137,22 @@ const POA_TEMPLATES: Record<string, { file: string; namePattern: string }> = {
     file: 'SingleExtractGeaux.docx',
     namePattern: "Extract of Trust.docx"
   },
+  'ClientSimpleWill': {
+    file: 'ClientSimpleWill.docx',
+    namePattern: "Will for {[Client.NameCO]}.docx"
+  },
+  'ClientWillCodicil': {
+    file: 'ClientWillCodicil.docx',
+    namePattern: "Codicil to {[Client.NameCO]}'s Will.docx"
+  },
+  'SpouseSimpleWill': {
+    file: 'SpouseSimpleWill.docx',
+    namePattern: "Will for {[Spouse.NameCO]}.docx"
+  },
+  'SpouseWillCodicil': {
+    file: 'SpouseWillCodicil.docx',
+    namePattern: "Codicil to {[Spouse.NameCO]}'s Will.docx"
+  },
 };
 
 /**
