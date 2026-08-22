@@ -356,24 +356,36 @@ async function handleSuccessfulPayment(session) {
 
     console.log(`Order ${orderNumber} created for session ${session.id}`);
 
-    // Sync to Keap CRM (non-blocking) — sync first product for back-compat
+    // Sync to Keap CRM — sync first product for back-compat.
+    //
+    // Awaited, not fire-and-forget: the webhook handler is awaited before the
+    // 200 is sent, and on Vercel the lambda can be frozen as soon as that
+    // response is flushed, which would kill a still-running sync.
+    //
+    // Failures are swallowed on purpose. The order and any subscription rows
+    // are already written above; throwing here would only make Stripe retry the
+    // webhook and create a duplicate order.
     const customerEmail = session.customer_details?.email || session.customer_email;
     const customerName = session.customer_details?.name || '';
     const nameParts = customerName.split(' ');
 
-    if (customerEmail) {
-      keapService.handlePurchase({
-        email: customerEmail,
-        firstName: nameParts[0] || '',
-        lastName: nameParts.slice(1).join(' ') || '',
-        phone: session.customer_details?.phone || '',
-      }, resolved[0].productId)
-        .then(keapResult => {
-          if (keapResult.success) {
-            console.log(`Keap contact synced for purchase: ${keapResult.contactId}`);
-          }
-        })
-        .catch(err => console.error('Keap purchase sync error:', err));
+    if (customerEmail && resolved.length > 0) {
+      try {
+        const keapResult = await keapService.handlePurchase({
+          email: customerEmail,
+          firstName: nameParts[0] || '',
+          lastName: nameParts.slice(1).join(' ') || '',
+          phone: session.customer_details?.phone || '',
+        }, resolved[0].productId);
+
+        if (keapResult.success) {
+          console.log(`Keap contact synced for purchase ${orderNumber}: ${keapResult.contactId}`);
+        } else {
+          console.error(`Keap purchase sync failed for order ${orderNumber}: ${keapResult.error}`);
+        }
+      } catch (err) {
+        console.error(`Keap purchase sync threw for order ${orderNumber}:`, err);
+      }
     }
   } catch (error) {
     console.error('Error creating order from payment:', error);

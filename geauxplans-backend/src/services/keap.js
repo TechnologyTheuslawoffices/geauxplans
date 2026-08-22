@@ -8,26 +8,115 @@ const { supabase } = require('../config/supabase');
 // Keap API Configuration
 const KEAP_API_BASE = 'https://api.infusionsoft.com/crm/rest/v1';
 
-// Product to Tag mapping (configure these with actual Keap tag IDs)
+/**
+ * TAG POLICY: this service applies TRIGGER tags only.
+ * ---------------------------------------------------
+ * The Keap account categorises every tag as Trigger, History, Status or
+ * Prospect. A Trigger tag exists to start a campaign; that campaign is what
+ * stamps the matching History tag (e.g. 498 "Completed Purchase") and moves
+ * the Status tag (e.g. 1174 "Client - Estate Planning (POA Supplement)").
+ *
+ * The backend must not write History or Status tags itself. Campaigns mutate
+ * that same lifecycle state, so a contact tagged from both sides can end up
+ * classified as both a current and a past client with no way to tell which
+ * write came last. Applying the trigger and letting the campaign own the rest
+ * keeps a single writer per piece of state.
+ */
+
+/**
+ * Stripe product id -> Keap trigger tags applied on a completed purchase.
+ *
+ * 1400 fires on every purchase; the account has a parallel 1424 "(Any Business
+ * Product)", which is what tells us 1400 is meant to sit alongside a
+ * product-specific trigger rather than replace it.
+ */
+const ANY_PURCHASE_TAG = 1400; // GeauxPlans - Completed Purchase (Any Product)
+
 const PRODUCT_TAGS = {
-  614: [], // POA - add tag IDs here
-  606: [], // Minor Child Estate Plan
-  673: [], // Will-Based Estate Plan
-  676: [], // Trust-Based Estate Plan
-  1367: [], // Subscription
+  614: [ANY_PURCHASE_TAG, 380],  // POA Supplement
+  606: [ANY_PURCHASE_TAG, 378],  // Minor Child-Centered Plan
+  673: [ANY_PURCHASE_TAG, 382],  // Will-Based Plan
+  676: [ANY_PURCHASE_TAG, 384],  // Trust-Based Plan
+  1367: [ANY_PURCHASE_TAG, 885], // Legal Edge Plan (subscription)
 };
 
-// Form type to Tag mapping
+/**
+ * Form type -> Keap trigger tags applied when the client finishes the
+ * interview.
+ *
+ * Every estate-planning form maps to the same tag: the account has one
+ * 1354 "Completed Interview" trigger for estate planning (1458 is its
+ * business-formation counterpart) and no per-plan variant. Which plan they
+ * completed is already carried by the purchase tag applied at checkout.
+ *
+ * The map is kept keyed by form type so a per-plan tag can be dropped in later
+ * without touching the call sites.
+ */
+const COMPLETED_INTERVIEW_TAG = 1354; // GeauxPlans - Completed Interview
+
 const FORM_TYPE_TAGS = {
-  powerOfAttorneyForm: [],
-  powerOfAttorneyForm2Person: [],
-  trustBasedEstatePlanSolo: [],
-  trustBasedEstatePlan2Person: [],
-  willBasedEstatePlan: [],
-  willBasedEstatePlan2Person: [],
-  minorChildEstatePlan: [],
-  minorChildEstatePlan2Person: [],
+  powerOfAttorneyForm: [COMPLETED_INTERVIEW_TAG],
+  powerOfAttorneyForm2Person: [COMPLETED_INTERVIEW_TAG],
+  trustBasedEstatePlanSolo: [COMPLETED_INTERVIEW_TAG],
+  trustBasedEstatePlan2Person: [COMPLETED_INTERVIEW_TAG],
+  willBasedEstatePlan: [COMPLETED_INTERVIEW_TAG],
+  willBasedEstatePlan2Person: [COMPLETED_INTERVIEW_TAG],
+  minorChildEstatePlan: [COMPLETED_INTERVIEW_TAG],
+  minorChildEstatePlan2Person: [COMPLETED_INTERVIEW_TAG],
 };
+
+/**
+ * Applied only once the engine has actually produced the documents, which is a
+ * later and separate moment from finishing the interview: a submission can be
+ * marked complete and still be blocked by a precondition failure.
+ */
+const DOCUMENTS_COMPLETE_TAGS = [1362]; // GeauxPlans - Documents Complete
+
+/**
+ * Public marketing form source -> trigger tags. Used by routes/leads.js.
+ *
+ * `contact` is deliberately empty: the account has no trigger tag for the
+ * contact form (386 "GeauxPlans Contact" is a History tag), and the nearest
+ * triggers — 836 "Start - GeauxPlans Sales Campaign", 1128 "Prospect" — would
+ * push someone who asked a support question into a sales sequence. The contact
+ * is still created; it just starts no campaign.
+ */
+const LEAD_SOURCE_TAGS = {
+  contact: [],
+  webinar_rsvp: [318],          // Webinar Registrant (GeauxPlans)
+  webinar_registration: [318],  // Webinar Registrant (GeauxPlans)
+};
+
+/**
+ * The full set of trigger tags a completed submission should end up carrying.
+ *
+ * Finishing the interview and having documents are separate milestones: a
+ * submission can be marked completed and still be blocked by a precondition
+ * failure, and that client must not be told their documents are ready.
+ */
+function submissionTags(formType, { documentsGenerated = false } = {}) {
+  return [
+    ...(FORM_TYPE_TAGS[formType] || []),
+    ...(documentsGenerated ? DOCUMENTS_COMPLETE_TAGS : []),
+  ];
+}
+
+/**
+ * Every tag id this service is configured to apply.
+ *
+ * applyTags swallows failures, so a typo'd or deleted id would silently stop a
+ * campaign from ever firing with nothing but a log line to show for it. The
+ * /test-keap endpoint checks this list against the live account so a bad id is
+ * caught deliberately rather than discovered from missing client email.
+ */
+function configuredTagIds() {
+  return [...new Set([
+    ...Object.values(PRODUCT_TAGS).flat(),
+    ...Object.values(FORM_TYPE_TAGS).flat(),
+    ...DOCUMENTS_COMPLETE_TAGS,
+    ...Object.values(LEAD_SOURCE_TAGS).flat(),
+  ])];
+}
 
 class KeapService {
   constructor() {
@@ -223,8 +312,15 @@ class KeapService {
 
   /**
    * Handle form submission - send contact to Keap
+   *
+   * @param {object} formData
+   * @param {string} formType
+   * @param {number[]|null} tags - explicit tag list, which REPLACES the
+   *   form-type default. Callers that track which tags a submission has already
+   *   received pass the remaining ones here so a resubmit does not re-fire a
+   *   campaign. Pass null to get the default set for the form type.
    */
-  async handleFormSubmission(formData, formType) {
+  async handleFormSubmission(formData, formType, tags = null) {
     const personalInfo = formData.personal_info || {};
 
     const contactData = {
@@ -238,7 +334,7 @@ class KeapService {
       state: personalInfo.state || '',
       zip: personalInfo.zip || '',
       source: `GeauxPlans Form: ${formType}`,
-      tags: FORM_TYPE_TAGS[formType] || [],
+      tags: tags === null ? submissionTags(formType) : tags,
     };
 
     // Only proceed if we have at least an email or name
@@ -298,4 +394,8 @@ module.exports = {
   KeapService,
   PRODUCT_TAGS,
   FORM_TYPE_TAGS,
+  DOCUMENTS_COMPLETE_TAGS,
+  LEAD_SOURCE_TAGS,
+  submissionTags,
+  configuredTagIds,
 };
