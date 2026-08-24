@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { FORM_TYPES, PAGE_NAMES } from './formTypes';
 import '../styles/poa-form.css';
 
 /**
@@ -32,83 +33,22 @@ function deepMerge<T extends Record<string, any>>(defaults: T, saved: Partial<T>
   return result;
 }
 
-// Page display names for progress bar
-const PAGE_NAMES: Record<string, string> = {
-  start: 'Start',
-  personal_info: 'Personal',
-  spouse_info: 'Spouse',
-  children: 'Children',
-  agents: 'Agents',
-  plan_contents: 'Contents',
-  // POA Pages
-  fpoa: 'FPOA',
-  hcpoa: 'HCPOA',
-  hcd: 'HCD',
-  // Trust Pages
-  trust_setup: 'Trust Setup',
-  trustees: 'Trustees',
-  distribution: 'Distribution',
-  trust_info: 'Trust', // Legacy - kept for compatibility
-  // Will Pages
-  executors: 'Executors',
-  guardians: 'Guardians',
-  will_distribution: 'Distribution',
-  // Minor Child Pages
-  children_trusts: 'Children Trusts',
-  // Review
-  review: 'Review',
-};
-
-// Form type configurations - each plan has specific pages
-const FORM_TYPES: Record<string, { title: string; pages: string[]; planType: string }> = {
-  // POA Plans
-  powerOfAttorneyForm: {
-    title: 'Power of Attorney Supplement for One Person',
-    pages: ['start', 'personal_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'review'],
-    planType: 'poa',
-  },
-  powerOfAttorneyForm2Person: {
-    title: 'Power of Attorney Supplement for Two Persons',
-    pages: ['start', 'personal_info', 'agents', 'plan_contents', 'fpoa', 'hcpoa', 'hcd', 'review'],
-    planType: 'poa_couple',
-  },
-
-  // Trust-Based Plans
-  trustBasedEstatePlanSolo: {
-    title: 'Trust-Based Estate Plan',
-    pages: ['start', 'personal_info', 'children', 'agents', 'trust_setup', 'trustees', 'distribution', 'fpoa', 'hcpoa', 'hcd', 'review'],
-    planType: 'single_trust',
-  },
-  trustBasedEstatePlan2Person: {
-    title: 'Trust-Based Estate Plan for 2 Persons',
-    pages: ['start', 'personal_info', 'spouse_info', 'children', 'agents', 'trust_setup', 'trustees', 'distribution', 'fpoa', 'hcpoa', 'hcd', 'review'],
-    planType: 'joint_trust',
-  },
-
-  // Will-Based Plans
-  willBasedEstatePlan: {
-    title: 'Will-Based Estate Plan',
-    pages: ['start', 'personal_info', 'children', 'agents', 'executors', 'guardians', 'will_distribution', 'fpoa', 'hcpoa', 'hcd', 'review'],
-    planType: 'will_based',
-  },
-  willBasedEstatePlan2Person: {
-    title: 'Will-Based Estate Plan for 2 Persons',
-    pages: ['start', 'personal_info', 'spouse_info', 'children', 'agents', 'executors', 'guardians', 'will_distribution', 'fpoa', 'hcpoa', 'hcd', 'review'],
-    planType: 'will_based_couple',
-  },
-
-  // Minor Child-Centered Plans
-  minorChildEstatePlan: {
-    title: 'Minor Child-Centered Estate Plan',
-    pages: ['start', 'personal_info', 'children', 'guardians', 'children_trusts', 'agents', 'fpoa', 'hcpoa', 'hcd', 'review'],
-    planType: 'minor_child',
-  },
-  minorChildEstatePlan2Person: {
-    title: 'Minor Child-Centered Estate Plan for 2 Persons',
-    pages: ['start', 'personal_info', 'spouse_info', 'children', 'guardians', 'children_trusts', 'agents', 'fpoa', 'hcpoa', 'hcd', 'review'],
-    planType: 'minor_child_couple',
-  },
-};
+/**
+ * The `data` block returned by POST/PUT /submissions.
+ *
+ * `documentsBlocked` is reported separately from `success` on purpose: the
+ * answers were saved, so the request did succeed, but no documents came out of
+ * it. Treating the two as one thing is what let a plan report "Complete" with
+ * nothing to download.
+ */
+interface SaveResponseData {
+  id: number;
+  status: string;
+  documentsGenerated?: number;
+  documentsBlocked?: boolean;
+  documentMessage?: string;
+  blockers?: string[];
+}
 
 // Suffix options (from Knackly suffixes table)
 const SUFFIX_OPTIONS = [
@@ -1016,6 +956,11 @@ const POAForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+  // The banner used to choose its colour by testing the message for the
+  // substrings 'success' or 'saved'. Any new wording had to be reverse-engineered
+  // against that test to come out the right colour, and "Answers saved, but
+  // documents could not be prepared" would have rendered as a green tick.
+  const [saveMessageKind, setSaveMessageKind] = useState<'success' | 'error'>('success');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [existingSubmissionId, setExistingSubmissionId] = useState<number | null>(null);
   const [hasOtherParties, setHasOtherParties] = useState<string>('');
@@ -1337,7 +1282,7 @@ const POAForm: React.FC = () => {
 
     setFormData(testData);
     setHasOtherParties('Yes');
-    setSaveMessage('🥚 Test data loaded!');
+    showSaveMessage('success', '🥚 Test data loaded!');
     setTimeout(() => setSaveMessage(''), 3000);
   }, [formType]);
 
@@ -1468,14 +1413,30 @@ const POAForm: React.FC = () => {
       }
     }
 
-    if (pageName === 'trust_info') {
-      const ti = formData.trust_info;
-      if (!ti.trust_type) newErrors['trust_info.trust_type'] = 'Trust type is required';
+    if (pageName === 'trust_setup') {
+      if (!formData.trust_info?.trust_type) {
+        newErrors['trust_info.trust_type'] = 'Trust type is required';
+      }
+    }
+
+    // 'distribution' is the page the trust plans actually use. This check used to
+    // be keyed on 'trust_info', which is a legacy name no entry in FORM_TYPES
+    // lists, so it never ran: trust clients were never asked for a residuary and
+    // the backend then declined to draft their trust.
+    if (pageName === 'distribution') {
       Object.assign(newErrors, validateDispositiveSection('trust_info'));
     }
 
     if (pageName === 'will_distribution') {
       Object.assign(newErrors, validateDispositiveSection('will_info'));
+    }
+
+    // The backend refuses a will with no executor, so catch it here where the
+    // client can still act on it.
+    if (pageName === 'executors') {
+      if (!formData.will_info?.primary_executor) {
+        newErrors['will_info.primary_executor'] = 'Name the executor who will administer your estate.';
+      }
     }
 
     return { valid: Object.keys(newErrors).length === 0, errors: newErrors };
@@ -1523,9 +1484,14 @@ const POAForm: React.FC = () => {
     return result.valid;
   };
 
+  const showSaveMessage = (kind: 'success' | 'error', message: string) => {
+    setSaveMessageKind(kind);
+    setSaveMessage(message);
+  };
+
   const handleSave = async (status: 'inprogress' | 'completed' = 'inprogress') => {
     if (!isAuthenticated) {
-      setSaveMessage('Please log in to save your progress');
+      showSaveMessage('error', 'Please log in to save your progress');
       return;
     }
 
@@ -1556,22 +1522,38 @@ const POAForm: React.FC = () => {
         }
 
         if (status === 'completed') {
-          setSaveMessage('You Successfully Saved Your Changes. You will now be redirected to your dashboard.');
+          // The save succeeding does not mean documents were produced. The server
+          // reports a refusal here rather than in `error`, because the answers
+          // really were stored — but redirecting on a green banner would tell the
+          // client their plan is finished when there is nothing to download.
+          const info = response.data as SaveResponseData | undefined;
+          if (info?.documentsBlocked) {
+            showSaveMessage(
+              'error',
+              [info.documentMessage, ...(info.blockers || [])].filter(Boolean).join(' ')
+            );
+            return;
+          }
+
+          showSaveMessage(
+            'success',
+            'You Successfully Saved Your Changes. You will now be redirected to your dashboard.'
+          );
           setTimeout(() => {
             navigate('/my-account/my-estate-planning');
           }, 3000);
         } else {
-          setSaveMessage('Progress saved!');
+          showSaveMessage('success', 'Progress saved!');
           setTimeout(() => setSaveMessage(''), 5000);
         }
       } else {
         console.error('Save failed:', response.error);
-        setSaveMessage(response.error || 'Failed to save. Please try again.');
+        showSaveMessage('error', response.error || 'Failed to save. Please try again.');
         setTimeout(() => setSaveMessage(''), 5000);
       }
     } catch (error) {
       console.error('Save error:', error);
-      setSaveMessage('Failed to save. Please try again.');
+      showSaveMessage('error', 'Failed to save. Please try again.');
       setTimeout(() => setSaveMessage(''), 5000);
     } finally {
       setIsSaving(false);
@@ -1605,7 +1587,12 @@ const POAForm: React.FC = () => {
       console.log('Validation failed on page', firstInvalidPage, allErrors);
       setCurrentPage(firstInvalidPage);
       setErrors(allErrors);
-      setSaveMessage(`Please complete all required fields on the "${pages[firstInvalidPage]}" page`);
+      showSaveMessage(
+        'error',
+        `Please complete all required fields on the "${
+          PAGE_NAMES[pages[firstInvalidPage]] || pages[firstInvalidPage]
+        }" page`
+      );
       return;
     }
 
@@ -1615,7 +1602,7 @@ const POAForm: React.FC = () => {
       await handleSave('completed');
     } catch (error) {
       console.error('Submit error:', error);
-      setSaveMessage('An error occurred while submitting. Please try again.');
+      showSaveMessage('error', 'An error occurred while submitting. Please try again.');
     }
     setIsSubmitting(false);
   };
@@ -6046,8 +6033,8 @@ const POAForm: React.FC = () => {
 
             {/* Save Message */}
             {saveMessage && (
-              <div className={`alert ${saveMessage.includes('success') || saveMessage.includes('saved') ? 'alert-success' : 'alert-danger'} mb-3`}>
-                <strong>{saveMessage.includes('success') || saveMessage.includes('saved') ? '✓ ' : '⚠ '}</strong>
+              <div className={`alert ${saveMessageKind === 'success' ? 'alert-success' : 'alert-danger'} mb-3`}>
+                <strong>{saveMessageKind === 'success' ? '✓ ' : '⚠ '}</strong>
                 {saveMessage}
               </div>
             )}

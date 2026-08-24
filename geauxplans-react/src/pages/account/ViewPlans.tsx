@@ -66,6 +66,7 @@ const STATUS_COLORS: Record<string, string> = {
   'In Progress': '#ff9900',
   'Submitted': '#666',
   'Processing': '#ff9900',
+  'Action Needed': '#c0392b',
   'Complete': '#0000ff',
 };
 
@@ -89,6 +90,10 @@ interface ApiSubmission {
   knacklyStatus?: string;
   knacklyDocuments?: KnacklyDocument[];
   knacklyZipUrl?: string;
+  // Answers the server still needs before it will draft. Recomputed on every
+  // read from the stored form data, so it always describes the plan as it
+  // currently stands rather than as it stood at the last save.
+  documentBlockers?: string[];
   createdAt: string;
   updatedAt: string;
   firstSubmittedAt?: string;
@@ -132,6 +137,9 @@ const ViewPlans: React.FC = () => {
   const [submissions, setSubmissions] = useState<ApiSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState<number | null>(null);
+  // Keyed by submission id: this page lists every plan the client owns, so an
+  // unkeyed message would appear under all of them at once.
+  const [refreshError, setRefreshError] = useState<{ id: number; message: string } | null>(null);
   const [downloading, setDownloading] = useState<number | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
 
@@ -199,6 +207,7 @@ const ViewPlans: React.FC = () => {
 
   const refreshDocuments = async (submissionId: number) => {
     setRefreshing(submissionId);
+    setRefreshError(null);
     try {
       // Pass token from context directly in headers
       const response = await api.post(`/submissions/${submissionId}/refresh-documents`, {}, getAuthHeaders());
@@ -218,11 +227,22 @@ const ViewPlans: React.FC = () => {
           console.log('Refresh result:', response.message);
         }
       } else {
+        // /refresh-documents answers 200 with success:false and a real
+        // explanation when generation is refused. Logging it to the console was
+        // the only place that explanation went, so pressing Generate Documents
+        // appeared to do nothing at all.
         console.error('Refresh documents failed:', response.error);
-        // Only show alert for manual refresh errors
+        setRefreshError({
+          id: submissionId,
+          message: response.error || 'Documents could not be generated.',
+        });
       }
     } catch (error) {
       console.error('Failed to refresh documents:', error);
+      setRefreshError({
+        id: submissionId,
+        message: 'Could not reach the document service. Please try again.',
+      });
     } finally {
       setRefreshing(null);
     }
@@ -325,11 +345,15 @@ const ViewPlans: React.FC = () => {
     if (submission.submissionStatus === 'completed') {
       if (submission.knacklyStatus === 'completed') {
         return { text: 'Complete', color: STATUS_COLORS['Complete'] };
-      } else if (submission.knacklyRecordId) {
-        return { text: 'Processing', color: STATUS_COLORS['Processing'] };
-      } else {
-        return { text: 'Complete', color: STATUS_COLORS['Complete'] };
       }
+      // Answers are in, but the server would not draft from them. Reporting this
+      // as 'Complete' — which is what both remaining branches used to do — is how
+      // will-, minor- and trust-based plans came to sit on the dashboard looking
+      // finished with no documents behind them.
+      if ((submission.documentBlockers || []).length > 0 || submission.knacklyStatus === 'blocked') {
+        return { text: 'Action Needed', color: STATUS_COLORS['Action Needed'] };
+      }
+      return { text: 'Processing', color: STATUS_COLORS['Processing'] };
     }
 
     return { text: 'In Progress', color: STATUS_COLORS['In Progress'] };
@@ -500,7 +524,40 @@ const ViewPlans: React.FC = () => {
       );
     }
 
-    // Completed but pending Knackly processing (not yet sent to Knackly)
+    // Completed interview, no documents. Distinguish "not drafted yet" from
+    // "we will not draft this" — both used to render the green "Interview
+    // Complete - Ready to generate documents", so a plan the server had already
+    // refused invited the client to press Generate and watch nothing happen.
+    const blockers = submission.documentBlockers || [];
+    if (blockers.length > 0) {
+      return (
+        <>
+          <p className="mb-0" style={{ lineHeight: '14px' }}>
+            <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
+          </p>
+          <p className="mb-0 mt-0">
+            <strong style={{ color: '#c0392b' }}>
+              A few answers are still needed
+            </strong>
+          </p>
+          <ul style={{ fontSize: '13px', color: '#666', margin: '4px 0 0 0', paddingLeft: '20px' }}>
+            {blockers.map((blocker, i) => (
+              <li key={i}>{blocker}</li>
+            ))}
+          </ul>
+          {submission.canEdit !== false && (
+            <Link
+              to={`/poa-form?type=${submission.formType}`}
+              className="btn btn-sm btn-primary mt-2"
+              style={{ fontSize: '12px' }}
+            >
+              Complete my plan
+            </Link>
+          )}
+        </>
+      );
+    }
+
     return (
       <>
         <p className="mb-0" style={{ lineHeight: '14px' }}>
@@ -511,6 +568,11 @@ const ViewPlans: React.FC = () => {
             Interview Complete - Ready to generate documents
           </strong>
         </p>
+        {refreshError?.id === submission.id && (
+          <p className="mb-0 mt-1" style={{ fontSize: '13px', color: '#c0392b' }}>
+            {refreshError.message}
+          </p>
+        )}
         <button
           onClick={() => refreshDocuments(submission.id)}
           disabled={refreshing === submission.id}

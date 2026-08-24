@@ -86,13 +86,78 @@ const documentService = {
         blocked: true,
         blockers,
         error:
-          'This plan needs more information before documents can be prepared. ' +
-          'Our team will contact you to complete it.',
+          'Your answers are saved, but a few details are still needed before we ' +
+          'can prepare your documents. Please reopen the plan and complete them:',
       };
     }
     return rawDocumentService.processSubmission(submission);
   },
 };
+
+/**
+ * Build the JSON body for a save that may or may not have produced documents.
+ *
+ * The save itself always succeeded — the row is written either way — so this
+ * keeps `success: true`. What it stops doing is claiming the plan is finished
+ * when documents were refused.
+ *
+ * Every write path used to return an identical `{ success: true, message:
+ * 'Submission completed' }` regardless of docResult, so a plan blocked by
+ * checkGenerationPreconditions was indistinguishable from one with a full set
+ * of documents. The client showed a green banner and redirected; the only
+ * record of the refusal was a console.warn in the Vercel log. That is why
+ * will-, minor- and trust-based plans read "Complete" with nothing to download.
+ *
+ * Blockers are deliberately not persisted: they are a pure function of
+ * form_data, so any route can recompute them with checkGenerationPreconditions
+ * rather than risk a stored copy drifting out of date.
+ */
+function submissionSaveResponse(id, submissionStatus, docResult) {
+  const data = { id, status: submissionStatus };
+
+  if (submissionStatus !== 'completed' || !docResult) {
+    return { success: true, message: 'Progress saved', data };
+  }
+
+  if (docResult.success) {
+    data.documentsGenerated = (docResult.documents || []).length;
+    return { success: true, message: 'Submission completed', data };
+  }
+
+  data.documentsGenerated = 0;
+  data.documentsBlocked = true;
+  data.documentMessage = docResult.error || 'Documents could not be generated.';
+  data.blockers = docResult.blockers || [];
+
+  return {
+    success: true,
+    message: 'Answers saved, but documents could not be prepared yet',
+    data,
+  };
+}
+
+/**
+ * Record that generation did not produce documents.
+ *
+ * Note this never clears knackly_documents. If the client had documents from an
+ * earlier successful run they stay downloadable — stale documents are worse than
+ * fresh ones but far better than none, and the status field tells the UI that a
+ * newer answer set has not been rendered yet.
+ */
+async function recordFailedGeneration(submissionId, docResult) {
+  if (!supabase) return;
+
+  const { error } = await supabase
+    .from('poa_submissions')
+    .update({ knackly_status: docResult.blocked ? 'blocked' : 'failed' })
+    .eq('id', submissionId);
+
+  if (error) {
+    console.error(
+      `Could not flag failed generation for submission ${submissionId}: ${error.message}`
+    );
+  }
+}
 
 const router = express.Router();
 
@@ -431,6 +496,12 @@ router.get('/', authenticate, async (req, res) => {
       // Get access status for this submission
       const accessInfo = await canEditForm(req.user.id, s.first_submitted_at, s.form_type);
 
+      // Recomputed rather than stored: blockers are a pure function of form_data,
+      // so this always reflects the answers as they stand right now. Without it
+      // the dashboard can only say documents are absent, not why, and the client
+      // has no way to learn what to go back and fill in.
+      const { blockers } = checkGenerationPreconditions(s.form_type, s.form_data);
+
       return {
         id: s.id,
         formType: s.form_type,
@@ -440,6 +511,7 @@ router.get('/', authenticate, async (req, res) => {
         knacklyStatus: s.knackly_status,
         knacklyDocuments: actualDocs,
         knacklyZipUrl: zipUrl,
+        documentBlockers: blockers,
         createdAt: s.created_at,
         updatedAt: s.updated_at,
         firstSubmittedAt: s.first_submitted_at,
@@ -526,9 +598,15 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
           },
         });
       } else {
+        // Flag the row the same way the save paths do, so a plan refused here
+        // does not keep presenting a Generate Documents button that can only
+        // ever be refused again.
+        await recordFailedGeneration(submission.id, result);
+
         return res.json({
           success: false,
           error: result.error || 'Document generation failed',
+          blockers: result.blockers || [],
         });
       }
     }
@@ -893,17 +971,11 @@ router.post('/', authenticate, async (req, res) => {
       // (Previously only triggered if status changed TO completed, but we need fresh docs on resubmit)
       let docResult = null;
       if (submission_status === 'completed') {
-        // Clear old document data first
-        await supabase
-          .from('poa_submissions')
-          .update({
-            knackly_record_id: null,
-            knackly_status: null,
-            knackly_documents: null,
-            knackly_sent_at: null,
-          })
-          .eq('id', existing.id);
-
+        // Old documents are intentionally left in place until new ones exist.
+        // This used to null knackly_documents before generating, which meant a
+        // resubmit that failed preconditions destroyed the documents the client
+        // had already been given. A successful run overwrites the column
+        // wholesale below, so clearing first bought nothing.
         docResult = await documentService.processSubmission({
           id: existing.id,
           form_type,
@@ -921,6 +993,8 @@ router.post('/', authenticate, async (req, res) => {
               knackly_documents: storedDocs,
             })
             .eq('id', existing.id);
+        } else {
+          await recordFailedGeneration(existing.id, docResult);
         }
 
         // Sync to Keap CRM. Awaited so the lambda cannot be frozen mid-flight;
@@ -928,11 +1002,7 @@ router.post('/', authenticate, async (req, res) => {
         await syncSubmissionToKeap(existing.id, form_data, form_type, docResult.success === true);
       }
 
-      return res.json({
-        success: true,
-        message: submission_status === 'completed' ? 'Submission completed' : 'Progress saved',
-        data: { id: existing.id, status: submission_status },
-      });
+      return res.json(submissionSaveResponse(existing.id, submission_status, docResult));
     }
 
     // Create new submission
@@ -960,8 +1030,9 @@ router.post('/', authenticate, async (req, res) => {
     }
 
     // Trigger document generation if completed
+    let docResult = null;
     if (submission_status === 'completed') {
-      const docResult = await documentService.processSubmission({
+      docResult = await documentService.processSubmission({
         id: newSubmission.id,
         form_type,
         form_data,
@@ -978,6 +1049,8 @@ router.post('/', authenticate, async (req, res) => {
             knackly_documents: storedDocs,
           })
           .eq('id', newSubmission.id);
+      } else {
+        await recordFailedGeneration(newSubmission.id, docResult);
       }
 
       // Sync to Keap CRM. Awaited so the lambda cannot be frozen mid-flight;
@@ -985,11 +1058,7 @@ router.post('/', authenticate, async (req, res) => {
       await syncSubmissionToKeap(newSubmission.id, form_data, form_type, docResult.success === true);
     }
 
-    res.status(201).json({
-      success: true,
-      message: submission_status === 'completed' ? 'Submission completed' : 'Progress saved',
-      data: { id: newSubmission.id, status: submission_status },
-    });
+    res.status(201).json(submissionSaveResponse(newSubmission.id, submission_status, docResult));
   } catch (error) {
     console.error('Create submission error:', error);
     res.status(500).json({ success: false, error: 'Failed to save submission' });
@@ -1061,12 +1130,19 @@ router.put('/:id', authenticate, async (req, res) => {
       return res.status(500).json({ success: false, error: 'Failed to update submission' });
     }
 
-    // Trigger document generation if newly completed
+    // Regenerate whenever the plan is completed, not only on the transition into
+    // completed. The old `existing.submission_status !== 'completed'` guard meant
+    // a client who corrected an answer on an already-completed plan got their
+    // edit saved but kept documents rendered from the superseded answers, with
+    // nothing anywhere to say so. POST /submissions has always regenerated
+    // unconditionally; this makes the two paths agree.
     let docResult = null;
-    if (submission_status === 'completed' && existing.submission_status !== 'completed') {
+    if (submission_status === 'completed') {
+      const effectiveFormType = form_type || existing.form_type;
+
       docResult = await documentService.processSubmission({
         id: existing.id,
-        form_type: form_type || existing.form_type,
+        form_type: effectiveFormType,
         form_data,
       });
 
@@ -1081,14 +1157,22 @@ router.put('/:id', authenticate, async (req, res) => {
             knackly_documents: storedDocs,
           })
           .eq('id', id);
+      } else {
+        await recordFailedGeneration(existing.id, docResult);
       }
+
+      // This path previously skipped Keap entirely, so a plan completed through
+      // PUT never reached the CRM. The tag-delta tracking in syncSubmissionToKeap
+      // stops the repeat calls from re-firing campaigns.
+      await syncSubmissionToKeap(
+        existing.id,
+        form_data,
+        effectiveFormType,
+        docResult.success === true
+      );
     }
 
-    return res.json({
-      success: true,
-      message: submission_status === 'completed' ? 'Submission completed' : 'Progress saved',
-      data: { id: existing.id, status: submission_status },
-    });
+    return res.json(submissionSaveResponse(existing.id, submission_status, docResult));
   } catch (error) {
     console.error('Update submission error:', error);
     res.status(500).json({ success: false, error: 'Failed to update submission' });

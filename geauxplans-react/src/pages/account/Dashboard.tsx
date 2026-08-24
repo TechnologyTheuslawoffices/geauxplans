@@ -3,21 +3,34 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
+/**
+ * Shape of an entry from GET /api/submissions.
+ *
+ * This interface previously described a `documents` array with `id`/`type`/`url`
+ * fields. No such array is ever sent — the route returns `knacklyDocuments`, and
+ * each document carries its URL as `storedUrl` (Supabase) or `publicUrl`/`url`
+ * (legacy Knackly). The result was that `plan.documents` was always undefined,
+ * so this dashboard showed "Your documents will appear here" no matter how many
+ * documents the client actually had.
+ */
 interface Plan {
-  id: string;
-  name: string;
-  type: string;
-  status: string;
+  id: number;
+  formType: string;
+  submissionStatus: string;
   createdAt: string;
-  documents?: Document[];
+  knacklyDocuments?: PlanDocument[];
 }
 
-interface Document {
-  id: string;
+interface PlanDocument {
+  id?: string;
   name: string;
-  type: string;
+  type?: string;
   url?: string;
+  publicUrl?: string;
+  storedUrl?: string;
 }
+
+const documentUrl = (doc: PlanDocument) => doc.storedUrl || doc.publicUrl || doc.url;
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -61,12 +74,12 @@ const Dashboard: React.FC = () => {
 
         {loading ? (
           <p style={{ color: '#707070' }}>Loading your documents...</p>
-        ) : plans.length > 0 && plans.some(p => p.documents && p.documents.length > 0) ? (
+        ) : plans.some(p => (p.knacklyDocuments || []).length > 0) ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {plans.flatMap(plan =>
-              (plan.documents || []).map(doc => (
+              (plan.knacklyDocuments || []).map((doc, index) => (
                 <div
-                  key={doc.id}
+                  key={`${plan.id}-${doc.id || index}`}
                   style={{
                     padding: '15px 20px',
                     border: '1px solid #eaeaea',
@@ -84,9 +97,9 @@ const Dashboard: React.FC = () => {
                       <p style={{ margin: 0, color: '#707070', fontSize: '12px' }}>{doc.type}</p>
                     </div>
                   </div>
-                  {doc.url && (
+                  {documentUrl(doc) && (
                     <a
-                      href={doc.url}
+                      href={documentUrl(doc)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn_geaux"
