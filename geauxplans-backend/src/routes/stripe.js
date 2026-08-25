@@ -9,6 +9,7 @@ const { supabase } = require('../config/supabase');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 const { keapService } = require('../services/keap');
 const { validateCoupon, recordRedemption } = require('../services/coupons');
+const upsell = require('../services/upsell');
 
 const router = express.Router();
 
@@ -196,6 +197,18 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
 
     if (subscriptionData) {
       sessionParams.subscription_data = subscriptionData;
+    }
+
+    if (mode === 'payment') {
+      // Keep the card on file so the post-purchase Legal Edge Plan offer can be
+      // accepted in one click, the way the WooFunnels upsell worked. Stripe
+      // Checkout tells the customer their details will be saved when
+      // setup_future_usage is set, so this is not done behind their back.
+      //
+      // Subscription mode does both of these implicitly, and rejects
+      // customer_creation outright.
+      sessionParams.customer_creation = 'always';
+      sessionParams.payment_intent_data = { setup_future_usage: 'off_session' };
     }
 
     if (appliedCoupon) {
@@ -475,6 +488,197 @@ router.get('/session/:sessionId', async (req, res) => {
     res.status(500).json({ success: false, error: 'Failed to get session details' });
   }
 });
+
+/**
+ * GET /api/stripe/upsell/:sessionId
+ *
+ * Should the thank-you page show the Legal Edge Plan offer, and on what terms?
+ *
+ * Answering 200 with `eligible: false` rather than 404, so the success page can
+ * tell "no offer for this order" from "the request failed" and does not flash
+ * an error at a customer who has just paid successfully.
+ */
+router.get('/upsell/:sessionId', async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.retrieve(req.params.sessionId, {
+      expand: ['payment_intent'],
+    });
+
+    const { eligible } = await upsell.isEligible(session);
+
+    if (!eligible) {
+      return res.json({ success: true, data: { eligible: false } });
+    }
+
+    // Already taken up on a page the customer reloaded or navigated back to.
+    if (await findUpsellSubscription(session)) {
+      return res.json({ success: true, data: { eligible: false } });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        eligible: true,
+        productName: upsell.OFFER.name,
+        regularPrice: upsell.OFFER.regularPriceCents / 100,
+        offerPrice: upsell.OFFER.offerPriceCents / 100,
+        interval: upsell.OFFER.interval,
+      },
+    });
+  } catch (error) {
+    console.error('Upsell eligibility error:', error);
+    // Not a 500. Failing to work out whether to advertise something is not a
+    // reason to show an error on a successful order.
+    res.json({ success: true, data: { eligible: false } });
+  }
+});
+
+/**
+ * An existing subscription created by this session's upsell, if any.
+ *
+ * The subscription is tagged with the originating session id so a reloaded or
+ * revisited thank-you page can recognise its own work. Stripe idempotency keys
+ * only last 24 hours, which is not long enough to rely on for a page a customer
+ * might come back to from an emailed receipt.
+ */
+async function findUpsellSubscription(session) {
+  if (!session.customer) return null;
+  const subs = await stripe.subscriptions.list({
+    customer: typeof session.customer === 'string' ? session.customer : session.customer.id,
+    status: 'all',
+    limit: 100,
+  });
+  return subs.data.find(s => s.metadata?.upsellSessionId === session.id) || null;
+}
+
+/**
+ * POST /api/stripe/upsell/:sessionId/accept
+ *
+ * Charge the card already on file for the Legal Edge Plan. This is the whole
+ * point of the feature: the customer clicks once and is not asked to re-enter
+ * anything.
+ *
+ * Eligibility is decided here rather than trusted from the client. The GET
+ * above only decides what to render; this decides what to charge, and a request
+ * can arrive without the GET ever having happened.
+ */
+router.post('/upsell/:sessionId/accept', async (req, res) => {
+  const { sessionId } = req.params;
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['payment_intent'],
+    });
+
+    const { eligible, reason } = await upsell.isEligible(session);
+    if (!eligible) {
+      return res.status(400).json({
+        success: false,
+        error: reason === 'already_subscribed'
+          ? 'You already have the Legal Edge Plan.'
+          : 'This offer is no longer available.',
+      });
+    }
+
+    // Double-submit and back-button protection. Without this a customer who
+    // clicks twice buys two subscriptions and has to ask for one back.
+    const existing = await findUpsellSubscription(session);
+    if (existing) {
+      return res.json({ success: true, data: { subscriptionId: existing.id, alreadyActive: true } });
+    }
+
+    const customerId = typeof session.customer === 'string' ? session.customer : session.customer.id;
+    const paymentMethodId = upsell.savedPaymentMethodId(session);
+
+    // Make the card they just used the default for invoices, otherwise Stripe
+    // has a saved method it will not reach for.
+    await stripe.customers.update(customerId, {
+      invoice_settings: { default_payment_method: paymentMethodId },
+    });
+
+    const subscription = await stripe.subscriptions.create(
+      {
+        customer: customerId,
+        default_payment_method: paymentMethodId,
+        items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: { name: upsell.OFFER.name },
+            unit_amount: upsell.OFFER.offerPriceCents,
+            recurring: { interval: upsell.OFFER.interval },
+          },
+        }],
+        // The customer is on the thank-you page watching, but they are not
+        // completing a card form, so from Stripe's point of view this is an
+        // off-session charge against a stored method.
+        off_session: true,
+        payment_behavior: 'error_if_incomplete',
+        metadata: {
+          upsellSessionId: session.id,
+          productId: String(upsell.LEP_PRODUCT_ID),
+          userId: session.metadata?.userId || '',
+        },
+      },
+      // Belt and braces alongside the lookup above: two clicks landing within
+      // the same second would both pass the check before either subscription
+      // exists to be found.
+      { idempotencyKey: `upsell_${session.id}` }
+    );
+
+    await recordUpsellSubscription(session, subscription);
+
+    res.json({ success: true, data: { subscriptionId: subscription.id, alreadyActive: false } });
+  } catch (error) {
+    // A stored card can be declined, or the issuer can demand authentication
+    // that cannot be given off-session. Say so, instead of reporting a generic
+    // failure on a page where the customer has just been charged for something
+    // else and is entitled to know exactly what did and did not happen.
+    if (error.type === 'StripeCardError') {
+      console.error(`Upsell card declined for session ${sessionId}: ${error.message}`);
+      return res.status(402).json({
+        success: false,
+        error: 'Your card was declined for this add-on. Your original order was not affected.',
+      });
+    }
+    console.error(`Upsell accept failed for session ${sessionId}:`, error);
+    res.status(500).json({
+      success: false,
+      error: 'We could not add the Legal Edge Plan. Your original order was not affected.',
+    });
+  }
+});
+
+/**
+ * Mirror the Stripe subscription into user_subscriptions.
+ *
+ * Best-effort: the money has already moved by the time this runs, so a failure
+ * here must not turn into an error the customer sees. It is logged loudly
+ * because the row is what My Account reads to decide whether the plan is active.
+ */
+async function recordUpsellSubscription(session, subscription) {
+  const userId = session.metadata?.userId;
+  if (!userId || !supabase) return;
+
+  try {
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + 1);
+
+    const { error } = await supabase.from('user_subscriptions').insert({
+      user_id: userId,
+      product_id: upsell.LEP_PRODUCT_ID,
+      stripe_subscription_id: subscription.id,
+      status: 'active',
+      started_at: new Date().toISOString(),
+      expires_at: expiresAt.toISOString(),
+    });
+
+    if (error) {
+      console.error(`Upsell subscription ${subscription.id} charged but not recorded: ${error.message}`);
+    }
+  } catch (err) {
+    console.error(`Upsell subscription ${subscription.id} charged but not recorded:`, err);
+  }
+}
 
 /**
  * Supabase auth middleware for subscription endpoints
