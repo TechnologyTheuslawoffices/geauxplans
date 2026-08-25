@@ -127,6 +127,24 @@
   font-weight: 600;
 }
 
+/* Responsive 16:9 wrapper for embedded video. The iframe is absolutely
+   positioned inside a box whose height comes from padding-top, so the player
+   scales with the column instead of keeping a fixed pixel size. */
+.article-video {
+  position: relative;
+  padding-top: 56.25%;
+  margin: 30px 0;
+}
+
+.article-video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 /* Article CTA */
 .article-cta {
   margin-top: 50px;
