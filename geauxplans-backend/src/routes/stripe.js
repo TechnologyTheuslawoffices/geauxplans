@@ -13,8 +13,46 @@ const upsell = require('../services/upsell');
 
 const router = express.Router();
 
-// Initialize Stripe
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+/**
+ * Stripe, or null when STRIPE_SECRET_KEY is not configured.
+ *
+ * The constructor throws on a missing key. Calling it at module load meant that
+ * an unset key took the whole router down at `require` time — and api/index.js
+ * catches that and merely warns, so every /api/stripe/* route answered 404 with
+ * nothing to say why. Checkout was dead in production for exactly this reason
+ * and it looked like a routing problem, which is the same trap the SOS name
+ * check fell into.
+ *
+ * Constructing lazily lets the router mount and answer honestly instead.
+ */
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? require('stripe')(process.env.STRIPE_SECRET_KEY)
+  : null;
+
+if (!stripe) {
+  console.error('STRIPE_SECRET_KEY is not set — payment routes will return 503');
+}
+
+router.use((req, res, next) => {
+  if (!stripe) {
+    return res.status(503).json({
+      success: false,
+      error: 'Payments are temporarily unavailable. Please try again shortly.',
+      detail: 'STRIPE_SECRET_KEY is not configured on the server',
+    });
+  }
+  next();
+});
+
+/**
+ * Where Stripe sends the customer back to.
+ *
+ * FRONTEND_URL is not set in the Vercel production environment, which would
+ * have produced `undefined/checkout/success` — a URL Stripe rejects, failing
+ * session creation for every order. Defaulting to the live site is correct for
+ * production and harmless in dev, where FRONTEND_URL is set to localhost.
+ */
+const SITE_URL = process.env.FRONTEND_URL || 'https://geauxplans.com';
 
 // Product configuration - matches frontend PRODUCTS (prices in cents)
 const PRODUCTS = {
@@ -179,8 +217,8 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode,
-      success_url: `${process.env.FRONTEND_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/checkout/cancelled`,
+      success_url: `${SITE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${SITE_URL}/checkout/cancelled`,
       metadata: {
         items: metadataItems,
         // Legacy single-item fields for back-compat with success page + webhook
