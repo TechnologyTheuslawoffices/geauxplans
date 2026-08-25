@@ -12,7 +12,15 @@
  */
 
 import api, { wpAjaxRequest } from './api';
-import type { Cart, CartItem, Order, Address, ApiResponse } from '../types';
+import type {
+  Cart,
+  CartItem,
+  Order,
+  Address,
+  ApiResponse,
+  AppliedCoupon,
+  CouponValidationResponse,
+} from '../types';
 
 // ---------------------------------------------------------------------------
 // Product catalog (front-end source of truth — must match backend stripe.js)
@@ -90,7 +98,7 @@ function loadCart(): Cart {
     if (!raw) return { ...emptyCart, items: [] };
     const parsed = JSON.parse(raw) as Cart;
     if (!parsed || !Array.isArray(parsed.items)) return { ...emptyCart, items: [] };
-    return recalc(parsed.items);
+    return recalc(parsed.items, parsed.coupon);
   } catch {
     return { ...emptyCart, items: [] };
   }
@@ -106,12 +114,46 @@ function saveCart(cart: Cart): void {
   }
 }
 
-function recalc(items: CartItem[]): Cart {
+/**
+ * Recompute the cart totals, re-deriving any coupon discount from the current
+ * subtotal.
+ *
+ * The discount is recalculated rather than carried forward because the cart can
+ * change after a code is applied — a percentage is worth more once another plan
+ * is added, and a $50 fixed discount has to shrink if the customer removes
+ * items until the cart is worth less than that. Only the coupon's *terms*
+ * (type and amount, as returned by the backend) are remembered.
+ *
+ * This figure is for display. The backend validates the code again and computes
+ * its own discount when it creates the Stripe session, so a tampered
+ * localStorage cart changes the number on screen and nothing that is charged.
+ */
+function recalc(items: CartItem[], coupon?: AppliedCoupon): Cart {
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const tax = 0;
-  const total = subtotal + tax;
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
-  return { items, subtotal, tax, total, itemCount };
+
+  if (!coupon || items.length === 0) {
+    return { items, subtotal, tax, total: subtotal + tax, itemCount };
+  }
+
+  const subtotalCents = Math.round(subtotal * 100);
+  const rawCents =
+    coupon.discountType === 'percent'
+      ? Math.round((subtotalCents * coupon.amount) / 100)
+      : Math.round(coupon.amount * 100);
+  const discountCents = Math.min(rawCents, subtotalCents);
+  const discount = discountCents / 100;
+
+  return {
+    items,
+    subtotal,
+    tax,
+    total: Math.max(0, subtotal - discount) + tax,
+    itemCount,
+    coupon: { ...coupon, discountCents },
+    discount,
+  };
 }
 
 // Module-level cache, initialized once
@@ -181,7 +223,7 @@ export async function addToCart(
     items.push(newItem);
   }
 
-  return ok(setCart(recalc(items)));
+  return ok(setCart(recalc(items, _cart.coupon)));
 }
 
 /**
@@ -225,7 +267,7 @@ export function addCustomItem(item: {
     });
   }
 
-  return setCart(recalc(items));
+  return setCart(recalc(items, _cart.coupon));
 }
 
 /**
@@ -238,7 +280,7 @@ export async function updateCartItem(
   const items = _cart.items
     .map(i => (i.id === itemId ? { ...i, quantity } : i))
     .filter(i => i.quantity > 0);
-  return ok(setCart(recalc(items)));
+  return ok(setCart(recalc(items, _cart.coupon)));
 }
 
 /**
@@ -246,7 +288,7 @@ export async function updateCartItem(
  */
 export async function removeFromCart(itemId: string): Promise<ApiResponse<Cart>> {
   const items = _cart.items.filter(i => i.id !== itemId);
-  return ok(setCart(recalc(items)));
+  return ok(setCart(recalc(items, _cart.coupon)));
 }
 
 /**
@@ -257,17 +299,54 @@ export async function clearCart(): Promise<ApiResponse<Cart>> {
 }
 
 /**
- * Apply coupon code (no-op locally)
+ * Apply a coupon code.
+ *
+ * This used to return success for any string, so the cart accepted "asdf" as
+ * readily as a real code — and then charged full price, because nothing
+ * downstream ever looked at it. The code is now checked against the backend,
+ * which owns the coupon table and decides what a code is worth.
+ *
+ * A rejected code leaves the cart untouched.
  */
-export async function applyCoupon(_code: string): Promise<ApiResponse<Cart>> {
-  return ok(_cart);
+export async function applyCoupon(code: string): Promise<ApiResponse<Cart>> {
+  const trimmed = code.trim();
+  if (!trimmed) {
+    return { success: false, error: 'Enter a coupon code.' };
+  }
+  if (_cart.items.length === 0) {
+    return { success: false, error: 'Add something to your cart first.' };
+  }
+
+  const subtotalCents = Math.round(_cart.subtotal * 100);
+  const response = await api.post<CouponValidationResponse>('/coupons/validate', {
+    code: trimmed,
+    subtotalCents,
+  });
+
+  if (!response.success || !response.data) {
+    return { success: false, error: response.error || 'Could not check that coupon. Try again.' };
+  }
+
+  const result = response.data;
+  if (!result.valid) {
+    return { success: false, error: result.message };
+  }
+
+  const applied: AppliedCoupon = {
+    code: result.code || trimmed.toLowerCase(),
+    discountType: result.discountType || 'fixed_cart',
+    amount: result.amount || 0,
+    discountCents: result.discountCents,
+  };
+
+  return ok(setCart(recalc(_cart.items, applied)));
 }
 
 /**
- * Remove coupon (no-op locally)
+ * Remove the applied coupon.
  */
-export async function removeCoupon(_code: string): Promise<ApiResponse<Cart>> {
-  return ok(_cart);
+export async function removeCoupon(): Promise<ApiResponse<Cart>> {
+  return ok(setCart(recalc(_cart.items, undefined)));
 }
 
 /**

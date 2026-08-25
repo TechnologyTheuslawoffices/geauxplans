@@ -8,6 +8,7 @@ const { db } = require('../config/database');
 const { supabase } = require('../config/supabase');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 const { keapService } = require('../services/keap');
+const { validateCoupon, recordRedemption } = require('../services/coupons');
 
 const router = express.Router();
 
@@ -155,6 +156,24 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
       resolved.map(r => ({ productId: r.productId, formType: r.formType }))
     );
 
+    // Re-validate the coupon here rather than trusting anything the cart sent.
+    // /api/coupons/validate is only a preview for display; this is the request
+    // that determines the amount charged, so the discount is recomputed from
+    // the database against a subtotal we derived ourselves from PRODUCTS.
+    let appliedCoupon = null;
+    if (req.body.couponCode) {
+      const subtotalCents = resolved.reduce((sum, r) => sum + r.unitAmount, 0);
+      const result = await validateCoupon(req.body.couponCode, subtotalCents);
+      if (result.valid) {
+        appliedCoupon = result;
+      } else {
+        // Fail the checkout instead of quietly dropping the discount. The
+        // customer is looking at a total that includes it; charging more than
+        // the page promised is worse than making them try again.
+        return res.status(400).json({ success: false, error: result.message });
+      }
+    }
+
     const sessionParams = {
       payment_method_types: ['card'],
       line_items: lineItems,
@@ -167,12 +186,30 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
         productId: resolved[0].productId.toString(),
         formType: resolved[0].formType,
         userId: req.user?.id?.toString() || '',
+        // Carried so the webhook can record the redemption after payment
+        // succeeds, rather than counting a code the customer never used.
+        couponCode: appliedCoupon?.code || '',
+        couponDiscountCents: appliedCoupon ? String(appliedCoupon.discountCents) : '',
       },
       customer_email: req.user?.email || undefined,
     };
 
     if (subscriptionData) {
       sessionParams.subscription_data = subscriptionData;
+    }
+
+    if (appliedCoupon) {
+      // A one-shot Stripe coupon per session. Stripe needs its own coupon
+      // object to show the discount on the payment page and the receipt;
+      // `duration: 'once'` keeps it from recurring on the Legal Edge Plan
+      // subscription, where the discount is meant to apply to this purchase
+      // and not to every future month.
+      const stripeCoupon = await stripe.coupons.create(
+        appliedCoupon.discountType === 'percent'
+          ? { percent_off: appliedCoupon.amount, duration: 'once', name: appliedCoupon.code.toUpperCase() }
+          : { amount_off: appliedCoupon.discountCents, currency: 'usd', duration: 'once', name: appliedCoupon.code.toUpperCase() }
+      );
+      sessionParams.discounts = [{ coupon: stripeCoupon.id }];
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
@@ -230,6 +267,20 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
  */
 async function handleSuccessfulPayment(session) {
   const { userId } = session.metadata;
+
+  // Count the coupon only now that money has actually moved. Doing it at
+  // session creation would let anyone burn down a limited-use code by opening
+  // checkout pages and walking away. Idempotent on the session id, since
+  // Stripe redelivers this event until it gets a 2xx.
+  if (session.metadata.couponCode) {
+    await recordRedemption({
+      code: session.metadata.couponCode,
+      stripeSessionId: session.id,
+      userId,
+      email: session.customer_email || session.customer_details?.email,
+      discountCents: parseInt(session.metadata.couponDiscountCents, 10) || 0,
+    });
+  }
 
   // Resolve list of items: prefer metadata.items, fall back to legacy fields
   let items = [];

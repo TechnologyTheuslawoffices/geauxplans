@@ -100,9 +100,12 @@ const Checkout: React.FC = () => {
         formType: i.variationId === 2 ? '2person' : 'solo',
       }));
 
+      // The code is sent, not the discount. The backend re-validates it against
+      // its own coupon table and computes the reduction itself, so an edited
+      // localStorage cart cannot buy anything cheaply.
       const response = await api.post<{ sessionId: string; url: string }>(
         '/stripe/create-checkout-session',
-        { items }
+        { items, couponCode: cart.coupon?.code }
       );
 
       if (response.success && response.data?.url) {
@@ -269,6 +272,23 @@ const Checkout: React.FC = () => {
                   </div>
                 );
               })}
+
+              {/* Shown so the total does not silently differ from the sum of
+                  the lines above it. */}
+              {cart.coupon && cart.discount ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '15px',
+                    color: '#1f7a3f',
+                    marginBottom: '12px',
+                  }}
+                >
+                  <span>Discount ({cart.coupon.code.toUpperCase()})</span>
+                  <span>&minus;${cart.discount.toFixed(2)}</span>
+                </div>
+              ) : null}
 
               <div
                 style={{

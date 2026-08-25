@@ -108,9 +108,11 @@ const knacklyRoutes = require('./routes/knackly');
 const stripeRoutes = require('./routes/stripe');
 const leadsRoutes = require('./routes/leads');
 const businessPublicRoutes = require('./routes/businessPublic');
+const couponRoutes = require('./routes/coupons');
 app.use('/api/knackly', knacklyRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/leads', leadsRoutes);
+app.use('/api/coupons', couponRoutes);
 
 // The DB-free half of /api/business. In SQLite mode the full router above is
 // already mounted on this prefix and matches first for the paths it defines;

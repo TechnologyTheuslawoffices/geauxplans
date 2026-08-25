@@ -28,7 +28,7 @@ interface CartContextType {
   removeItem: (itemId: string) => Promise<boolean>;
   clearCart: () => Promise<boolean>;
   applyCoupon: (code: string) => Promise<boolean>;
-  removeCoupon: (code: string) => Promise<boolean>;
+  removeCoupon: () => Promise<boolean>;
   refreshCart: () => Promise<void>;
   clearError: () => void;
 }
@@ -191,12 +191,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   }, []);
 
-  const removeCoupon = useCallback(async (code: string): Promise<boolean> => {
+  const removeCoupon = useCallback(async (): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await cartService.removeCoupon(code);
+      const response = await cartService.removeCoupon();
 
       if (response.success && response.data) {
         setCart(response.data);

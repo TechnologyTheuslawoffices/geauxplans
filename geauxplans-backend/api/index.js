@@ -93,6 +93,11 @@ const businessPublicRoutes = require('../src/routes/businessPublic');
 app.use('/api/business', businessPublicRoutes);
 console.log('Loaded public business routes');
 
+// Coupon validation. Supabase-only, so it loads in both entry points.
+const couponRoutes = require('../src/routes/coupons');
+app.use('/api/coupons', couponRoutes);
+console.log('Loaded coupon routes');
+
 // Note: Knackly routes are not loaded on Vercel. Documents are drafted by the
 // engine named in DOC_ENGINE, which defaults to the in-process local drafter.
 console.log(`Vercel mode: document engine = ${process.env.DOC_ENGINE || 'local'}`);

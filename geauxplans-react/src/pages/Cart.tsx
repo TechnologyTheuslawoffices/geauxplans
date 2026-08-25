@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { cartUtils } from '../services/cartService';
@@ -17,10 +17,21 @@ import '../styles/cart.css';
  * thing a customer can want.
  */
 const Cart: React.FC = () => {
-  const { cart, updateItem, removeItem, clearCart, isLoading } = useCart();
+  const {
+    cart, updateItem, removeItem, clearCart, isLoading,
+    applyCoupon, removeCoupon, error, clearError,
+  } = useCart();
   const navigate = useNavigate();
+  const [couponInput, setCouponInput] = useState('');
 
   const isEmpty = cart.items.length === 0;
+
+  const handleApplyCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    clearError();
+    const applied = await applyCoupon(couponInput);
+    if (applied) setCouponInput('');
+  };
 
   if (isEmpty) {
     return (
@@ -129,6 +140,51 @@ const Cart: React.FC = () => {
                 <span>Subtotal</span>
                 <span>{cartUtils.formatPrice(cart.subtotal)}</span>
               </div>
+
+              {cart.coupon && cart.discount ? (
+                <div className="cart-summary-row cart-summary-discount">
+                  <span>
+                    Discount
+                    <code className="cart-coupon-code">{cart.coupon.code.toUpperCase()}</code>
+                    <button
+                      type="button"
+                      className="cart-coupon-remove"
+                      aria-label="Remove coupon"
+                      disabled={isLoading}
+                      onClick={() => removeCoupon()}
+                    >
+                      Remove
+                    </button>
+                  </span>
+                  <span>&minus;{cartUtils.formatPrice(cart.discount)}</span>
+                </div>
+              ) : (
+                <form className="cart-coupon-form" onSubmit={handleApplyCoupon}>
+                  <label htmlFor="coupon-code">Coupon code</label>
+                  <div className="cart-coupon-row">
+                    <input
+                      id="coupon-code"
+                      type="text"
+                      autoComplete="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      placeholder="Enter code"
+                      value={couponInput}
+                      onChange={e => setCouponInput(e.target.value)}
+                    />
+                    <button
+                      type="submit"
+                      className="btn btn-outline"
+                      disabled={isLoading || !couponInput.trim()}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {error && <p className="cart-coupon-error" role="alert">{error}</p>}
+
               {/*
                 Tax is not shown as a line here. It is calculated by Stripe at
                 payment time, and printing "Tax $0.00" would read as a promise

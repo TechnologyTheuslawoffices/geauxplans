@@ -176,6 +176,31 @@ export interface Cart {
   tax: number;
   total: number;
   itemCount: number;
+  /**
+   * Applied discount code, as validated by the backend.
+   *
+   * `discount` is for display only. The server recalculates it from its own
+   * copy of the coupon when it creates the Stripe session, so tampering with
+   * this changes the number on screen and nothing that is charged.
+   */
+  coupon?: AppliedCoupon;
+  discount?: number;
+}
+
+export interface AppliedCoupon {
+  code: string;
+  discountType: 'percent' | 'fixed_cart';
+  amount: number;
+  discountCents: number;
+}
+
+export interface CouponValidationResponse {
+  valid: boolean;
+  message: string;
+  discountCents: number;
+  code?: string;
+  discountType?: 'percent' | 'fixed_cart';
+  amount?: number;
 }
 
 export interface CartItem {
