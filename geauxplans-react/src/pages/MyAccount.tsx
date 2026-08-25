@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Dashboard from './account/Dashboard';
 import ViewPlans from './account/ViewPlans';
@@ -155,6 +155,15 @@ const MyAccount: React.FC = () => {
                 <Route path="business-planning" element={<BusinessPlanning />} />
                 <Route path="orders" element={<Orders />} />
                 <Route path="edit-account" element={<EditProfile />} />
+                {/*
+                  WooCommerce registered a long tail of My Account endpoints
+                  (interview, customer-logout, get-start-interview, ...). The
+                  common ones are redirected in vercel.json; without this
+                  fallback anything left over renders the account chrome around
+                  an empty panel, which reads as a broken page rather than a
+                  missing one.
+                */}
+                <Route path="*" element={<Navigate to="/my-account" replace />} />
               </Routes>
             </div>
           </div>

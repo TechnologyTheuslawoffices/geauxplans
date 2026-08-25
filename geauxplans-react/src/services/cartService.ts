@@ -185,6 +185,50 @@ export async function addToCart(
 }
 
 /**
+ * Add an item that is not in the PRODUCTS catalog.
+ *
+ * The LLC wizard prices its packages itself (formation tier + state filing fee +
+ * registered agent + operating agreement), so those lines carry an explicit
+ * price rather than a product ID. They still have to go through here: the cart
+ * context used to keep custom items in React state only, so reloading the
+ * checkout page dropped them and bounced the customer back to the shop with an
+ * empty cart, mid-purchase.
+ *
+ * Synchronous, unlike its catalog sibling, so the wizard can add several lines
+ * in a row and have each one see the previous one.
+ */
+export function addCustomItem(item: {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  type?: string;
+  metadata?: Record<string, unknown>;
+}): Cart {
+  const items = [..._cart.items];
+  const existingIndex = items.findIndex(i => i.id === item.id);
+
+  if (existingIndex >= 0) {
+    items[existingIndex] = {
+      ...items[existingIndex],
+      quantity: items[existingIndex].quantity + item.quantity,
+    };
+  } else {
+    items.push({
+      id: item.id,
+      productId: 0,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      type: item.type,
+      metadata: item.metadata,
+    });
+  }
+
+  return setCart(recalc(items));
+}
+
+/**
  * Update cart item quantity
  */
 export async function updateCartItem(
@@ -323,6 +367,7 @@ export const cartUtils = {
 const cartService = {
   getCart,
   addToCart,
+  addCustomItem,
   updateCartItem,
   removeFromCart,
   clearCart,

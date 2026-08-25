@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Header from './components/Header';
@@ -29,6 +29,7 @@ import EstatePlanningArticles from './pages/EstatePlanningArticles';
 import BusinessPlanningArticles from './pages/BusinessPlanningArticles';
 import POAForm from './pages/POAForm';
 import VerifyEmail from './pages/VerifyEmail';
+import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import CheckoutCancelled from './pages/CheckoutCancelled';
@@ -83,6 +84,28 @@ const DevBanner: React.FC = () => {
   );
 };
 
+/**
+ * Shown for any URL with no matching route.
+ *
+ * Without a catch-all, an unknown path rendered the header and footer around an
+ * empty body — indistinguishable from a page that failed to load. That matters
+ * more than usual here: vercel.json redirects a list of legacy WordPress URLs,
+ * and anything missed from that list lands on whatever this route renders.
+ */
+const NotFound: React.FC = () => (
+  <main className="not-found-page">
+    <div className="container" style={{ padding: '80px 0', textAlign: 'center' }}>
+      <h1>We couldn&rsquo;t find that page</h1>
+      <p>The page you&rsquo;re looking for may have moved since our site was rebuilt.</p>
+      <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '24px' }}>
+        <Link to="/" className="btn btn-solid">Go to the homepage</Link>
+        <Link to="/learn" className="btn btn-outline">Browse articles</Link>
+        <Link to="/my-account" className="btn btn-outline">My account</Link>
+      </div>
+    </div>
+  </main>
+);
+
 // Routes where we hide the header/footer (design mode)
 const DESIGN_MODE_ROUTES = ['/poa-form'];
 
@@ -129,6 +152,7 @@ function App() {
               <Route path="/trust-based-estate-plan" element={<TrustBasedEstatePlan />} />
               <Route path="/poa-form" element={<POAForm />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/checkout/success" element={<CheckoutSuccess />} />
               <Route path="/checkout/cancelled" element={<CheckoutCancelled />} />
@@ -143,6 +167,7 @@ function App() {
               <Route path="/legal-edge-plan-contract" element={<LegalEdgePlanContract />} />
               <Route path="/estate-planning-articles/:slug" element={<Article />} />
               <Route path="/business-planning-articles/:slug" element={<Article />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </AppLayout>
         </Router>

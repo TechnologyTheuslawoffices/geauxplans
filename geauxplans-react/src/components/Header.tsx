@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
+  const { cart } = useCart();
 
   const [headerHeight, setHeaderHeight] = useState(0);
 
@@ -121,6 +123,17 @@ const Header: React.FC = () => {
               </div>
             </div>
             <div className="d-flex align-items-center">
+              {/*
+                Only rendered when there is something in the cart. An always-on
+                empty cart icon is noise on a site where most visitors are
+                reading articles, but a customer who has added a plan needs a
+                way back to it from any page.
+              */}
+              {cart.itemCount > 0 && (
+                <Link to="/cart" className="header-cart-link" aria-label={`Cart, ${cart.itemCount} item${cart.itemCount === 1 ? '' : 's'}`}>
+                  Cart <span className="header-cart-count">{cart.itemCount}</span>
+                </Link>
+              )}
               {!isAuthenticated ? (
                 <div id="place_for_my_account" className="d-flex align-items-center">
                   <p className="mb-0">

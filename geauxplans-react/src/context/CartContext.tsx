@@ -6,7 +6,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import cartService from '../services/cartService';
-import type { Cart, CartItem } from '../types';
+import type { Cart } from '../types';
 
 interface CustomCartItem {
   id: string;
@@ -214,50 +214,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // Add custom item to cart (for LLC wizard and custom products)
+  // Add custom item to cart (for LLC wizard and custom products).
+  // Delegates to the service so the item is written to localStorage like every
+  // other line; keeping it in React state alone meant it did not survive a
+  // reload of the checkout page.
   const addToCart = useCallback((item: CustomCartItem): void => {
-    setCart(prevCart => {
-      // Check if item already exists
-      const existingIndex = prevCart.items.findIndex(i => i.id === item.id);
-
-      let newItems: CartItem[];
-      if (existingIndex >= 0) {
-        // Update existing item quantity
-        newItems = prevCart.items.map((i, index) =>
-          index === existingIndex
-            ? { ...i, quantity: i.quantity + item.quantity }
-            : i
-        );
-      } else {
-        // Add new item
-        const newItem: CartItem = {
-          id: item.id,
-          productId: 0, // Custom item, no product ID
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: '',
-          type: item.type,
-          metadata: item.metadata,
-        };
-        newItems = [...prevCart.items, newItem];
-      }
-
-      // Recalculate totals
-      const subtotal = newItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-      const tax = 0; // Tax calculated at checkout
-      const total = subtotal + tax;
-      const itemCount = newItems.reduce((sum, i) => sum + i.quantity, 0);
-
-      return {
-        ...prevCart,
-        items: newItems,
-        subtotal,
-        tax,
-        total,
-        itemCount,
-      };
-    });
+    setCart(cartService.addCustomItem(item));
   }, []);
 
   const clearError = useCallback(() => {

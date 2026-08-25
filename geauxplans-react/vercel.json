@@ -1,4 +1,35 @@
 {
+  "redirects": [
+    { "source": "/geauxplans-downloads", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/geauxplans-downloads", "destination": "/my-account/my-estate-planning", "permanent": true },
+
+    { "source": "/my-trust-based-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/my-trust-based-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+
+    { "source": "/my-power-of-attorney-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/my-power-of-attorney-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+
+    { "source": "/my-minor-child-centered-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/my-minor-child-centered-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+
+    { "source": "/my-will-based-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/my-will-based-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+
+    { "source": "/my-business-planning", "destination": "/my-account/business-planning", "permanent": true },
+    { "source": "/my-account/my-business-planning", "destination": "/my-account/business-planning", "permanent": true },
+
+    { "source": "/my-company", "destination": "/my-account/business-planning", "permanent": true },
+    { "source": "/my-account/my-company", "destination": "/my-account/business-planning", "permanent": true },
+
+    { "source": "/my-account/dashboard", "destination": "/my-account", "permanent": true },
+    { "source": "/my-account/downloads", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/payment-methods", "destination": "/my-account", "permanent": true },
+    { "source": "/my-account/edit-address", "destination": "/my-account/edit-account", "permanent": true },
+    { "source": "/my-account/subscriptions", "destination": "/my-account/orders", "permanent": true },
+
+    { "source": "/estate-planning-articles", "destination": "/category/estate-planning-articles", "permanent": true },
+    { "source": "/business-planning-articles", "destination": "/category/business-planning-articles", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
