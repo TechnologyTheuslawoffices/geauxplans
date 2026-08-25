@@ -29,11 +29,22 @@ export const BUSINESS_PRODUCT_IDS = {
 } as const;
 
 /**
- * Check LLC name availability via Louisiana SOS
- * Note: In production, this should go through your backend to protect API credentials
+ * Check LLC name availability via the Louisiana SOS.
+ *
+ * Routed through the backend so the SOS token stays server-side.
+ *
+ * `available` is three-valued and callers must respect that: `null` means the
+ * lookup did not complete, which is NOT the same as the name being free. This
+ * previously pointed at `/business/check-llc`, which the backend has never
+ * defined, so every call 404'd.
  */
-export async function checkLLCAvailability(name: string): Promise<ApiResponse<LLCAvailabilityResponse>> {
-  return api.get<LLCAvailabilityResponse>(`/business/check-llc?name=${encodeURIComponent(name)}`);
+export async function checkLLCAvailability(
+  name: string
+): Promise<ApiResponse<LLCAvailabilityResponse>> {
+  return api.post<LLCAvailabilityResponse>('/business/check-availability', {
+    name,
+    state: 'LA',
+  });
 }
 
 /**
@@ -187,7 +198,7 @@ export const llcUtils = {
   },
 };
 
-export default {
+const businessService = {
   checkLLCAvailability,
   getBusinessEntities,
   getBusinessEntitiesPaginated,
@@ -201,3 +212,5 @@ export default {
   llcUtils,
   BUSINESS_PRODUCT_IDS,
 };
+
+export default businessService;

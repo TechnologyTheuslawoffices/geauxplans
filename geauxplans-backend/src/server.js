@@ -107,9 +107,17 @@ function loadSqliteRoutes() {
 const knacklyRoutes = require('./routes/knackly');
 const stripeRoutes = require('./routes/stripe');
 const leadsRoutes = require('./routes/leads');
+const businessPublicRoutes = require('./routes/businessPublic');
 app.use('/api/knackly', knacklyRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/leads', leadsRoutes);
+
+// The DB-free half of /api/business. In SQLite mode the full router above is
+// already mounted on this prefix and matches first for the paths it defines;
+// Express falls through to this one for the rest. In Supabase mode this is the
+// only /api/business there is, which is the point — the LLC purchase funnel
+// opens with the SOS name check and it was 404ing in production.
+app.use('/api/business', businessPublicRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -99,10 +99,26 @@ export interface BusinessDocument {
   downloadUrl: string;
 }
 
-export interface LLCAvailabilityResponse {
-  available: boolean;
+export interface SimilarEntity {
   name: string;
-  similarNames?: string[];
+  type?: string;
+  status?: string;
+  charterNumber?: string;
+}
+
+export interface LLCAvailabilityResponse {
+  /**
+   * Three-valued on purpose. `null` means the Secretary of State lookup did not
+   * complete, which is not the same as the name being free — conflating the two
+   * is what let customers buy a registration for a name already taken.
+   */
+  available: boolean | null;
+  name: string;
+  state?: string;
+  message: string;
+  similar: SimilarEntity[];
+  /** False when the lookup could not run, so the UI can say so plainly. */
+  checked: boolean;
 }
 
 // Order types
