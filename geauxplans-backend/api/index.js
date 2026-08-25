@@ -2,6 +2,12 @@
  * Vercel Serverless Entry Point
  * This file is specifically for Vercel deployment
  * It only loads Supabase routes - no SQLite dependencies
+ *
+ * ⚠️ This is a second copy of the app defined in ../src/server.js, and it is the
+ * one production actually serves — vercel.json routes every request here. A
+ * route added to server.js alone is invisible in production, which is how the
+ * SOS name check stayed 404 while looking mounted. Add routes to BOTH files
+ * until the two entry points are merged.
  */
 
 const path = require('path');
@@ -80,9 +86,16 @@ try {
   console.warn('Stripe routes failed to load:', e.message);
 }
 
-// Note: Knackly routes are not loaded on Vercel.
-// DocTools is used instead of Knackly for document generation
-console.log('Vercel mode: Using DocTools for document generation');
+// Louisiana SOS name availability. No database dependency, which is the whole
+// reason it lives in its own router — the rest of /api/business is in
+// routes/business.js, which requires sql.js and cannot load here.
+const businessPublicRoutes = require('../src/routes/businessPublic');
+app.use('/api/business', businessPublicRoutes);
+console.log('Loaded public business routes');
+
+// Note: Knackly routes are not loaded on Vercel. Documents are drafted by the
+// engine named in DOC_ENGINE, which defaults to the in-process local drafter.
+console.log(`Vercel mode: document engine = ${process.env.DOC_ENGINE || 'local'}`);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
