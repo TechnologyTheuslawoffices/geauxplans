@@ -21,6 +21,9 @@
     { "source": "/my-company", "destination": "/my-account/business-planning", "permanent": true },
     { "source": "/my-account/my-company", "destination": "/my-account/business-planning", "permanent": true },
 
+    { "source": "/my-estate-planning", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/interview", "destination": "/my-account/interview", "permanent": true },
+
     { "source": "/my-account/dashboard", "destination": "/my-account", "permanent": true },
     { "source": "/my-account/downloads", "destination": "/my-account/my-estate-planning", "permanent": true },
     { "source": "/my-account/payment-methods", "destination": "/my-account", "permanent": true },

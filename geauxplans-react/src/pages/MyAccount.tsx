@@ -6,6 +6,7 @@ import ViewPlans from './account/ViewPlans';
 import BusinessPlanning from './account/BusinessPlanning';
 import Orders from './account/Orders';
 import EditProfile from './account/EditProfile';
+import ScheduleAppointment from './account/ScheduleAppointment';
 
 const MyAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
@@ -92,6 +93,12 @@ const MyAccount: React.FC = () => {
                     </Link>
                   </li>
                   <li style={{ marginBottom: '10px' }}>
+                    <Link to="/my-account/interview" style={navLinkStyle('/my-account/interview')}>
+                      <i className="fas fa-calendar-alt" style={{ marginRight: '10px', width: '16px' }}></i>
+                      Schedule Meeting
+                    </Link>
+                  </li>
+                  <li style={{ marginBottom: '10px' }}>
                     <Link to="/my-account/orders" style={navLinkStyle('/my-account/orders')}>
                       <i className="fas fa-shopping-bag" style={{ marginRight: '10px', width: '16px' }}></i>
                       View Orders
@@ -155,13 +162,13 @@ const MyAccount: React.FC = () => {
                 <Route path="business-planning" element={<BusinessPlanning />} />
                 <Route path="orders" element={<Orders />} />
                 <Route path="edit-account" element={<EditProfile />} />
+                <Route path="interview" element={<ScheduleAppointment />} />
                 {/*
                   WooCommerce registered a long tail of My Account endpoints
-                  (interview, customer-logout, get-start-interview, ...). The
-                  common ones are redirected in vercel.json; without this
-                  fallback anything left over renders the account chrome around
-                  an empty panel, which reads as a broken page rather than a
-                  missing one.
+                  (customer-logout, get-start-interview, ...). The common ones
+                  are redirected in vercel.json; without this fallback anything
+                  left over renders the account chrome around an empty panel,
+                  which reads as a broken page rather than a missing one.
                 */}
                 <Route path="*" element={<Navigate to="/my-account" replace />} />
               </Routes>
