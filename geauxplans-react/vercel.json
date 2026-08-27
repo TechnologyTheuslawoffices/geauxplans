@@ -1,5 +1,4 @@
 {
-  "//": "WordPress ran with permalink_structure /%category%/%postname%/, so every legacy URL ended in a slash. Vercel matches redirect sources exactly, which meant /my-company redirected but /my-company/ — the form actually sitting in Google's index and in old emails — fell through to the SPA and rendered the not-found page. trailingSlash normalises the slashed form first so the redirects below can match it.",
   "trailingSlash": false,
   "redirects": [
     { "source": "/geauxplans-downloads", "destination": "/my-account/my-estate-planning", "permanent": true },
