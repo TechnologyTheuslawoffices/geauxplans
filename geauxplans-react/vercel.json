@@ -1,4 +1,6 @@
 {
+  "//": "WordPress ran with permalink_structure /%category%/%postname%/, so every legacy URL ended in a slash. Vercel matches redirect sources exactly, which meant /my-company redirected but /my-company/ — the form actually sitting in Google's index and in old emails — fell through to the SPA and rendered the not-found page. trailingSlash normalises the slashed form first so the redirects below can match it.",
+  "trailingSlash": false,
   "redirects": [
     { "source": "/geauxplans-downloads", "destination": "/my-account/my-estate-planning", "permanent": true },
     { "source": "/my-account/geauxplans-downloads", "destination": "/my-account/my-estate-planning", "permanent": true },
@@ -31,7 +33,24 @@
     { "source": "/my-account/subscriptions", "destination": "/my-account/orders", "permanent": true },
 
     { "source": "/estate-planning-articles", "destination": "/category/estate-planning-articles", "permanent": true },
-    { "source": "/business-planning-articles", "destination": "/category/business-planning-articles", "permanent": true }
+    { "source": "/business-planning-articles", "destination": "/category/business-planning-articles", "permanent": true },
+
+    { "source": "/about-contact-us", "destination": "/about", "permanent": true },
+    { "source": "/terms-of-use", "destination": "/terms", "permanent": true },
+    { "source": "/home-page", "destination": "/", "permanent": true },
+
+    { "source": "/product/minor-child-centered-estate-plan", "destination": "/minor-child-centered-estate-plan", "permanent": true },
+    { "source": "/product/power-of-attorney-plan", "destination": "/power-of-attorney-plan", "permanent": true },
+    { "source": "/product/will-based-estate-plan", "destination": "/will-based-estate-plan", "permanent": true },
+    { "source": "/product/trust-based-estate-plan", "destination": "/trust-based-estate-plan", "permanent": true },
+    { "source": "/product/legal-edge-plan", "destination": "/legal-edge-plan", "permanent": true },
+    { "source": "/product/operating-agreement", "destination": "/operating-agreement-llc", "permanent": true },
+    { "source": "/product/llc-registration", "destination": "/start-business-llc", "permanent": true },
+    { "source": "/product/appoint-geauxplans-as-registered-agent", "destination": "/start-business-llc", "permanent": true },
+
+    { "source": "/product-category/estate-plan", "destination": "/shop", "permanent": true },
+    { "source": "/product-category/business-plan", "destination": "/start-business-llc", "permanent": true },
+    { "source": "/product-category/legal-edge-plan", "destination": "/legal-edge-plan", "permanent": true }
   ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
