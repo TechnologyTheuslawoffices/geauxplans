@@ -337,18 +337,55 @@ function applyHcd(record, section, who) {
  * entirely (`ClientWillSpouseIsExecTF`), so that flag has to be set too or the
  * spouse is named twice.
  */
-function applyWill(record, formData) {
-  const will = formData.will_info || {};
+/**
+ * Executor appointments for the will (or, for a trust plan, its pourover will).
+ *
+ * The intake form now collects executors as two repeatable groups — an initial
+ * group whose first row may name a co-executor, and an ordered successor list
+ * whose rows share the `successor_agents` field shape `successorAgents` already
+ * understands. `primary_executor`/`successor_executor` are still kept in sync by
+ * the frontend, so older submissions without the arrays continue to map.
+ */
+function applyExecutors(record, will, who = 'Client') {
+  const spouse = who === 'Spouse';
+  const initialField = spouse ? 'spouse_initial_executors' : 'initial_executors';
+  const successorField = spouse ? 'spouse_successor_executors' : 'successor_executors';
+  const primaryField = spouse ? 'spouse_primary_executor' : 'primary_executor';
+  const successorSingleField = spouse ? 'spouse_successor_executor' : 'successor_executor';
 
-  const execs = agentBlock(record, 'ClientGeauxWillExecs', will.primary_executor, '', true);
+  const initial = Array.isArray(will[initialField]) ? will[initialField][0] : null;
+  const primaryExec = initial ? initial.initial_executor : will[primaryField];
+  const coExec = initial ? initial.co_executor : '';
+
+  const execs = agentBlock(record, `${who}GeauxWillExecs`, primaryExec, coExec, !coExec);
   if (execs) {
-    record.ClientGeauxWillExecs = execs;
-    record.ClientWillSpouseIsExecTF = Boolean(record.Spouse) && execs.AgentSelect === SPOUSE_ID;
+    record[`${who}GeauxWillExecs`] = execs;
+    // The "named exec is the other principal" flag differs by side: on the
+    // client's will it asks whether the spouse is executor; on the spouse's
+    // will whether the client is.
+    if (spouse) {
+      record.SpouseWillClientIsExecTF = execs.AgentSelect === CLIENT_ID;
+    } else {
+      record.ClientWillSpouseIsExecTF = Boolean(record.Spouse) && execs.AgentSelect === SPOUSE_ID;
+    }
   }
 
-  const successor = agentBlock(record, 'ClientWillSuccessorExecs-1', will.successor_executor, '', true);
-  record.ClientWillSuccessorExecsTF = Boolean(successor);
-  record.ClientWillSuccessorExecs = successor ? [successor] : [];
+  let successors;
+  if (Array.isArray(will[successorField]) && will[successorField].length) {
+    successors = successorAgents(record, will[successorField], `${who}WillSuccessorExecs`);
+  } else {
+    const single = agentBlock(record, `${who}WillSuccessorExecs-1`, will[successorSingleField], '', true);
+    successors = single ? [single] : [];
+  }
+  record[`${who}WillSuccessorExecsTF`] = successors.length > 0;
+  record[`${who}WillSuccessorExecs`] = successors;
+}
+
+function applyWill(record, formData, twoPerson = false) {
+  const will = formData.will_info || {};
+
+  applyExecutors(record, will, 'Client');
+  if (twoPerson) applyExecutors(record, will, 'Spouse');
 
   // Tutorship. Naming a guardian is the only signal the form gives that there
   // are minor children, so it also turns the article on.
@@ -371,11 +408,40 @@ function applyWill(record, formData) {
 // ---------------------------------------------------------------------------
 
 /**
- * NOTE ON `trust_name`
+ * Act of Donation of the principal residence into the trust.
+ *
+ * The catalog models this as the `GeauxAODHome` object — an `actoftransfer`
+ * child catalog — so its answers are nested under that key rather than written
+ * top-level. On a Geaux trust app only three of its fields are relevant:
+ *
+ *   LandParish                   the parish/county the home sits in
+ *   GeauxHaveLegalDescriptionTF  whether the client has a legal description
+ *   ExhibitALegalDesc            the description itself, gated in the catalog by
+ *                                `GeauxTrustTF && GeauxHaveLegalDescriptionTF`
+ *
+ * When the client has no description yet, only the flag is written and the
+ * template leaves Exhibit A as a placeholder to be attached at recording.
+ */
+function applyDonationOfResidence(record, formData) {
+  const dor = formData.dor || {};
+  const parish = text(dor.parish_where_home_is_located);
+  const hasLegal = /^yes/i.test(text(dor.have_full_legal_description_for_home));
+
+  const home = { GeauxHaveLegalDescriptionTF: hasLegal };
+  if (parish) home.LandParish = parish;
+  if (hasLegal && text(dor.full_legal_description)) {
+    home.ExhibitALegalDesc = text(dor.full_legal_description);
+  }
+  record.GeauxAODHome = home;
+}
+
+/**
+ * NOTE ON TRUST NAMING
  * --------------------
- * The form asks the client to name their trust, but on a Geaux app that answer
- * does not reach the document. Every trust template titles itself from the
- * `TrustName1` TEXT TEMPLATE, not from the `TrustName` property:
+ * The intake form no longer asks the client to name their trust, and that is
+ * correct: on a Geaux app the answer never reached the document anyway. Every
+ * trust template titles itself from the `TrustName1` TEXT TEMPLATE, not from the
+ * `TrustName` property:
  *
  *     {[if IsGeauxAppTF]}
  *       {[if IsGeauxMarriedTF]}…{[Client.First]} & {[Spouse.First]} {[Client.Last]}…
@@ -384,24 +450,58 @@ function applyWill(record, formData) {
  *
  * so a solo plan is always "«Client» Living Trust" and a joint plan always
  * "«First» & «First» «Last» Living Trust". `TrustName` is only consulted in the
- * `{[else]}` (EstateApp) branch, which a Geaux app never takes. Verified: a
- * record carrying TrustName "ZZZ Distinctive Trust Name" still produced
- * "John Michael Smith Living Trust.docx".
- *
- * The answer is still written, because `TrustName` is genuinely the catalog
- * property for it and discarding a user's answer is worse than storing an
- * unread one. But the form question is misleading as it stands — either it
- * should be removed or the catalog's naming rule explained beside it.
+ * `{[else]}` (EstateApp) branch, which a Geaux app never takes.
  */
-function applyTrust(record, formData) {
+function applyTrust(record, formData, twoPerson = false) {
   const trust = formData.trust_info || {};
 
-  if (text(trust.trust_name)) record.TrustName = text(trust.trust_name);
   record.SettlorTrusteeTF = trust.settlor_as_trustee !== false;
 
-  const successor = agentBlock(record, 'SuccGenTrustees-1', trust.successor_trustee, '', true);
-  record.SuccGenTrustees = successor ? [successor] : [];
+  // Successor trustees — the form collects an ordered list, each row of which
+  // may name a co-trustee to serve jointly. Order is preserved.
+  const trustees = Array.isArray(trust.trustees) ? trust.trustees : [];
+  record.SuccGenTrustees = trustees
+    .map((t, i) => agentBlock(
+      record,
+      `SuccGenTrustees-${i + 1}`,
+      t.trustee_to_serve,
+      t.second_trustee_person_to_serve,
+      !t.second_trustee_person_to_serve
+    ))
+    .filter(Boolean);
 
+  // Marital trust option (two-person plans only; harmless when absent).
+  if (trust.marital_trust_type) record.MaritalTrustType = text(trust.marital_trust_type);
+
+  // A trust plan still generates a pourover will; its executor appointments come
+  // from the same Executors page the will plans use.
+  applyExecutors(record, formData.will_info || {}, 'Client');
+  if (twoPerson) applyExecutors(record, formData.will_info || {}, 'Spouse');
+
+  // Tutorship for minor children. The trust names its own Tutor/Under-Tutor
+  // (`TrustTutor`/`TrustUnderTutor`, gated by `IncludeTutorTF`) — distinct from
+  // the pourover will's `ClientWill*` tutor article.
+  if (trust.appoint_tutor) {
+    const tutor = findPartyId(record, trust.tutor);
+    const underTutor = findPartyId(record, trust.under_tutor);
+    record.IncludeTutorTF = Boolean(tutor);
+    if (tutor) record.TrustTutor = tutor;
+    if (underTutor) record.TrustUnderTutor = underTutor;
+
+    // Successor tutors are an optional ordered list of single selections
+    // (`SuccessorTutors`, each a `singleselection` whose field is `Selection`),
+    // gated by `TrustSuccessorTutorsTF`.
+    const hasSucc = isYes(trust.has_successor_tutors);
+    record.TrustSuccessorTutorsTF = hasSucc;
+    record.SuccessorTutors = hasSucc
+      ? (Array.isArray(trust.successor_tutors) ? trust.successor_tutors : [])
+          .map((s) => findPartyId(record, s && s.successor_tutor_to_serve))
+          .filter(Boolean)
+          .map((id) => ({ Selection: id }))
+      : [];
+  }
+
+  applyDonationOfResidence(record, formData);
   applyResiduary(record, formData, 'trust');
 }
 
@@ -454,8 +554,8 @@ function transformFormDataToKnackly(formData, formType) {
   applyHcd(record, data.hcd, 'Client');
   applyHcd(record, data.spouse_hcd, 'Spouse');
 
-  if (/^(will|minorChild)/.test(formType || '')) applyWill(record, data);
-  if (/^trust/.test(formType || '')) applyTrust(record, data);
+  if (/^(will|minorChild)/.test(formType || '')) applyWill(record, data, twoPerson);
+  if (/^trust/.test(formType || '')) applyTrust(record, data, twoPerson);
 
   record.ESignTF = data.esign === true;
 

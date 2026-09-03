@@ -45,10 +45,8 @@ const PAGE_NAMES: Record<string, string> = {
   hcpoa: 'HCPOA',
   hcd: 'HCD',
   // Trust Pages
-  trust_setup: 'Trust Setup',
-  trustees: 'Trustees',
-  distribution: 'Distribution',
-  trust_info: 'Trust', // Legacy - kept for compatibility
+  rlt: 'RLT',
+  dor: 'DOR',
   // Will Pages
   executors: 'Executors',
   guardians: 'Guardians',
@@ -76,12 +74,12 @@ const FORM_TYPES: Record<string, { title: string; pages: string[]; planType: str
   // Trust-Based Plans
   trustBasedEstatePlanSolo: {
     title: 'Trust-Based Estate Plan',
-    pages: ['start', 'personal_info', 'children', 'agents', 'trust_setup', 'trustees', 'distribution', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    pages: ['start', 'personal_info', 'children', 'agents', 'plan_contents', 'executors', 'rlt', 'dor', 'fpoa', 'hcpoa', 'hcd', 'review'],
     planType: 'single_trust',
   },
   trustBasedEstatePlan2Person: {
     title: 'Trust-Based Estate Plan for 2 Persons',
-    pages: ['start', 'personal_info', 'spouse_info', 'children', 'agents', 'trust_setup', 'trustees', 'distribution', 'fpoa', 'hcpoa', 'hcd', 'review'],
+    pages: ['start', 'personal_info', 'spouse_info', 'children', 'agents', 'plan_contents', 'executors', 'rlt', 'dor', 'fpoa', 'hcpoa', 'hcd', 'review'],
     planType: 'joint_trust',
   },
 
@@ -500,27 +498,54 @@ interface FormData {
     hcd_sooner_longer: string;
   };
   trust_info: {
-    trust_name: string;
-    trust_type: string;
-    is_amendment: boolean;
     settlor_as_trustee: boolean;
-    successor_trustee: string;
+    // Successor trustees (WP repeatable group)
+    trustees: Array<{ trustee_to_serve: string; second_trustee_person_to_serve: string }>;
+    // Trust specific bequests (WP)
+    has_specific_bequests: boolean;
+    specific_bequests: Array<{ recipient: string; description: string; multiple_recipients: string; second_recipient: string }>;
+    // Final trust distributions (WP) — backend residuary contract shape
+    distributions_equal: boolean;
+    residuary_distribution: Array<{ recipient: string; share_percent: string; how_receive: string; trust_until_age: string }>;
+    // Marital trust option (two-person plans)
     marital_trust_type: string;
-    primary_beneficiaries: string[];
-    contingent_beneficiaries: string[];
-    successor_trustees: string[];
-    specific_bequests: string;
-    residuary_distribution: string;
-    special_instructions: string;
+    // Tutor / Under-Tutor for minor children (WP)
+    appoint_tutor: boolean;
+    tutor: string;
+    under_tutor: string;
+    has_successor_tutors: string;
+    successor_tutors: Array<{ successor_tutor_to_serve: string }>;
+  };
+  // Donation of Residence (Act of Donation to Trust of Principal Residence)
+  dor: {
+    parish_where_home_is_located: string;
+    have_full_legal_description_for_home: string;
+    full_legal_description: string;
   };
   will_info: {
+    // Executors (WP repeatable groups)
+    initial_executors: Array<{ initial_executor: string; co_executor: string }>;
+    has_successor_executors: string;
+    successor_executors: Array<{ successor_agent_to_serve: string; second_successor_coagent_to_serve: string }>;
+    // Derived single values kept for backend compatibility
     primary_executor: string;
     successor_executor: string;
+    // Spouse's own pourover-will executors (2-person plans only), mirroring the
+    // client fields above exactly as spouse_fpoa / spouse_hcpoa mirror theirs.
+    spouse_initial_executors: Array<{ initial_executor: string; co_executor: string }>;
+    spouse_has_successor_executors: string;
+    spouse_successor_executors: Array<{ successor_agent_to_serve: string; second_successor_coagent_to_serve: string }>;
+    spouse_primary_executor: string;
+    spouse_successor_executor: string;
+    // Sole-executor shortcuts: does one principal name the other as sole executor?
+    name_second_principal_as_executor: string; // client's will: 'Yes' | 'No' | ''
+    name_first_principal_as_executor: string;  // spouse's will: 'Yes' | 'No' | ''
     primary_guardian: string;
     backup_guardian: string;
     has_specific_bequests: boolean;
-    specific_bequests: string;
-    residuary_distribution: string;
+    specific_bequests: Array<{ recipient: string; description: string; multiple_recipients: string; second_recipient: string }>;
+    distributions_equal: boolean;
+    residuary_distribution: Array<{ recipient: string; share_percent: string; how_receive: string; trust_until_age: string }>;
     distribution_age: string;
     children_trustee: string;
     allow_education_distributions: boolean;
@@ -635,27 +660,43 @@ const initialFormData: FormData = {
     hcd_sooner_longer: '',
   },
   trust_info: {
-    trust_name: '',
-    trust_type: 'revocable',
-    is_amendment: false,
     settlor_as_trustee: true,
-    successor_trustee: '',
+    trustees: [],
+    has_specific_bequests: false,
+    specific_bequests: [],
+    distributions_equal: true,
+    residuary_distribution: [],
     marital_trust_type: '',
-    primary_beneficiaries: [],
-    contingent_beneficiaries: [],
-    successor_trustees: [],
-    specific_bequests: '',
-    residuary_distribution: '',
-    special_instructions: '',
+    appoint_tutor: false,
+    tutor: '',
+    under_tutor: '',
+    has_successor_tutors: '',
+    successor_tutors: [],
+  },
+  dor: {
+    parish_where_home_is_located: '',
+    have_full_legal_description_for_home: '',
+    full_legal_description: '',
   },
   will_info: {
+    initial_executors: [],
+    has_successor_executors: '',
+    successor_executors: [],
     primary_executor: '',
     successor_executor: '',
+    spouse_initial_executors: [],
+    spouse_has_successor_executors: '',
+    spouse_successor_executors: [],
+    spouse_primary_executor: '',
+    spouse_successor_executor: '',
+    name_second_principal_as_executor: '',
+    name_first_principal_as_executor: '',
     primary_guardian: '',
     backup_guardian: '',
     has_specific_bequests: false,
-    specific_bequests: '',
-    residuary_distribution: '',
+    specific_bequests: [],
+    distributions_equal: true,
+    residuary_distribution: [],
     distribution_age: '25',
     children_trustee: '',
     allow_education_distributions: true,
@@ -910,28 +951,60 @@ const TEST_PREFILL_DATA: FormData = {
   },
   // Trust info (for trust-based plans)
   trust_info: {
-    trust_name: 'Smith Family Living Trust',
-    trust_type: 'revocable',
-    is_amendment: false,
     settlor_as_trustee: true,
-    successor_trustee: 'Robert James Smith',
+    trustees: [
+      { trustee_to_serve: 'Robert James Smith', second_trustee_person_to_serve: '' },
+    ],
+    has_specific_bequests: true,
+    specific_bequests: [
+      { recipient: 'Emily Rose Johnson', description: 'Jewelry collection', multiple_recipients: 'No', second_recipient: '' },
+    ],
+    distributions_equal: false,
+    residuary_distribution: [
+      { recipient: 'Robert James Smith', share_percent: '50', how_receive: 'Outright', trust_until_age: '' },
+      { recipient: 'Emily Rose Johnson', share_percent: '50', how_receive: 'In Trust', trust_until_age: '25' },
+    ],
     marital_trust_type: 'NoMarital',
-    primary_beneficiaries: ['Robert James Smith', 'Emily Rose Johnson'],
-    contingent_beneficiaries: ['Grandchildren per stirpes'],
-    successor_trustees: ['First National Trust Company'],
-    specific_bequests: 'Family home to children equally; Jewelry collection to daughter Emily.',
-    residuary_distribution: 'Equally among my children',
-    special_instructions: 'Distribute trust assets to children at ages 25, 30, and 35 in equal portions.',
+    appoint_tutor: false,
+    tutor: '',
+    under_tutor: '',
+    has_successor_tutors: '',
+    successor_tutors: [],
+  },
+  // Donation of Residence
+  dor: {
+    parish_where_home_is_located: 'Orleans',
+    have_full_legal_description_for_home: 'Yes, I have the complete legal description',
+    full_legal_description: 'Lot 12, Square 5, Faubourg Marigny, City of New Orleans, Orleans Parish, Louisiana.',
   },
   // Will info (for will-based plans)
   will_info: {
+    initial_executors: [
+      { initial_executor: 'Robert James Smith', co_executor: '' },
+    ],
+    has_successor_executors: 'Yes',
+    successor_executors: [
+      { successor_agent_to_serve: 'Emily Rose Johnson', second_successor_coagent_to_serve: '' },
+    ],
     primary_executor: 'Robert James Smith',
     successor_executor: 'Emily Rose Johnson',
+    spouse_initial_executors: [],
+    spouse_has_successor_executors: '',
+    spouse_successor_executors: [],
+    spouse_primary_executor: '',
+    spouse_successor_executor: '',
+    name_second_principal_as_executor: '',
+    name_first_principal_as_executor: '',
     primary_guardian: 'Michael Andrew Williams III',
     backup_guardian: 'Emily Rose Johnson',
     has_specific_bequests: true,
-    specific_bequests: 'My jewelry collection to my daughter Emily.',
-    residuary_distribution: 'Equally among my children per stirpes.',
+    specific_bequests: [
+      { recipient: 'Emily Rose Johnson', description: 'My jewelry collection.', multiple_recipients: 'No', second_recipient: '' },
+    ],
+    distributions_equal: false,
+    residuary_distribution: [
+      { recipient: 'Emily Rose Johnson', share_percent: '100', how_receive: 'Outright', trust_until_age: '' },
+    ],
     distribution_age: '25',
     children_trustee: 'First National Trust Company',
     allow_education_distributions: true,
@@ -957,6 +1030,19 @@ const POAForm: React.FC = () => {
 
   const formConfig = FORM_TYPES[formType] || FORM_TYPES.powerOfAttorneyForm;
   const pages = formConfig.pages;
+
+  // WordPress numbers the flow Start=1, Personal Information=2, Other Parties=3,
+  // ... HCD=10. The spouse and children pages fold into the "Personal
+  // Information" section (Step 2), so they share its number and are not counted
+  // separately. This keeps Executors=5, RLT=6, DOR=7, FPOA=8, HCPOA=9, HCD=10 on
+  // the trust flow (and FPOA=5 on the POA-only flow) regardless of solo vs
+  // 2-person, matching the legacy site.
+  const getStepNumber = (pageKey: string): number => {
+    const key = pageKey === 'children' || pageKey === 'spouse_info' ? 'personal_info' : pageKey;
+    const numbered = pages.filter((p) => p !== 'spouse_info' && p !== 'children');
+    const idx = numbered.indexOf(key);
+    return idx >= 0 ? idx + 1 : 0;
+  };
 
   // Load existing submission
   useEffect(() => {
@@ -1115,6 +1201,165 @@ const POAForm: React.FC = () => {
     return ordinals[index] || `${index + 1}th`;
   };
 
+  // Beneficiary options: agents/parties plus any children (WP pulls from both pools).
+  const getBeneficiaryOptions = (): string[] => {
+    const partyNames = (formData.people_or_entities_who_will_serve_as_agents?.parties || [])
+      .map((p) => getPartyDisplayName(p))
+      .filter(Boolean);
+    const childNames = (formData.children || [])
+      .map((c) => [c.first_name, c.middle_name, c.surname, c.suffix].map((s) => (s || '').trim()).filter(Boolean).join(' '))
+      .filter(Boolean);
+    return Array.from(new Set([...partyNames, ...childNames]));
+  };
+
+  // Executor options for a given principal's pourover will. The "other
+  // principal" (the spouse for the client's will, the client for the spouse's)
+  // is a selectable option; the backend `findPartyId` resolves those display
+  // names to client/spouse ids, so no id plumbing is needed here.
+  const getExecutorOptions = (principal: ExecutorPrincipal = 'client'): string[] => {
+    const pi = formData.personal_info;
+    const si = formData.spouse_info;
+    const clientName = [pi.first_name, pi.middle_name, pi.surname].filter(Boolean).join(' ');
+    const spouseName = [si.first_name, si.middle_name, si.surname].filter(Boolean).join(' ');
+    const otherName = principal === 'spouse' ? clientName : spouseName;
+    return Array.from(new Set([otherName, ...getBeneficiaryOptions()].filter(Boolean)));
+  };
+
+  // ---- Trust: successor trustees group ----
+  const addTrustee = () => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, trustees: [...(prev.trust_info.trustees || []), { trustee_to_serve: '', second_trustee_person_to_serve: '' }] },
+  }));
+  const removeTrustee = (index: number) => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, trustees: (prev.trust_info.trustees || []).filter((_, i) => i !== index) },
+  }));
+  const updateTrustee = (index: number, field: 'trustee_to_serve' | 'second_trustee_person_to_serve', value: string) => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, trustees: (prev.trust_info.trustees || []).map((t, i) => i === index ? { ...t, [field]: value } : t) },
+  }));
+
+  // ---- Trust: specific bequests group ----
+  const addBequest = () => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, specific_bequests: [...(prev.trust_info.specific_bequests || []), { recipient: '', description: '', multiple_recipients: 'No', second_recipient: '' }] },
+  }));
+  const removeBequest = (index: number) => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, specific_bequests: (prev.trust_info.specific_bequests || []).filter((_, i) => i !== index) },
+  }));
+  const updateBequest = (index: number, field: 'recipient' | 'description' | 'multiple_recipients' | 'second_recipient', value: string) => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, specific_bequests: (prev.trust_info.specific_bequests || []).map((b, i) => i === index ? { ...b, [field]: value } : b) },
+  }));
+
+  // ---- Trust: final residuary distributions group ----
+  const addDistribution = () => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, residuary_distribution: [...(prev.trust_info.residuary_distribution || []), { recipient: '', share_percent: '', how_receive: 'Outright', trust_until_age: '' }] },
+  }));
+  const removeDistribution = (index: number) => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, residuary_distribution: (prev.trust_info.residuary_distribution || []).filter((_, i) => i !== index) },
+  }));
+  const updateDistribution = (index: number, field: 'recipient' | 'share_percent' | 'how_receive' | 'trust_until_age', value: string) => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, residuary_distribution: (prev.trust_info.residuary_distribution || []).map((d, i) => i === index ? { ...d, [field]: value } : d) },
+  }));
+
+  // ---- Will: specific bequests group (mirrors the trust helpers, on will_info) ----
+  const addWillBequest = () => setFormData(prev => ({
+    ...prev,
+    will_info: { ...prev.will_info, specific_bequests: [...(prev.will_info.specific_bequests || []), { recipient: '', description: '', multiple_recipients: 'No', second_recipient: '' }] },
+  }));
+  const removeWillBequest = (index: number) => setFormData(prev => ({
+    ...prev,
+    will_info: { ...prev.will_info, specific_bequests: (prev.will_info.specific_bequests || []).filter((_, i) => i !== index) },
+  }));
+  const updateWillBequest = (index: number, field: 'recipient' | 'description' | 'multiple_recipients' | 'second_recipient', value: string) => setFormData(prev => ({
+    ...prev,
+    will_info: { ...prev.will_info, specific_bequests: (prev.will_info.specific_bequests || []).map((b, i) => i === index ? { ...b, [field]: value } : b) },
+  }));
+
+  // ---- Will: residuary distributions group ----
+  const addWillDistribution = () => setFormData(prev => ({
+    ...prev,
+    will_info: { ...prev.will_info, residuary_distribution: [...(prev.will_info.residuary_distribution || []), { recipient: '', share_percent: '', how_receive: 'Outright', trust_until_age: '' }] },
+  }));
+  const removeWillDistribution = (index: number) => setFormData(prev => ({
+    ...prev,
+    will_info: { ...prev.will_info, residuary_distribution: (prev.will_info.residuary_distribution || []).filter((_, i) => i !== index) },
+  }));
+  const updateWillDistribution = (index: number, field: 'recipient' | 'share_percent' | 'how_receive' | 'trust_until_age', value: string) => setFormData(prev => ({
+    ...prev,
+    will_info: { ...prev.will_info, residuary_distribution: (prev.will_info.residuary_distribution || []).map((d, i) => i === index ? { ...d, [field]: value } : d) },
+  }));
+
+  // ---- Trust: successor tutors group ----
+  const addSuccessorTutor = () => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, successor_tutors: [...(prev.trust_info.successor_tutors || []), { successor_tutor_to_serve: '' }] },
+  }));
+  const removeSuccessorTutor = (index: number) => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, successor_tutors: (prev.trust_info.successor_tutors || []).filter((_, i) => i !== index) },
+  }));
+  const updateSuccessorTutor = (index: number, value: string) => setFormData(prev => ({
+    ...prev,
+    trust_info: { ...prev.trust_info, successor_tutors: (prev.trust_info.successor_tutors || []).map((t, i) => i === index ? { successor_tutor_to_serve: value } : t) },
+  }));
+
+  // ---- Will/Pourover: initial + successor executors groups ----
+  // primary_executor / successor_executor are kept in sync for the backend contract.
+  // Generalized over principal so a 2-person plan can drive each spouse's own
+  // pourover-will section; call sites default to the client.
+  type ExecutorPrincipal = 'client' | 'spouse';
+  const execFields = (principal: ExecutorPrincipal) => principal === 'spouse'
+    ? {
+        initial: 'spouse_initial_executors' as const,
+        successor: 'spouse_successor_executors' as const,
+        primarySingle: 'spouse_primary_executor' as const,
+        successorSingle: 'spouse_successor_executor' as const,
+      }
+    : {
+        initial: 'initial_executors' as const,
+        successor: 'successor_executors' as const,
+        primarySingle: 'primary_executor' as const,
+        successorSingle: 'successor_executor' as const,
+      };
+  const syncExecutorSingles = (info: FormData['will_info'], principal: ExecutorPrincipal = 'client'): FormData['will_info'] => {
+    const f = execFields(principal);
+    return {
+      ...info,
+      [f.primarySingle]: (info[f.initial] as Array<{ initial_executor: string }>)?.[0]?.initial_executor || '',
+      [f.successorSingle]: (info[f.successor] as Array<{ successor_agent_to_serve: string }>)?.[0]?.successor_agent_to_serve || '',
+    };
+  };
+  const addInitialExecutor = (principal: ExecutorPrincipal = 'client') => setFormData(prev => {
+    const f = execFields(principal);
+    return { ...prev, will_info: syncExecutorSingles({ ...prev.will_info, [f.initial]: [...(prev.will_info[f.initial] as any[] || []), { initial_executor: '', co_executor: '' }] }, principal) };
+  });
+  const removeInitialExecutor = (index: number, principal: ExecutorPrincipal = 'client') => setFormData(prev => {
+    const f = execFields(principal);
+    return { ...prev, will_info: syncExecutorSingles({ ...prev.will_info, [f.initial]: (prev.will_info[f.initial] as any[] || []).filter((_, i) => i !== index) }, principal) };
+  });
+  const updateInitialExecutor = (index: number, field: 'initial_executor' | 'co_executor', value: string, principal: ExecutorPrincipal = 'client') => setFormData(prev => {
+    const f = execFields(principal);
+    return { ...prev, will_info: syncExecutorSingles({ ...prev.will_info, [f.initial]: (prev.will_info[f.initial] as any[] || []).map((e, i) => i === index ? { ...e, [field]: value } : e) }, principal) };
+  });
+  const addSuccessorExecutor = (principal: ExecutorPrincipal = 'client') => setFormData(prev => {
+    const f = execFields(principal);
+    return { ...prev, will_info: syncExecutorSingles({ ...prev.will_info, [f.successor]: [...(prev.will_info[f.successor] as any[] || []), { successor_agent_to_serve: '', second_successor_coagent_to_serve: '' }] }, principal) };
+  });
+  const removeSuccessorExecutor = (index: number, principal: ExecutorPrincipal = 'client') => setFormData(prev => {
+    const f = execFields(principal);
+    return { ...prev, will_info: syncExecutorSingles({ ...prev.will_info, [f.successor]: (prev.will_info[f.successor] as any[] || []).filter((_, i) => i !== index) }, principal) };
+  });
+  const updateSuccessorExecutor = (index: number, field: 'successor_agent_to_serve' | 'second_successor_coagent_to_serve', value: string, principal: ExecutorPrincipal = 'client') => setFormData(prev => {
+    const f = execFields(principal);
+    return { ...prev, will_info: syncExecutorSingles({ ...prev.will_info, [f.successor]: (prev.will_info[f.successor] as any[] || []).map((e, i) => i === index ? { ...e, [field]: value } : e) }, principal) };
+  });
+
   // Easter egg: Prefill form with test data (Ctrl+Shift+T)
   const prefillTestData = useCallback(() => {
     const isTwoPerson = formType.includes('2Person');
@@ -1260,14 +1505,89 @@ const POAForm: React.FC = () => {
     }
 
     if (pageName === 'agents') {
-      if ((formData.people_or_entities_who_will_serve_as_agents?.parties || []).length === 0) {
-        newErrors['agents'] = 'You must add at least one agent';
+      // Other Parties is optional: selecting "No" (or adding at least one party)
+      // lets the user continue. Only block if they haven't answered and haven't
+      // added anyone.
+      const partyCount = (formData.people_or_entities_who_will_serve_as_agents?.parties || []).length;
+      if (hasOtherParties !== 'No' && partyCount === 0) {
+        newErrors['agents'] = 'Add at least one party, or select "No".';
       }
     }
 
-    if (pageName === 'trust_info') {
+    if (pageName === 'executors') {
+      const wi = formData.will_info;
+      const isTwoPerson = formType.includes('2Person');
+      // Each principal is satisfied by either the sole-executor shortcut === 'Yes'
+      // or a named initial executor.
+      const clientOk = wi.name_second_principal_as_executor === 'Yes'
+        || Boolean((wi.initial_executors || [])[0]?.initial_executor);
+      if (!clientOk) {
+        newErrors['will_info.initial_executors'] = 'Select at least one Executor.';
+      }
+      if (isTwoPerson) {
+        const spouseOk = wi.name_first_principal_as_executor === 'Yes'
+          || Boolean((wi.spouse_initial_executors || [])[0]?.initial_executor);
+        if (!spouseOk) {
+          newErrors['will_info.spouse_initial_executors'] = 'Select at least one Executor.';
+        }
+      }
+    }
+
+    if (pageName === 'will_distribution') {
+      const wi = formData.will_info;
+      const dist = wi.residuary_distribution || [];
+      if (dist.length === 0 || dist.some((d) => !d.recipient)) {
+        newErrors['will_info.residuary_distribution'] = 'Each residuary beneficiary must be named.';
+      } else if (!wi.distributions_equal) {
+        const total = dist.reduce((sum, d) => sum + (parseFloat(d.share_percent) || 0), 0);
+        if (Math.abs(total - 100) > 0.01) {
+          newErrors['will_info.residuary_distribution'] = `Residuary shares total ${Math.round(total * 100) / 100}%, not 100%.`;
+        }
+      }
+      if (wi.has_specific_bequests) {
+        const bequests = wi.specific_bequests || [];
+        if (bequests.some((b) => !b.recipient || !String(b.description || '').trim())) {
+          newErrors['will_info.specific_bequests'] = 'Each specific bequest needs a recipient and a description.';
+        }
+      }
+    }
+
+    if (pageName === 'rlt') {
       const ti = formData.trust_info;
-      if (!ti.trust_type) newErrors['trust_info.trust_type'] = 'Trust type is required';
+      const trustees = ti.trustees || [];
+      if (trustees.length === 0 || !trustees[0]?.trustee_to_serve) {
+        newErrors['trust_info.trustees'] = 'Select at least one Successor Trustee.';
+      }
+      const dist = ti.residuary_distribution || [];
+      if (dist.length === 0 || dist.some((d) => !d.recipient)) {
+        newErrors['trust_info.residuary_distribution'] = 'Each residuary beneficiary must be named.';
+      }
+      if (!ti.distributions_equal) {
+        const total = dist.reduce((sum, d) => sum + (parseFloat(d.share_percent) || 0), 0);
+        if (Math.abs(total - 100) > 0.01) {
+          newErrors['trust_info.residuary_distribution'] = `Residuary shares total ${Math.round(total * 100) / 100}%, not 100%.`;
+        }
+      }
+      if (ti.has_specific_bequests) {
+        const bequests = ti.specific_bequests || [];
+        if (bequests.some((b) => !b.recipient || !String(b.description || '').trim())) {
+          newErrors['trust_info.specific_bequests'] = 'Each specific bequest needs a recipient and a description.';
+        }
+      }
+      if (ti.appoint_tutor && (!ti.tutor || !ti.under_tutor)) {
+        newErrors['trust_info.tutor'] = 'Select both a Tutor and an Under-Tutor.';
+      }
+    }
+
+    if (pageName === 'dor') {
+      const dor = formData.dor;
+      if (!dor.parish_where_home_is_located) {
+        newErrors['dor.parish_where_home_is_located'] = 'Parish or county is required.';
+      }
+      if (dor.have_full_legal_description_for_home === 'Yes, I have the complete legal description' &&
+          !String(dor.full_legal_description || '').trim()) {
+        newErrors['dor.full_legal_description'] = 'Enter the full legal description.';
+      }
     }
 
     return { valid: Object.keys(newErrors).length === 0, errors: newErrors };
@@ -1277,6 +1597,32 @@ const POAForm: React.FC = () => {
     const result = validatePage(currentPage);
     setErrors(result.errors);
     return result.valid;
+  };
+
+  // When "distribute equally" is chosen the UI hides the per-beneficiary
+  // percentage, but the backend still requires residuary shares to total 100
+  // (see docPreconditions.js). Fill equal shares before the payload leaves.
+  const fillEqualShares = <T extends { share_percent: string }>(rows: T[], equal: boolean): T[] => {
+    if (!equal || rows.length === 0) return rows;
+    const n = rows.length;
+    const base = Math.floor(10000 / n) / 100;
+    return rows.map((d, i) => ({
+      ...d,
+      share_percent: (i === 0 ? 100 - base * (n - 1) : base).toFixed(2),
+    }));
+  };
+
+  const normalizeFormDataForSubmit = (data: FormData): FormData => {
+    let next = data;
+    if (next.trust_info) {
+      const ti = next.trust_info;
+      next = { ...next, trust_info: { ...ti, residuary_distribution: fillEqualShares(ti.residuary_distribution || [], ti.distributions_equal) } };
+    }
+    if (next.will_info) {
+      const wi = next.will_info;
+      next = { ...next, will_info: { ...wi, residuary_distribution: fillEqualShares(wi.residuary_distribution || [], wi.distributions_equal) } };
+    }
+    return next;
   };
 
   const handleSave = async (status: 'inprogress' | 'completed' = 'inprogress') => {
@@ -1290,7 +1636,7 @@ const POAForm: React.FC = () => {
 
     try {
       const payload = {
-        form_data: formData,
+        form_data: normalizeFormDataForSubmit(formData),
         form_type: formType,
         submission_status: status,
       };
@@ -1402,7 +1748,7 @@ const POAForm: React.FC = () => {
     return (
       <div className="poa-page">
         <p className="text-muted"><em>Estate Plan Document Selection</em></p>
-        <h2>1. {formConfig.title}</h2>
+        <h2>{getStepNumber('start')}. {formConfig.title}</h2>
         {isPOA2Person ? (
           <>
             <p>
@@ -1429,7 +1775,7 @@ const POAForm: React.FC = () => {
 
     return (
       <div className="poa-page">
-        <h2>2. Personal Information</h2>
+        <h2>{getStepNumber('personal_info')}. Personal Information</h2>
         <p className="text-muted">
           {isPOA2Person
             ? 'Enter the personal information for both persons granting powers of attorney.'
@@ -1844,7 +2190,9 @@ const POAForm: React.FC = () => {
   // For POA 2-person forms: Second Principal's Personal Information
   const renderSecondPrincipalPage = () => {
     const isPOA = formType.includes('powerOfAttorney');
-    const pageTitle = isPOA ? '3. Personal Information for Second Principal' : '3. Spouse Information';
+    const pageTitle = isPOA
+      ? `${getStepNumber('personal_info')}. Personal Information for Second Principal`
+      : `${getStepNumber('personal_info')}. Spouse Information`;
     const pageDescription = isPOA
       ? 'Enter the personal information about the second person granting powers of attorney (e.g., an adult child, aging parent, or other person):'
       : 'Enter your spouse\'s personal information below.';
@@ -2065,19 +2413,25 @@ const POAForm: React.FC = () => {
   const renderPlanContentsPage = () => {
     const isTrust = formType.includes('trustBased');
     const isWill = formType.includes('willBased') || formType.includes('minorChild');
+    const isPOA = formType.includes('powerOfAttorney');
 
     return (
       <div className="poa-page">
-        <h2>4. Plan Contents</h2>
+        <h2>{getStepNumber('plan_contents')}. Plan Contents</h2>
         <p><em><strong>In the following steps you will enter information to create the following documents:</strong></em></p>
         <ul className="mb-4" style={{ listStyleType: 'disc', paddingLeft: '2.5rem' }}>
-          {/* Trust-specific documents */}
+          {/* Trust plans: the full WordPress document set */}
           {isTrust && (
             <>
-              <li><em>Revocable Living Trust Agreement</em></li>
+              <li><em>Revocable Living Trust</em></li>
+              <li><em>Pourover Last Will and Testament</em></li>
+              <li><em>Durable Financial Power of Attorney</em></li>
+              <li><em>Advance Healthcare Directive (a/k/a Living Will)</em></li>
+              <li><em>HIPAA Release</em></li>
+              <li><em>Act of Donation of Principal Residence</em></li>
+              <li><em>Extract of Trust</em></li>
               <li><em>Certificate of Trust</em></li>
-              <li><em>Pour-Over Will</em></li>
-              <li><em>Trust Funding Instructions</em></li>
+              <li><em>Trust Funding Guide</em></li>
             </>
           )}
           {/* Will-specific documents */}
@@ -2085,13 +2439,21 @@ const POAForm: React.FC = () => {
             <>
               <li><em>Last Will and Testament</em></li>
               <li><em>Will Attestation</em></li>
+              <li><em>Durable Financial Power of Attorney</em></li>
+              <li><em>Durable Medical Power of Attorney</em></li>
+              <li><em>Advance Healthcare Directive (a/k/a Living Will)</em></li>
+              <li><em>HIPAA Release</em></li>
             </>
           )}
-          {/* POA documents (all plans) */}
-          <li><em>Durable Financial Power of Attorney</em></li>
-          <li><em>Durable Medical Power of Attorney</em></li>
-          <li><em>Advance Healthcare Directive (a/k/a Living Will)</em></li>
-          <li><em>HIPAA Release</em></li>
+          {/* POA Supplement documents (verbatim WordPress list) */}
+          {isPOA && (
+            <>
+              <li><em>Durable Financial Power of Attorney</em></li>
+              <li><em>Durable Medical Power of Attorney</em></li>
+              <li><em>Advance Healthcare Directive (a/k/a Living Will)</em></li>
+              <li><em>HIPAA Release</em></li>
+            </>
+          )}
         </ul>
         <p>If you wish to add, remove, or edit personal information about any person to be included in your GeauxPlan, simply return to the previous steps. Your revisions will then be available in the following steps.</p>
       </div>
@@ -2107,18 +2469,22 @@ const POAForm: React.FC = () => {
 
     return (
       <div className="poa-page">
-        <h2>5. Financial Power of Attorney for {getPrincipalFullName()}</h2>
+        <h2>{getStepNumber('fpoa')}. Financial Power of Attorney</h2>
         <p className="text-muted mb-3">
-          <em><strong>A Financial Power of Attorney (FPOA) is a legal document that allows an individual (the "Principal") to designate another person (an "Agent") to make financial decisions for him or her when he or she cannot make decisions for himself or herself.</strong></em>
+          A Financial Power of Attorney (FPOA) is a legal document that allows an individual to designate another
+          person to make financial decisions for him or her when he or she cannot make decisions for himself or herself.
         </p>
         <p className="text-muted mb-3">
-          The Financial Power of Attorney will be effective immediately upon execution by the Principal and Agent.
+          Your agent's powers will include the full power to act and transact business on your behalf, including, but
+          not limited to, purchasing and selling assets, establishing legal entities, such as trusts and limited
+          liability companies, making and accepting donations, participating in legal proceedings, and virtually any
+          other legal act that you could personally undertake.
         </p>
+        <h4 className="mt-4 mb-3">{getPrincipalFullName()}'s Financial Power of Attorney</h4>
         <p className="text-muted mb-3">
-          The Financial Power of Attorney is "durable", which means it will remain effective until the earlier of the death of the of the Principal or until it is expressly revoked, and shall not be affected by the subsequent disability, incapacity, or other condition of Principal making express revocation impossible or impracticable.
-        </p>
-        <p className="text-muted mb-3">
-          You can designate a single Agent who will serve alone, or you may designate Co-Agents who will serve at the same time. If you designate Co-Agents, then decisions must be made jointly by mutual consent.
+          Choose {getPrincipalFullName()}'s Agents for the Financial Power of Attorney (the person {getPrincipalFullName()} wants
+          to make financial decisions for them if they are incapacitated). {getPrincipalFullName()} may select a Co-Agent to
+          serve at the same time as the Initial Agent. Decisions of Co-Agents will be made jointly by mutual consent.
         </p>
         <div className="alert alert-light border mb-4">
           <strong>If you do not see the name of the person or entity you wish to designate as an Agent:</strong>
@@ -2301,15 +2667,11 @@ const POAForm: React.FC = () => {
         {isTwoPerson && (
           <>
             <hr className="my-5" />
-            <h2>5. Financial Power of Attorney for {getSecondPersonName()}</h2>
+            <h4 className="mb-3">{getSecondPersonName()}'s Financial Power of Attorney</h4>
             <p className="text-muted mb-3">
-              A Financial Power of Attorney gives a person, called an Agent, the authority to make financial decisions for
-              you if you become incapacitated or otherwise unable to manage your own affairs. Agents can pay your bills,
-              manage your investments and financial accounts, and other similar tasks.
-            </p>
-            <p className="text-muted mb-4">
-              <em>If you did not enter an Agent for this Principal on the "Agents" step (Step 3), please return to Step 3
-              and enter at least one Agent before continuing.</em>
+              Choose {getSecondPersonName()}'s Agents for the Financial Power of Attorney (the person {getSecondPersonName()} wants
+              to make financial decisions for them if they are incapacitated). {getSecondPersonName()} may select a Co-Agent to
+              serve at the same time as the Initial Agent. Decisions of Co-Agents will be made jointly by mutual consent.
             </p>
 
             <p className="mb-3">Select the initial agent(s) for {getSecondPersonName()}'s Financial Power of Attorney:</p>
@@ -2487,34 +2849,20 @@ const POAForm: React.FC = () => {
 
     return (
       <div className="poa-page">
-        <h2>6. Healthcare Power of Attorney For {getPrincipalFullName()}</h2>
+        <h2>{getStepNumber('hcpoa')}. Healthcare Power of Attorney</h2>
         <p className="text-muted mb-3">
-          <em><strong>A Healthcare Power of Attorney (HCPOA) is a legal document that allows an individual (the "Principal") to designate another person (an "Agent") to make medical decisions for him or her when he or she cannot make decisions for himself or herself.</strong></em>
+          A Health Care Power of Attorney (HCPOA) is a legal document that allows an individual to designate another
+          person to make medical decisions for him or her when he or she cannot make decisions for himself or herself.
         </p>
         <p className="text-muted mb-3">
-          Healthcare decisions include the power to consent, refuse to consent, or withdraw consent to any type of medical care, treatment, service or procedure, as well as accessing protected health information, and making care arrangements.
-        </p>
-        <p className="text-muted mb-3">
-          The Healthcare Power of Attorney will be effective immediately upon execution by the Principal and Agent.
-        </p>
-        <p className="text-muted mb-3">
-          The Healthcare Power of Attorney is "durable", which means it will remain effective until the earlier of the death of the Principal or until it is expressly revoked, and shall not be affected by the subsequent disability, incapacity, or other condition of Principal making express revocation impossible or impracticable.
-        </p>
-        <p className="text-muted mb-4">
-          You can designate a single Agent who will serve alone, or you may designate Co-Agents who will serve at the same time. If you designate Co-Agents, then decisions must be made jointly by mutual consent.
+          In other words it names someone who stands in your shoes and tells the doctors what to do or what not do for
+          you. A person need not be terminally ill, elderly, or facing high risk activities to execute a HCPOA. Health
+          care decisions include the power to consent, refuse consent or withdraw consent to any type of medical care,
+          treatment, service or procedure. A HCPOA is also referred to as health care proxy, medical power of attorney
+          and Durable Power of Attorney for Health Care.
         </p>
 
-        <div className="alert alert-light border mb-4">
-          <strong>If you do not see the name of the person or entity you wish to designate as an Agent:</strong>
-          <div className="d-flex align-items-center mt-2 flex-wrap">
-            <span>Return to Step 3</span>
-            <span className="mx-2">&rarr;</span>
-            <span>Select "yes" that the person will serve as Financial Agent or Medical Agent</span>
-            <span className="mx-2">&rarr;</span>
-            <span>Add the last 4 digits of the SSN or EIN as appropriate.</span>
-            <span className="ms-2 text-success">&#10003;</span>
-          </div>
-        </div>
+        <h4 className="mt-4 mb-3">{getPrincipalFullName()}'s Healthcare Power of Attorney</h4>
 
         <div className="mb-3">
           <label className="form-label">Does {getPrincipalFullName()} wish to be an organ donor?</label>
@@ -2741,29 +3089,7 @@ const POAForm: React.FC = () => {
         {isTwoPerson && (
           <>
             <hr className="my-5" />
-            <h2>Healthcare Power of Attorney For {getSecondPersonName()}</h2>
-            <p className="text-muted mb-3">
-              A Healthcare Power of Attorney (HCPOA) is a legal document that allows an individual (the "Principal") to
-              designate another person (an "Agent") to make medical decisions for him or her when he or she cannot make
-              decisions for himself or herself.
-            </p>
-            <p className="text-muted mb-3">
-              Healthcare decisions include the power to consent, refuse to consent, or withdraw consent to any type of
-              medical care, treatment, service or procedure, as well as accessing protected health information, and
-              making care arrangements.
-            </p>
-            <p className="text-muted mb-3">
-              The Healthcare Power of Attorney will be effective immediately upon execution by the Principal and Agent.
-            </p>
-            <p className="text-muted mb-3">
-              The Healthcare Power of Attorney is "durable", which means it will remain effective until the earlier of
-              the death of the Principal or until it is expressly revoked, and shall not be affected by the subsequent
-              disability, incapacity, or other condition of Principal making express revocation impossible or impracticable.
-            </p>
-            <p className="text-muted mb-4">
-              You can designate a single Agent who will serve alone, or you may designate Co-Agents who will serve at
-              the same time. If you designate Co-Agents, then decisions must be made jointly by mutual consent.
-            </p>
+            <h4 className="mb-3">{getSecondPersonName()}'s Healthcare Power of Attorney</h4>
 
             <div className="mb-3">
               <label className="form-label">Does {getSecondPersonName()} wish to be an organ donor?</label>
@@ -2995,12 +3321,29 @@ const POAForm: React.FC = () => {
 
     return (
       <div className="poa-page">
-        <h2>7. Healthcare Directive for {getPrincipalFullName()}</h2>
+        <h2>{getStepNumber('hcd')}. Advance Healthcare Directive</h2>
         <p className="text-muted mb-3">
-          <em><strong>Also known as a "Living Will"</strong></em>.
+          <em>Also known as a "Living Will".</em>
         </p>
         <p className="text-muted mb-3">
-          A Healthcare Directive (sometimes referred to as a "Living Will") is a document that instructs your healthcare provider to withhold life sustaining procedures in the event two (2) physicians certify that you are in a terminal and irreversible condition and that your death will occur whether or not life-sustaining procedures are utilized or artificially prolong your life. If you wish to make this directive, you essentially have two choices: (1) to withhold all life sustaining procedures, including nutrition and hydration; or (2) to withhold all life-sustaining procedures, except nutrition and hydration. You will not be conscious or able to communicate in this end-of-life state, so nutrition connotes a feeding tube and hydration would be administered intravenously. You must initial next to your choice as indicated on the form.
+          A Healthcare Directive (sometimes referred to as a "Living Will") is a document that instructs your healthcare
+          provider to withhold life sustaining procedures in the event two (2) physicians certify that you are in a
+          terminal and irreversible condition and that your death will occur whether or not life-sustaining procedures
+          are utilized or artificially prolong your life. A statement of your wishes regarding the types of medical life
+          support measures you prefer to have, or have withheld if you are in a terminal condition and cannot express
+          your wishes yourself. Without this legal document, your physician will spare no expense to prolong your life.
+        </p>
+        <p className="text-muted mb-3">
+          If you wish to make that directive, you essentially have two choices: (1) to withhold all life sustaining
+          procedures, including nutrition and hydration; or (2) to withhold all life-sustaining procedures, except
+          nutrition and hydration. You will not be conscious or able to communicate in this end-of-life state, so
+          nutrition connotes a feeding tube and hydration would be administered intravenously. You must initial next to
+          your choice as indicated on the form.
+        </p>
+        <h4 className="mt-4 mb-3">{getPrincipalFullName()}'s Healthcare Directive</h4>
+        <p className="text-muted mb-3">
+          For {getPrincipalFullName()}, select whether to withdraw life support entirely or choose which support options
+          to permit:
         </p>
 
         <div className="mb-3">
@@ -3092,11 +3435,10 @@ const POAForm: React.FC = () => {
         {isTwoPerson && (
           <>
             <hr className="my-5" />
-            <h2>7. Healthcare Directive for {getSecondPersonName()}</h2>
+            <h4 className="mb-3">{getSecondPersonName()}'s Healthcare Directive</h4>
             <p className="text-muted mb-3">
-              A Healthcare Directive (also known as a Living Will) documents your wishes regarding end-of-life care.
-              It tells your healthcare providers and loved ones what medical treatments you want or don't want
-              if you become terminally ill or permanently unconscious.
+              For {getSecondPersonName()}, select whether to withdraw life support entirely or choose which support
+              options to permit:
             </p>
 
             <div className="mb-3">
@@ -3189,7 +3531,7 @@ const POAForm: React.FC = () => {
 
   const renderOtherPartiesPage = () => (
     <div className="poa-page">
-      <h2>3. Other Parties</h2>
+      <h2>{getStepNumber('agents')}. Other Parties</h2>
       <p className="text-muted">
         If you want to include anyone else in your estate plan (other than yourself or if children are listed in Step 2),
         enter their information here. These may be individuals or entities that serve a specific role or receive a specific gift.
@@ -3228,7 +3570,7 @@ const POAForm: React.FC = () => {
               name="has_other_parties"
               value="Yes"
               checked={hasOtherParties === 'Yes'}
-              onChange={(e) => setHasOtherParties(e.target.value)}
+              onChange={() => setHasOtherParties('Yes')}
             />
             <label className="form-check-label">Yes</label>
           </div>
@@ -3246,11 +3588,13 @@ const POAForm: React.FC = () => {
         </div>
       </div>
 
-      <button type="button" className="btn btn-outline-primary mb-4" onClick={addParty}>
-        <i className="fas fa-plus me-2"></i> Add Party
-      </button>
+      {hasOtherParties === 'Yes' && (
+        <button type="button" className="btn btn-outline-primary mb-4" onClick={addParty}>
+          <i className="fas fa-plus me-2"></i> Add Party
+        </button>
+      )}
 
-      {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).length > 0 && (
+      {hasOtherParties === 'Yes' && (formData.people_or_entities_who_will_serve_as_agents?.parties || []).length > 0 && (
         <>
           {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, index) => (
             <div key={party.id} className="card mb-3">
@@ -3608,76 +3952,12 @@ const POAForm: React.FC = () => {
     </div>
   );
 
-  const renderTrustInfoPage = () => (
-    <div className="poa-page">
-      <h2>8. Trust Information</h2>
-      <p className="text-muted">Enter information about your trust.</p>
-
-      <div className="mb-3">
-        <label className="form-label">Trust Name</label>
-        <input
-          type="text"
-          className="form-control"
-          value={formData.trust_info.trust_name}
-          onChange={(e) => updateFormData('trust_info', 'trust_name', e.target.value)}
-          placeholder="e.g., The Smith Family Trust"
-        />
-        <small className="text-muted">Leave blank to use default naming based on your name</small>
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Trust Type <span className="text-danger">*</span></label>
-        <select
-          className={`form-select ${errors['trust_info.trust_type'] ? 'is-invalid' : ''}`}
-          value={formData.trust_info.trust_type}
-          onChange={(e) => updateFormData('trust_info', 'trust_type', e.target.value)}
-        >
-          <option value="">Select trust type...</option>
-          <option value="revocable">Revocable Living Trust</option>
-          <option value="irrevocable">Irrevocable Trust</option>
-          <option value="joint">Joint Trust (for married couples)</option>
-        </select>
-        {errors['trust_info.trust_type'] && <div className="invalid-feedback">{errors['trust_info.trust_type']}</div>}
-        <small className="text-muted">Most people choose a Revocable Living Trust</small>
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Specific Bequests</label>
-        <textarea
-          className="form-control"
-          rows={4}
-          value={formData.trust_info.specific_bequests}
-          onChange={(e) => updateFormData('trust_info', 'specific_bequests', e.target.value)}
-          placeholder="List any specific items you wish to leave to specific people (e.g., 'My grandmother's ring to my daughter Jane')"
-        />
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Special Instructions</label>
-        <textarea
-          className="form-control"
-          rows={4}
-          value={formData.trust_info.special_instructions}
-          onChange={(e) => updateFormData('trust_info', 'special_instructions', e.target.value)}
-          placeholder="Any special instructions or wishes for your trust"
-        />
-      </div>
-
-      <div className="alert alert-info">
-        <i className="fas fa-info-circle me-2"></i>
-        <strong>Note:</strong> Your successor trustees and beneficiaries will be selected from the agents you've already added.
-        After submission, our team will contact you to confirm these details.
-      </div>
-
-    </div>
-  );
-
   // ============================================================================
   // CHILDREN PAGE (Trust, Will, Minor Child plans)
   // ============================================================================
   const renderChildrenPage = () => (
     <div className="poa-page">
-      <h2>Children Information</h2>
+      <h2>{getStepNumber('children')}. Children</h2>
       <p className="text-muted">Enter information about your children.</p>
 
       <div className="mb-3">
@@ -3690,7 +3970,7 @@ const POAForm: React.FC = () => {
             id="hasChildrenYes"
             value="yes"
             checked={formData.children_as_agents === true}
-            onChange={() => updateFormData('', 'children_as_agents', true)}
+            onChange={() => updateNestedFormData('children_as_agents', true)}
           />
           <label className="form-check-label" htmlFor="hasChildrenYes">Yes</label>
         </div>
@@ -3702,7 +3982,7 @@ const POAForm: React.FC = () => {
             id="hasChildrenNo"
             value="no"
             checked={formData.children_as_agents === false}
-            onChange={() => updateFormData('', 'children_as_agents', false)}
+            onChange={() => updateNestedFormData('children_as_agents', false)}
           />
           <label className="form-check-label" htmlFor="hasChildrenNo">No</label>
         </div>
@@ -3865,148 +4145,101 @@ const POAForm: React.FC = () => {
   );
 
   // ============================================================================
-  // TRUST SETUP PAGE (Trust plans only)
+  // RLT PAGE — Revocable Living Trust (Trust plans only)
   // ============================================================================
-  const renderTrustSetupPage = () => (
-    <div className="poa-page">
-      <h2>Trust Setup</h2>
-      <p className="text-muted">Configure your trust settings.</p>
-
-      <div className="mb-3">
-        <label className="form-label">Trust Name</label>
-        <input
-          type="text"
-          className="form-control"
-          value={formData.trust_info?.trust_name || ''}
-          onChange={(e) => updateFormData('trust_info', 'trust_name', e.target.value)}
-          placeholder="e.g., The Smith Family Living Trust"
-        />
-        <small className="text-muted">Leave blank to use default naming based on your name</small>
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Trust Type <span className="text-danger">*</span></label>
-        <select
-          className={`form-select ${errors['trust_info.trust_type'] ? 'is-invalid' : ''}`}
-          value={formData.trust_info?.trust_type || ''}
-          onChange={(e) => updateFormData('trust_info', 'trust_type', e.target.value)}
-        >
-          <option value="">Select trust type...</option>
-          <option value="revocable">Revocable Living Trust (Most Common)</option>
-          <option value="apt">Asset Protection Trust</option>
-          <option value="idgt">Intentionally Defective Grantor Trust (IDGT)</option>
-        </select>
-        {errors['trust_info.trust_type'] && <div className="invalid-feedback">{errors['trust_info.trust_type']}</div>}
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Is this an amendment to an existing trust?</label>
-        <div className="form-check">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="isAmendment"
-            value="no"
-            checked={!formData.trust_info?.is_amendment}
-            onChange={() => updateFormData('trust_info', 'is_amendment', false)}
-          />
-          <label className="form-check-label">No, this is a new trust</label>
-        </div>
-        <div className="form-check">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="isAmendment"
-            value="yes"
-            checked={formData.trust_info?.is_amendment === true}
-            onChange={() => updateFormData('trust_info', 'is_amendment', true)}
-          />
-          <label className="form-check-label">Yes, amending existing trust</label>
-        </div>
-      </div>
-    </div>
-  );
-
-  // ============================================================================
-  // TRUSTEES PAGE (Trust plans only)
-  // ============================================================================
-  const renderTrusteesPage = () => {
+  const renderRLTPage = () => {
     const isTwoPerson = formType.includes('2Person');
+    const ti = formData.trust_info;
+    const principal = getPrincipalFullName();
+    const beneficiaryOptions = getBeneficiaryOptions();
+    const trustees = ti.trustees || [];
+    const bequests = ti.specific_bequests || [];
+    const dist = ti.residuary_distribution || [];
+    const residTotal = dist.reduce((sum, d) => sum + (parseFloat(d.share_percent) || 0), 0);
+
     return (
       <div className="poa-page">
-        <h2>Trustees</h2>
-        <p className="text-muted">Designate who will manage your trust.</p>
+        <h2>{getStepNumber('rlt')}. Revocable Living Trust</h2>
+        <p className="lead text-blue"><em>Your Trust. Your Control.</em></p>
+        <p className="text-muted">
+          A Revocable Living Trust is a flexible estate planning tool that allows you to maintain full control over
+          your assets during your lifetime while providing a clear plan for how they will be managed and distributed
+          after your death. Because it is <strong>revocable</strong>, you may change it at any time while you are
+          living and mentally competent. You can:
+        </p>
+        <ul className="text-muted">
+          <li>Add or remove assets</li>
+          <li>Change beneficiaries</li>
+          <li>Update your Trustees</li>
+          <li>Revise your distribution instructions</li>
+        </ul>
+        <p className="text-muted">
+          Think of it as a living document that grows and adapts alongside your life. A well-structured trust helps
+          you:
+        </p>
+        <ul className="text-muted">
+          <li>Avoid probate</li>
+          <li>Protect your privacy</li>
+          <li>Plan for incapacity</li>
+          <li>Minimize family disputes</li>
+          <li>Maintain control over how and when your assets are distributed</li>
+        </ul>
 
-        <div className="mb-3">
-          <label className="form-label">Will you serve as your own initial trustee?</label>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="settlorAsTrustee"
-              value="yes"
-              checked={formData.trust_info?.settlor_as_trustee === true}
-              onChange={() => updateFormData('trust_info', 'settlor_as_trustee', true)}
-            />
-            <label className="form-check-label">
-              Yes{isTwoPerson ? ', both of us will serve as co-trustees' : ', I will serve as my own trustee'}
-            </label>
+        <div className="alert alert-light border">
+          <h5>Let's Start Building Your Trust</h5>
+          <p>
+            Now that you understand the purpose of a Revocable Living Trust and how it fits into your overall estate
+            plan, let's begin by entering the key information needed to set up your trust:
+          </p>
+          <ul className="mb-0">
+            <li>Who will manage it (the Trustee)</li>
+            <li>Who will benefit from it (your Beneficiaries)</li>
+            <li>Any specific instructions you'd like us to follow</li>
+          </ul>
+        </div>
+
+        {/* ---- Trustees ---- */}
+        <h4 className="mt-4 border-bottom pb-2">Trustees</h4>
+        <p className="text-muted">
+          {principal} will serve as the initial Trustee. Once you are no longer able or willing to serve, your
+          Successor Trustees will take over, in the order you list them. You may also choose Co-Trustees to serve
+          jointly, who must act by mutual consent.
+        </p>
+        {trustees.map((t, index) => (
+          <div key={index} className="card mb-2">
+            <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+              <span>{getOrdinalLabel(index)} Successor Trustee</span>
+              <button type="button" className="btn btn-sm btn-link text-white p-0" onClick={() => removeTrustee(index)}>×</button>
+            </div>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Select the person you want to serve:</label>
+                  <select className="form-select" value={t.trustee_to_serve} onChange={(e) => updateTrustee(index, 'trustee_to_serve', e.target.value)}>
+                    <option value="">Select Trustee...</option>
+                    {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                  </select>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">If you want to appoint a second person to serve at the same time, select them here:</label>
+                  <select className="form-select" value={t.second_trustee_person_to_serve} onChange={(e) => updateTrustee(index, 'second_trustee_person_to_serve', e.target.value)}>
+                    <option value="">None</option>
+                    {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="settlorAsTrustee"
-              value="no"
-              checked={formData.trust_info?.settlor_as_trustee === false}
-              onChange={() => updateFormData('trust_info', 'settlor_as_trustee', false)}
-            />
-            <label className="form-check-label">No, someone else will serve</label>
-          </div>
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Successor Trustee(s)</label>
-          <p className="text-muted small">Select from agents you've added, or add new ones on the Agents page.</p>
-          <select
-            className="form-select"
-            value={formData.trust_info?.successor_trustee || ''}
-            onChange={(e) => updateFormData('trust_info', 'successor_trustee', e.target.value)}
-          >
-            <option value="">Select successor trustee...</option>
-            {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, i) => (
-              <option key={i} value={`${party.first_name} ${party.surname}`.trim() || party.entity_name}>
-                {party.type_of_party === 'An entity' ? party.entity_name : `${party.first_name} ${party.surname}`.trim()}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="alert alert-info">
-          <i className="fas fa-info-circle me-2"></i>
-          <strong>Tip:</strong> A successor trustee manages your trust if you become incapacitated or pass away.
-          Choose someone you trust completely with financial matters.
-        </div>
-      </div>
-    );
-  };
-
-  // ============================================================================
-  // DISTRIBUTION PAGE (Trust plans only)
-  // ============================================================================
-  const renderDistributionPage = () => {
-    const isTwoPerson = formType.includes('2Person');
-    return (
-      <div className="poa-page">
-        <h2>Distribution</h2>
-        <p className="text-muted">Specify how your assets should be distributed.</p>
+        ))}
+        <button type="button" className="btn btn-outline-primary mb-2" onClick={addTrustee}>+ Add Successor Trustee</button>
+        {errors['trust_info.trustees'] && <div className="text-danger small mb-2">{errors['trust_info.trustees']}</div>}
 
         {isTwoPerson && (
-          <div className="mb-4">
-            <label className="form-label">Marital Trust Options</label>
+          <div className="mb-3 mt-3">
+            <label className="form-label">Marital Trust Option</label>
             <select
               className="form-select"
-              value={formData.trust_info?.marital_trust_type || ''}
+              value={ti.marital_trust_type || ''}
               onChange={(e) => updateFormData('trust_info', 'marital_trust_type', e.target.value)}
             >
               <option value="">Select marital trust option...</option>
@@ -4017,199 +4250,784 @@ const POAForm: React.FC = () => {
           </div>
         )}
 
+        {/* ---- Trust Specific Bequests ---- */}
+        <div className="mt-4 p-3" style={{ backgroundColor: '#FAFAFA' }}>
+          <h4 className="border-bottom pb-2">Trust Specific Bequests</h4>
+          <p className="text-muted">
+            This section allows you to make specific gifts—also known as specific bequests—to individuals or
+            organizations. These gifts can include particular items of personal property, specific amounts of money,
+            or even real estate, distributed outright after your death. Any remaining assets are handled in the
+            "Final Trust Distributions" section below.
+          </p>
+          <label className="form-label">
+            Does {principal} want to make a specific bequest of any trust property—such as a home, vehicle, jewelry,
+            or other item—to a particular person, organization, or entity?
+          </label>
+          <div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="radio" name="hasSpecificBequests" checked={ti.has_specific_bequests === true} onChange={() => updateFormData('trust_info', 'has_specific_bequests', true)} />
+              <label className="form-check-label">Yes</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="radio" name="hasSpecificBequests" checked={ti.has_specific_bequests === false} onChange={() => updateFormData('trust_info', 'has_specific_bequests', false)} />
+              <label className="form-check-label">No</label>
+            </div>
+          </div>
+
+          {ti.has_specific_bequests && (
+            <div className="mt-3">
+              <p className="text-muted">Enter details below for any specific gifts you would like to leave to a particular person or organization.</p>
+              {bequests.map((b, index) => (
+                <div key={index} className="card mb-2">
+                  <div className="card-header d-flex justify-content-between align-items-center">
+                    <span>{getOrdinalLabel(index)} Specific Bequest</span>
+                    <button type="button" className="btn btn-sm btn-link p-0" onClick={() => removeBequest(index)}>×</button>
+                  </div>
+                  <div className="card-body">
+                    <div className="mb-3">
+                      <label className="form-label">Is this bequest to multiple recipients?</label>
+                      <div>
+                        <div className="form-check form-check-inline">
+                          <input className="form-check-input" type="radio" name={`multiple_recipients_${index}`} checked={b.multiple_recipients === 'Yes'} onChange={() => updateBequest(index, 'multiple_recipients', 'Yes')} />
+                          <label className="form-check-label">Yes</label>
+                        </div>
+                        <div className="form-check form-check-inline">
+                          <input className="form-check-input" type="radio" name={`multiple_recipients_${index}`} checked={b.multiple_recipients !== 'Yes'} onChange={() => updateBequest(index, 'multiple_recipients', 'No')} />
+                          <label className="form-check-label">No</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">Recipient:</label>
+                        <select className="form-select" value={b.recipient} onChange={(e) => updateBequest(index, 'recipient', e.target.value)}>
+                          <option value="">Select recipient...</option>
+                          {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                        </select>
+                      </div>
+                      {b.multiple_recipients === 'Yes' && (
+                        <div className="col-md-6 mb-3">
+                          <label className="form-label">Second recipient:</label>
+                          <select className="form-select" value={b.second_recipient} onChange={(e) => updateBequest(index, 'second_recipient', e.target.value)}>
+                            <option value="">Select recipient...</option>
+                            {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                          </select>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mb-2">
+                      <label className="form-label">Describe the gift or item:</label>
+                      <textarea className="form-control" rows={2} value={b.description} onChange={(e) => updateBequest(index, 'description', e.target.value)} placeholder="e.g., My grandmother's ring, the family home at 123 Main St, $10,000" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button type="button" className="btn btn-outline-primary" onClick={addBequest}>+ Add Specific Bequest</button>
+              {errors['trust_info.specific_bequests'] && <div className="text-danger small mt-2">{errors['trust_info.specific_bequests']}</div>}
+            </div>
+          )}
+        </div>
+
+        {/* ---- Final Trust Distributions ---- */}
+        <h4 className="mt-4 border-bottom pb-2">Final Trust Distributions</h4>
+        <p className="text-muted">
+          Once you pass away, any remaining assets in your trust—after specific gifts have been distributed—will be
+          divided among the beneficiaries you list below. Each beneficiary's share may be given outright, or held in
+          trust and distributed once they reach a certain age. All percentages must total 100%.
+        </p>
+        <label className="form-label">Will the final trust distribution be equal among all recipients?</label>
         <div className="mb-3">
-          <label className="form-label">Specific Bequests</label>
-          <textarea
-            className="form-control"
-            rows={4}
-            value={formData.trust_info?.specific_bequests || ''}
-            onChange={(e) => updateFormData('trust_info', 'specific_bequests', e.target.value)}
-            placeholder="List any specific items you wish to leave to specific people (e.g., 'My grandmother's ring to my daughter Jane')"
-          />
+          <div className="form-check form-check-inline">
+            <input className="form-check-input" type="radio" name="distributionsEqual" checked={ti.distributions_equal === true} onChange={() => updateFormData('trust_info', 'distributions_equal', true)} />
+            <label className="form-check-label">Yes</label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input className="form-check-input" type="radio" name="distributionsEqual" checked={ti.distributions_equal === false} onChange={() => updateFormData('trust_info', 'distributions_equal', false)} />
+            <label className="form-check-label">No</label>
+          </div>
+        </div>
+
+        {dist.map((d, index) => (
+          <div key={index} className="card mb-2">
+            <div className="card-header d-flex justify-content-between align-items-center">
+              <span>Beneficiary {index + 1}</span>
+              <button type="button" className="btn btn-sm btn-link p-0" onClick={() => removeDistribution(index)}>×</button>
+            </div>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-4 mb-3">
+                  <label className="form-label">Beneficiary:</label>
+                  <select className="form-select" value={d.recipient} onChange={(e) => updateDistribution(index, 'recipient', e.target.value)}>
+                    <option value="">Select beneficiary...</option>
+                    {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                  </select>
+                </div>
+                {!ti.distributions_equal && (
+                  <div className="col-md-3 mb-3">
+                    <label className="form-label">Share (%)</label>
+                    <input type="number" min={0} max={100} className="form-control" value={d.share_percent} onChange={(e) => updateDistribution(index, 'share_percent', e.target.value)} />
+                  </div>
+                )}
+                <div className="col-md-3 mb-3">
+                  <label className="form-label">How received:</label>
+                  <select className="form-select" value={d.how_receive} onChange={(e) => updateDistribution(index, 'how_receive', e.target.value)}>
+                    <option value="Outright">Outright</option>
+                    <option value="In Trust">In Trust (age-based)</option>
+                  </select>
+                </div>
+                {d.how_receive === 'In Trust' && (
+                  <div className="col-md-2 mb-3">
+                    <label className="form-label">Until age</label>
+                    <input type="number" min={18} max={99} className="form-control" value={d.trust_until_age} onChange={(e) => updateDistribution(index, 'trust_until_age', e.target.value)} placeholder="25" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+        <button type="button" className="btn btn-outline-primary" onClick={addDistribution}>+ Add Beneficiary to Receive Final Distribution</button>
+        {!ti.distributions_equal && dist.length > 0 && (
+          <div className={`small mt-2 ${Math.abs(residTotal - 100) < 0.01 ? 'text-success' : 'text-danger'}`}>
+            Total: {Math.round(residTotal * 100) / 100}% {Math.abs(residTotal - 100) < 0.01 ? '✓' : '(must equal 100%)'}
+          </div>
+        )}
+        {errors['trust_info.residuary_distribution'] && <div className="text-danger small mt-2">{errors['trust_info.residuary_distribution']}</div>}
+
+        <div className="alert alert-info mt-3">
+          <strong>Contingent Under-Age Beneficiary Trust.</strong> If any beneficiary is under the age you specify at
+          the time a distribution would be made, their share will automatically remain in trust for their benefit
+          until they reach that age. In the meantime, the Trustee may use the funds for the beneficiary's health,
+          education, maintenance, and support, protecting the inheritance until the beneficiary is mature enough to
+          manage it responsibly.
+        </div>
+
+        {/* ---- Tutor / Under-Tutor ---- */}
+        <h4 className="mt-4 border-bottom pb-2">Tutor and Under-Tutor (Legal Guardian for Minor Children)</h4>
+        <p className="text-muted">
+          A Tutor is the person who will be legally responsible for the care and upbringing of your minor children if
+          you (and the other parent) are unable to do so. Under Louisiana law, you may also name an Under-Tutor, who
+          serves as a safeguard by overseeing the Tutor's management of the child's affairs.
+        </p>
+        <p className="text-muted">
+          If the other natural parent is still living, they will generally have the first legal right to serve as
+          Tutor. For that reason, you typically would not list the other parent here—only the person you want to serve
+          if neither parent is able to.
+        </p>
+        <div className="form-check mb-3">
+          <input className="form-check-input" type="checkbox" id="appointTutor" checked={ti.appoint_tutor === true} onChange={(e) => updateFormData('trust_info', 'appoint_tutor', e.target.checked)} />
+          <label className="form-check-label" htmlFor="appointTutor">Appoint a Tutor and Under-Tutor to care for minor children.</label>
+        </div>
+        {ti.appoint_tutor && (
+          <>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Select the Tutor for your minor children</label>
+                <select className="form-select" value={ti.tutor} onChange={(e) => updateFormData('trust_info', 'tutor', e.target.value)}>
+                  <option value="">Select Tutor...</option>
+                  {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                </select>
+              </div>
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Select the Under-Tutor for your minor children</label>
+                <select className="form-select" value={ti.under_tutor} onChange={(e) => updateFormData('trust_info', 'under_tutor', e.target.value)}>
+                  <option value="">Select Under-Tutor...</option>
+                  {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                </select>
+              </div>
+              {errors['trust_info.tutor'] && <div className="text-danger small">{errors['trust_info.tutor']}</div>}
+            </div>
+
+            {/* ---- Successor Tutors ---- */}
+            <label className="form-label">Do you want to appoint successor Tutors for the Trust?</label>
+            <div className="mb-3">
+              <div className="form-check form-check-inline">
+                <input className="form-check-input" type="radio" name="hasSuccessorTutors" checked={ti.has_successor_tutors === 'Yes'} onChange={() => updateFormData('trust_info', 'has_successor_tutors', 'Yes')} />
+                <label className="form-check-label">Yes</label>
+              </div>
+              <div className="form-check form-check-inline">
+                <input className="form-check-input" type="radio" name="hasSuccessorTutors" checked={ti.has_successor_tutors === 'No'} onChange={() => updateFormData('trust_info', 'has_successor_tutors', 'No')} />
+                <label className="form-check-label">No</label>
+              </div>
+            </div>
+
+            {ti.has_successor_tutors === 'Yes' && (
+              <div className="mb-3">
+                {(ti.successor_tutors || []).map((s, index) => (
+                  <div key={index} className="card mb-2">
+                    <div className="card-header d-flex justify-content-between align-items-center">
+                      <span>{getOrdinalLabel(index)} Successor Tutor</span>
+                      <button type="button" className="btn btn-sm btn-link p-0" onClick={() => removeSuccessorTutor(index)}>×</button>
+                    </div>
+                    <div className="card-body">
+                      <label className="form-label">Select the person you want to serve:</label>
+                      <select className="form-select" value={s.successor_tutor_to_serve} onChange={(e) => updateSuccessorTutor(index, e.target.value)}>
+                        <option value="">Select Successor Tutor...</option>
+                        {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                      </select>
+                    </div>
+                  </div>
+                ))}
+                <button type="button" className="btn btn-outline-primary" onClick={addSuccessorTutor}>
+                  + Add {(ti.successor_tutors || []).length === 0 ? 'First' : 'Another'} Successor Tutor
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
+  };
+
+  // ============================================================================
+  // DOR PAGE — Donation of Residence (Trust plans only)
+  // ============================================================================
+  const renderDORPage = () => {
+    const dor = formData.dor;
+    const hasLegal = dor.have_full_legal_description_for_home;
+    return (
+      <div className="poa-page">
+        <h2>{getStepNumber('dor')}. Donation of Residence</h2>
+        <p className="text-muted">
+          The process of transferring assets into your trust is commonly referred to as "trust funding." In order for
+          your trust to function properly and avoid probate, it must be properly funded with your assets.
+        </p>
+        <p className="text-muted">
+          As part of your GeauxPlans Trust-Based Estate Plan, we will prepare one Act of Donation for a Louisiana
+          residence—specifically, Louisiana immovable property (real estate). This deed will include a reserved usufruct
+          in favor of the donor(s), meaning you retain the right to use and enjoy the home during your lifetime. This
+          approach is designed to preserve the Louisiana homestead exemption and support seamless integration into your
+          Revocable Living Trust.
+        </p>
+        <p className="text-muted">
+          <strong>Please note:</strong> This deed is limited to property located in Louisiana. Out-of-state real estate
+          is not eligible for this donation deed and may require alternative or supplemental trust funding methods, which
+          can be discussed with an attorney or title company.
+        </p>
+
+        <h4 className="mt-4 border-bottom pb-2">Act of Donation for Home</h4>
+
+        <div className="mb-3">
+          <label className="form-label">In which State is the property located?</label>
+          <input type="text" className="form-control" value="Louisiana" readOnly disabled />
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Residuary Distribution</label>
-          <p className="text-muted small">After specific bequests, how should the remainder be distributed?</p>
-          <textarea
-            className="form-control"
-            rows={3}
-            value={formData.trust_info?.residuary_distribution || ''}
-            onChange={(e) => updateFormData('trust_info', 'residuary_distribution', e.target.value)}
-            placeholder="e.g., Equally among my children, or specific percentages"
+          <label className="form-label">Parish or County <span className="text-danger">*</span></label>
+          <input
+            type="text"
+            className={`form-control ${errors['dor.parish_where_home_is_located'] ? 'is-invalid' : ''}`}
+            value={dor.parish_where_home_is_located}
+            onChange={(e) => updateFormData('dor', 'parish_where_home_is_located', e.target.value)}
           />
+          {errors['dor.parish_where_home_is_located'] && <div className="invalid-feedback">{errors['dor.parish_where_home_is_located']}</div>}
+        </div>
+
+        <div className="alert alert-light border">
+          <p>
+            To complete the Act of Donation, we must include the full legal description of your property. An abbreviated
+            version—like the one found on your tax assessor's notice—is not sufficient.
+          </p>
+          <p className="mb-1">You can typically find the full legal description in documents such as:</p>
+          <ul className="mb-2">
+            <li>Your original act of sale</li>
+            <li>A prior act of donation</li>
+            <li>A judgment of possession or other recorded conveyance document</li>
+            <li>A previously prepared deed</li>
+          </ul>
+          <p className="mb-0">
+            If you don't currently have the full legal description, select "No". You can still move forward—you can add
+            the legal description later as an Exhibit once it becomes available.
+          </p>
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Do You Have the Full Legal Description for Your Home? <span className="text-danger">*</span></label>
+          <select
+            className="form-select"
+            value={hasLegal}
+            onChange={(e) => updateFormData('dor', 'have_full_legal_description_for_home', e.target.value)}
+          >
+            <option value="">Select...</option>
+            <option value="Yes, I have the complete legal description">Yes, I have the complete legal description</option>
+            <option value="No, I do not have a complete legal description">No, I do not have a complete legal description</option>
+          </select>
+        </div>
+
+        {hasLegal === 'Yes, I have the complete legal description' && (
+          <div className="mb-3">
+            <label className="form-label">Insert full legal description here: <span className="text-danger">*</span></label>
+            <textarea
+              className={`form-control ${errors['dor.full_legal_description'] ? 'is-invalid' : ''}`}
+              rows={5}
+              value={dor.full_legal_description}
+              onChange={(e) => updateFormData('dor', 'full_legal_description', e.target.value)}
+            />
+            {errors['dor.full_legal_description'] && <div className="invalid-feedback">{errors['dor.full_legal_description']}</div>}
+          </div>
+        )}
+
+        {hasLegal === 'No, I do not have a complete legal description' && (
+          <div className="p-3" style={{ backgroundColor: '#FAFAFA' }}>
+            <strong>You must complete these steps later:</strong>
+            <ul className="mb-0">
+              <li>Obtain a copy of your full legal description (from your deed, judgment of possession, or other conveyance document).</li>
+              <li>Ensure it is typed or scanned clearly on a separate page labeled <em>Exhibit A</em>.</li>
+              <li>This page will be attached to and recorded with your Act of Donation, which references Exhibit A as the source of the legal property description.</li>
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ============================================================================
+  // EXECUTORS PAGE (Will &amp; Trust plans)
+  // ============================================================================
+  const renderExecutorsPage = () => {
+    const wi = formData.will_info;
+    const isTrust = formType.includes('trustBased');
+    const isTwoPerson = formType.includes('2Person');
+
+    const clientName = getPrincipalFullName();
+    const spouseName = [formData.spouse_info.first_name, formData.spouse_info.middle_name, formData.spouse_info.surname]
+      .filter(Boolean).join(' ') || 'Spouse';
+
+    const renderExecutorSection = (principal: ExecutorPrincipal) => {
+      const isSpouse = principal === 'spouse';
+      const f = execFields(principal);
+      const name = isSpouse ? spouseName : clientName;
+      const otherName = isSpouse ? clientName : spouseName;
+      const options = getExecutorOptions(principal);
+      const initialExecs = (wi[f.initial] as Array<{ initial_executor: string; co_executor: string }>) || [];
+      const successorExecs = (wi[f.successor] as Array<{ successor_agent_to_serve: string; second_successor_coagent_to_serve: string }>) || [];
+      const hasSuccessorField = isSpouse ? 'spouse_has_successor_executors' : 'has_successor_executors';
+      const hasSuccessor = wi[hasSuccessorField] as string;
+      const shortcutField = isSpouse ? 'name_first_principal_as_executor' : 'name_second_principal_as_executor';
+      const shortcut = wi[shortcutField] as string;
+      const errorKey = isSpouse ? 'will_info.spouse_initial_executors' : 'will_info.initial_executors';
+
+      const setShortcutYes = () => {
+        updateNestedFormData(`will_info.${shortcutField}`, 'Yes');
+        setFormData(prev => ({
+          ...prev,
+          will_info: syncExecutorSingles(
+            { ...prev.will_info, [f.initial]: [{ initial_executor: otherName, co_executor: '' }] },
+            principal,
+          ),
+        }));
+      };
+      const setShortcutNo = () => {
+        updateNestedFormData(`will_info.${shortcutField}`, 'No');
+        setFormData(prev => {
+          const rows = (prev.will_info[f.initial] as Array<{ initial_executor: string; co_executor: string }>) || [];
+          const cleared = rows.map((r) => r.initial_executor === otherName ? { ...r, initial_executor: '' } : r);
+          return { ...prev, will_info: syncExecutorSingles({ ...prev.will_info, [f.initial]: cleared }, principal) };
+        });
+      };
+
+      return (
+        <React.Fragment key={principal}>
+          {/* ---- Initial Executors ---- */}
+          <h4 className="mt-4 border-bottom pb-2">Executors in {name}'s Will</h4>
+          {isTrust && (
+            <p className="text-muted">
+              The only decision you need to make for your Pourover Will is the selection of your Independent Executor.
+              This is the person responsible for opening a Louisiana succession, if necessary, to transfer omitted assets
+              into your Revocable Living Trust.
+            </p>
+          )}
+          <p className="text-muted">
+            The Executor(s) are the person or people {name} wants to manage the distribution of {name}'s estate
+            after having passed. {name} may select Co-Executors (more than one person) to serve at the same time.
+            Decisions of Co-Executors would be made jointly by mutual consent.
+          </p>
+          <p className="text-muted">
+            This {isTrust ? 'Pourover Will' : 'Will'} provides for Independent Administration, which means {name}'s
+            Executors will have the ability to act without pre-approval or permission of a Court. The initial Executor
+            will serve first; you may select one initial Executor to serve alone, or two initial Co-Executors to serve at
+            the same time.
+          </p>
+
+          {/* ---- Sole-executor shortcut (2-person only) ---- */}
+          {isTwoPerson && (
+            <div className="mb-3">
+              <label className="form-label">Does {name} want to name {otherName} as their sole executor, if {otherName} survives them?</label>
+              <div>
+                <div className="form-check form-check-inline">
+                  <input className="form-check-input" type="radio" name={`soleExec_${principal}`} checked={shortcut === 'Yes'} onChange={setShortcutYes} />
+                  <label className="form-check-label">Yes</label>
+                </div>
+                <div className="form-check form-check-inline">
+                  <input className="form-check-input" type="radio" name={`soleExec_${principal}`} checked={shortcut === 'No'} onChange={setShortcutNo} />
+                  <label className="form-check-label">No</label>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {(!isTwoPerson || shortcut === 'No') && (
+            <>
+              {initialExecs.map((ex, index) => (
+                <div key={index} className="card mb-2">
+                  <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <span>{getOrdinalLabel(index)} Initial Executor</span>
+                    <button type="button" className="btn btn-sm btn-link text-white p-0" onClick={() => removeInitialExecutor(index, principal)}>×</button>
+                  </div>
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">Select the person you want to serve as Executor:</label>
+                        <select className="form-select" value={ex.initial_executor} onChange={(e) => updateInitialExecutor(index, 'initial_executor', e.target.value, principal)}>
+                          <option value="">Select Executor...</option>
+                          {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                        </select>
+                      </div>
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">If you want to appoint a Co-Executor to serve at the same time, select them here:</label>
+                        <select className="form-select" value={ex.co_executor} onChange={(e) => updateInitialExecutor(index, 'co_executor', e.target.value, principal)}>
+                          <option value="">None</option>
+                          {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button type="button" className="btn btn-outline-primary mb-2" onClick={() => addInitialExecutor(principal)}>+ Add Initial Executor</button>
+              {errors[errorKey] && <div className="text-danger small mb-2">{errors[errorKey]}</div>}
+            </>
+          )}
+
+          {/* ---- Successor Executors ---- */}
+          <h4 className="mt-4 border-bottom pb-2">Successor Executors</h4>
+          <p className="text-muted">
+            Your successor Executors will serve if all of the initial Executors are unable to serve. These successor
+            Executors will serve in the order they are entered.
+          </p>
+          <label className="form-label">Do you want to appoint successor Executors for {name}'s Will?</label>
+          <div className="mb-3">
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="radio" name={`hasSuccessorExecutors_${principal}`} checked={hasSuccessor === 'Yes'} onChange={() => updateFormData('will_info', hasSuccessorField, 'Yes')} />
+              <label className="form-check-label">Yes</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="radio" name={`hasSuccessorExecutors_${principal}`} checked={hasSuccessor === 'No'} onChange={() => updateFormData('will_info', hasSuccessorField, 'No')} />
+              <label className="form-check-label">No</label>
+            </div>
+          </div>
+
+          {hasSuccessor === 'Yes' && (
+            <div>
+              {successorExecs.map((ex, index) => (
+                <div key={index} className="card mb-2">
+                  <div className="card-header d-flex justify-content-between align-items-center">
+                    <span>{getOrdinalLabel(index)} Successor Executor</span>
+                    <button type="button" className="btn btn-sm btn-link p-0" onClick={() => removeSuccessorExecutor(index, principal)}>×</button>
+                  </div>
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">Select the person you want to serve:</label>
+                        <select className="form-select" value={ex.successor_agent_to_serve} onChange={(e) => updateSuccessorExecutor(index, 'successor_agent_to_serve', e.target.value, principal)}>
+                          <option value="">Select Executor...</option>
+                          {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                        </select>
+                      </div>
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">If you want to appoint a second person to serve at the same time, select them here:</label>
+                        <select className="form-select" value={ex.second_successor_coagent_to_serve} onChange={(e) => updateSuccessorExecutor(index, 'second_successor_coagent_to_serve', e.target.value, principal)}>
+                          <option value="">None</option>
+                          {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button type="button" className="btn btn-outline-primary" onClick={() => addSuccessorExecutor(principal)}>+ Add Successor Executor</button>
+            </div>
+          )}
+        </React.Fragment>
+      );
+    };
+
+    return (
+      <div className="poa-page">
+        {isTrust ? (
+          <>
+            <h2>{getStepNumber('executors')}. Pourover Last Will and Testament</h2>
+            <p className="text-muted">
+              A Pourover Last Will and Testament is an ancillary document that accompanies a trust-based estate plan.
+              Its primary function is to serve as a legal "catch-all," ensuring that any probate assets not transferred
+              to your trust during your lifetime are "poured over" into your trust at death, through the probate process.
+            </p>
+            <p className="text-muted">
+              Assets governed by beneficiary designation—such as life insurance policies, retirement accounts, and
+              annuities—are considered non-probate assets. These do not pass through your Will, and instead go directly
+              to the named beneficiaries. The Pourover Will only applies to probate assets, meaning assets that are not
+              titled in the name of your trust and not governed by a beneficiary designation at the time of your death.
+            </p>
+            <p className="text-muted">
+              Think of it like a decanter: properly funded trusts handle the distribution of most of your estate, but
+              if anything is left out, the Pourover Will acts as a legal mechanism to transfer those remaining assets
+              into the trust through probate.
+            </p>
+            <p className="text-muted">
+              A well-funded trust typically avoids the need for a Pourover Will entirely. However, we include it as a
+              precautionary measure—a legal backstop to keep your trust at the center of your estate plan.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2>{getStepNumber('executors')}. Executors</h2>
+            <p className="text-muted">
+              Your Executor is responsible for administering your estate—opening a Louisiana succession if necessary,
+              paying debts and taxes, and distributing your assets according to your Will.
+            </p>
+          </>
+        )}
+
+        {renderExecutorSection('client')}
+        {isTwoPerson && renderExecutorSection('spouse')}
+
+        {isTrust && (
+          <div className="alert alert-light border mt-3">
+            <i className="fas fa-info-circle me-2"></i>
+            A probate will not be required, and there is no need to use your Pourover Will or to appoint an Executor if
+            your Revocable Trust is properly funded, so these appointments are simply a safety measure.
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ============================================================================
+  // GUARDIANS PAGE (Will & Minor Child plans)
+  // ============================================================================
+  const renderGuardiansPage = () => {
+    const guardianOptions = getBeneficiaryOptions();
+    return (
+      <div className="poa-page">
+        <h2>{getStepNumber('guardians')}. Tutor and Under-Tutor (Legal Guardian for Minor Children)</h2>
+        <p className="text-muted">
+          If you have children under the age of 18, you may appoint someone to serve as Tutor (legal guardian) in the
+          event you pass away or become unable to care for your child.
+        </p>
+        <p className="text-muted">
+          Under Louisiana law, the child's surviving parent is automatically the "natural Tutor" and has priority to
+          serve. Therefore, any Tutor you name will only act if the child's other parent is deceased, unwilling, or
+          unable to serve in that role. For that reason, do not list the other parent as your nominated Tutor.
+        </p>
+        <p className="text-muted">
+          In addition, Louisiana law requires you to name an Under-Tutor, who serves as a safeguard and must consent to
+          certain decisions made by the Tutor. If you do not nominate an Under-Tutor, the Court will appoint one to
+          serve alongside the Tutor.
+        </p>
+
+        <h4 className="mt-4 border-bottom pb-2">Tutor and Under-Tutor</h4>
+
+        <div className="mb-3">
+          <label className="form-label">Select the tutor for Your Minor Children</label>
+          <select
+            className="form-select"
+            value={formData.will_info?.primary_guardian || ''}
+            onChange={(e) => updateFormData('will_info', 'primary_guardian', e.target.value)}
+          >
+            <option value="">Select Tutor...</option>
+            {guardianOptions.map((n) => (<option key={n} value={n}>{n}</option>))}
+          </select>
+          <small className="text-muted">
+            This is your first-choice guardian to care for your minor children if you pass away while they are under
+            age 18.
+          </small>
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Select the Under-Tutor for Your Minor Children</label>
+          <select
+            className="form-select"
+            value={formData.will_info?.backup_guardian || ''}
+            onChange={(e) => updateFormData('will_info', 'backup_guardian', e.target.value)}
+          >
+            <option value="">Select Under-Tutor...</option>
+            {guardianOptions.map((n) => (<option key={n} value={n}>{n}</option>))}
+          </select>
+          <small className="text-muted">This person must approve certain actions taken by the Tutor.</small>
         </div>
       </div>
     );
   };
 
   // ============================================================================
-  // EXECUTORS PAGE (Will plans only)
-  // ============================================================================
-  const renderExecutorsPage = () => (
-    <div className="poa-page">
-      <h2>Executors</h2>
-      <p className="text-muted">Designate who will administer your estate.</p>
-
-      <div className="mb-3">
-        <label className="form-label">Primary Executor</label>
-        <select
-          className="form-select"
-          value={formData.will_info?.primary_executor || ''}
-          onChange={(e) => updateFormData('will_info', 'primary_executor', e.target.value)}
-        >
-          <option value="">Select primary executor...</option>
-          {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, i) => (
-            <option key={i} value={`${party.first_name} ${party.surname}`.trim() || party.entity_name}>
-              {party.type_of_party === 'An entity' ? party.entity_name : `${party.first_name} ${party.surname}`.trim()}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Successor Executor</label>
-        <select
-          className="form-select"
-          value={formData.will_info?.successor_executor || ''}
-          onChange={(e) => updateFormData('will_info', 'successor_executor', e.target.value)}
-        >
-          <option value="">Select successor executor...</option>
-          {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, i) => (
-            <option key={i} value={`${party.first_name} ${party.surname}`.trim() || party.entity_name}>
-              {party.type_of_party === 'An entity' ? party.entity_name : `${party.first_name} ${party.surname}`.trim()}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="alert alert-info">
-        <i className="fas fa-info-circle me-2"></i>
-        <strong>What does an Executor do?</strong> The executor is responsible for managing your estate after you pass,
-        including paying debts, filing taxes, and distributing assets according to your will.
-      </div>
-    </div>
-  );
-
-  // ============================================================================
-  // GUARDIANS PAGE (Will & Minor Child plans)
-  // ============================================================================
-  const renderGuardiansPage = () => (
-    <div className="poa-page">
-      <h2>Guardians for Minor Children</h2>
-      <p className="text-muted">Designate who will care for your minor children if needed.</p>
-
-      <div className="mb-3">
-        <label className="form-label">Primary Guardian (Tutor)</label>
-        <select
-          className="form-select"
-          value={formData.will_info?.primary_guardian || ''}
-          onChange={(e) => updateFormData('will_info', 'primary_guardian', e.target.value)}
-        >
-          <option value="">Select primary guardian...</option>
-          {(formData.people_or_entities_who_will_serve_as_agents?.parties || [])
-            .filter(p => p.type_of_party === 'An individual person')
-            .map((party, i) => (
-              <option key={i} value={`${party.first_name} ${party.surname}`.trim()}>
-                {`${party.first_name} ${party.surname}`.trim()}
-              </option>
-            ))}
-        </select>
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Backup Guardian (Under-Tutor)</label>
-        <select
-          className="form-select"
-          value={formData.will_info?.backup_guardian || ''}
-          onChange={(e) => updateFormData('will_info', 'backup_guardian', e.target.value)}
-        >
-          <option value="">Select backup guardian...</option>
-          {(formData.people_or_entities_who_will_serve_as_agents?.parties || [])
-            .filter(p => p.type_of_party === 'An individual person')
-            .map((party, i) => (
-              <option key={i} value={`${party.first_name} ${party.surname}`.trim()}>
-                {`${party.first_name} ${party.surname}`.trim()}
-              </option>
-            ))}
-        </select>
-      </div>
-
-      <div className="alert alert-warning">
-        <i className="fas fa-exclamation-triangle me-2"></i>
-        <strong>Important:</strong> Guardian designations only apply to minor children (under 18).
-        Make sure to discuss this responsibility with your chosen guardians beforehand.
-      </div>
-    </div>
-  );
-
-  // ============================================================================
   // WILL DISTRIBUTION PAGE (Will plans only)
   // ============================================================================
-  const renderWillDistributionPage = () => (
-    <div className="poa-page">
-      <h2>Will Distribution</h2>
-      <p className="text-muted">Specify how your assets should be distributed in your will.</p>
+  const renderWillDistributionPage = () => {
+    const wi = formData.will_info;
+    const principal = getPrincipalFullName();
+    const beneficiaryOptions = getBeneficiaryOptions();
+    const bequests = wi.specific_bequests || [];
+    const dist = wi.residuary_distribution || [];
+    const residTotal = dist.reduce((sum, d) => sum + (parseFloat(d.share_percent) || 0), 0);
 
-      <div className="mb-3">
-        <label className="form-label">Do you want to include specific bequests?</label>
-        <div className="form-check">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="hasSpecificBequests"
-            value="yes"
-            checked={formData.will_info?.has_specific_bequests === true}
-            onChange={() => updateFormData('will_info', 'has_specific_bequests', true)}
-          />
-          <label className="form-check-label">Yes, I have specific items to leave to specific people</label>
-        </div>
-        <div className="form-check">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="hasSpecificBequests"
-            value="no"
-            checked={formData.will_info?.has_specific_bequests === false}
-            onChange={() => updateFormData('will_info', 'has_specific_bequests', false)}
-          />
-          <label className="form-check-label">No, distribute everything according to my residuary plan</label>
-        </div>
-      </div>
+    return (
+      <div className="poa-page">
+        <h2>{getStepNumber('will_distribution')}. Will Distribution</h2>
+        <p className="text-muted">
+          Specify how {principal}'s assets should be distributed. First make any specific gifts to particular people
+          or organizations, then divide everything that remains (the residuary estate) among your beneficiaries.
+        </p>
 
-      {formData.will_info?.has_specific_bequests && (
+        {/* ---- Specific Bequests ---- */}
+        <div className="mt-4 p-3" style={{ backgroundColor: '#FAFAFA' }}>
+          <h4 className="border-bottom pb-2">Specific Bequests</h4>
+          <p className="text-muted">
+            This section lets you make specific gifts—also known as specific bequests—to individuals or organizations.
+            These gifts can include particular items of personal property, specific amounts of money, or real estate,
+            distributed outright after your death. Anything remaining is handled in the "Residuary Estate" section below.
+          </p>
+          <label className="form-label">
+            Does {principal} want to make a specific bequest of any property—such as a home, vehicle, jewelry, or other
+            item—to a particular person, organization, or entity?
+          </label>
+          <div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="radio" name="willHasSpecificBequests" checked={wi.has_specific_bequests === true} onChange={() => updateFormData('will_info', 'has_specific_bequests', true)} />
+              <label className="form-check-label">Yes</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="radio" name="willHasSpecificBequests" checked={wi.has_specific_bequests === false} onChange={() => updateFormData('will_info', 'has_specific_bequests', false)} />
+              <label className="form-check-label">No</label>
+            </div>
+          </div>
+
+          {wi.has_specific_bequests && (
+            <div className="mt-3">
+              <p className="text-muted">Enter details below for any specific gifts you would like to leave to a particular person or organization.</p>
+              {bequests.map((b, index) => (
+                <div key={index} className="card mb-2">
+                  <div className="card-header d-flex justify-content-between align-items-center">
+                    <span>{getOrdinalLabel(index)} Specific Bequest</span>
+                    <button type="button" className="btn btn-sm btn-link p-0" onClick={() => removeWillBequest(index)}>×</button>
+                  </div>
+                  <div className="card-body">
+                    <div className="mb-3">
+                      <label className="form-label">Is this bequest to multiple recipients?</label>
+                      <div>
+                        <div className="form-check form-check-inline">
+                          <input className="form-check-input" type="radio" name={`will_multiple_recipients_${index}`} checked={b.multiple_recipients === 'Yes'} onChange={() => updateWillBequest(index, 'multiple_recipients', 'Yes')} />
+                          <label className="form-check-label">Yes</label>
+                        </div>
+                        <div className="form-check form-check-inline">
+                          <input className="form-check-input" type="radio" name={`will_multiple_recipients_${index}`} checked={b.multiple_recipients !== 'Yes'} onChange={() => updateWillBequest(index, 'multiple_recipients', 'No')} />
+                          <label className="form-check-label">No</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">Recipient:</label>
+                        <select className="form-select" value={b.recipient} onChange={(e) => updateWillBequest(index, 'recipient', e.target.value)}>
+                          <option value="">Select recipient...</option>
+                          {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                        </select>
+                      </div>
+                      {b.multiple_recipients === 'Yes' && (
+                        <div className="col-md-6 mb-3">
+                          <label className="form-label">Second recipient:</label>
+                          <select className="form-select" value={b.second_recipient} onChange={(e) => updateWillBequest(index, 'second_recipient', e.target.value)}>
+                            <option value="">Select recipient...</option>
+                            {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                          </select>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mb-2">
+                      <label className="form-label">Describe the gift or item:</label>
+                      <textarea className="form-control" rows={2} value={b.description} onChange={(e) => updateWillBequest(index, 'description', e.target.value)} placeholder="e.g., My grandmother's ring, the family home at 123 Main St, $10,000" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button type="button" className="btn btn-outline-primary" onClick={addWillBequest}>+ Add Specific Bequest</button>
+              {errors['will_info.specific_bequests'] && <div className="text-danger small mt-2">{errors['will_info.specific_bequests']}</div>}
+            </div>
+          )}
+        </div>
+
+        {/* ---- Residuary Estate ---- */}
+        <h4 className="mt-4 border-bottom pb-2">Residuary Estate</h4>
+        <p className="text-muted">
+          Your residuary estate is everything that remains after specific gifts have been distributed. It will be
+          divided among the beneficiaries you list below. Each beneficiary's share may be given outright, or held in
+          trust and distributed once they reach a certain age. All percentages must total 100%.
+        </p>
+        <label className="form-label">Will the residuary estate be distributed equally among all beneficiaries?</label>
         <div className="mb-3">
-          <label className="form-label">Specific Bequests</label>
-          <textarea
-            className="form-control"
-            rows={4}
-            value={formData.will_info?.specific_bequests || ''}
-            onChange={(e) => updateFormData('will_info', 'specific_bequests', e.target.value)}
-            placeholder="List specific items and recipients (e.g., 'My jewelry collection to my daughter Jane')"
-          />
+          <div className="form-check form-check-inline">
+            <input className="form-check-input" type="radio" name="willDistributionsEqual" checked={wi.distributions_equal === true} onChange={() => updateFormData('will_info', 'distributions_equal', true)} />
+            <label className="form-check-label">Yes</label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input className="form-check-input" type="radio" name="willDistributionsEqual" checked={wi.distributions_equal === false} onChange={() => updateFormData('will_info', 'distributions_equal', false)} />
+            <label className="form-check-label">No</label>
+          </div>
         </div>
-      )}
 
-      <div className="mb-3">
-        <label className="form-label">Residuary Estate Distribution</label>
-        <textarea
-          className="form-control"
-          rows={3}
-          value={formData.will_info?.residuary_distribution || ''}
-          onChange={(e) => updateFormData('will_info', 'residuary_distribution', e.target.value)}
-          placeholder="e.g., Equally among my children, or specific percentages"
-        />
-        <small className="text-muted">This covers everything not specifically bequeathed above.</small>
+        {dist.map((d, index) => (
+          <div key={index} className="card mb-2">
+            <div className="card-header d-flex justify-content-between align-items-center">
+              <span>Beneficiary {index + 1}</span>
+              <button type="button" className="btn btn-sm btn-link p-0" onClick={() => removeWillDistribution(index)}>×</button>
+            </div>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-4 mb-3">
+                  <label className="form-label">Beneficiary:</label>
+                  <select className="form-select" value={d.recipient} onChange={(e) => updateWillDistribution(index, 'recipient', e.target.value)}>
+                    <option value="">Select beneficiary...</option>
+                    {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                  </select>
+                </div>
+                {!wi.distributions_equal && (
+                  <div className="col-md-3 mb-3">
+                    <label className="form-label">Share (%)</label>
+                    <input type="number" min={0} max={100} className="form-control" value={d.share_percent} onChange={(e) => updateWillDistribution(index, 'share_percent', e.target.value)} />
+                  </div>
+                )}
+                <div className="col-md-3 mb-3">
+                  <label className="form-label">How received:</label>
+                  <select className="form-select" value={d.how_receive} onChange={(e) => updateWillDistribution(index, 'how_receive', e.target.value)}>
+                    <option value="Outright">Outright</option>
+                    <option value="In Trust">In Trust (age-based)</option>
+                  </select>
+                </div>
+                {d.how_receive === 'In Trust' && (
+                  <div className="col-md-2 mb-3">
+                    <label className="form-label">Until age</label>
+                    <input type="number" min={18} max={99} className="form-control" value={d.trust_until_age} onChange={(e) => updateWillDistribution(index, 'trust_until_age', e.target.value)} placeholder="25" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+        <button type="button" className="btn btn-outline-primary" onClick={addWillDistribution}>+ Add Residuary Beneficiary</button>
+        {!wi.distributions_equal && dist.length > 0 && (
+          <div className={`small mt-2 ${Math.abs(residTotal - 100) < 0.01 ? 'text-success' : 'text-danger'}`}>
+            Total: {Math.round(residTotal * 100) / 100}% {Math.abs(residTotal - 100) < 0.01 ? '✓' : '(must equal 100%)'}
+          </div>
+        )}
+        {errors['will_info.residuary_distribution'] && <div className="text-danger small mt-2">{errors['will_info.residuary_distribution']}</div>}
       </div>
-    </div>
-  );
+    );
+  };
 
   // ============================================================================
   // CHILDREN TRUSTS PAGE (Minor Child plans only)
   // ============================================================================
   const renderChildrenTrustsPage = () => (
     <div className="poa-page">
-      <h2>Children's Trust Provisions</h2>
+      <h2>{getStepNumber('children_trusts')}. Children's Trust Provisions</h2>
       <p className="text-muted">Configure trust provisions for your minor children.</p>
 
       <div className="mb-3">
@@ -4362,19 +5180,9 @@ const POAForm: React.FC = () => {
       return choices.map(c => labels[c] || c).join(', ') || 'None selected';
     };
 
-    // Helper to get trust type label
-    const getTrustTypeLabel = (type: string) => {
-      switch (type) {
-        case 'revocable': return 'Revocable Living Trust';
-        case 'apt': return 'Asset Protection Trust';
-        case 'idgt': return 'Intentionally Defective Grantor Trust (IDGT)';
-        default: return type || 'Not selected';
-      }
-    };
-
     return (
       <div className="poa-page">
-        <h2>8. Review</h2>
+        <h2>{getStepNumber('review')}. Review</h2>
         <p className="text-muted mb-2">
           You have completed all sections of the form. Please review your information and click "Submit Form" when ready.
         </p>
@@ -4550,28 +5358,8 @@ const POAForm: React.FC = () => {
         {/* ===== SECTION 4: TRUST DETAILS (Trust Plans Only) ===== */}
         {isTrustPlan && (
           <>
-            <h4 className="mt-4 mb-3 border-bottom pb-2">Trust Details</h4>
+            <h4 className="mt-4 mb-3 border-bottom pb-2">Revocable Living Trust</h4>
             <div className="row">
-              <div className="col-md-6 mb-3">
-                <div className="card h-100">
-                  <div className="card-header">
-                    <strong>Trust Setup</strong>
-                    <button
-                      type="button"
-                      className="btn btn-link btn-sm float-end p-0"
-                      onClick={() => setCurrentPage(pages.indexOf('trust_setup'))}
-                    >
-                      Edit
-                    </button>
-                  </div>
-                  <div className="card-body">
-                    <p className="mb-1"><strong>Trust Name:</strong> {formData.trust_info?.trust_name || 'Default (based on your name)'}</p>
-                    <p className="mb-1"><strong>Trust Type:</strong> {getTrustTypeLabel(formData.trust_info?.trust_type)}</p>
-                    <p className="mb-1"><strong>Amendment:</strong> {formData.trust_info?.is_amendment ? 'Yes (amending existing trust)' : 'No (new trust)'}</p>
-                    <p className="mb-0"><strong>Settlor as Trustee:</strong> {formData.trust_info?.settlor_as_trustee ? 'Yes' : 'No'}</p>
-                  </div>
-                </div>
-              </div>
               <div className="col-md-6 mb-3">
                 <div className="card h-100">
                   <div className="card-header">
@@ -4579,20 +5367,102 @@ const POAForm: React.FC = () => {
                     <button
                       type="button"
                       className="btn btn-link btn-sm float-end p-0"
-                      onClick={() => setCurrentPage(pages.indexOf('trustees'))}
+                      onClick={() => setCurrentPage(pages.indexOf('rlt'))}
                     >
                       Edit
                     </button>
                   </div>
                   <div className="card-body">
-                    <p className="mb-1"><strong>Successor Trustee:</strong> {formData.trust_info?.successor_trustee || 'Not selected'}</p>
-                    <p className="mb-1"><strong>Distribution Plan:</strong> {formData.trust_info?.residuary_distribution || 'Not specified'}</p>
-                    {formData.trust_info?.specific_bequests && (
-                      <p className="mb-0"><strong>Specific Bequests:</strong> {formData.trust_info.specific_bequests.substring(0, 100)}...</p>
+                    <p className="mb-1"><strong>Successor Trustees:</strong>{' '}
+                      {(formData.trust_info?.trustees || [])
+                        .map(t => [t.trustee_to_serve, t.second_trustee_person_to_serve].filter(Boolean).join(' & '))
+                        .filter(Boolean).join('; ') || 'None named'}</p>
+                    {isTwoPerson && (
+                      <p className="mb-1"><strong>Marital Trust:</strong> {formData.trust_info?.marital_trust_type || 'Not selected'}</p>
+                    )}
+                    <p className="mb-1"><strong>Distributions Equal:</strong> {formData.trust_info?.distributions_equal ? 'Yes' : 'No'}</p>
+                    <p className="mb-1"><strong>Residuary Beneficiaries:</strong>{' '}
+                      {(formData.trust_info?.residuary_distribution || [])
+                        .map(d => `${d.recipient || '(unnamed)'}${formData.trust_info?.distributions_equal ? '' : ` (${d.share_percent || 0}%)`}${d.how_receive === 'In Trust' ? ` in trust to age ${d.trust_until_age || '?'}` : ''}`)
+                        .join('; ') || 'None named'}</p>
+                    {formData.trust_info?.has_specific_bequests && (
+                      <p className="mb-0"><strong>Specific Bequests:</strong> {(formData.trust_info?.specific_bequests || []).length} listed</p>
                     )}
                   </div>
                 </div>
               </div>
+              <div className="col-md-6 mb-3">
+                <div className="card h-100">
+                  <div className="card-header">
+                    <strong>Tutor & Donation of Residence</strong>
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm float-end p-0"
+                      onClick={() => setCurrentPage(pages.indexOf('dor'))}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                  <div className="card-body">
+                    <p className="mb-1"><strong>Appoint Tutor:</strong> {formData.trust_info?.appoint_tutor ? 'Yes' : 'No'}</p>
+                    {formData.trust_info?.appoint_tutor && (
+                      <>
+                        <p className="mb-1"><strong>Tutor:</strong> {formData.trust_info?.tutor || 'Not selected'}</p>
+                        <p className="mb-1"><strong>Under-Tutor:</strong> {formData.trust_info?.under_tutor || 'Not selected'}</p>
+                      </>
+                    )}
+                    <p className="mb-1"><strong>Parish of Residence:</strong> {formData.dor?.parish_where_home_is_located || 'Not provided'}</p>
+                    <p className="mb-0"><strong>Legal Description:</strong> {formData.dor?.have_full_legal_description_for_home || 'Not provided'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ===== EXECUTORS (Will & Trust plans — trust plans have a pourover will) ===== */}
+        {pages.includes('executors') && (
+          <>
+            <h4 className="mt-4 mb-3 border-bottom pb-2">Executors</h4>
+            <div className="row">
+              <div className={isTwoPerson ? 'col-md-6 mb-3' : 'col-12 mb-3'}>
+                <div className="card h-100">
+                  <div className="card-header">
+                    <strong>Executors in {getPrincipalFullName()}'s Will</strong>
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm float-end p-0"
+                      onClick={() => setCurrentPage(pages.indexOf('executors'))}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                  <div className="card-body">
+                    <p className="mb-1"><strong>Primary Executor:</strong> {formData.will_info?.primary_executor || 'Not selected'}</p>
+                    <p className="mb-0"><strong>Successor Executor:</strong> {formData.will_info?.successor_executor || 'Not selected'}</p>
+                  </div>
+                </div>
+              </div>
+              {isTwoPerson && (
+                <div className="col-md-6 mb-3">
+                  <div className="card h-100">
+                    <div className="card-header">
+                      <strong>Executors in {[formData.spouse_info.first_name, formData.spouse_info.middle_name, formData.spouse_info.surname].filter(Boolean).join(' ') || 'Spouse'}'s Will</strong>
+                      <button
+                        type="button"
+                        className="btn btn-link btn-sm float-end p-0"
+                        onClick={() => setCurrentPage(pages.indexOf('executors'))}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                    <div className="card-body">
+                      <p className="mb-1"><strong>Primary Executor:</strong> {formData.will_info?.spouse_primary_executor || 'Not selected'}</p>
+                      <p className="mb-0"><strong>Successor Executor:</strong> {formData.will_info?.spouse_successor_executor || 'Not selected'}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}
@@ -4602,26 +5472,6 @@ const POAForm: React.FC = () => {
           <>
             <h4 className="mt-4 mb-3 border-bottom pb-2">Will Details</h4>
             <div className="row">
-              <div className="col-md-6 mb-3">
-                <div className="card h-100">
-                  <div className="card-header">
-                    <strong>Executors</strong>
-                    {pages.includes('executors') && (
-                      <button
-                        type="button"
-                        className="btn btn-link btn-sm float-end p-0"
-                        onClick={() => setCurrentPage(pages.indexOf('executors'))}
-                      >
-                        Edit
-                      </button>
-                    )}
-                  </div>
-                  <div className="card-body">
-                    <p className="mb-1"><strong>Primary Executor:</strong> {formData.will_info?.primary_executor || 'Not selected'}</p>
-                    <p className="mb-0"><strong>Successor Executor:</strong> {formData.will_info?.successor_executor || 'Not selected'}</p>
-                  </div>
-                </div>
-              </div>
               <div className="col-md-6 mb-3">
                 <div className="card h-100">
                   <div className="card-header">
@@ -4648,7 +5498,16 @@ const POAForm: React.FC = () => {
                     <strong>Distribution</strong>
                   </div>
                   <div className="card-body">
-                    <p className="mb-1"><strong>Residuary Distribution:</strong> {formData.will_info?.residuary_distribution || 'Not specified'}</p>
+                    <p className="mb-1"><strong>Residuary Distribution:</strong>{' '}
+                      {(formData.will_info?.residuary_distribution || []).length > 0
+                        ? (formData.will_info?.distributions_equal
+                            ? `Equally among ${(formData.will_info?.residuary_distribution || []).map((d) => d.recipient).filter(Boolean).join(', ')}`
+                            : (formData.will_info?.residuary_distribution || []).map((d) => `${d.recipient || '—'} (${d.share_percent || '0'}%)`).join(', '))
+                        : 'Not specified'}
+                    </p>
+                    {formData.will_info?.has_specific_bequests && (formData.will_info?.specific_bequests || []).length > 0 && (
+                      <p className="mb-1"><strong>Specific Bequests:</strong> {(formData.will_info?.specific_bequests || []).map((b) => `${b.description || '—'} → ${b.recipient || '—'}`).join('; ')}</p>
+                    )}
                     <p className="mb-1"><strong>Distribution Age:</strong> {formData.will_info?.distribution_age || '25'} years old</p>
                     <p className="mb-1"><strong>Children's Trustee:</strong> {formData.will_info?.children_trustee || 'Not selected'}</p>
                     <p className="mb-0"><strong>Allow Education Distributions:</strong> {formData.will_info?.allow_education_distributions ? 'Yes' : 'No'}</p>
@@ -4870,10 +5729,8 @@ const POAForm: React.FC = () => {
       case 'hcpoa': return renderHCPOAPage();
       case 'hcd': return renderHCDPage();
       // Trust pages
-      case 'trust_setup': return renderTrustSetupPage();
-      case 'trustees': return renderTrusteesPage();
-      case 'distribution': return renderDistributionPage();
-      case 'trust_info': return renderTrustInfoPage(); // Legacy compatibility
+      case 'rlt': return renderRLTPage();
+      case 'dor': return renderDORPage();
       // Will pages
       case 'executors': return renderExecutorsPage();
       case 'guardians': return renderGuardiansPage();

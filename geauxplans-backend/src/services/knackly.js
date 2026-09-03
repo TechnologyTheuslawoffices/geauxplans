@@ -620,54 +620,54 @@ function transformFormDataToKnackly(formData, formType = 'powerOfAttorneyForm') 
   if (formData.trust_info) {
     const ti = formData.trust_info;
 
-    // Trust Type (RevApt) - Revocable, APT, or IDGT
-    if (ti.trust_type) {
-      const trustTypeMap = {
-        'revocable': 'Revocable',
-        'apt': 'APT',
-        'idgt': 'IDGT',
-      };
-      knacklyData.RevApt = trustTypeMap[ti.trust_type.toLowerCase()] || 'Revocable';
-    }
-
-    // Is this an amendment?
-    if (ti.is_amendment !== undefined) {
-      knacklyData.AmendRestateTrustTF = ti.is_amendment === true;
-    }
-
     // Settlor as Trustee
     if (ti.settlor_as_trustee !== undefined) {
       knacklyData.SettlorTrusteeTF = ti.settlor_as_trustee === true;
     }
 
-    // Marital Trust Type
+    // Marital Trust Type (two-person plans)
     if (ti.marital_trust_type) {
       knacklyData.MaritalTrustType = ti.marital_trust_type;
     }
 
-    // Successor Trustees
-    if (ti.successor_trustees && Array.isArray(ti.successor_trustees) && ti.successor_trustees.length > 0) {
-      knacklyData.SuccGenTrustees = ti.successor_trustees.map(name => ({
-        'id$': getAgentName(name),
-        NameCO: getAgentName(name),
-      }));
-    } else if (ti.successor_trustee) {
-      // Single successor trustee
-      knacklyData.SuccGenTrustees = [{
-        'id$': getAgentName(ti.successor_trustee),
-        NameCO: getAgentName(ti.successor_trustee),
-      }];
+    // Successor Trustees — ordered list, each row may name a co-trustee.
+    if (Array.isArray(ti.trustees) && ti.trustees.length > 0) {
+      knacklyData.SuccGenTrustees = ti.trustees
+        .filter(t => t && t.trustee_to_serve)
+        .map((t, i) => ({
+          'id$': `SuccGenTrustees-${i + 1}`,
+          AgentSelect: getAgentName(t.trustee_to_serve),
+          CoAgentSelect: t.second_trustee_person_to_serve ? getAgentName(t.second_trustee_person_to_serve) : undefined,
+        }));
     }
 
-    // Residuary Distribution info
-    if (ti.residuary_distribution) {
-      knacklyData.ResiduaryDistribution = ti.residuary_distribution;
-    }
+    // Tutor / Under-Tutor for minor children — the trust names its own, distinct
+    // from the pourover will's tutor article.
+    if (ti.appoint_tutor) {
+      if (ti.tutor) knacklyData.TrustTutor = getAgentName(ti.tutor);
+      if (ti.under_tutor) knacklyData.TrustUnderTutor = getAgentName(ti.under_tutor);
+      knacklyData.IncludeTutorTF = Boolean(ti.tutor);
 
-    // Special Instructions
-    if (ti.special_instructions) {
-      knacklyData.SpecialInstructions = ti.special_instructions;
+      const hasSuccTutors = /^yes/i.test(String(ti.has_successor_tutors || ''));
+      knacklyData.TrustSuccessorTutorsTF = hasSuccTutors;
+      knacklyData.SuccessorTutors = hasSuccTutors && Array.isArray(ti.successor_tutors)
+        ? ti.successor_tutors
+            .filter(s => s && s.successor_tutor_to_serve)
+            .map(s => ({ Selection: getAgentName(s.successor_tutor_to_serve) }))
+        : [];
     }
+  }
+
+  // ============================================================================
+  // DONATION OF RESIDENCE (Trust plans) — nested actoftransfer object
+  // ============================================================================
+  if (formData.dor) {
+    const dor = formData.dor;
+    const hasLegal = /^yes/i.test(String(dor.have_full_legal_description_for_home || ''));
+    const home = { GeauxHaveLegalDescriptionTF: hasLegal };
+    if (dor.parish_where_home_is_located) home.LandParish = dor.parish_where_home_is_located;
+    if (hasLegal && dor.full_legal_description) home.ExhibitALegalDesc = dor.full_legal_description;
+    knacklyData.GeauxAODHome = home;
   }
 
   // ============================================================================
@@ -676,20 +676,34 @@ function transformFormDataToKnackly(formData, formType = 'powerOfAttorneyForm') 
   if (formData.will_info) {
     const wi = formData.will_info;
 
-    // Primary Executor
-    if (wi.primary_executor) {
-      knacklyData.Executor = {
-        'id$': getAgentName(wi.primary_executor),
-        NameCO: getAgentName(wi.primary_executor),
+    // Initial Executors — first row may name a co-executor.
+    const initialExec = Array.isArray(wi.initial_executors) ? wi.initial_executors[0] : null;
+    const primaryExec = initialExec ? initialExec.initial_executor : wi.primary_executor;
+    const coExec = initialExec ? initialExec.co_executor : '';
+    if (primaryExec) {
+      knacklyData.ClientGeauxWillExecs = {
+        'id$': 'ClientGeauxWillExecs',
+        AgentSelect: getAgentName(primaryExec),
+        CoAgentSelect: coExec ? getAgentName(coExec) : undefined,
       };
     }
 
-    // Successor Executor
-    if (wi.successor_executor) {
-      knacklyData.SuccessorExecutor = {
-        'id$': getAgentName(wi.successor_executor),
-        NameCO: getAgentName(wi.successor_executor),
-      };
+    // Successor Executors — ordered list.
+    if (Array.isArray(wi.successor_executors) && wi.successor_executors.length > 0) {
+      knacklyData.ClientWillSuccessorExecs = wi.successor_executors
+        .filter(s => s && s.successor_agent_to_serve)
+        .map((s, i) => ({
+          'id$': `ClientWillSuccessorExecs-${i + 1}`,
+          AgentSelect: getAgentName(s.successor_agent_to_serve),
+          CoAgentSelect: s.second_successor_coagent_to_serve ? getAgentName(s.second_successor_coagent_to_serve) : undefined,
+        }));
+      knacklyData.ClientWillSuccessorExecsTF = knacklyData.ClientWillSuccessorExecs.length > 0;
+    } else if (wi.successor_executor) {
+      knacklyData.ClientWillSuccessorExecs = [{
+        'id$': 'ClientWillSuccessorExecs-1',
+        AgentSelect: getAgentName(wi.successor_executor),
+      }];
+      knacklyData.ClientWillSuccessorExecsTF = true;
     }
 
     // Primary Guardian (for minor children)
