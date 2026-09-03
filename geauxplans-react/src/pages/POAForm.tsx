@@ -38,7 +38,7 @@ const PAGE_NAMES: Record<string, string> = {
   personal_info: 'Personal',
   spouse_info: 'Spouse',
   children: 'Children',
-  agents: 'Agents',
+  agents: 'Other Parties',
   plan_contents: 'Contents',
   // POA Pages
   fpoa: 'FPOA',
@@ -2062,430 +2062,6 @@ const POAForm: React.FC = () => {
     );
   };
 
-  const renderAgentsPage = () => (
-    <div className="poa-page">
-      <h2>3. People or Entities Who Will Serve as Agents</h2>
-      <p className="text-muted">Add the people or entities you want to serve as your agents (attorneys-in-fact).</p>
-
-      {errors['agents'] && <div className="alert alert-danger">{errors['agents']}</div>}
-
-      {(formData.people_or_entities_who_will_serve_as_agents?.parties || []).map((party, index) => (
-        <div key={party.id} className="card mb-3">
-          <div className="card-header d-flex justify-content-between align-items-center">
-            <strong>{getPartyDisplayName(party) || `Agent ${index + 1}`}</strong>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-danger"
-              onClick={() => removeParty(index)}
-            >
-              <i className="fas fa-trash"></i> Remove
-            </button>
-          </div>
-          <div className="card-body">
-            <div className="mb-3">
-              <label className="form-label">Type of Party <span className="text-danger">*</span></label>
-              <div>
-                <div className="form-check form-check-inline">
-                  <input
-                    type="radio"
-                    className="form-check-input"
-                    name={`party_type_${index}`}
-                    value="An individual person"
-                    checked={party.type_of_party === 'An individual person'}
-                    onChange={(e) => updateParty(index, 'type_of_party', e.target.value)}
-                  />
-                  <label className="form-check-label">An individual person</label>
-                </div>
-                <div className="form-check form-check-inline">
-                  <input
-                    type="radio"
-                    className="form-check-input"
-                    name={`party_type_${index}`}
-                    value="An entity"
-                    checked={party.type_of_party === 'An entity'}
-                    onChange={(e) => updateParty(index, 'type_of_party', e.target.value)}
-                  />
-                  <label className="form-check-label">An entity (company, trust, etc.)</label>
-                </div>
-              </div>
-            </div>
-
-            {party.type_of_party === 'An individual person' && (
-              <>
-                <div className="row mb-3">
-                  <div className="col-md-4">
-                    <label className="form-label">First Name <span className="text-danger">*</span></label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.first_name}
-                      onChange={(e) => updateParty(index, 'first_name', e.target.value)}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label className="form-label">Middle Name</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.middle_name}
-                      onChange={(e) => updateParty(index, 'middle_name', e.target.value)}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label className="form-label">Last Name <span className="text-danger">*</span></label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.surname}
-                      onChange={(e) => updateParty(index, 'surname', e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="row mb-3">
-                  <div className="col-md-4">
-                    <label className="form-label">Date of Birth <span className="text-danger">*</span></label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={party.date_of_birth}
-                      onChange={(e) => updateParty(index, 'date_of_birth', e.target.value)}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label className="form-label">Gender <span className="text-danger">*</span></label>
-                    <select
-                      className="form-select"
-                      value={party.gender}
-                      onChange={(e) => updateParty(index, 'gender', e.target.value)}
-                    >
-                      <option value="">Select...</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label className="form-label">Street Address</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.street_address || ''}
-                      onChange={(e) => updateParty(index, 'street_address', e.target.value)}
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label">Second line of street address, if any (Apt. or Suite No.)</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.street_address_2 || ''}
-                      onChange={(e) => updateParty(index, 'street_address_2', e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="row mb-3">
-                  <div className="col-md-3">
-                    <label className="form-label">City</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.city || ''}
-                      onChange={(e) => updateParty(index, 'city', e.target.value)}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <label className="form-label">State</label>
-                    <select
-                      className="form-select"
-                      value={party.state || ''}
-                      onChange={(e) => updateParty(index, 'state', e.target.value)}
-                    >
-                      <option value="">Select...</option>
-                      {US_STATES.map((st) => (
-                        <option key={st.abbrev} value={st.value}>{st.value}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="col-md-3">
-                    <label className="form-label">Zip</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.zip || ''}
-                      onChange={(e) => updateParty(index, 'zip', e.target.value)}
-                      maxLength={10}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <label className="form-label">Parish or County</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.parish || ''}
-                      onChange={(e) => updateParty(index, 'parish', e.target.value)}
-                      placeholder="Do not include 'Parish' or 'County'"
-                    />
-                  </div>
-                </div>
-                <div className="row mb-3">
-                  <div className="col-md-4">
-                    <label className="form-label">Your relationship with this person <span className="text-danger">*</span></label>
-                    <select
-                      className="form-select"
-                      value={party.relationship_with_person}
-                      onChange={(e) => updateParty(index, 'relationship_with_person', e.target.value)}
-                    >
-                      <option value="">Select...</option>
-                      {RELATIONSHIP_OPTIONS.map((rel) => (
-                        <option key={rel} value={rel}>{rel}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="col-md-4">
-                    <label className="form-label">Last 4 digits SSN <span className="text-danger">*</span></label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.last_4_ssn_digits}
-                      onChange={(e) => updateParty(index, 'last_4_ssn_digits', e.target.value.replace(/\D/g, ''))}
-                      maxLength={4}
-                    />
-                  </div>
-                </div>
-              </>
-            )}
-
-            {party.type_of_party === 'An entity' && (
-              <>
-                <div className="row mb-3">
-                  <div className="col-md-8">
-                    <label className="form-label">Entity Name <span className="text-danger">*</span></label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.entity_name}
-                      onChange={(e) => updateParty(index, 'entity_name', e.target.value)}
-                      placeholder="e.g., ABC Company, LLC"
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label className="form-label">Last 4 EIN Digits</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.last_4_ein_digits}
-                      onChange={(e) => updateParty(index, 'last_4_ein_digits', e.target.value.replace(/\D/g, ''))}
-                      maxLength={4}
-                    />
-                  </div>
-                </div>
-
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label className="form-label">Entity Type <span className="text-danger">*</span></label>
-                    <select
-                      className="form-select"
-                      value={party.entity_type}
-                      onChange={(e) => updateParty(index, 'entity_type', e.target.value)}
-                    >
-                      <option value="">Select Entity Type...</option>
-                      {ENTITY_TYPE_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Authorized Signers for Entity */}
-                <div className="mb-3">
-                  <label className="form-label">
-                    <strong>Authorized Signers</strong>
-                    <span className="text-muted ms-2">(Person(s) who will sign on behalf of the entity)</span>
-                  </label>
-
-                  {(party.signers || []).map((signer, signerIndex) => (
-                    <div key={signerIndex} className="card card-body bg-light mb-2">
-                      <div className="d-flex justify-content-between align-items-center mb-2">
-                        <small className="text-muted">Signer {signerIndex + 1}</small>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => removeSigner(index, signerIndex)}
-                        >
-                          <i className="fas fa-times"></i>
-                        </button>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-3 mb-2">
-                          <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            placeholder="First Name"
-                            value={signer.first_name}
-                            onChange={(e) => updateSigner(index, signerIndex, 'first_name', e.target.value)}
-                          />
-                        </div>
-                        <div className="col-md-2 mb-2">
-                          <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            placeholder="Middle"
-                            value={signer.middle_name}
-                            onChange={(e) => updateSigner(index, signerIndex, 'middle_name', e.target.value)}
-                          />
-                        </div>
-                        <div className="col-md-3 mb-2">
-                          <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            placeholder="Last Name"
-                            value={signer.surname}
-                            onChange={(e) => updateSigner(index, signerIndex, 'surname', e.target.value)}
-                          />
-                        </div>
-                        <div className="col-md-2 mb-2">
-                          <select
-                            className="form-select form-select-sm"
-                            value={signer.suffix}
-                            onChange={(e) => updateSigner(index, signerIndex, 'suffix', e.target.value)}
-                            title="Suffix (Jr., Sr., III, etc.)"
-                          >
-                            <option value="">None</option>
-                            {SUFFIX_OPTIONS.map((sfx) => (
-                              <option key={sfx} value={sfx}>{sfx}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="col-md-2 mb-2">
-                          <select
-                            className="form-select form-select-sm"
-                            value={signer.title}
-                            onChange={(e) => updateSigner(index, signerIndex, 'title', e.target.value)}
-                          >
-                            <option value="">Select Title...</option>
-                            {ENTITY_ROLE_OPTIONS.map((role) => (
-                              <option key={role} value={role}>{role}</option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-secondary"
-                    onClick={() => addSigner(index)}
-                  >
-                    <i className="fas fa-plus me-1"></i>
-                    Add Signer
-                  </button>
-                </div>
-              </>
-            )}
-
-            <div className="mb-3">
-              <div className="form-check">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  checked={party.same_address_as_person_granting_power_of_attorney}
-                  onChange={(e) => updateParty(index, 'same_address_as_person_granting_power_of_attorney', e.target.checked)}
-                />
-                <label className="form-check-label">Same address as {getPrincipalFullName()}</label>
-              </div>
-            </div>
-
-            {!party.same_address_as_person_granting_power_of_attorney && (
-              <div className="row mb-3">
-                <div className="col-md-6">
-                  <label className="form-label">Street Address</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={party.street_address}
-                    onChange={(e) => updateParty(index, 'street_address', e.target.value)}
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label className="form-label">Street Address 2</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={party.street_address_2}
-                    onChange={(e) => updateParty(index, 'street_address_2', e.target.value)}
-                  />
-                </div>
-                <div className="col-md-3 mt-2">
-                  <label className="form-label">City</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={party.city}
-                    onChange={(e) => updateParty(index, 'city', e.target.value)}
-                  />
-                </div>
-                <div className="col-md-3 mt-2">
-                  <label className="form-label">State</label>
-                  <select
-                    className="form-select"
-                    value={party.state}
-                    onChange={(e) => updateParty(index, 'state', e.target.value)}
-                  >
-                    <option value="">Select State...</option>
-                    {US_STATES.map((st) => (
-                      <option key={st.abbrev} value={st.value}>{st.value}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-md-3 mt-2">
-                  <label className="form-label">ZIP Code</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={party.zip}
-                    onChange={(e) => updateParty(index, 'zip', e.target.value)}
-                    maxLength={5}
-                  />
-                </div>
-                <div className="col-md-3 mt-2">
-                  <label className="form-label">
-                    {party.state === 'Louisiana' ? 'Parish' : 'County'}
-                  </label>
-                  {getCountiesForState(party.state || '').length > 0 ? (
-                    <select
-                      className="form-select"
-                      value={party.parish}
-                      onChange={(e) => updateParty(index, 'parish', e.target.value)}
-                    >
-                      <option value="">Select {party.state === 'Louisiana' ? 'Parish' : 'County'}...</option>
-                      {getCountiesForState(party.state || '').map((p) => (
-                        <option key={p} value={p}>{p}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={party.parish}
-                      onChange={(e) => updateParty(index, 'parish', e.target.value)}
-                      placeholder={party.state ? `Enter county` : 'Select state first'}
-                    />
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      ))}
-
-      <button type="button" className="btn btn-outline-primary" onClick={addParty}>
-        <i className="fas fa-plus me-2"></i> Add Another Party
-      </button>
-    </div>
-  );
-
   const renderPlanContentsPage = () => {
     const isTrust = formType.includes('trustBased');
     const isWill = formType.includes('willBased') || formType.includes('minorChild');
@@ -3611,7 +3187,6 @@ const POAForm: React.FC = () => {
     );
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const renderOtherPartiesPage = () => (
     <div className="poa-page">
       <h2>3. Other Parties</h2>
@@ -3844,14 +3419,14 @@ const POAForm: React.FC = () => {
                     {/* Authorized Signers for Entity */}
                     <div className="mb-3">
                       <label className="form-label">
-                        <strong>Authorized Signers</strong>
-                        <span className="text-muted ms-2">(Person(s) who will sign on behalf of the entity)</span>
+                        <strong>Signers</strong>
+                        <span className="text-muted ms-2">- these must be one or more individuals who are authorized to sign on behalf of the entity.</span>
                       </label>
 
                       {(party.signers || []).map((signer, signerIndex) => (
                         <div key={signerIndex} className="card card-body bg-light mb-2">
                           <div className="d-flex justify-content-between align-items-center mb-2">
-                            <small className="text-muted">Signer {signerIndex + 1}</small>
+                            <small className="text-muted">Signer</small>
                             <button
                               type="button"
                               className="btn btn-sm btn-outline-danger"
@@ -3865,7 +3440,7 @@ const POAForm: React.FC = () => {
                               <input
                                 type="text"
                                 className="form-control form-control-sm"
-                                placeholder="First Name"
+                                placeholder="Name"
                                 value={signer.first_name}
                                 onChange={(e) => updateSigner(index, signerIndex, 'first_name', e.target.value)}
                               />
@@ -3874,7 +3449,7 @@ const POAForm: React.FC = () => {
                               <input
                                 type="text"
                                 className="form-control form-control-sm"
-                                placeholder="Middle"
+                                placeholder="Middle name"
                                 value={signer.middle_name}
                                 onChange={(e) => updateSigner(index, signerIndex, 'middle_name', e.target.value)}
                               />
@@ -3883,7 +3458,7 @@ const POAForm: React.FC = () => {
                               <input
                                 type="text"
                                 className="form-control form-control-sm"
-                                placeholder="Last Name"
+                                placeholder="Surname"
                                 value={signer.surname}
                                 onChange={(e) => updateSigner(index, signerIndex, 'surname', e.target.value)}
                               />
@@ -3893,9 +3468,9 @@ const POAForm: React.FC = () => {
                                 className="form-select form-select-sm"
                                 value={signer.suffix}
                                 onChange={(e) => updateSigner(index, signerIndex, 'suffix', e.target.value)}
-                                title="Suffix (Jr., Sr., III, etc.)"
+                                title="Suffix, if any"
                               >
-                                <option value="">None</option>
+                                <option value="">Suffix, if any</option>
                                 {SUFFIX_OPTIONS.map((sfx) => (
                                   <option key={sfx} value={sfx}>{sfx}</option>
                                 ))}
@@ -3907,7 +3482,7 @@ const POAForm: React.FC = () => {
                                 value={signer.title}
                                 onChange={(e) => updateSigner(index, signerIndex, 'title', e.target.value)}
                               >
-                                <option value="">Select Title...</option>
+                                <option value="">Company Title / Position for Signing</option>
                                 {ENTITY_ROLE_OPTIONS.map((role) => (
                                   <option key={role} value={role}>{role}</option>
                                 ))}
@@ -5283,7 +4858,7 @@ const POAForm: React.FC = () => {
       case 'personal_info': return renderPersonalInfoPage();
       case 'spouse_info': return renderSecondPrincipalPage();
       case 'children': return renderChildrenPage();
-      case 'agents': return renderAgentsPage();
+      case 'agents': return renderOtherPartiesPage();
       case 'plan_contents': return renderPlanContentsPage();
       // POA pages
       case 'fpoa': return renderFPOAPage();
