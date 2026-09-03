@@ -185,8 +185,10 @@ function mapParty(party, index) {
 function mapChild(child, index, twoPerson) {
   const row = mapIndividual(child, `child-${index + 1}`);
   row.Parentage = twoPerson ? (text(child.parentage) || 'Joint') : 'Client';
-  // Written outside `compact`: `false` is a real answer ("not disinherited"),
-  // and the catalog's ChildrenInherit/ChildrenDisinherit split reads it.
+  // Written outside `compact`: `false` is a real answer, and the catalog's
+  // ChildrenLiving/ChildrenDeceased and ChildrenInherit/ChildrenDisinherit
+  // splits read these flags directly.
+  row.DeceasedTF = child.deceased === true || child.deceased === 'true';
   row.DisinheritTF = child.disinherit === true || child.disinherit === 'true';
   return row;
 }

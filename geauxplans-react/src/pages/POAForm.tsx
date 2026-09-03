@@ -376,6 +376,7 @@ interface FormData {
     suffix: string;
     date_of_birth: string;
     parentage: string;   // 'Joint' | 'Client' | 'Spouse' (2-person plans only)
+    deceased: boolean;
     disinherit: boolean;
   }>;
   governing_law: string;
@@ -693,7 +694,7 @@ const TEST_PREFILL_DATA: FormData = {
   married: true,
   children_as_agents: true,
   children: [
-    { first_name: 'Emily', middle_name: '', surname: 'Smith', suffix: '', date_of_birth: '2010-04-12', parentage: 'Joint', disinherit: false },
+    { first_name: 'Emily', middle_name: '', surname: 'Smith', suffix: '', date_of_birth: '2010-04-12', parentage: 'Joint', deceased: false, disinherit: false },
   ],
   governing_law: 'Louisiana',
   personal_info: {
@@ -1052,7 +1053,7 @@ const POAForm: React.FC = () => {
       ...prev,
       children: [
         ...(prev.children || []),
-        { first_name: '', middle_name: '', surname: '', suffix: '', date_of_birth: '', parentage: 'Joint', disinherit: false },
+        { first_name: '', middle_name: '', surname: '', suffix: '', date_of_birth: '', parentage: 'Joint', deceased: false, disinherit: false },
       ],
     }));
   };
@@ -4131,6 +4132,10 @@ const POAForm: React.FC = () => {
         <div className="children-roster">
           {(formData.children || []).map((child, index) => {
             const isTwoPerson = formType.includes('2Person');
+            const fullName = (p?: { first_name?: string; middle_name?: string; surname?: string; suffix?: string }) =>
+              [p?.first_name, p?.middle_name, p?.surname, p?.suffix].map(s => (s || '').trim()).filter(Boolean).join(' ');
+            const clientName = fullName(formData.personal_info) || 'you';
+            const spouseName = fullName(formData.spouse_info) || 'your spouse';
             return (
               <div key={index} className="card mb-3">
                 <div className="card-body">
@@ -4197,33 +4202,73 @@ const POAForm: React.FC = () => {
                     {isTwoPerson && (
                       <div className="col-md-6 mb-3">
                         <label className="form-label">
-                          Is this a child of {formData.personal_info?.first_name || 'you'} only,{' '}
-                          {formData.spouse_info?.first_name || 'your spouse'} only, or both together?
+                          Select whether this is a child of {clientName} only, {spouseName} only, or both spouses together:
                         </label>
                         <select
                           className="form-select"
                           value={child.parentage}
                           onChange={(e) => updateChild(index, 'parentage', e.target.value)}
                         >
-                          <option value="Joint">Both spouses together</option>
-                          <option value="Client">{formData.personal_info?.first_name || 'You'} only</option>
-                          <option value="Spouse">{formData.spouse_info?.first_name || 'Spouse'} only</option>
+                          <option value="Joint">{clientName} and {spouseName} together</option>
+                          <option value="Client">{clientName}</option>
+                          <option value="Spouse">{spouseName}</option>
                         </select>
                       </div>
                     )}
                   </div>
 
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id={`disinherit-${index}`}
-                      checked={child.disinherit}
-                      onChange={(e) => updateChild(index, 'disinherit', e.target.checked)}
-                    />
-                    <label className="form-check-label" htmlFor={`disinherit-${index}`}>
-                      Should this child be disinherited?
+                  <div className="mb-3">
+                    <label className="form-label">Is this child deceased?</label>
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name={`deceased-${index}`}
+                        id={`deceased-yes-${index}`}
+                        checked={child.deceased === true}
+                        onChange={() => updateChild(index, 'deceased', true)}
+                      />
+                      <label className="form-check-label" htmlFor={`deceased-yes-${index}`}>Yes</label>
+                    </div>
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name={`deceased-${index}`}
+                        id={`deceased-no-${index}`}
+                        checked={child.deceased === false}
+                        onChange={() => updateChild(index, 'deceased', false)}
+                      />
+                      <label className="form-check-label" htmlFor={`deceased-no-${index}`}>No</label>
+                    </div>
+                  </div>
+
+                  <div className="mb-2">
+                    <label className="form-label">
+                      Should this child be intentionally omitted from your estate plan (receive nothing from your estate)?
                     </label>
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name={`disinherit-${index}`}
+                        id={`disinherit-yes-${index}`}
+                        checked={child.disinherit === true}
+                        onChange={() => updateChild(index, 'disinherit', true)}
+                      />
+                      <label className="form-check-label" htmlFor={`disinherit-yes-${index}`}>Yes</label>
+                    </div>
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name={`disinherit-${index}`}
+                        id={`disinherit-no-${index}`}
+                        checked={child.disinherit === false}
+                        onChange={() => updateChild(index, 'disinherit', false)}
+                      />
+                      <label className="form-check-label" htmlFor={`disinherit-no-${index}`}>No</label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -4862,7 +4907,8 @@ const POAForm: React.FC = () => {
                             {child.first_name} {child.surname}
                             {formType.includes('2Person') && child.parentage && ` - ${child.parentage === 'Joint' ? 'Both spouses' : child.parentage === 'Client' ? 'Your child' : "Spouse's child"}`}
                             {child.date_of_birth && ` (DOB: ${child.date_of_birth})`}
-                            {child.disinherit && ' - disinherited'}
+                            {child.deceased && ' - deceased'}
+                            {child.disinherit && ' - omitted from estate'}
                           </li>
                         ))}
                       </ul>
