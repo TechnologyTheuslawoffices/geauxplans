@@ -369,6 +369,15 @@ interface FormData {
   esign: boolean;
   married: boolean;
   children_as_agents: boolean;
+  children: Array<{
+    first_name: string;
+    middle_name: string;
+    surname: string;
+    suffix: string;
+    date_of_birth: string;
+    parentage: string;   // 'Joint' | 'Client' | 'Spouse' (2-person plans only)
+    disinherit: boolean;
+  }>;
   governing_law: string;
   personal_info: {
     first_name: string;
@@ -522,6 +531,7 @@ const initialFormData: FormData = {
   esign: false,
   married: false,
   children_as_agents: false,
+  children: [],
   governing_law: 'Louisiana',
   personal_info: {
     first_name: '',
@@ -682,6 +692,9 @@ const TEST_PREFILL_DATA: FormData = {
   esign: true,
   married: true,
   children_as_agents: true,
+  children: [
+    { first_name: 'Emily', middle_name: '', surname: 'Smith', suffix: '', date_of_birth: '2010-04-12', parentage: 'Joint', disinherit: false },
+  ],
   governing_law: 'Louisiana',
   personal_info: {
     first_name: 'John',
@@ -1030,6 +1043,33 @@ const POAForm: React.FC = () => {
       people_or_entities_who_will_serve_as_agents: {
         parties: (prev.people_or_entities_who_will_serve_as_agents?.parties || []).filter((_, i) => i !== index),
       },
+    }));
+  };
+
+  // Children roster helpers
+  const addChild = () => {
+    setFormData(prev => ({
+      ...prev,
+      children: [
+        ...(prev.children || []),
+        { first_name: '', middle_name: '', surname: '', suffix: '', date_of_birth: '', parentage: 'Joint', disinherit: false },
+      ],
+    }));
+  };
+
+  const removeChild = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      children: (prev.children || []).filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateChild = (index: number, field: keyof FormData['children'][number], value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      children: (prev.children || []).map((child, i) =>
+        i === index ? { ...child, [field]: value } : child
+      ),
     }));
   };
 
@@ -4088,9 +4128,112 @@ const POAForm: React.FC = () => {
       </div>
 
       {formData.children_as_agents && (
-        <div className="alert alert-info">
-          <i className="fas fa-info-circle me-2"></i>
-          Children can be added as agents on the Agents page. Their information will be used for beneficiary designations.
+        <div className="children-roster">
+          {(formData.children || []).map((child, index) => {
+            const isTwoPerson = formType.includes('2Person');
+            return (
+              <div key={index} className="card mb-3">
+                <div className="card-body">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h5 className="mb-0">Child {index + 1}</h5>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => removeChild(index)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-4 mb-3">
+                      <label className="form-label">First name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={child.first_name}
+                        onChange={(e) => updateChild(index, 'first_name', e.target.value)}
+                      />
+                    </div>
+                    <div className="col-md-4 mb-3">
+                      <label className="form-label">Middle name (or initial with period)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={child.middle_name}
+                        onChange={(e) => updateChild(index, 'middle_name', e.target.value)}
+                      />
+                    </div>
+                    <div className="col-md-4 mb-3">
+                      <label className="form-label">Last name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={child.surname}
+                        onChange={(e) => updateChild(index, 'surname', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-3 mb-3">
+                      <label className="form-label">Suffix, if any</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={child.suffix}
+                        onChange={(e) => updateChild(index, 'suffix', e.target.value)}
+                      />
+                    </div>
+                    <div className="col-md-3 mb-3">
+                      <label className="form-label">Date of birth</label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        value={child.date_of_birth}
+                        onChange={(e) => updateChild(index, 'date_of_birth', e.target.value)}
+                      />
+                    </div>
+                    {isTwoPerson && (
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">
+                          Is this a child of {formData.personal_info?.first_name || 'you'} only,{' '}
+                          {formData.spouse_info?.first_name || 'your spouse'} only, or both together?
+                        </label>
+                        <select
+                          className="form-select"
+                          value={child.parentage}
+                          onChange={(e) => updateChild(index, 'parentage', e.target.value)}
+                        >
+                          <option value="Joint">Both spouses together</option>
+                          <option value="Client">{formData.personal_info?.first_name || 'You'} only</option>
+                          <option value="Spouse">{formData.spouse_info?.first_name || 'Spouse'} only</option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id={`disinherit-${index}`}
+                      checked={child.disinherit}
+                      onChange={(e) => updateChild(index, 'disinherit', e.target.checked)}
+                    />
+                    <label className="form-check-label" htmlFor={`disinherit-${index}`}>
+                      Should this child be disinherited?
+                    </label>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          <button type="button" className="btn btn-outline-primary" onClick={addChild}>
+            <i className="fas fa-plus me-2"></i>
+            Add a child
+          </button>
         </div>
       )}
     </div>
@@ -4712,12 +4855,14 @@ const POAForm: React.FC = () => {
                   </div>
                   <div className="card-body">
                     <p className="mb-2"><strong>Has Children:</strong> {formData.children_as_agents ? 'Yes' : 'No'}</p>
-                    {formData.children_as_agents && agents.filter(a => a.relationship_with_person?.toLowerCase().includes('child') || a.relationship_with_person?.toLowerCase().includes('son') || a.relationship_with_person?.toLowerCase().includes('daughter')).length > 0 && (
+                    {formData.children_as_agents && (formData.children || []).length > 0 && (
                       <ul className="mb-0">
-                        {agents.filter(a => a.relationship_with_person?.toLowerCase().includes('child') || a.relationship_with_person?.toLowerCase().includes('son') || a.relationship_with_person?.toLowerCase().includes('daughter')).map((child, idx) => (
+                        {(formData.children || []).map((child, idx) => (
                           <li key={idx}>
-                            {child.first_name} {child.surname} - {child.relationship_with_person}
+                            {child.first_name} {child.surname}
+                            {formType.includes('2Person') && child.parentage && ` - ${child.parentage === 'Joint' ? 'Both spouses' : child.parentage === 'Client' ? 'Your child' : "Spouse's child"}`}
                             {child.date_of_birth && ` (DOB: ${child.date_of_birth})`}
+                            {child.disinherit && ' - disinherited'}
                           </li>
                         ))}
                       </ul>

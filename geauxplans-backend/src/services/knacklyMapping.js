@@ -170,6 +170,42 @@ function mapParty(party, index) {
 }
 
 // ---------------------------------------------------------------------------
+// Children
+// ---------------------------------------------------------------------------
+
+/**
+ * One `Children` row — an `individual` carrying `Parentage` and `DisinheritTF`.
+ *
+ * `Parentage` is a selection stored by its Name (`Joint` | `Client` | `Spouse`)
+ * that the catalog's `ChildrenClient` / `ChildrenSpouse` / `ChildrenofBoth`
+ * formulas filter on. On a solo plan the catalog never asks the question
+ * (its relevance is `MarriedTF`), so every child is the client's and the value
+ * is forced to `Client`; the stored joint/spouse answer, if any, is ignored.
+ */
+function mapChild(child, index, twoPerson) {
+  const row = mapIndividual(child, `child-${index + 1}`);
+  row.Parentage = twoPerson ? (text(child.parentage) || 'Joint') : 'Client';
+  // Written outside `compact`: `false` is a real answer ("not disinherited"),
+  // and the catalog's ChildrenInherit/ChildrenDisinherit split reads it.
+  row.DisinheritTF = child.disinherit === true || child.disinherit === 'true';
+  return row;
+}
+
+/**
+ * Populate `Children` and its gate `ChildrenTF`.
+ *
+ * `ChildrenTF` is the raw "does anyone have children?" question — the form
+ * stores it as `children_as_agents` — not a formula, so it is written here.
+ */
+function applyChildren(record, data, twoPerson) {
+  const hasChildren = data.children_as_agents === true || isYes(data.children_as_agents);
+  record.ChildrenTF = hasChildren;
+
+  const list = Array.isArray(data.children) ? data.children : [];
+  record.Children = hasChildren ? list.map((c, i) => mapChild(c, i, twoPerson)) : [];
+}
+
+// ---------------------------------------------------------------------------
 // Agents
 // ---------------------------------------------------------------------------
 
@@ -401,6 +437,8 @@ function transformFormDataToKnackly(formData, formType) {
     record.Spouse.SameAddressTF = sameAddress;
   }
   record.MarriedTF = Boolean(record.Spouse);
+
+  applyChildren(record, data, twoPerson);
 
   // `StateLawSelect` is a selection stored by its Name; the catalog derives
   // "Parish" vs "County", "immovable" vs "real" and the rest of the governing
