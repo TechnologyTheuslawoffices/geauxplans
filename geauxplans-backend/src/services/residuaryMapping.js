@@ -134,7 +134,91 @@ function resolveRecipientId(record, answer) {
   );
 }
 
-function toResiduaryRow(record, entry) {
+/**
+ * Map a form row's nested "In Trust" answers onto the catalog's per-beneficiary
+ * trust properties: the multi-age distribution schedule, the initial/successor
+ * trustees, and the education/trade-school flags.
+ *
+ * WHAT ACTUALLY RENDERS (verified against the .docx templates, not the models)
+ * ---------------------------------------------------------------------------
+ * `GeauxJointTrust.docx` — the template a Geaux TRUST plan renders — references
+ * all of these with NO `IsGeauxAppTF` guard anywhere in the file, so they DO
+ * appear in the trust document. Verified quotes from that template:
+ *   - ages:      `{[list ResidDistribs]}…attains {[DistAge|cardinal]}…{[endlist]}`
+ *   - initial:   `{[GeauxInitialTrustTees.AgentSelect.NameCO]}` (+ `.CoAgentSelect`,
+ *                `.AgentServeAlone`) — an AGENT OBJECT, not a bare id.
+ *   - successor: `{[if GeauxTrustSuccessorsTF]}…{[list FullPurposeSuccessorTees]}`
+ *                `{[AgentSelect.NameCO]}…` — the names come from
+ *                `FullPurposeSuccessorTees` (a list of agent objects), NOT from a
+ *                `GeauxSuccessorTrustTees` property (which the template never reads).
+ *   - education: `{[if ResidEducationTF]}Educational Expenses…{[if TradeSchoolTF]},`
+ *                ` or a trade school{[endif]}{[endif]}`.
+ *
+ * So the shapes below are what the TRUST template dereferences. An earlier version
+ * of this file wrote `GeauxInitialTrustTees` as a bare ObjectId and the successors
+ * as `GeauxSuccessorTrustTees`; both were wrong and would have rendered blanks.
+ *
+ * WILL is different and NOT handled here yet: `willresidual.json` uses
+ * `GeauxInitialTee` (singular) for the trustee, gates `ResidDistribs` behind
+ * `SpecificTrustType == "Term" && TermType == "Ages"`, and does not carry
+ * `ResidEducationTF`/`TradeSchoolTF` as row properties. The will path therefore
+ * only gets the ages + single mandatory distribution age below; its trustee and
+ * education mapping is deferred until those shapes are confirmed.
+ */
+function applyInTrustDetail(record, row, entry, family) {
+  // Multi-age schedule. Fall back to the single legacy age when the richer list
+  // was never populated (older submissions), so nothing regresses. Both the
+  // trust and will models carry `ResidDistribs` ({DistAge}) and the single
+  // `WillResiduaryMandatoryDist`, so these are written for either family.
+  const ages = Array.isArray(entry.distribution_ages) && entry.distribution_ages.length > 0
+    ? entry.distribution_ages
+    : [entry.trust_until_age];
+  const distribs = ages
+    .map((a) => parseInt(a, 10))
+    .filter((n) => Number.isFinite(n) && n > 0)
+    .map((DistAge) => ({ DistAge }));
+
+  row.WillResiduaryMandatoryDist = distribs.length > 0 ? distribs[0].DistAge : 25;
+
+  if (distribs.length > 0) {
+    row.ResidDistribs = distribs;
+  }
+
+  // The trustee and education shapes below are verified against GeauxJointTrust.docx
+  // only. The will template reads different property names, so guard on family
+  // rather than write will rows in a shape the will document never dereferences.
+  if (family !== 'trust') {
+    return;
+  }
+
+  // Agent object: the template reads `.AgentSelect.NameCO`. The intake collects a
+  // single initial trustee, so CoAgentSelect/AgentServeAlone are left unset and
+  // the template's `{[if …CoAgentSelect]}` branch simply doesn't fire.
+  const initialTrustee = findPartyId(record, entry.initial_trustee);
+  if (initialTrustee) {
+    row.GeauxInitialTrustTees = { AgentSelect: initialTrustee };
+  }
+
+  const wantsSuccessors = entry.has_successor_trustees === 'Yes';
+  row.GeauxTrustSuccessorsTF = wantsSuccessors;
+  if (wantsSuccessors) {
+    const successors = (Array.isArray(entry.successor_trustees) ? entry.successor_trustees : [])
+      .map((name) => findPartyId(record, name))
+      .filter(Boolean)
+      .map((id) => ({ AgentSelect: id }));
+    if (successors.length > 0) {
+      row.FullPurposeSuccessorTees = successors;
+    }
+  }
+
+  const payEducation = entry.pay_for_education === 'Yes';
+  row.ResidEducationTF = payEducation;
+  if (payEducation) {
+    row.TradeSchoolTF = entry.include_trade_schools === 'Yes';
+  }
+}
+
+function toResiduaryRow(record, entry, family) {
   const inTrust = entry.how_receive === 'In Trust';
   const row = {
     Recipient: resolveRecipientId(record, entry.recipient),
@@ -143,10 +227,7 @@ function toResiduaryRow(record, entry) {
   };
 
   if (inTrust) {
-    // The Geaux apps describe this as "held in trust until the person reaches
-    // the stated age", which the catalog models as a single mandatory
-    // distribution age rather than a full distribution schedule.
-    row.WillResiduaryMandatoryDist = parseInt(entry.trust_until_age, 10) || 25;
+    applyInTrustDetail(record, row, entry, family);
   }
 
   return row;
@@ -176,7 +257,7 @@ function applyResiduary(record, formData, family) {
   const entries = Array.isArray(section.residuary_distribution)
     ? section.residuary_distribution
     : [];
-  record[target.residuary] = entries.map((e) => toResiduaryRow(record, e));
+  record[target.residuary] = entries.map((e) => toResiduaryRow(record, e, family));
 
   // The catalog asks this separately and uses it to decide whether to show the
   // per-beneficiary percentage question at all.
