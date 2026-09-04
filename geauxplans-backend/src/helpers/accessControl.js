@@ -58,6 +58,10 @@ async function hasActiveSubscription(userId, subscriptionProductId = PRODUCTS.SU
   }
 
   try {
+    // A user may hold more than one active row for the same subscription
+    // product (renewals, or the plan added to the cart more than once). Order
+    // by the furthest expiry and take a single row — a bare `.single()` throws
+    // on multiple matches, which would wrongly deny access to a paying member.
     const { data: subscription, error } = await supabase
       .from('user_subscriptions')
       .select('id, status, expires_at')
@@ -65,7 +69,9 @@ async function hasActiveSubscription(userId, subscriptionProductId = PRODUCTS.SU
       .eq('product_id', subscriptionProductId)
       .eq('status', 'active')
       .gte('expires_at', new Date().toISOString())
-      .single();
+      .order('expires_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (error || !subscription) {
       return false;
