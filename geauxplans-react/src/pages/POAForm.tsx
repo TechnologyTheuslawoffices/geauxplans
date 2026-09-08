@@ -1071,6 +1071,9 @@ const POAForm: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [existingSubmissionId, setExistingSubmissionId] = useState<number | null>(null);
   const [hasOtherParties, setHasOtherParties] = useState<string>('');
+  const [collapsedAgentPanels, setCollapsedAgentPanels] = useState<Record<string, boolean>>({});
+  const toggleAgentPanel = (id: string) =>
+    setCollapsedAgentPanels((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const formConfig = FORM_TYPES[formType] || FORM_TYPES.powerOfAttorneyForm;
   const pages = formConfig.pages;
@@ -2796,8 +2799,9 @@ const POAForm: React.FC = () => {
         <p className="text-muted mb-3">
           Choose {getPrincipalFullName()}'s Agents for the Financial Power of Attorney (the person {getPrincipalFullName()} wants
           to make financial decisions for them if they are incapacitated). {getPrincipalFullName()} may select a Co-Agent to
-          serve at the same time as the Initial Agent. Decisions of Co-Agents will be made jointly by mutual consent.
+          serve at the same time as the Initial Agent.
         </p>
+        <p className="text-muted mb-3">Decisions of Co-Agents will be made jointly by mutual consent.</p>
         <div className="alert alert-light border mb-4">
           <strong>If you do not see the name of the person or entity you wish to designate as an Agent:</strong>
           <div className="d-flex align-items-center mt-2 flex-wrap">
@@ -2810,13 +2814,17 @@ const POAForm: React.FC = () => {
           </div>
         </div>
 
-        <p className="mb-3">Select the initial agent(s) for {getPrincipalFullName()}'s Financial Power of Attorney:</p>
+        <p className="mb-3">Select the Initial Agent(s) for {getPrincipalFullName()}'s Financial Power of Attorney:</p>
         <div className="card mb-3">
-          <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <span>Item</span>
-            <span>−</span>
+          <div
+            className="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+            style={{ cursor: 'pointer' }}
+            onClick={() => toggleAgentPanel('fpoa-client')}
+          >
+            <span>Initial Agent(s)</span>
+            <span>{collapsedAgentPanels['fpoa-client'] ? '+' : '−'}</span>
           </div>
-          <div className="card-body">
+          <div className={`card-body ${collapsedAgentPanels['fpoa-client'] ? 'd-none' : ''}`}>
             <div className="row">
               <div className="col-md-6 mb-3">
                 <label className="form-label">Select the person you want to serve:</label>
@@ -2983,16 +2991,21 @@ const POAForm: React.FC = () => {
             <p className="text-muted mb-3">
               Choose {getSecondPersonName()}'s Agents for the Financial Power of Attorney (the person {getSecondPersonName()} wants
               to make financial decisions for them if they are incapacitated). {getSecondPersonName()} may select a Co-Agent to
-              serve at the same time as the Initial Agent. Decisions of Co-Agents will be made jointly by mutual consent.
+              serve at the same time as the Initial Agent.
             </p>
+            <p className="text-muted mb-3">Decisions of Co-Agents will be made jointly by mutual consent.</p>
 
-            <p className="mb-3">Select the initial agent(s) for {getSecondPersonName()}'s Financial Power of Attorney:</p>
+            <p className="mb-3">Select the Initial Agent(s) for {getSecondPersonName()}'s Financial Power of Attorney:</p>
             <div className="card mb-3">
-              <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <span>Item</span>
-                <span>−</span>
+              <div
+                className="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+                style={{ cursor: 'pointer' }}
+                onClick={() => toggleAgentPanel('fpoa-spouse')}
+              >
+                <span>Initial Agent(s)</span>
+                <span>{collapsedAgentPanels['fpoa-spouse'] ? '+' : '−'}</span>
               </div>
-              <div className="card-body">
+              <div className={`card-body ${collapsedAgentPanels['fpoa-spouse'] ? 'd-none' : ''}`}>
                 <div className="row">
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Select the person you want to serve:</label>
@@ -3236,17 +3249,21 @@ const POAForm: React.FC = () => {
         <p className="text-muted mb-3">
           Choose {getPrincipalFullName()}'s Agents for the Healthcare Power of Attorney (the person{' '}
           {getPrincipalFullName()} wants to make health care decisions for them if they are incapacitated).{' '}
-          {getPrincipalFullName()} may select a Co-Agent to serve at the same time as the Agent. Decisions of Co-Agents
-          will be made jointly by mutual consent.
+          {getPrincipalFullName()} may select a Co-Agent to serve at the same time as the Agent.
         </p>
+        <p className="text-muted mb-3">Decisions of Co-Agents will be made jointly by mutual consent.</p>
 
-        <p className="mb-3">Select the Agent(s) for {getPrincipalFullName()}'s Healthcare Power of Attorney:</p>
+        <p className="mb-3">Select the Agent(s) for {getPrincipalFullName()}'s Health Care Power of Attorney:</p>
         <div className="card mb-3">
-          <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <span>Item</span>
-            <span>−</span>
+          <div
+            className="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+            style={{ cursor: 'pointer' }}
+            onClick={() => toggleAgentPanel('hcpoa-client')}
+          >
+            <span>Initial Agent(s)</span>
+            <span>{collapsedAgentPanels['hcpoa-client'] ? '+' : '−'}</span>
           </div>
-          <div className="card-body">
+          <div className={`card-body ${collapsedAgentPanels['hcpoa-client'] ? 'd-none' : ''}`}>
             <div className="row">
               <div className="col-md-6 mb-3">
                 <label className="form-label">Select the person you want to serve:</label>
@@ -3467,13 +3484,24 @@ const POAForm: React.FC = () => {
               </div>
             </div>
 
-            <p className="mb-3">Select the initial agent(s) for {getSecondPersonName()}'s Healthcare Power of Attorney:</p>
+            <p className="text-muted mb-3">
+              Choose {getSecondPersonName()}'s Agents for the Healthcare Power of Attorney (the person{' '}
+              {getSecondPersonName()} wants to make health care decisions for them if they are incapacitated).{' '}
+              {getSecondPersonName()} may select a Co-Agent to serve at the same time as the Agent.
+            </p>
+            <p className="text-muted mb-3">Decisions of Co-Agents will be made jointly by mutual consent.</p>
+
+            <p className="mb-3">Select the Agent(s) for {getSecondPersonName()}'s Health Care Power of Attorney:</p>
             <div className="card mb-3">
-              <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <span>Item</span>
-                <span>−</span>
+              <div
+                className="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+                style={{ cursor: 'pointer' }}
+                onClick={() => toggleAgentPanel('hcpoa-spouse')}
+              >
+                <span>Initial Agent(s)</span>
+                <span>{collapsedAgentPanels['hcpoa-spouse'] ? '+' : '−'}</span>
               </div>
-              <div className="card-body">
+              <div className={`card-body ${collapsedAgentPanels['hcpoa-spouse'] ? 'd-none' : ''}`}>
                 <div className="row">
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Select the person you want to serve:</label>
@@ -3660,7 +3688,7 @@ const POAForm: React.FC = () => {
           nutrition connotes a feeding tube and hydration would be administered intravenously. You must initial next to
           your choice as indicated on the form.
         </p>
-        <h4 className="mt-4 mb-3">{getPrincipalFullName()}'s Healthcare Directive</h4>
+        <h4 className="mt-4 mb-3">{getPrincipalFullName()}'s Healthcare Directive.</h4>
         <p className="text-muted mb-3">
           For {getPrincipalFullName()}, select whether to withdraw life support entirely or choose which support options
           to permit:
@@ -3675,7 +3703,7 @@ const POAForm: React.FC = () => {
           >
             <option value="">Select your preference...</option>
             <option value="WITHDRAW">WITHDRAW - withhold and remove all life support</option>
-            <option value="CHOOSE">Choose specific options below</option>
+            <option value="CHOOSE">Choose all that apply from the options below:</option>
           </select>
         </div>
 
@@ -3761,7 +3789,7 @@ const POAForm: React.FC = () => {
         {isTwoPerson && (
           <>
             <hr className="my-5" />
-            <h4 className="mb-3">{getSecondPersonName()}'s Healthcare Directive</h4>
+            <h4 className="mb-3">{getSecondPersonName()}'s Healthcare Directive.</h4>
             <p className="text-muted mb-3">
               For {getSecondPersonName()}, select whether to withdraw life support entirely or choose which support
               options to permit:
@@ -4699,7 +4727,7 @@ const POAForm: React.FC = () => {
           <li>Add or remove assets</li>
           <li>Change beneficiaries</li>
           <li>Update your Trustees</li>
-          <li>Revise distribution instructions—all with flexibility and ease.</li>
+          <li>Revise distribution instructions—All with flexibility and ease.</li>
         </ul>
         <p className="text-muted">
           {isTwoPerson
@@ -4852,7 +4880,7 @@ const POAForm: React.FC = () => {
           </p>
           <p className="text-muted">
             Any remaining assets that are not given away through specific bequests will be handled later in the
-            "Final Trust Distributions" section. Those assets will be divided among the beneficiaries you designate to
+            "Final Distributions" section. Those assets will be divided among the beneficiaries you designate to
             receive the rest of your trust property.
           </p>
           <label className="form-label">
@@ -4932,11 +4960,11 @@ const POAForm: React.FC = () => {
           grandchildren, or other individuals or organizations you wish to inherit the rest of your estate.
         </p>
         <p className="text-muted">You can choose to leave each beneficiary's share in one of two ways:</p>
-        <p className="text-muted mb-1"><strong>Outright Distribution</strong></p>
+        <ul className="text-muted mb-1"><li><strong>Outright Distribution</strong></li></ul>
         <p className="text-muted">
           The beneficiary receives full ownership of their share immediately with no restrictions.
         </p>
-        <p className="text-muted mb-1"><strong>In Trust (Age-Based Distribution)</strong></p>
+        <ul className="text-muted mb-1"><li><strong>In Trust (Age-Based Distribution)</strong></li></ul>
         <p className="text-muted">
           You may prefer to have the inheritance held in trust and distributed to the beneficiary over time. In this
           case, you can choose specific ages or age ranges for staggered distributions (e.g., 1/3 at age 25, 1/3 at
@@ -5035,18 +5063,22 @@ const POAForm: React.FC = () => {
         {/* ---- Tutor / Under-Tutor ---- */}
         <h4 className="mt-4 border-bottom pb-2">Tutor and Under-Tutor (Legal Guardian for Minor Children)</h4>
         <p className="text-muted">
-          A Tutor is the person who will be legally responsible for the care and upbringing of your minor children if
-          you (and the other parent) are unable to do so. Under Louisiana law, you may also name an Under-Tutor, who
-          serves as a safeguard by overseeing the Tutor's management of the child's affairs.
+          If you have children under the age of 18, you may appoint someone to serve as Tutor (legal guardian) in the
+          event you pass away or become unable to care for your child.
         </p>
         <p className="text-muted">
-          If the other natural parent is still living, they will generally have the first legal right to serve as
-          Tutor. For that reason, you typically would not list the other parent here—only the person you want to serve
-          if neither parent is able to.
+          Under Louisiana law, the child's surviving parent is automatically the "natural Tutor" and has priority to
+          serve. Therefore, any Tutor you name will only act if the child's other parent is deceased, unwilling, or
+          unable to serve in that role. For that reason, do not list the other parent as your nominated Tutor.
+        </p>
+        <p className="text-muted">
+          In addition, Louisiana law requires you to name an Under-Tutor, who serves as a safeguard and must consent to
+          certain decisions made by the Tutor. If you do not nominate an Under-Tutor, the Court will appoint one to
+          serve alongside the Tutor.
         </p>
         <div className="form-check mb-3">
           <input className="form-check-input" type="checkbox" id="appointTutor" checked={ti.appoint_tutor === true} onChange={(e) => updateFormData('trust_info', 'appoint_tutor', e.target.checked)} />
-          <label className="form-check-label" htmlFor="appointTutor">Appoint a Tutor and Under-Tutor to care for minor children.</label>
+          <label className="form-check-label" htmlFor="appointTutor">Select to appoint a Tutor and Under-Tutor to care for minor children.</label>
         </div>
         {ti.appoint_tutor && (
           <>
@@ -5260,24 +5292,28 @@ const POAForm: React.FC = () => {
         <React.Fragment key={principal}>
           {/* ---- Initial Executors ---- */}
           <h4 className="mt-4 border-bottom pb-2">Executors in {name}'s Will</h4>
-          {isTrust && (
-            <p className="text-muted">
-              The only decision you need to make for your Pourover Will is the selection of your Independent Executor.
-              This is the person responsible for opening a Louisiana succession, if necessary, to transfer omitted assets
-              into your Revocable Living Trust.
-            </p>
-          )}
           <p className="text-muted">
-            The Executor(s) are the person or people {name} wants to manage the distribution of {name}'s estate
-            after having passed. {name} may select Co-Executors (more than one person) to serve at the same time.
-            Decisions of Co-Executors would be made jointly by mutual consent.
+            The Executor(s) are the person or people {name} wants to manage the distribution of {name}'s estate after
+            having passed.
+          </p>
+          <p className="text-muted">
+            {name} may select Co-Executors (more than one person) to serve at the same time. Decisions of Co-Executors
+            would be made jointly by mutual consent.
           </p>
           <p className="text-muted">
             This {isTrust ? 'Pourover Will' : 'Will'} provides for Independent Administration, which means {name}'s
-            Executors will have the ability to act without pre-approval or permission of a Court. The initial Executor
-            will serve first; you may select one initial Executor to serve alone, or two initial Co-Executors to serve at
-            the same time.
+            Executors will have the ability to act without pre-approval or permission of a Court.
           </p>
+          <p className="text-muted">
+            The initial Executor will serve first; you may select one initial Executor to serve alone, or two initial
+            Co-Executors to serve at the same time.
+          </p>
+          {isTrust && (
+            <p className="text-muted">
+              Please understand that a probate will not be required and you will not need the Pourover Will or to appoint
+              an Executor if your Revocable Trust is properly funded, so these appointments are simply a safety measure.
+            </p>
+          )}
 
           {/* ---- Sole-executor shortcut (2-person only) ---- */}
           {isTwoPerson && (
@@ -5299,34 +5335,44 @@ const POAForm: React.FC = () => {
           {(!isTwoPerson || shortcut === 'No') && (
             <>
               <label className="form-label fw-bold">Executors for {name}'s Will:</label>
-              {initialExecs.map((ex, index) => (
-                <div key={index} className="card mb-2">
-                  <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <span>{getOrdinalLabel(index)} Initial Executor</span>
-                    <button type="button" className="btn btn-sm btn-link text-white p-0" onClick={() => removeInitialExecutor(index, principal)}>×</button>
-                  </div>
-                  <div className="card-body">
-                    <div className="row">
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">Select the person you want to serve as Initial Executor:</label>
-                        <select className="form-select" value={ex.initial_executor} onChange={(e) => updateInitialExecutor(index, 'initial_executor', e.target.value, principal)}>
-                          <option value="">Select Executor...</option>
-                          {options.map((n) => (<option key={n} value={n}>{n}</option>))}
-                        </select>
+              <div className="card mb-3">
+                <div
+                  className="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => toggleAgentPanel(`exec-${principal}`)}
+                >
+                  <span>Select Executors Below</span>
+                  <span>{collapsedAgentPanels[`exec-${principal}`] ? '+' : '−'}</span>
+                </div>
+                <div className={`card-body ${collapsedAgentPanels[`exec-${principal}`] ? 'd-none' : ''}`}>
+                  {initialExecs.map((ex, index) => (
+                    <div key={index} className="border rounded p-3 mb-3">
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <span className="fw-bold">{getOrdinalLabel(index)} Initial Executor</span>
+                        <button type="button" className="btn btn-sm btn-link text-danger p-0" onClick={() => removeInitialExecutor(index, principal)}>×</button>
                       </div>
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">If you want to appoint a second person to serve at the same time as the Initial Agent, select them here:</label>
-                        <select className="form-select" value={ex.co_executor} onChange={(e) => updateInitialExecutor(index, 'co_executor', e.target.value, principal)}>
-                          <option value="">None</option>
-                          {options.map((n) => (<option key={n} value={n}>{n}</option>))}
-                        </select>
+                      <div className="row">
+                        <div className="col-md-6 mb-3">
+                          <label className="form-label">Select the person you want to serve as Initial Executor:</label>
+                          <select className="form-select" value={ex.initial_executor} onChange={(e) => updateInitialExecutor(index, 'initial_executor', e.target.value, principal)}>
+                            <option value="">Select Executor...</option>
+                            {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                          </select>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <label className="form-label">If you want to appoint a second person to serve at the same time as the Initial Agent, select them here:</label>
+                          <select className="form-select" value={ex.co_executor} onChange={(e) => updateInitialExecutor(index, 'co_executor', e.target.value, principal)}>
+                            <option value="">None</option>
+                            {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                          </select>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
+                  <button type="button" className="btn btn-outline-primary mb-2" onClick={() => addInitialExecutor(principal)}>+ Add Initial Executor</button>
+                  {errors[errorKey] && <div className="text-danger small mb-2">{errors[errorKey]}</div>}
                 </div>
-              ))}
-              <button type="button" className="btn btn-outline-primary mb-2" onClick={() => addInitialExecutor(principal)}>+ Add Initial Executor</button>
-              {errors[errorKey] && <div className="text-danger small mb-2">{errors[errorKey]}</div>}
+              </div>
             </>
           )}
 
@@ -5409,6 +5455,11 @@ const POAForm: React.FC = () => {
               A well-funded trust typically avoids the need for a Pourover Will entirely. However, we include it as a
               precautionary measure—a legal backstop to keep your trust at the center of your estate plan.
             </p>
+            <p className="text-muted">
+              The only decision you need to make for your Pourover Will is the selection of your Independent Executor.
+              This is the person responsible for opening a Louisiana succession, if necessary, to transfer omitted assets
+              into your Revocable Living Trust.
+            </p>
           </>
         ) : (
           <>
@@ -5422,14 +5473,6 @@ const POAForm: React.FC = () => {
 
         {renderExecutorSection('client')}
         {isTwoPerson && renderExecutorSection('spouse')}
-
-        {isTrust && (
-          <div className="alert alert-light border mt-3">
-            <i className="fas fa-info-circle me-2"></i>
-            A probate will not be required, and there is no need to use your Pourover Will or to appoint an Executor if
-            your Revocable Trust is properly funded, so these appointments are simply a safety measure.
-          </div>
-        )}
       </div>
     );
   };
