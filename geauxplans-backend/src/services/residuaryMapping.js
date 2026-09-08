@@ -191,21 +191,34 @@ function applyInTrustDetail(record, row, entry, family) {
     return;
   }
 
-  // Agent object: the template reads `.AgentSelect.NameCO`. The intake collects a
-  // single initial trustee, so CoAgentSelect/AgentServeAlone are left unset and
-  // the template's `{[if …CoAgentSelect]}` branch simply doesn't fire.
+  // Agent object: the template reads `.AgentSelect.NameCO` and, when a second
+  // person is named, `.CoAgentSelect`. The intake now collects an optional
+  // co-trustee alongside the initial trustee; the template's
+  // `{[if …CoAgentSelect]}` branch fires only when that co-trustee resolves.
   const initialTrustee = findPartyId(record, entry.initial_trustee);
   if (initialTrustee) {
     row.GeauxInitialTrustTees = { AgentSelect: initialTrustee };
+    const initialCoTrustee = findPartyId(record, entry.initial_co_trustee);
+    if (initialCoTrustee) row.GeauxInitialTrustTees.CoAgentSelect = initialCoTrustee;
   }
 
   const wantsSuccessors = entry.has_successor_trustees === 'Yes';
   row.GeauxTrustSuccessorsTF = wantsSuccessors;
   if (wantsSuccessors) {
+    // Successors are objects ({ person_to_serve, second_person_to_serve }).
+    // Tolerate older submissions that stored a bare name string per successor.
     const successors = (Array.isArray(entry.successor_trustees) ? entry.successor_trustees : [])
-      .map((name) => findPartyId(record, name))
-      .filter(Boolean)
-      .map((id) => ({ AgentSelect: id }));
+      .map((s) => {
+        const person = typeof s === 'string' ? s : (s && s.person_to_serve);
+        const AgentSelect = findPartyId(record, person);
+        if (!AgentSelect) return null;
+        const agent = { AgentSelect };
+        const co = typeof s === 'string' ? null : (s && s.second_person_to_serve);
+        const CoAgentSelect = findPartyId(record, co);
+        if (CoAgentSelect) agent.CoAgentSelect = CoAgentSelect;
+        return agent;
+      })
+      .filter(Boolean);
     if (successors.length > 0) {
       row.FullPurposeSuccessorTees = successors;
     }
@@ -224,6 +237,13 @@ function toResiduaryRow(record, entry, family) {
     Recipient: resolveRecipientId(record, entry.recipient),
     GeauxBequest: parseFloat(entry.share_percent) || 0,
     HowReceive: inTrust ? 'In Trust' : 'Outright',
+    // The trust document never reads HowReceive. Its per-beneficiary trust
+    // section — trustees, education, and the ResidDistribs age schedule — is
+    // gated on `{[if SpecificOutrightTrust == "Trust"]}` in GeauxJointTrust.docx
+    // (verified by tracing the template's control flow). Without this, every
+    // in-trust field below is written but never rendered: the beneficiary would
+    // take outright and the trust terms would silently vanish.
+    SpecificOutrightTrust: inTrust ? 'Trust' : 'Outright',
   };
 
   if (inTrust) {

@@ -73,7 +73,7 @@ const FORM_TYPES: Record<string, { title: string; pages: string[]; planType: str
 
   // Trust-Based Plans
   trustBasedEstatePlanSolo: {
-    title: 'Trust-Based Estate Plan',
+    title: 'Trust-Based Estate Plan for One Person',
     pages: ['start', 'personal_info', 'children', 'agents', 'plan_contents', 'executors', 'rlt', 'dor', 'fpoa', 'hcpoa', 'hcd', 'review'],
     planType: 'single_trust',
   },
@@ -341,6 +341,7 @@ interface Party {
   suffix: string;
   date_of_birth: string;
   gender: string;
+  is_an_agent?: string; // 'Yes' | 'No' — will this person be named a Financial/Healthcare Agent?
   relationship_with_person: string;
   last_4_ssn_digits: string;
   entity_name: string;
@@ -373,7 +374,17 @@ interface FormData {
     surname: string;
     suffix: string;
     date_of_birth: string;
+    gender: string;
     parentage: string;   // 'Joint' | 'Client' | 'Spouse' (2-person plans only)
+    same_address_as_parent: boolean;
+    street_address: string;
+    street_address_2: string;
+    city: string;
+    state: string;
+    zip: string;
+    parish: string;
+    phone_number: string;
+    last_4_ssn_digits: string;
     deceased: boolean;
     disinherit: boolean;
   }>;
@@ -517,8 +528,9 @@ interface FormData {
       // optional so existing/mocked rows without them still typecheck.
       distribution_ages?: string[];        // one or more mandatory distribution ages
       initial_trustee?: string;            // initial trustee of this beneficiary's trust
+      initial_co_trustee?: string;         // co-trustee serving alongside the initial trustee
       has_successor_trustees?: string;     // 'Yes' | 'No'
-      successor_trustees?: string[];       // ordered successor trustees
+      successor_trustees?: Array<{ person_to_serve: string; second_person_to_serve: string }>; // ordered successor trustees (+ co-trustee)
       pay_for_education?: string;          // 'Yes' | 'No'
       include_trade_schools?: string;      // 'Yes' | 'No'
     }>;
@@ -569,8 +581,9 @@ interface FormData {
       // optional so existing/mocked rows without them still typecheck.
       distribution_ages?: string[];        // one or more mandatory distribution ages
       initial_trustee?: string;            // initial trustee of this beneficiary's trust
+      initial_co_trustee?: string;         // co-trustee serving alongside the initial trustee
       has_successor_trustees?: string;     // 'Yes' | 'No'
-      successor_trustees?: string[];       // ordered successor trustees
+      successor_trustees?: Array<{ person_to_serve: string; second_person_to_serve: string }>; // ordered successor trustees (+ co-trustee)
       pay_for_education?: string;          // 'Yes' | 'No'
       include_trade_schools?: string;      // 'Yes' | 'No'
     }>;
@@ -741,6 +754,7 @@ const createEmptyParty = (): Party => ({
   suffix: '',
   date_of_birth: '',
   gender: '',
+  is_an_agent: '',
   relationship_with_person: '',
   last_4_ssn_digits: '',
   entity_name: '',
@@ -764,7 +778,7 @@ const TEST_PREFILL_DATA: FormData = {
   married: true,
   children_as_agents: true,
   children: [
-    { first_name: 'Emily', middle_name: '', surname: 'Smith', suffix: '', date_of_birth: '2010-04-12', parentage: 'Joint', deceased: false, disinherit: false },
+    { first_name: 'Emily', middle_name: '', surname: 'Smith', suffix: '', date_of_birth: '2010-04-12', gender: '', parentage: 'Joint', same_address_as_parent: true, street_address: '', street_address_2: '', city: '', state: '', zip: '', parish: '', phone_number: '', last_4_ssn_digits: '', deceased: false, disinherit: false },
   ],
   governing_law: 'Louisiana',
   personal_info: {
@@ -1169,7 +1183,7 @@ const POAForm: React.FC = () => {
       ...prev,
       children: [
         ...(prev.children || []),
-        { first_name: '', middle_name: '', surname: '', suffix: '', date_of_birth: '', parentage: 'Joint', deceased: false, disinherit: false },
+        { first_name: '', middle_name: '', surname: '', suffix: '', date_of_birth: '', gender: '', parentage: 'Joint', same_address_as_parent: true, street_address: '', street_address_2: '', city: '', state: '', zip: '', parish: '', phone_number: '', last_4_ssn_digits: '', deceased: false, disinherit: false },
       ],
     }));
   };
@@ -1253,6 +1267,19 @@ const POAForm: React.FC = () => {
     const spouseName = [si.first_name, si.middle_name, si.surname].filter(Boolean).join(' ');
     const otherName = principal === 'spouse' ? clientName : spouseName;
     return Array.from(new Set([otherName, ...getBeneficiaryOptions()].filter(Boolean)));
+  };
+
+  // Narrow an option list to the names not already chosen elsewhere in the same
+  // group (e.g. another trustee slot), while keeping this control's own current
+  // value so it still renders its selected label. Prevents naming one person to
+  // two trustee roles at once.
+  const availableOptions = (
+    options: string[],
+    used: Array<string | undefined>,
+    current: string,
+  ): string[] => {
+    const taken = new Set(used.filter((u): u is string => Boolean(u) && u !== current));
+    return options.filter((o) => o === current || !taken.has(o));
   };
 
   // ---- Trust: successor trustees group ----
@@ -1342,57 +1369,114 @@ const POAForm: React.FC = () => {
   // age so older submissions and the backend's single-age fallback still work.
   const renderInTrustDetails = (section: ResidSectionKey, d: any, index: number) => {
     const trusteeOptions = getBeneficiaryOptions();
+    const beneficiaryName = d.recipient || 'this beneficiary';
     const ages: string[] = (d.distribution_ages && d.distribution_ages.length)
       ? d.distribution_ages
       : [d.trust_until_age || ''];
-    const successors: string[] = d.successor_trustees || [];
+    // Successor trustees are stored as objects ({ person, co-trustee }); tolerate
+    // older submissions that stored bare name strings by normalizing on read.
+    const normSucc = (arr: any): Array<{ person_to_serve: string; second_person_to_serve: string }> =>
+      (arr || []).map((s: any) => typeof s === 'string'
+        ? { person_to_serve: s, second_person_to_serve: '' }
+        : { person_to_serve: s?.person_to_serve || '', second_person_to_serve: s?.second_person_to_serve || '' });
+    const successors = normSucc(d.successor_trustees);
+    // Every trustee slot in this beneficiary's trust — initial, its co-trustee, and
+    // each successor pair — so a person named to one is dropped from the others.
+    const usedTrustees: Array<string | undefined> = [
+      d.initial_trustee,
+      d.initial_co_trustee,
+      ...successors.flatMap((s) => [s.person_to_serve, s.second_person_to_serve]),
+    ];
     return (
       <div className="mt-2 pt-3 border-top">
-        <label className="form-label fw-semibold">At what age(s) should distributions be made?</label>
-        <p className="text-muted small mb-2">You can enter as many ages (i.e., have as many distributions) as you like.</p>
+        {/* ---- Distribution Ages ---- */}
+        <h5>Distribution Ages</h5>
+        <p className="text-muted small">
+          Enter distribution ages; you can enter as many ages (i.e., have as many distributions) as you like.
+          Distributions will be staggered equally based on the number of ages you enter. For example, if you wish for
+          there to be three distributions and you enter ages 25, 30, and 35, then one-third (1/3) of the trust assets
+          will be distributed outright to the beneficiary at age 25, followed by another one-third (1/3) at age 30, and
+          the final one-third (1/3) at age 35 at which time the trust will terminate. Of course, distributions can be
+          made for the maintenance, education, support, or health of the beneficiary prior to the age(s) you set for
+          final distribution.
+        </p>
         {ages.map((age, ai) => (
-          <div key={ai} className="d-flex align-items-center mb-2" style={{ maxWidth: 320 }}>
-            <input
-              type="number" min={18} max={99} className="form-control" placeholder="25" value={age}
-              onChange={(e) => mutateResidRow(section, index, (r) => {
-                const base = (r.distribution_ages && r.distribution_ages.length) ? [...r.distribution_ages] : [r.trust_until_age || ''];
-                base[ai] = e.target.value;
-                return { ...r, distribution_ages: base, trust_until_age: base[0] || '' };
-              })}
-            />
-            {ages.length > 1 && (
-              <button
-                type="button" className="btn btn-sm btn-link text-danger ms-2"
-                onClick={() => mutateResidRow(section, index, (r) => {
+          <div key={ai} className="mb-2" style={{ maxWidth: 360 }}>
+            <label className="form-label">Age of Beneficiary for {getOrdinalLabel(ai)} Distribution</label>
+            <div className="d-flex align-items-center">
+              <input
+                type="number" min={18} max={99} className="form-control" placeholder="25" value={age}
+                onChange={(e) => mutateResidRow(section, index, (r) => {
                   const base = (r.distribution_ages && r.distribution_ages.length) ? [...r.distribution_ages] : [r.trust_until_age || ''];
-                  const next = base.filter((_: string, i2: number) => i2 !== ai);
-                  return { ...r, distribution_ages: next, trust_until_age: next[0] || '' };
+                  base[ai] = e.target.value;
+                  return { ...r, distribution_ages: base, trust_until_age: base[0] || '' };
                 })}
-              >×</button>
-            )}
+              />
+              {ages.length > 1 && (
+                <button
+                  type="button" className="btn btn-sm btn-link text-danger ms-2"
+                  onClick={() => mutateResidRow(section, index, (r) => {
+                    const base = (r.distribution_ages && r.distribution_ages.length) ? [...r.distribution_ages] : [r.trust_until_age || ''];
+                    const next = base.filter((_: string, i2: number) => i2 !== ai);
+                    return { ...r, distribution_ages: next, trust_until_age: next[0] || '' };
+                  })}
+                >×</button>
+              )}
+            </div>
           </div>
         ))}
         <button
-          type="button" className="btn btn-sm btn-outline-secondary mb-3"
+          type="button" className="btn btn-sm btn-outline-secondary"
           onClick={() => mutateResidRow(section, index, (r) => {
             const base = (r.distribution_ages && r.distribution_ages.length) ? [...r.distribution_ages] : [r.trust_until_age || ''];
             return { ...r, distribution_ages: [...base, ''] };
           })}
         >+ Add another age</button>
+        <p className="text-muted small mt-2">
+          TIP: Only add another if you want to create an additional stage of distribution. If you're done, no need to
+          add more.
+        </p>
 
-        <div className="mb-3">
-          <label className="form-label">Who should serve as the initial Trustee of this beneficiary's trust?</label>
-          <select
-            className="form-select" value={d.initial_trustee || ''}
-            onChange={(e) => mutateResidRow(section, index, (r) => ({ ...r, initial_trustee: e.target.value }))}
-          >
-            <option value="">Select trustee...</option>
-            {trusteeOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
-          </select>
+        {/* ---- Trustees ---- */}
+        <h5 className="mt-3">Trustees</h5>
+        <p className="text-muted small">
+          Assets distributed to {beneficiaryName} will be held in trust. The trust stipulates how the assets should be
+          managed, and how, when and to whom the assets will be distributed. Assets inside the trust are managed by a
+          Trustee who has legal responsibility for managing and overseeing trust proceeds.
+        </p>
+        <p className="text-muted small">
+          You may select Co-Trustees (more than one person) to serve at the same time. Decisions of Co-Trustees would
+          be made jointly by mutual consent.
+        </p>
+
+        <label className="form-label fw-semibold">Initial Trustees</label>
+        <p className="text-muted small">Select the initial Trustee or initial Co-Trustees for this beneficiary's Trust.</p>
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Select the person you want to serve:</label>
+            <select
+              className="form-select" value={d.initial_trustee || ''}
+              onChange={(e) => mutateResidRow(section, index, (r) => ({ ...r, initial_trustee: e.target.value }))}
+            >
+              <option value="">Select trustee...</option>
+              {availableOptions(trusteeOptions, usedTrustees, d.initial_trustee || '').map((name) => (<option key={name} value={name}>{name}</option>))}
+            </select>
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">If you want to appoint a second person to serve at the same time as the person to the left, select them here:</label>
+            <select
+              className="form-select" value={d.initial_co_trustee || ''}
+              onChange={(e) => mutateResidRow(section, index, (r) => ({ ...r, initial_co_trustee: e.target.value }))}
+            >
+              <option value="">None</option>
+              {availableOptions(trusteeOptions, usedTrustees, d.initial_co_trustee || '').map((name) => (<option key={name} value={name}>{name}</option>))}
+            </select>
+          </div>
         </div>
 
-        <div className="mb-3">
-          <label className="form-label">Do you want to appoint successor Trustees for this beneficiary's trust?</label>
+        <label className="form-label fw-semibold">Successor Trustees</label>
+        <div className="mb-2">
+          <label className="form-label">Do you want to appoint successor Trustees for this beneficiary's Trust?</label>
           <select
             className="form-select" style={{ maxWidth: 160 }} value={d.has_successor_trustees || 'No'}
             onChange={(e) => mutateResidRow(section, index, (r) => ({ ...r, has_successor_trustees: e.target.value }))}
@@ -1402,35 +1486,64 @@ const POAForm: React.FC = () => {
           </select>
           {d.has_successor_trustees === 'Yes' && (
             <div className="mt-2">
+              <p className="text-muted small">Enter the Successor Trustees:</p>
               {successors.map((s, si) => (
-                <div key={si} className="d-flex align-items-center mb-2" style={{ maxWidth: 360 }}>
-                  <select
-                    className="form-select" value={s}
-                    onChange={(e) => mutateResidRow(section, index, (r) => {
-                      const next = [...(r.successor_trustees || [])];
-                      next[si] = e.target.value;
-                      return { ...r, successor_trustees: next };
-                    })}
-                  >
-                    <option value="">Select successor trustee...</option>
-                    {trusteeOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
-                  </select>
-                  <button
-                    type="button" className="btn btn-sm btn-link text-danger ms-2"
-                    onClick={() => mutateResidRow(section, index, (r) => ({
-                      ...r, successor_trustees: (r.successor_trustees || []).filter((_: string, i2: number) => i2 !== si),
-                    }))}
-                  >×</button>
+                <div key={si} className="card mb-2">
+                  <div className="card-header d-flex justify-content-between align-items-center">
+                    <span>{getOrdinalLabel(si)} Successor Trustee</span>
+                    <button
+                      type="button" className="btn btn-sm btn-link text-danger p-0"
+                      onClick={() => mutateResidRow(section, index, (r) => ({
+                        ...r, successor_trustees: normSucc(r.successor_trustees).filter((_, i2: number) => i2 !== si),
+                      }))}
+                    >×</button>
+                  </div>
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">Select the person you want to serve:</label>
+                        <select
+                          className="form-select" value={s.person_to_serve}
+                          onChange={(e) => mutateResidRow(section, index, (r) => {
+                            const next = normSucc(r.successor_trustees);
+                            next[si] = { ...next[si], person_to_serve: e.target.value };
+                            return { ...r, successor_trustees: next };
+                          })}
+                        >
+                          <option value="">Select successor trustee...</option>
+                          {availableOptions(trusteeOptions, usedTrustees, s.person_to_serve).map((name) => (<option key={name} value={name}>{name}</option>))}
+                        </select>
+                      </div>
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">If you want to appoint a second person to serve at the same time as the person to the left, select them here:</label>
+                        <select
+                          className="form-select" value={s.second_person_to_serve}
+                          onChange={(e) => mutateResidRow(section, index, (r) => {
+                            const next = normSucc(r.successor_trustees);
+                            next[si] = { ...next[si], second_person_to_serve: e.target.value };
+                            return { ...r, successor_trustees: next };
+                          })}
+                        >
+                          <option value="">None</option>
+                          {availableOptions(trusteeOptions, usedTrustees, s.second_person_to_serve).map((name) => (<option key={name} value={name}>{name}</option>))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
               <button
                 type="button" className="btn btn-sm btn-outline-secondary"
-                onClick={() => mutateResidRow(section, index, (r) => ({ ...r, successor_trustees: [...(r.successor_trustees || []), ''] }))}
+                onClick={() => mutateResidRow(section, index, (r) => ({
+                  ...r, successor_trustees: [...normSucc(r.successor_trustees), { person_to_serve: '', second_person_to_serve: '' }],
+                }))}
               >+ Add successor Trustee</button>
             </div>
           )}
         </div>
 
+        {/* ---- Education ---- */}
+        <h5 className="mt-3">Education</h5>
         <div className="mb-2">
           <label className="form-label">Do you want the Trustee to use the Trust funds to pay for the beneficiary's education?</label>
           <select
@@ -1908,12 +2021,34 @@ const POAForm: React.FC = () => {
 
   const renderStartPage = () => {
     const isPOA2Person = formType === 'powerOfAttorneyForm2Person';
+    const isTrust = formType.startsWith('trustBasedEstatePlan');
 
     return (
       <div className="poa-page">
         <p className="text-muted"><em>Estate Plan Document Selection</em></p>
         <h2>{getStepNumber('start')}. {formConfig.title}</h2>
-        {isPOA2Person ? (
+        {isTrust ? (
+          <>
+            <p><strong>Welcome to GeauxPlans</strong></p>
+            <p>You're about to take the first step in reviewing and securing your estate plan—great job.</p>
+            <p>Your custom estate plan typically includes:</p>
+            <ul>
+              <li>A <strong>Revocable Living Trust</strong> to hold your assets and avoid probate</li>
+              <li>A <strong>Pourover Will</strong> as a back-up for anything not yet in your trust</li>
+              <li>A <strong>Financial Power of Attorney</strong> and <strong>Medical Power of Attorney</strong></li>
+              <li>An <strong>Advance Directive (Living Will)</strong></li>
+              <li>An <strong>Act of Donation for your home</strong> (if applicable)</li>
+            </ul>
+            <p>Throughout this process, we'll help you:</p>
+            <ul>
+              <li>Identify key people (like trustees, executors, and agents)</li>
+              <li>Understand which assets should be titled in your trust</li>
+              <li>Know what not to transfer to your trust. As a general rule, most assets should be transferred to your trust to avoid probate. However, ownership of certain assets—<strong>like retirement plans and other qualified or tax-deferred investments</strong>—should remain outside your trust).</li>
+            </ul>
+            <p><strong><em>No need to remember it all right now.</em></strong> We'll guide you step-by-step and explain everything as you go</p>
+            <p>Ready to get started? Let's Geaux!</p>
+          </>
+        ) : isPOA2Person ? (
           <>
             <p>
               The Power of Attorney Supplement for Two People includes a set of the following legal documents for two people:
@@ -2638,6 +2773,7 @@ const POAForm: React.FC = () => {
 
   const renderFPOAPage = () => {
     const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
+    const agentParties = parties.filter((p) => p.is_an_agent === 'Yes');
     const isTwoPerson = formType.includes('2Person');
     const isPOA = formType.includes('powerOfAttorney');
     const secondPersonLabel = isPOA ? 'Second Principal' : 'Second Person';
@@ -2693,7 +2829,7 @@ const POAForm: React.FC = () => {
                   {isTwoPerson && (
                     <option value="spouse">{getSecondPersonName()}</option>
                   )}
-                  {parties.map((party) => (
+                  {agentParties.map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
@@ -2706,7 +2842,7 @@ const POAForm: React.FC = () => {
                   onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                 >
                   <option value="">None</option>
-                  {parties.map((party) => (
+                  {agentParties.map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
@@ -2806,7 +2942,7 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateSuccessorAgent('fpoa', index, 'successor_agent_to_serve', e.target.value)}
                       >
                         <option value="">Select Agent...</option>
-                        {parties.map((party) => (
+                        {agentParties.map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
                       </select>
@@ -2819,7 +2955,7 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateSuccessorAgent('fpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                       >
                         <option value="">None</option>
-                        {parties.map((party) => (
+                        {agentParties.map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
                       </select>
@@ -2867,7 +3003,7 @@ const POAForm: React.FC = () => {
                     >
                       <option value="">Select Agent...</option>
                       <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'First Person'})</option>
-                      {parties.map((party) => (
+                      {agentParties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
@@ -2880,7 +3016,7 @@ const POAForm: React.FC = () => {
                       onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                     >
                       <option value="">None</option>
-                      {parties.map((party) => (
+                      {agentParties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
@@ -2978,7 +3114,7 @@ const POAForm: React.FC = () => {
                           >
                             <option value="">Select Agent...</option>
                             <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'First Person'})</option>
-                            {parties.map((party) => (
+                            {agentParties.map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -2991,7 +3127,7 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_fpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                           >
                             <option value="">None</option>
-                            {parties.map((party) => (
+                            {agentParties.map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -3018,6 +3154,7 @@ const POAForm: React.FC = () => {
 
   const renderHCPOAPage = () => {
     const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
+    const agentParties = parties.filter((p) => p.is_an_agent === 'Yes');
     const isTwoPerson = formType.includes('2Person');
     const isPOA = formType.includes('powerOfAttorney');
     const secondPersonLabel = isPOA ? 'Second Principal' : 'Second Person';
@@ -3096,7 +3233,14 @@ const POAForm: React.FC = () => {
           </div>
         </div>
 
-        <p className="mb-3">Select the initial agent(s) for {getPrincipalFullName()}'s Healthcare Power of Attorney:</p>
+        <p className="text-muted mb-3">
+          Choose {getPrincipalFullName()}'s Agents for the Healthcare Power of Attorney (the person{' '}
+          {getPrincipalFullName()} wants to make health care decisions for them if they are incapacitated).{' '}
+          {getPrincipalFullName()} may select a Co-Agent to serve at the same time as the Agent. Decisions of Co-Agents
+          will be made jointly by mutual consent.
+        </p>
+
+        <p className="mb-3">Select the Agent(s) for {getPrincipalFullName()}'s Healthcare Power of Attorney:</p>
         <div className="card mb-3">
           <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <span>Item</span>
@@ -3115,7 +3259,7 @@ const POAForm: React.FC = () => {
                   {isTwoPerson && (
                     <option value="spouse">{getSecondPersonName()}</option>
                   )}
-                  {parties.map((party) => (
+                  {agentParties.map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
@@ -3128,7 +3272,7 @@ const POAForm: React.FC = () => {
                   onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                 >
                   <option value="">None</option>
-                  {parties.map((party) => (
+                  {agentParties.map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
@@ -3228,7 +3372,7 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateSuccessorAgent('hcpoa', index, 'successor_agent_to_serve', e.target.value)}
                       >
                         <option value="">Select Agent...</option>
-                        {parties.map((party) => (
+                        {agentParties.map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
                       </select>
@@ -3241,7 +3385,7 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateSuccessorAgent('hcpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                       >
                         <option value="">None</option>
-                        {parties.map((party) => (
+                        {agentParties.map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
                       </select>
@@ -3340,7 +3484,7 @@ const POAForm: React.FC = () => {
                     >
                       <option value="">Select Agent...</option>
                       <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'First Person'})</option>
-                      {parties.map((party) => (
+                      {agentParties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
@@ -3353,7 +3497,7 @@ const POAForm: React.FC = () => {
                       onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                     >
                       <option value="">None</option>
-                      {parties.map((party) => (
+                      {agentParties.map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
@@ -3451,7 +3595,7 @@ const POAForm: React.FC = () => {
                           >
                             <option value="">Select Agent...</option>
                             <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'First Person'})</option>
-                            {parties.map((party) => (
+                            {agentParties.map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -3464,7 +3608,7 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_hcpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                           >
                             <option value="">None</option>
-                            {parties.map((party) => (
+                            {agentParties.map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -3539,6 +3683,12 @@ const POAForm: React.FC = () => {
           <div className="card mb-3">
             <div className="card-header">Specific Preferences</div>
             <div className="card-body">
+              <p className="text-muted">
+                Indicate which of the following specific treatments and procedures {getPrincipalFullName()} wishes to
+                CONTINUE in the event two (2) physicians certify that the individual is in a terminal and irreversible
+                condition and that death will occur whether or not life-sustaining procedures are utilized to
+                artificially prolong their life:
+              </p>
               <div className="form-check mb-2">
                 <input
                   type="checkbox"
@@ -3552,7 +3702,7 @@ const POAForm: React.FC = () => {
                   }}
                 />
                 <label className="form-check-label">
-                  <strong>Nutrition</strong> - I want to receive artificial nutrition (feeding tube)
+                  <strong>Nutrition</strong>, so that food can be administered invasively
                 </label>
               </div>
               <div className="form-check mb-2">
@@ -3568,7 +3718,7 @@ const POAForm: React.FC = () => {
                   }}
                 />
                 <label className="form-check-label">
-                  <strong>Hydration</strong> - I want to receive artificial hydration (IV fluids)
+                  <strong>Hydration</strong>, so that water can be administered invasively
                 </label>
               </div>
               <div className="form-check mb-2">
@@ -3626,7 +3776,7 @@ const POAForm: React.FC = () => {
               >
                 <option value="">Select preference...</option>
                 <option value="WITHDRAW">WITHDRAW - withhold and remove all life support</option>
-                <option value="CHOOSE">Choose specific options below</option>
+                <option value="CHOOSE">Choose all that apply from the options below:</option>
               </select>
             </div>
 
@@ -3878,6 +4028,31 @@ const POAForm: React.FC = () => {
                             <option key={rel} value={rel}>{rel}</option>
                           ))}
                         </select>
+                      </div>
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Will this person be named as a Financial Agent or Healthcare Agent?</label>
+                      <div>
+                        <div className="form-check form-check-inline">
+                          <input
+                            type="radio"
+                            className="form-check-input"
+                            name={`is_an_agent_${index}`}
+                            checked={party.is_an_agent === 'Yes'}
+                            onChange={() => updateParty(index, 'is_an_agent', 'Yes')}
+                          />
+                          <label className="form-check-label">Yes</label>
+                        </div>
+                        <div className="form-check form-check-inline">
+                          <input
+                            type="radio"
+                            className="form-check-input"
+                            name={`is_an_agent_${index}`}
+                            checked={party.is_an_agent === 'No'}
+                            onChange={() => updateParty(index, 'is_an_agent', 'No')}
+                          />
+                          <label className="form-check-label">No</label>
+                        </div>
                       </div>
                     </div>
                     <div className="row mb-3">
@@ -4139,12 +4314,12 @@ const POAForm: React.FC = () => {
     const secondPersonName = fullNameOf(formData.spouse_info) || 'the second person';
     const childrenQuestion = isTwoPersonPlan
       ? `Does ${firstPersonName} or ${secondPersonName} have any children whatsoever - whether born or legally adopted?`
-      : 'Do you have any children whatsoever - whether born or legally adopted?';
+      : 'Does the person creating this Trust-Based Plan have any children whatsoever – whether born or legally adopted?';
 
     return (
     <div className="poa-page">
       <h2>{getStepNumber('children')}. Children</h2>
-      <p className="text-muted">Enter information about your children.</p>
+      <p className="text-muted">Enter information for all children here:</p>
 
       <div className="mb-3">
         <label className="form-label">{childrenQuestion} <span className="text-danger">*</span></label>
@@ -4196,9 +4371,29 @@ const POAForm: React.FC = () => {
                     </button>
                   </div>
 
+                  {isTwoPerson && (
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Select whether this is a child of {clientName} only, {spouseName} only, or both spouses together:
+                      </label>
+                      <select
+                        className="form-select"
+                        value={child.parentage}
+                        onChange={(e) => updateChild(index, 'parentage', e.target.value)}
+                      >
+                        <option value="Joint">{clientName} and {spouseName} together</option>
+                        <option value="Client">{clientName}</option>
+                        <option value="Spouse">{spouseName}</option>
+                      </select>
+                    </div>
+                  )}
+
+                  <h5 className="mt-3">Personal Information of the child</h5>
+                  <p className="text-muted">Enter the personal information about the child:</p>
+
                   <div className="row">
                     <div className="col-md-4 mb-3">
-                      <label className="form-label">First name</label>
+                      <label className="form-label">Name</label>
                       <input
                         type="text"
                         className="form-control"
@@ -4207,7 +4402,7 @@ const POAForm: React.FC = () => {
                       />
                     </div>
                     <div className="col-md-4 mb-3">
-                      <label className="form-label">Middle name (or initial with period)</label>
+                      <label className="form-label">Middle name</label>
                       <input
                         type="text"
                         className="form-control"
@@ -4216,7 +4411,7 @@ const POAForm: React.FC = () => {
                       />
                     </div>
                     <div className="col-md-4 mb-3">
-                      <label className="form-label">Last name</label>
+                      <label className="form-label">Surname</label>
                       <input
                         type="text"
                         className="form-control"
@@ -4227,7 +4422,7 @@ const POAForm: React.FC = () => {
                   </div>
 
                   <div className="row">
-                    <div className="col-md-3 mb-3">
+                    <div className="col-md-4 mb-3">
                       <label className="form-label">Suffix, if any</label>
                       <input
                         type="text"
@@ -4236,7 +4431,7 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateChild(index, 'suffix', e.target.value)}
                       />
                     </div>
-                    <div className="col-md-3 mb-3">
+                    <div className="col-md-4 mb-3">
                       <label className="form-label">Date of birth</label>
                       <input
                         type="date"
@@ -4245,22 +4440,158 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateChild(index, 'date_of_birth', e.target.value)}
                       />
                     </div>
-                    {isTwoPerson && (
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">
-                          Select whether this is a child of {clientName} only, {spouseName} only, or both of them together:
-                        </label>
-                        <select
-                          className="form-select"
-                          value={child.parentage}
-                          onChange={(e) => updateChild(index, 'parentage', e.target.value)}
-                        >
-                          <option value="Joint">{clientName} and {spouseName} together</option>
-                          <option value="Client">{clientName}</option>
-                          <option value="Spouse">{spouseName}</option>
-                        </select>
+                    <div className="col-md-4 mb-3">
+                      <label className="form-label">Gender</label>
+                      <select
+                        className="form-select"
+                        value={child.gender}
+                        onChange={(e) => updateChild(index, 'gender', e.target.value)}
+                      >
+                        <option value="">Select...</option>
+                        <option value="male">male</option>
+                        <option value="female">female</option>
+                        <option value="non-binary">non-binary</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="form-check">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id={`child-same-address-${index}`}
+                        checked={child.same_address_as_parent}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setFormData(prev => {
+                            const children = [...(prev.children || [])];
+                            const src = prev.personal_info;
+                            children[index] = {
+                              ...children[index],
+                              same_address_as_parent: checked,
+                              ...(checked ? {
+                                street_address: src.street_address,
+                                street_address_2: src.street_address_2,
+                                city: src.city,
+                                state: src.state,
+                                zip: src.zip,
+                                parish: src.parish,
+                              } : {}),
+                            };
+                            return { ...prev, children };
+                          });
+                        }}
+                      />
+                      <label className="form-check-label" htmlFor={`child-same-address-${index}`}>
+                        Check here if this child has the same address as {clientName}
+                      </label>
+                    </div>
+                  </div>
+
+                  {!child.same_address_as_parent && (
+                    <>
+                      <div className="row mb-3">
+                        <div className="col-md-6">
+                          <label className="form-label">Street Address</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={child.street_address}
+                            onChange={(e) => updateChild(index, 'street_address', e.target.value)}
+                          />
+                        </div>
+                        <div className="col-md-6">
+                          <label className="form-label">Second line of street address, if any (Apt. or Suite No.)</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={child.street_address_2}
+                            onChange={(e) => updateChild(index, 'street_address_2', e.target.value)}
+                          />
+                        </div>
                       </div>
-                    )}
+
+                      <div className="row mb-3">
+                        <div className="col-md-3">
+                          <label className="form-label">City</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={child.city}
+                            onChange={(e) => updateChild(index, 'city', e.target.value)}
+                          />
+                        </div>
+                        <div className="col-md-3">
+                          <label className="form-label">State</label>
+                          <select
+                            className="form-select"
+                            value={child.state}
+                            onChange={(e) => updateChild(index, 'state', e.target.value)}
+                          >
+                            <option value="">Select State...</option>
+                            {US_STATES.map((st) => (
+                              <option key={st.abbrev} value={st.value}>{st.value}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="col-md-3">
+                          <label className="form-label">Zip</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={child.zip}
+                            onChange={(e) => updateChild(index, 'zip', e.target.value)}
+                            maxLength={5}
+                          />
+                        </div>
+                        <div className="col-md-3">
+                          <label className="form-label">Parish or County</label>
+                          {getCountiesForState(child.state).length > 0 ? (
+                            <select
+                              className="form-select"
+                              value={child.parish}
+                              onChange={(e) => updateChild(index, 'parish', e.target.value)}
+                            >
+                              <option value="">Select {child.state === 'Louisiana' ? 'Parish' : 'County'}...</option>
+                              {getCountiesForState(child.state).map((p) => (
+                                <option key={p} value={p}>{p}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={child.parish}
+                              onChange={(e) => updateChild(index, 'parish', e.target.value)}
+                              placeholder={child.state ? 'Enter county' : 'Select state first'}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Phone Number</label>
+                      <input
+                        type="tel"
+                        className="form-control"
+                        value={child.phone_number}
+                        onChange={(e) => updateChild(index, 'phone_number', handlePhoneChange(e.target.value))}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Last 4 digits SSN</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={child.last_4_ssn_digits}
+                        onChange={(e) => updateChild(index, 'last_4_ssn_digits', e.target.value.replace(/\D/g, ''))}
+                        maxLength={4}
+                      />
+                    </div>
                   </div>
 
                   <div className="mb-3">
@@ -4323,7 +4654,7 @@ const POAForm: React.FC = () => {
 
           <button type="button" className="btn btn-outline-primary" onClick={addChild}>
             <i className="fas fa-plus me-2"></i>
-            Add a child
+            Add Child
           </button>
         </div>
       )}
@@ -4344,6 +4675,9 @@ const POAForm: React.FC = () => {
     const bequestAsker = isTwoPerson ? `${principal} and / or ${secondFullName}` : principal;
     const beneficiaryOptions = getBeneficiaryOptions();
     const trustees = ti.trustees || [];
+    // Names already assigned to any successor-trustee slot, so a person named in
+    // one row (or column) is dropped from the other trustee dropdowns.
+    const usedTrusteeNames = trustees.flatMap((t) => [t.trustee_to_serve, t.second_trustee_person_to_serve]);
     const bequests = ti.specific_bequests || [];
     const dist = ti.residuary_distribution || [];
     const residTotal = dist.reduce((sum, d) => sum + (parseFloat(d.share_percent) || 0), 0);
@@ -4431,9 +4765,13 @@ const POAForm: React.FC = () => {
           <>
             <p className="text-muted">
               <strong>NOTE:</strong> {principal} will serve as the initial Trustee, which means {principal} will
-              manage the trust — handling investments, paying expenses, and making distributions. Only the Settlor
-              (the person who created the trust) has the authority to amend, modify, or revoke the trust while
-              surviving and with mental capacity.
+              manage your trust — handling investments, paying expenses, and making distributions. However, it's
+              important to understand that only the Settlor (the person who created the trust, who also happens to be
+              {' '}{principal}), will have the authority to amend, modify, or revoke the trust.
+            </p>
+            <p className="text-muted">
+              The Trustee (whoever this may be) is bound to follow the terms of the trust and cannot change them
+              without action from the Settlor.
             </p>
             <p className="text-muted">
               Once {principal} is no longer able or willing to serve as Trustee, Successor Trustees will take over.
@@ -4482,14 +4820,14 @@ const POAForm: React.FC = () => {
                       <label className="form-label">Select the person you want to serve:</label>
                       <select className="form-select" value={t.trustee_to_serve} onChange={(e) => updateTrustee(index, 'trustee_to_serve', e.target.value)}>
                         <option value="">Select Trustee...</option>
-                        {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                        {availableOptions(beneficiaryOptions, usedTrusteeNames, t.trustee_to_serve).map((name) => (<option key={name} value={name}>{name}</option>))}
                       </select>
                     </div>
                     <div className="col-md-6 mb-3">
                       <label className="form-label">If you want to appoint a second person to serve at the same time as the person to the left, select them here:</label>
                       <select className="form-select" value={t.second_trustee_person_to_serve} onChange={(e) => updateTrustee(index, 'second_trustee_person_to_serve', e.target.value)}>
                         <option value="">None</option>
-                        {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                        {availableOptions(beneficiaryOptions, usedTrusteeNames, t.second_trustee_person_to_serve).map((name) => (<option key={name} value={name}>{name}</option>))}
                       </select>
                     </div>
                   </div>
@@ -4960,6 +5298,7 @@ const POAForm: React.FC = () => {
 
           {(!isTwoPerson || shortcut === 'No') && (
             <>
+              <label className="form-label fw-bold">Executors for {name}'s Will:</label>
               {initialExecs.map((ex, index) => (
                 <div key={index} className="card mb-2">
                   <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -4969,14 +5308,14 @@ const POAForm: React.FC = () => {
                   <div className="card-body">
                     <div className="row">
                       <div className="col-md-6 mb-3">
-                        <label className="form-label">Select the person you want to serve as Executor:</label>
+                        <label className="form-label">Select the person you want to serve as Initial Executor:</label>
                         <select className="form-select" value={ex.initial_executor} onChange={(e) => updateInitialExecutor(index, 'initial_executor', e.target.value, principal)}>
                           <option value="">Select Executor...</option>
                           {options.map((n) => (<option key={n} value={n}>{n}</option>))}
                         </select>
                       </div>
                       <div className="col-md-6 mb-3">
-                        <label className="form-label">If you want to appoint a Co-Executor to serve at the same time, select them here:</label>
+                        <label className="form-label">If you want to appoint a second person to serve at the same time as the Initial Agent, select them here:</label>
                         <select className="form-select" value={ex.co_executor} onChange={(e) => updateInitialExecutor(index, 'co_executor', e.target.value, principal)}>
                           <option value="">None</option>
                           {options.map((n) => (<option key={n} value={n}>{n}</option>))}
@@ -4994,8 +5333,9 @@ const POAForm: React.FC = () => {
           {/* ---- Successor Executors ---- */}
           <h4 className="mt-4 border-bottom pb-2">Successor Executors</h4>
           <p className="text-muted">
-            Your successor Executors will serve if all of the initial Executors are unable to serve. These successor
-            Executors will serve in the order they are entered.
+            The successor Executors will serve if all of the initial Executors are unable to serve. These successor
+            Executors will serve in the order they are entered. Successor Executors are not required, but are usually
+            recommended.
           </p>
           <label className="form-label">Do you want to appoint successor Executors for {name}'s Will?</label>
           <div className="mb-3">
@@ -5027,7 +5367,7 @@ const POAForm: React.FC = () => {
                         </select>
                       </div>
                       <div className="col-md-6 mb-3">
-                        <label className="form-label">If you want to appoint a second person to serve at the same time, select them here:</label>
+                        <label className="form-label">If you want to appoint a second person to serve as Successor Executor, select them here:</label>
                         <select className="form-select" value={ex.second_successor_coagent_to_serve} onChange={(e) => updateSuccessorExecutor(index, 'second_successor_coagent_to_serve', e.target.value, principal)}>
                           <option value="">None</option>
                           {options.map((n) => (<option key={n} value={n}>{n}</option>))}
