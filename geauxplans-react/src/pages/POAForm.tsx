@@ -5371,60 +5371,58 @@ const POAForm: React.FC = () => {
                   ))}
                   <button type="button" className="btn btn-outline-primary mb-2" onClick={() => addInitialExecutor(principal)}>+ Add Initial Executor</button>
                   {errors[errorKey] && <div className="text-danger small mb-2">{errors[errorKey]}</div>}
+
+                  {/* ---- Successor Executors (inside the same accordion) ---- */}
+                  <hr className="my-3" />
+                  <p className="text-muted">
+                    The successor Executors will serve if all of the initial Executors are unable to serve. These successor
+                    Executors will serve in the order they are entered. Successor Executors are not required, but are usually
+                    recommended.
+                  </p>
+                  <label className="form-label">Do you want to appoint successor Executors for {name}'s Will?</label>
+                  <div className="mb-3">
+                    <div className="form-check form-check-inline">
+                      <input className="form-check-input" type="radio" name={`hasSuccessorExecutors_${principal}`} checked={hasSuccessor === 'Yes'} onChange={() => updateFormData('will_info', hasSuccessorField, 'Yes')} />
+                      <label className="form-check-label">Yes</label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input className="form-check-input" type="radio" name={`hasSuccessorExecutors_${principal}`} checked={hasSuccessor === 'No'} onChange={() => updateFormData('will_info', hasSuccessorField, 'No')} />
+                      <label className="form-check-label">No</label>
+                    </div>
+                  </div>
+
+                  {hasSuccessor === 'Yes' && (
+                    <div>
+                      {successorExecs.map((ex, index) => (
+                        <div key={index} className="border rounded p-3 mb-3">
+                          <div className="d-flex justify-content-between align-items-center mb-2">
+                            <span className="fw-bold">{getOrdinalLabel(index)} Successor Executor</span>
+                            <button type="button" className="btn btn-sm btn-link text-danger p-0" onClick={() => removeSuccessorExecutor(index, principal)}>×</button>
+                          </div>
+                          <div className="row">
+                            <div className="col-md-6 mb-3">
+                              <label className="form-label">Select the person you want to serve:</label>
+                              <select className="form-select" value={ex.successor_agent_to_serve} onChange={(e) => updateSuccessorExecutor(index, 'successor_agent_to_serve', e.target.value, principal)}>
+                                <option value="">Select Executor...</option>
+                                {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                              </select>
+                            </div>
+                            <div className="col-md-6 mb-3">
+                              <label className="form-label">If you want to appoint a second person to serve as Successor Executor, select them here:</label>
+                              <select className="form-select" value={ex.second_successor_coagent_to_serve} onChange={(e) => updateSuccessorExecutor(index, 'second_successor_coagent_to_serve', e.target.value, principal)}>
+                                <option value="">None</option>
+                                {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      <button type="button" className="btn btn-outline-primary" onClick={() => addSuccessorExecutor(principal)}>+ Add Successor Executor</button>
+                    </div>
+                  )}
                 </div>
               </div>
             </>
-          )}
-
-          {/* ---- Successor Executors ---- */}
-          <h4 className="mt-4 border-bottom pb-2">Successor Executors</h4>
-          <p className="text-muted">
-            The successor Executors will serve if all of the initial Executors are unable to serve. These successor
-            Executors will serve in the order they are entered. Successor Executors are not required, but are usually
-            recommended.
-          </p>
-          <label className="form-label">Do you want to appoint successor Executors for {name}'s Will?</label>
-          <div className="mb-3">
-            <div className="form-check form-check-inline">
-              <input className="form-check-input" type="radio" name={`hasSuccessorExecutors_${principal}`} checked={hasSuccessor === 'Yes'} onChange={() => updateFormData('will_info', hasSuccessorField, 'Yes')} />
-              <label className="form-check-label">Yes</label>
-            </div>
-            <div className="form-check form-check-inline">
-              <input className="form-check-input" type="radio" name={`hasSuccessorExecutors_${principal}`} checked={hasSuccessor === 'No'} onChange={() => updateFormData('will_info', hasSuccessorField, 'No')} />
-              <label className="form-check-label">No</label>
-            </div>
-          </div>
-
-          {hasSuccessor === 'Yes' && (
-            <div>
-              {successorExecs.map((ex, index) => (
-                <div key={index} className="card mb-2">
-                  <div className="card-header d-flex justify-content-between align-items-center">
-                    <span>{getOrdinalLabel(index)} Successor Executor</span>
-                    <button type="button" className="btn btn-sm btn-link p-0" onClick={() => removeSuccessorExecutor(index, principal)}>×</button>
-                  </div>
-                  <div className="card-body">
-                    <div className="row">
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">Select the person you want to serve:</label>
-                        <select className="form-select" value={ex.successor_agent_to_serve} onChange={(e) => updateSuccessorExecutor(index, 'successor_agent_to_serve', e.target.value, principal)}>
-                          <option value="">Select Executor...</option>
-                          {options.map((n) => (<option key={n} value={n}>{n}</option>))}
-                        </select>
-                      </div>
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">If you want to appoint a second person to serve as Successor Executor, select them here:</label>
-                        <select className="form-select" value={ex.second_successor_coagent_to_serve} onChange={(e) => updateSuccessorExecutor(index, 'second_successor_coagent_to_serve', e.target.value, principal)}>
-                          <option value="">None</option>
-                          {options.map((n) => (<option key={n} value={n}>{n}</option>))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              <button type="button" className="btn btn-outline-primary" onClick={() => addSuccessorExecutor(principal)}>+ Add Successor Executor</button>
-            </div>
           )}
         </React.Fragment>
       );
