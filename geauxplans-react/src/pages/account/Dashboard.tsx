@@ -1,132 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import api from '../../services/api';
-
-/**
- * Shape of an entry from GET /api/submissions.
- *
- * This interface previously described a `documents` array with `id`/`type`/`url`
- * fields. No such array is ever sent — the route returns `knacklyDocuments`, and
- * each document carries its URL as `storedUrl` (Supabase) or `publicUrl`/`url`
- * (legacy Knackly). The result was that `plan.documents` was always undefined,
- * so this dashboard showed "Your documents will appear here" no matter how many
- * documents the client actually had.
- */
-interface Plan {
-  id: number;
-  formType: string;
-  submissionStatus: string;
-  createdAt: string;
-  knacklyDocuments?: PlanDocument[];
-}
-
-interface PlanDocument {
-  id?: string;
-  name: string;
-  type?: string;
-  url?: string;
-  publicUrl?: string;
-  storedUrl?: string;
-}
-
-const documentUrl = (doc: PlanDocument) => doc.storedUrl || doc.publicUrl || doc.url;
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const response = await api.get('/submissions');
-        if (response.success && response.data) {
-          setPlans(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching plans:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPlans();
-  }, []);
 
   return (
     <div>
       <h2 style={{ marginBottom: '10px' }}>Welcome back, {user?.firstName || user?.displayName || 'User'}!</h2>
       <p style={{ marginBottom: '30px', color: '#707070' }}>
-        From your account dashboard you can view your active plans, access your documents, and manage your account.
+        From your account dashboard you can view your active plans and manage your account.
       </p>
-
-      {/* Your Documents Section */}
-      <div style={{ marginBottom: '40px' }}>
-        <h3 style={{
-          fontSize: '20px',
-          marginBottom: '20px',
-          paddingBottom: '10px',
-          borderBottom: '2px solid #004d71'
-        }}>
-          Your Documents
-        </h3>
-
-        {loading ? (
-          <p style={{ color: '#707070' }}>Loading your documents...</p>
-        ) : plans.some(p => (p.knacklyDocuments || []).length > 0) ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {plans.flatMap(plan =>
-              (plan.knacklyDocuments || []).map((doc, index) => (
-                <div
-                  key={`${plan.id}-${doc.id || index}`}
-                  style={{
-                    padding: '15px 20px',
-                    border: '1px solid #eaeaea',
-                    borderRadius: '8px',
-                    backgroundColor: '#fff',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <i className="fas fa-file-pdf" style={{ fontSize: '24px', color: '#dc3545' }}></i>
-                    <div>
-                      <p style={{ margin: 0, fontWeight: '600' }}>{doc.name}</p>
-                      <p style={{ margin: 0, color: '#707070', fontSize: '12px' }}>{doc.type}</p>
-                    </div>
-                  </div>
-                  {documentUrl(doc) && (
-                    <a
-                      href={documentUrl(doc)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn_geaux"
-                      style={{ fontSize: '14px', padding: '8px 16px' }}
-                    >
-                      Download
-                    </a>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        ) : (
-          <div style={{
-            padding: '30px',
-            border: '1px dashed #ccc',
-            borderRadius: '8px',
-            textAlign: 'center',
-            backgroundColor: '#f9f9f9'
-          }}>
-            <i className="fas fa-folder-open" style={{ fontSize: '40px', color: '#ccc', marginBottom: '15px' }}></i>
-            <p style={{ color: '#707070', marginBottom: '0' }}>
-              Your documents will appear here once your plans are completed.
-            </p>
-          </div>
-        )}
-      </div>
 
       {/* Start New Plan Section */}
       <div style={{ marginBottom: '40px' }}>

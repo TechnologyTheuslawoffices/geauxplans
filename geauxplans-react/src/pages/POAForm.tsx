@@ -1272,6 +1272,29 @@ const POAForm: React.FC = () => {
     return Array.from(new Set([otherName, ...getBeneficiaryOptions()].filter(Boolean)));
   };
 
+  // Agent dropdown pool for the FPOA/HCPOA pages. WordPress lists EVERY person
+  // entered — all parties on the Agents step PLUS all children — and does not
+  // gate them behind any flag.
+  //
+  // NOTE: We removed the "Will this person be named as a Financial Agent or
+  // Healthcare Agent?" (Yes/No) question from the Agents page, so the old
+  // `is_an_agent === 'Yes'` filter that used to narrow this list is gone and the
+  // full pool is offered. To restore that gate later, re-add the question in
+  // renderOtherPartiesPage and filter `parties` by `p.is_an_agent === 'Yes'`.
+  const getAgentPartyOptions = (): Party[] => {
+    const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
+    const childParties: Party[] = (formData.children || []).map((c, i) => ({
+      ...createEmptyParty(),
+      id: `child_${i}`,
+      type_of_party: 'An individual person',
+      first_name: c.first_name || '',
+      middle_name: c.middle_name || '',
+      surname: c.surname || '',
+      suffix: c.suffix || '',
+    }));
+    return [...parties, ...childParties];
+  };
+
   // Narrow an option list to the names not already chosen elsewhere in the same
   // group (e.g. another trustee slot), while keeping this control's own current
   // value so it still renders its selected label. Prevents naming one person to
@@ -2775,8 +2798,8 @@ const POAForm: React.FC = () => {
   };
 
   const renderFPOAPage = () => {
-    const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
-    const agentParties = parties.filter((p) => p.is_an_agent === 'Yes');
+    // Full pool: all Agents-step parties + all children (see getAgentPartyOptions).
+    const agentParties = getAgentPartyOptions();
     const isTwoPerson = formType.includes('2Person');
     const isPOA = formType.includes('powerOfAttorney');
     const secondPersonLabel = isPOA ? 'Second Principal' : 'Second Person';
@@ -3166,8 +3189,8 @@ const POAForm: React.FC = () => {
   };
 
   const renderHCPOAPage = () => {
-    const parties = formData.people_or_entities_who_will_serve_as_agents?.parties || [];
-    const agentParties = parties.filter((p) => p.is_an_agent === 'Yes');
+    // Full pool: all Agents-step parties + all children (see getAgentPartyOptions).
+    const agentParties = getAgentPartyOptions();
     const isTwoPerson = formType.includes('2Person');
     const isPOA = formType.includes('powerOfAttorney');
     const secondPersonLabel = isPOA ? 'Second Principal' : 'Second Person';
@@ -4058,31 +4081,15 @@ const POAForm: React.FC = () => {
                         </select>
                       </div>
                     </div>
-                    <div className="mb-3">
-                      <label className="form-label">Will this person be named as a Financial Agent or Healthcare Agent?</label>
-                      <div>
-                        <div className="form-check form-check-inline">
-                          <input
-                            type="radio"
-                            className="form-check-input"
-                            name={`is_an_agent_${index}`}
-                            checked={party.is_an_agent === 'Yes'}
-                            onChange={() => updateParty(index, 'is_an_agent', 'Yes')}
-                          />
-                          <label className="form-check-label">Yes</label>
-                        </div>
-                        <div className="form-check form-check-inline">
-                          <input
-                            type="radio"
-                            className="form-check-input"
-                            name={`is_an_agent_${index}`}
-                            checked={party.is_an_agent === 'No'}
-                            onChange={() => updateParty(index, 'is_an_agent', 'No')}
-                          />
-                          <label className="form-check-label">No</label>
-                        </div>
-                      </div>
-                    </div>
+                    {/*
+                      REMOVED (per request): the "Will this person be named as a
+                      Financial Agent or Healthcare Agent?" (Yes/No) question that
+                      set party.is_an_agent. The FPOA/HCPOA dropdowns now list every
+                      party + child (see getAgentPartyOptions) instead of gating on
+                      is_an_agent === 'Yes'. To restore, re-add the radio group here
+                      bound to updateParty(index, 'is_an_agent', ...) and re-apply
+                      the filter in getAgentPartyOptions.
+                    */}
                     <div className="row mb-3">
                       <div className="col-md-4">
                         <label className="form-label">Last 4 SSN Digits <span className="text-danger">*</span></label>
@@ -4164,7 +4171,7 @@ const POAForm: React.FC = () => {
                             </button>
                           </div>
                           <div className="row">
-                            <div className="col-md-3 mb-2">
+                            <div className="col-md-4 mb-2">
                               <input
                                 type="text"
                                 className="form-control form-control-sm"
@@ -4173,7 +4180,7 @@ const POAForm: React.FC = () => {
                                 onChange={(e) => updateSigner(index, signerIndex, 'first_name', e.target.value)}
                               />
                             </div>
-                            <div className="col-md-2 mb-2">
+                            <div className="col-md-4 mb-2">
                               <input
                                 type="text"
                                 className="form-control form-control-sm"
@@ -4182,7 +4189,7 @@ const POAForm: React.FC = () => {
                                 onChange={(e) => updateSigner(index, signerIndex, 'middle_name', e.target.value)}
                               />
                             </div>
-                            <div className="col-md-3 mb-2">
+                            <div className="col-md-4 mb-2">
                               <input
                                 type="text"
                                 className="form-control form-control-sm"
@@ -4191,12 +4198,11 @@ const POAForm: React.FC = () => {
                                 onChange={(e) => updateSigner(index, signerIndex, 'surname', e.target.value)}
                               />
                             </div>
-                            <div className="col-md-2 mb-2">
+                            <div className="col-md-4 mb-2">
                               <select
                                 className="form-select form-select-sm"
                                 value={signer.suffix}
                                 onChange={(e) => updateSigner(index, signerIndex, 'suffix', e.target.value)}
-                                title="Suffix, if any"
                               >
                                 <option value="">Suffix, if any</option>
                                 {SUFFIX_OPTIONS.map((sfx) => (
@@ -4204,7 +4210,7 @@ const POAForm: React.FC = () => {
                                 ))}
                               </select>
                             </div>
-                            <div className="col-md-2 mb-2">
+                            <div className="col-md-8 mb-2">
                               <select
                                 className="form-select form-select-sm"
                                 value={signer.title}
