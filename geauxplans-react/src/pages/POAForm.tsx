@@ -6199,7 +6199,7 @@ const POAForm: React.FC = () => {
           <div className="col-md-6 mb-3">
             <div className="card h-100">
               <div className="card-header">
-                <strong>{isTwoPerson ? 'Your FPOA' : 'FPOA Settings'}</strong>
+                <strong>{getPrincipalFullName()}'s FPOA</strong>
                 <button
                   type="button"
                   className="btn btn-link btn-sm float-end p-0"
@@ -6223,7 +6223,7 @@ const POAForm: React.FC = () => {
             <div className="col-md-6 mb-3">
               <div className="card h-100">
                 <div className="card-header">
-                  <strong>Second Person's FPOA</strong>
+                  <strong>{[formData.spouse_info.first_name, formData.spouse_info.middle_name, formData.spouse_info.surname].filter(Boolean).join(' ') || 'Second Person'}'s FPOA</strong>
                 </div>
                 <div className="card-body">
                   <p className="mb-1"><strong>Primary Agent:</strong> {formData.spouse_fpoa?.fpoa_initial_agents?.person_to_serve || 'Not selected'}</p>
@@ -6245,7 +6245,7 @@ const POAForm: React.FC = () => {
           <div className="col-md-6 mb-3">
             <div className="card h-100">
               <div className="card-header">
-                <strong>{isTwoPerson ? 'Your HCPOA' : 'HCPOA Settings'}</strong>
+                <strong>{getPrincipalFullName()}'s HCPOA</strong>
                 <button
                   type="button"
                   className="btn btn-link btn-sm float-end p-0"
@@ -6269,7 +6269,7 @@ const POAForm: React.FC = () => {
             <div className="col-md-6 mb-3">
               <div className="card h-100">
                 <div className="card-header">
-                  <strong>Second Person's HCPOA</strong>
+                  <strong>{[formData.spouse_info.first_name, formData.spouse_info.middle_name, formData.spouse_info.surname].filter(Boolean).join(' ') || 'Second Person'}'s HCPOA</strong>
                 </div>
                 <div className="card-body">
                   <p className="mb-1"><strong>Primary Agent:</strong> {formData.spouse_hcpoa?.hcpoa_initial_agents?.person_to_serve || 'Not selected'}</p>
@@ -6291,7 +6291,7 @@ const POAForm: React.FC = () => {
           <div className="col-md-6 mb-3">
             <div className="card h-100">
               <div className="card-header">
-                <strong>{isTwoPerson ? 'Your Directive' : 'Healthcare Directive'}</strong>
+                <strong>{getPrincipalFullName()}'s Directive</strong>
                 <button
                   type="button"
                   className="btn btn-link btn-sm float-end p-0"
@@ -6312,7 +6312,7 @@ const POAForm: React.FC = () => {
             <div className="col-md-6 mb-3">
               <div className="card h-100">
                 <div className="card-header">
-                  <strong>Second Person's Directive</strong>
+                  <strong>{[formData.spouse_info.first_name, formData.spouse_info.middle_name, formData.spouse_info.surname].filter(Boolean).join(' ') || 'Second Person'}'s Directive</strong>
                 </div>
                 <div className="card-body">
                   <p className="mb-1"><strong>Life Support Preference:</strong> {getLifeSupportLabel(formData.spouse_hcd?.life_support_option)}</p>
