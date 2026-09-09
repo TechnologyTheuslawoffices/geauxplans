@@ -4156,12 +4156,12 @@ const POAForm: React.FC = () => {
                       {(party.signers || []).map((signer, signerIndex) => (
                         <div key={signerIndex} className="card card-body bg-light mb-2">
                           <div className="d-flex justify-content-between align-items-center mb-2">
-                            <small className="text-muted">
+                            <strong>
                               {[signer.first_name, signer.middle_name, signer.surname, signer.suffix]
                                 .map((s) => (s || '').trim())
                                 .filter(Boolean)
                                 .join(' ') || 'Signer'}
-                            </small>
+                            </strong>
                             <button
                               type="button"
                               className="btn btn-sm btn-outline-danger"
