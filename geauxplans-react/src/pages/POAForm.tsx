@@ -4389,8 +4389,8 @@ const POAForm: React.FC = () => {
             const isTwoPerson = formType.includes('2Person');
             const fullName = (p?: { first_name?: string; middle_name?: string; surname?: string; suffix?: string }) =>
               [p?.first_name, p?.middle_name, p?.surname, p?.suffix].map(s => (s || '').trim()).filter(Boolean).join(' ');
-            const clientName = fullName(formData.personal_info) || 'you';
-            const spouseName = fullName(formData.spouse_info) || 'your spouse';
+            const clientName = fullName(formData.personal_info) || 'Principal';
+            const spouseName = fullName(formData.spouse_info) || 'Second Person';
             return (
               <div key={index} className="card mb-3">
                 <div className="card-body">
@@ -5891,7 +5891,7 @@ const POAForm: React.FC = () => {
           <div className="col-md-6 mb-3">
             <div className="card h-100">
               <div className="card-header bg-primary text-white">
-                <strong>Principal (You)</strong>
+                <strong>{getPrincipalFullName()}</strong>
                 <button
                   type="button"
                   className="btn btn-link btn-sm float-end p-0 text-white"
