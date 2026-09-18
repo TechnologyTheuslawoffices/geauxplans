@@ -152,14 +152,14 @@
   "templates": [
     {
       "contentType": "",
-      "text": "{[this.StreetAddress1|else: \"_____________________\"]}\n{[if this.StreetAddress2]}\n\n{[this.StreetAddress2]}\n{[else]}\n\n{[endif]}\n{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}",
+      "text": "{[this.StreetAddress1|else: \"_____________________\"]}\n{[if this.StreetAddress2]}{[this.StreetAddress2]}\n{[endif]}{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}",
       "label": "",
       "type": "text",
       "name": "BlockAddress",
       "lastModifiedBy": "5fe0c5547241dc6f81146408",
       "lastModified": "2021-03-17T14:38:52.366Z",
       "_id": "6478c8da3bf0704dd83a380a",
-      "content": "{[this.StreetAddress1|else: \"_____________________\"]}\n{[if this.StreetAddress2]}\n\n{[this.StreetAddress2]}\n{[else]}\n\n{[endif]}\n{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}"
+      "content": "{[this.StreetAddress1|else: \"_____________________\"]}\n{[if this.StreetAddress2]}{[this.StreetAddress2]}\n{[endif]}{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}"
     },
     {
       "contentType": "",

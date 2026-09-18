@@ -182,8 +182,19 @@ function mapParty(party, index) {
  * (its relevance is `MarriedTF`), so every child is the client's and the value
  * is forced to `Client`; the stored joint/spouse answer, if any, is ignored.
  */
-function mapChild(child, index, twoPerson) {
-  const row = mapIndividual(child, `child-${index + 1}`);
+function mapChild(child, index, twoPerson, principal) {
+  // The intake form defaults "same address as the parent" to checked and only
+  // copies the principal's address into the child's own fields when the user
+  // toggles that checkbox. A submission that leaves the default therefore
+  // carries an empty child address, so the copy is resolved here instead —
+  // mirroring the principal whenever the flag is set, which also backfills
+  // older submissions.
+  const sameAsParent =
+    child.same_address_as_parent === true || child.same_address_as_parent === 'true';
+  const source = sameAsParent && principal
+    ? { ...child, ...pickAddress(principal) }
+    : child;
+  const row = mapIndividual(source, `child-${index + 1}`);
   row.Parentage = twoPerson ? (text(child.parentage) || 'Joint') : 'Client';
   // Written outside `compact`: `false` is a real answer, and the catalog's
   // ChildrenLiving/ChildrenDeceased and ChildrenInherit/ChildrenDisinherit
@@ -204,7 +215,9 @@ function applyChildren(record, data, twoPerson) {
   record.ChildrenTF = hasChildren;
 
   const list = Array.isArray(data.children) ? data.children : [];
-  record.Children = hasChildren ? list.map((c, i) => mapChild(c, i, twoPerson)) : [];
+  record.Children = hasChildren
+    ? list.map((c, i) => mapChild(c, i, twoPerson, data.personal_info))
+    : [];
 }
 
 // ---------------------------------------------------------------------------
@@ -299,21 +312,26 @@ function applyPoaSection(record, section, who, kind) {
 /**
  * Advance healthcare directive.
  *
- * `HCDClientNone` is a two-option selection stored by its `Name`: "None"
- * withdraws all life support, "Choose" permits the treatments listed in
- * `ClientHCDs`. `ClientHCDs` values are the `healthprocedures` table keys
- * ("Nutr", "Hydr", "Antib"), which is what the form's checkboxes already emit.
+ * The HCD template has two branches. The `EstateAppTF` branch reads
+ * `HCD{who}None` / `{who}HCDs`; the Geaux branch (the live path, where
+ * `EstateAppTF` is false) reads `GeauxHCD{who}None` / `Geaux{who}HCDs` and only
+ * lists Nutrition and Hydration. The Geaux names are the ones that must be set
+ * or the "procedures you wish to continue" list renders empty.
+ *
+ * The selection is stored by its `Name`: "None" withdraws all life support,
+ * "Choose" permits the treatments the client checked. The picks are the
+ * `healthprocedures` keys ("Nutr", "Hydr"), which the form's checkboxes emit.
  */
 function applyHcd(record, section, who) {
   if (!section) return;
 
   const raw = text(section.life_support_option).toUpperCase();
   const choose = raw.startsWith('CHOOSE');
-  record[`HCD${who}None`] = choose ? 'Choose' : 'None';
+  record[`GeauxHCD${who}None`] = choose ? 'Choose' : 'None';
 
   if (choose) {
     const picks = section.client_hcds || section.spouse_hcds;
-    if (Array.isArray(picks) && picks.length) record[`${who}HCDs`] = picks.map(text);
+    if (Array.isArray(picks) && picks.length) record[`Geaux${who}HCDs`] = picks.map(text);
   }
 
   if (section.extend_hcd !== undefined) record[`${who}ExtendHCDTF`] = isYes(section.extend_hcd);

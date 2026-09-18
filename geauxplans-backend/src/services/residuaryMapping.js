@@ -233,18 +233,29 @@ function applyInTrustDetail(record, row, entry, family) {
 
 function toResiduaryRow(record, entry, family) {
   const inTrust = entry.how_receive === 'In Trust';
-  const row = {
-    Recipient: resolveRecipientId(record, entry.recipient),
-    GeauxBequest: parseFloat(entry.share_percent) || 0,
-    HowReceive: inTrust ? 'In Trust' : 'Outright',
-    // The trust document never reads HowReceive. Its per-beneficiary trust
-    // section — trustees, education, and the ResidDistribs age schedule — is
-    // gated on `{[if SpecificOutrightTrust == "Trust"]}` in GeauxJointTrust.docx
-    // (verified by tracing the template's control flow). Without this, every
-    // in-trust field below is written but never rendered: the beneficiary would
-    // take outright and the trust terms would silently vanish.
-    SpecificOutrightTrust: inTrust ? 'Trust' : 'Outright',
-  };
+  const recipientId = resolveRecipientId(record, entry.recipient);
+  const share = parseFloat(entry.share_percent) || 0;
+
+  // The recipient reference and the share percentage are stored under DIFFERENT
+  // property names by app family, because the two residuary lists bind to two
+  // different catalog models:
+  //   - will  -> `ClientWillResiduary`, model `willresidual`  => Recipient / GeauxBequest
+  //   - trust -> `ResidualBeneficiaries`, model `residuary`   => ResiduaryBenef / GeauxTrustBequest
+  // The trust template reads `{[ResiduaryBenef.NameCO]}` and `{[GeauxTrustBequest]}`;
+  // writing the will's `Recipient`/`GeauxBequest` here left the trust and its
+  // extract with a blank legatee name and blank share.
+  const row = family === 'trust'
+    ? { ResiduaryBenef: recipientId, GeauxTrustBequest: share }
+    : { Recipient: recipientId, GeauxBequest: share };
+
+  row.HowReceive = inTrust ? 'In Trust' : 'Outright';
+  // The trust document never reads HowReceive. Its per-beneficiary trust
+  // section — trustees, education, and the ResidDistribs age schedule — is
+  // gated on `{[if SpecificOutrightTrust == "Trust"]}` in GeauxJointTrust.docx
+  // (verified by tracing the template's control flow). Without this, every
+  // in-trust field below is written but never rendered: the beneficiary would
+  // take outright and the trust terms would silently vanish.
+  row.SpecificOutrightTrust = inTrust ? 'Trust' : 'Outright';
 
   if (inTrust) {
     applyInTrustDetail(record, row, entry, family);

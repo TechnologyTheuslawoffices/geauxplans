@@ -716,14 +716,14 @@
     },
     {
       "contentType": "",
-      "text": "{[this.Street|else: \"_____________________\"]}\n{[if this.Street2]}\n\n{[this.Street2]}\n{[else]}\n\n{[endif]}\n{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}",
+      "text": "{[this.Street|else: \"_____________________\"]}\n{[if this.Street2]}{[this.Street2]}\n{[endif]}{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}",
       "_id": "642c623b4d79d5adbe5909c0",
       "name": "BlockAddress",
       "label": "",
       "lastModified": "2022-02-15T15:03:37.380Z",
       "lastModifiedBy": "5fe0c5547241dc6f81146408",
       "type": "text",
-      "content": "{[this.Street|else: \"_____________________\"]}\n{[if this.Street2]}\n\n{[this.Street2]}\n{[else]}\n\n{[endif]}\n{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}"
+      "content": "{[this.Street|else: \"_____________________\"]}\n{[if this.Street2]}{[this.Street2]}\n{[endif]}{[if this.City && this.State.Abbrev && this.Zip]}{[this.City]}, {[this.State.Abbrev]} {[this.Zip]}{[else]}_____________________{[endif]}"
     },
     {
       "filename": "GeauxBusinessSigning.docx",
