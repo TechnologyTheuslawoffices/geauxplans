@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import AIAttorneyChat from './AIAttorneyChat';
 import '../styles/poa-form.css';
 
 /**
@@ -30,6 +31,23 @@ function deepMerge<T extends Record<string, any>>(defaults: T, saved: Partial<T>
   }
 
   return result;
+}
+
+// The HCD "choose specific treatments" step now only offers Nutrition and
+// Hydration. Older saved records may still carry removed codes ('Vent', 'CPR');
+// strip them so they can't reach the review page or document generation.
+const ALLOWED_HCD_CODES = ['Nutr', 'Hydr'];
+function stripRemovedHcdCodes(data: FormData): FormData {
+  let next = data;
+  const clientPicks = next.hcd?.client_hcds;
+  if (Array.isArray(clientPicks) && clientPicks.some((c) => !ALLOWED_HCD_CODES.includes(c))) {
+    next = { ...next, hcd: { ...next.hcd, client_hcds: clientPicks.filter((c) => ALLOWED_HCD_CODES.includes(c)) } };
+  }
+  const spousePicks = next.spouse_hcd?.spouse_hcds;
+  if (Array.isArray(spousePicks) && spousePicks.some((c) => !ALLOWED_HCD_CODES.includes(c))) {
+    next = { ...next, spouse_hcd: { ...next.spouse_hcd, spouse_hcds: spousePicks.filter((c) => ALLOWED_HCD_CODES.includes(c)) } };
+  }
+  return next;
 }
 
 // Page display names for progress bar
@@ -979,7 +997,7 @@ const TEST_PREFILL_DATA: FormData = {
   // Client HCD - Simplified (hidden fields use defaults)
   hcd: {
     life_support_option: 'CHOOSE',  // 'WITHDRAW' or 'CHOOSE'
-    client_hcds: ['Nutr', 'Hydr', 'CPR'],  // Options: 'Nutr', 'Hydr', 'Vent', 'CPR'
+    client_hcds: ['Nutr', 'Hydr'],  // Options: 'Nutr', 'Hydr'
     extend_hcd: 'No',  // HIDDEN: defaults to No (standard period)
     hcd_days: 7,  // HIDDEN: defaults to 7
     hcd_sooner_longer: '',  // HIDDEN: defaults to empty
@@ -1065,6 +1083,9 @@ const POAForm: React.FC = () => {
 
   const [currentPage, setCurrentPage] = useState(0);
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  // Intake mode: the guided form, or the conversational AI attorney. Both edit
+  // the SAME formData below; the toggle only swaps which UI renders.
+  const [mode, setMode] = useState<'form' | 'ai'>('form');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
@@ -1074,6 +1095,14 @@ const POAForm: React.FC = () => {
   const [collapsedAgentPanels, setCollapsedAgentPanels] = useState<Record<string, boolean>>({});
   const toggleAgentPanel = (id: string) =>
     setCollapsedAgentPanels((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  // Merge a partial-FormData patch from the AI attorney into shared state. Reuses
+  // the module-level deepMerge (recurses into objects, replaces arrays wholesale),
+  // so the attorney's fields land exactly where the guided form reads them.
+  const applyAiPatch = useCallback(
+    (patch: any) => setFormData((prev) => deepMerge(prev, patch)),
+    []
+  );
 
   const formConfig = FORM_TYPES[formType] || FORM_TYPES.powerOfAttorneyForm;
   const pages = formConfig.pages;
@@ -1099,7 +1128,7 @@ const POAForm: React.FC = () => {
         if (response.success && response.data && response.data.formData) {
           // Deep merge saved data with initial data to ensure all required fields exist
           const savedData = response.data.formData;
-          const mergedData = deepMerge(initialFormData, savedData);
+          const mergedData = stripRemovedHcdCodes(deepMerge(initialFormData, savedData));
           setFormData(mergedData);
           setExistingSubmissionId(response.data.id);
         }
@@ -1772,7 +1801,13 @@ const POAForm: React.FC = () => {
     if (party.type_of_party === 'An entity') {
       return party.entity_name || 'Unnamed Entity';
     }
-    const name = [party.first_name, party.middle_name, party.surname].filter(Boolean).join(' ');
+    // Include the suffix so people who share a name (e.g. Jr./III) are
+    // distinguishable in every dropdown and carry the suffix into the value
+    // that lands in formData and the review page.
+    const name = [party.first_name, party.middle_name, party.surname, party.suffix]
+      .map((s) => (s || '').trim())
+      .filter(Boolean)
+      .join(' ');
     return name || 'Unnamed Person';
   };
 
@@ -1925,6 +1960,7 @@ const POAForm: React.FC = () => {
       const wi = next.will_info;
       next = { ...next, will_info: { ...wi, residuary_distribution: fillEqualShares(wi.residuary_distribution || [], wi.distributions_equal) } };
     }
+    next = stripRemovedHcdCodes(next);
     return next;
   };
 
@@ -3772,38 +3808,6 @@ const POAForm: React.FC = () => {
                   <strong>Hydration</strong>, so that water can be administered invasively
                 </label>
               </div>
-              <div className="form-check mb-2">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  checked={formData.hcd.client_hcds.includes('Vent')}
-                  onChange={(e) => {
-                    const newHcds = e.target.checked
-                      ? [...formData.hcd.client_hcds, 'Vent']
-                      : formData.hcd.client_hcds.filter(h => h !== 'Vent');
-                    updateNestedFormData('hcd.client_hcds', newHcds);
-                  }}
-                />
-                <label className="form-check-label">
-                  <strong>Ventilator</strong> - I want to receive mechanical ventilation
-                </label>
-              </div>
-              <div className="form-check mb-2">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  checked={formData.hcd.client_hcds.includes('CPR')}
-                  onChange={(e) => {
-                    const newHcds = e.target.checked
-                      ? [...formData.hcd.client_hcds, 'CPR']
-                      : formData.hcd.client_hcds.filter(h => h !== 'CPR');
-                    updateNestedFormData('hcd.client_hcds', newHcds);
-                  }}
-                />
-                <label className="form-check-label">
-                  <strong>CPR</strong> - I want cardiopulmonary resuscitation attempted
-                </label>
-              </div>
             </div>
           </div>
         )}
@@ -3862,34 +3866,6 @@ const POAForm: React.FC = () => {
                       }}
                     />
                     <label className="form-check-label"><strong>Hydration</strong></label>
-                  </div>
-                  <div className="form-check mb-2">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      checked={formData.spouse_hcd.spouse_hcds.includes('Vent')}
-                      onChange={(e) => {
-                        const newHcds = e.target.checked
-                          ? [...formData.spouse_hcd.spouse_hcds, 'Vent']
-                          : formData.spouse_hcd.spouse_hcds.filter(h => h !== 'Vent');
-                        updateNestedFormData('spouse_hcd.spouse_hcds', newHcds);
-                      }}
-                    />
-                    <label className="form-check-label"><strong>Ventilator</strong></label>
-                  </div>
-                  <div className="form-check mb-2">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      checked={formData.spouse_hcd.spouse_hcds.includes('CPR')}
-                      onChange={(e) => {
-                        const newHcds = e.target.checked
-                          ? [...formData.spouse_hcd.spouse_hcds, 'CPR']
-                          : formData.spouse_hcd.spouse_hcds.filter(h => h !== 'CPR');
-                        updateNestedFormData('spouse_hcd.spouse_hcds', newHcds);
-                      }}
-                    />
-                    <label className="form-check-label"><strong>CPR</strong></label>
                   </div>
                 </div>
               </div>
@@ -5844,15 +5820,15 @@ const POAForm: React.FC = () => {
       }
     };
 
-    // Helper to get HCD choices
+    // Helper to get HCD choices. Only Nutrition and Hydration are still asked;
+    // any other codes (e.g. legacy 'Vent'/'CPR' from older saved records) are
+    // filtered out so removed options never surface in the review.
     const getHCDChoices = (choices: string[]) => {
       const labels: Record<string, string> = {
         'Nutr': 'Nutrition/Feeding Tube',
         'Hydr': 'Hydration',
-        'Vent': 'Ventilator/Breathing Machine',
-        'CPR': 'CPR/Resuscitation',
       };
-      return choices.map(c => labels[c] || c).join(', ') || 'None selected';
+      return choices.filter(c => c in labels).map(c => labels[c]).join(', ') || 'None selected';
     };
 
     return (
@@ -6113,8 +6089,31 @@ const POAForm: React.FC = () => {
                     </button>
                   </div>
                   <div className="card-body">
-                    <p className="mb-1"><strong>Primary Executor:</strong> {formData.will_info?.primary_executor || 'Not selected'}</p>
-                    <p className="mb-0"><strong>Successor Executor:</strong> {formData.will_info?.successor_executor || 'Not selected'}</p>
+                    {(() => {
+                      const wi = formData.will_info;
+                      const inits = (wi?.initial_executors || []).filter((e) => e.initial_executor);
+                      const succs = (wi?.successor_executors || []).filter((e) => e.successor_agent_to_serve);
+                      const lines: Array<{ label: string; value: string }> = [];
+                      if (inits.length) {
+                        inits.forEach((e, i) => lines.push({
+                          label: `Initial Executor${inits.length > 1 ? ` ${i + 1}` : ''}`,
+                          value: e.co_executor ? `${e.initial_executor} (with ${e.co_executor})` : e.initial_executor,
+                        }));
+                      } else {
+                        lines.push({ label: 'Initial Executor', value: 'Not selected' });
+                      }
+                      succs.forEach((e, i) => lines.push({
+                        label: `Successor Executor${succs.length > 1 ? ` ${i + 1}` : ''}`,
+                        value: e.second_successor_coagent_to_serve
+                          ? `${e.successor_agent_to_serve} (with ${e.second_successor_coagent_to_serve})`
+                          : e.successor_agent_to_serve,
+                      }));
+                      return lines.map((ln, i) => (
+                        <p key={i} className={i === lines.length - 1 ? 'mb-0' : 'mb-1'}>
+                          <strong>{ln.label}:</strong> {ln.value}
+                        </p>
+                      ));
+                    })()}
                   </div>
                 </div>
               </div>
@@ -6132,8 +6131,31 @@ const POAForm: React.FC = () => {
                       </button>
                     </div>
                     <div className="card-body">
-                      <p className="mb-1"><strong>Primary Executor:</strong> {formData.will_info?.spouse_primary_executor || 'Not selected'}</p>
-                      <p className="mb-0"><strong>Successor Executor:</strong> {formData.will_info?.spouse_successor_executor || 'Not selected'}</p>
+                      {(() => {
+                        const wi = formData.will_info;
+                        const inits = (wi?.spouse_initial_executors || []).filter((e) => e.initial_executor);
+                        const succs = (wi?.spouse_successor_executors || []).filter((e) => e.successor_agent_to_serve);
+                        const lines: Array<{ label: string; value: string }> = [];
+                        if (inits.length) {
+                          inits.forEach((e, i) => lines.push({
+                            label: `Initial Executor${inits.length > 1 ? ` ${i + 1}` : ''}`,
+                            value: e.co_executor ? `${e.initial_executor} (with ${e.co_executor})` : e.initial_executor,
+                          }));
+                        } else {
+                          lines.push({ label: 'Initial Executor', value: 'Not selected' });
+                        }
+                        succs.forEach((e, i) => lines.push({
+                          label: `Successor Executor${succs.length > 1 ? ` ${i + 1}` : ''}`,
+                          value: e.second_successor_coagent_to_serve
+                            ? `${e.successor_agent_to_serve} (with ${e.second_successor_coagent_to_serve})`
+                            : e.successor_agent_to_serve,
+                        }));
+                        return lines.map((ln, i) => (
+                          <p key={i} className={i === lines.length - 1 ? 'mb-0' : 'mb-1'}>
+                            <strong>{ln.label}:</strong> {ln.value}
+                          </p>
+                        ));
+                      })()}
                     </div>
                   </div>
                 </div>
@@ -6213,9 +6235,7 @@ const POAForm: React.FC = () => {
                 {formData.fpoa?.fpoa_initial_agents?.second_coagent_person_to_serve && (
                   <p className="mb-1"><strong>Co-Agent:</strong> {formData.fpoa.fpoa_initial_agents.second_coagent_person_to_serve}</p>
                 )}
-                <p className="mb-1"><strong>Agents Act Independently:</strong> {formData.fpoa?.fpoa_initial_agents?.agents_serve_alone === 'Yes' ? 'Yes' : 'No (must act together)'}</p>
-                <p className="mb-1"><strong>Springing POA:</strong> {formData.fpoa?.springing_poa === 'Yes' ? 'Yes (effective upon incapacity)' : 'No (effective immediately)'}</p>
-                <p className="mb-0"><strong>Revoke Prior POAs:</strong> {formData.fpoa?.revoke_prior_poa === 'Yes' ? 'Yes' : 'No'}</p>
+                <p className="mb-0"><strong>Agents Act Independently:</strong> {formData.fpoa?.fpoa_initial_agents?.agents_serve_alone === 'Yes' ? 'Yes' : 'No (must act together)'}</p>
               </div>
             </div>
           </div>
@@ -6230,9 +6250,7 @@ const POAForm: React.FC = () => {
                   {formData.spouse_fpoa?.fpoa_initial_agents?.second_coagent_person_to_serve && (
                     <p className="mb-1"><strong>Co-Agent:</strong> {formData.spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve}</p>
                   )}
-                  <p className="mb-1"><strong>Agents Act Independently:</strong> {formData.spouse_fpoa?.fpoa_initial_agents?.agents_serve_alone === 'Yes' ? 'Yes' : 'No'}</p>
-                  <p className="mb-1"><strong>Springing POA:</strong> {formData.spouse_fpoa?.springing_poa === 'Yes' ? 'Yes' : 'No'}</p>
-                  <p className="mb-0"><strong>Revoke Prior POAs:</strong> {formData.spouse_fpoa?.revoke_prior_poa === 'Yes' ? 'Yes' : 'No'}</p>
+                  <p className="mb-0"><strong>Agents Act Independently:</strong> {formData.spouse_fpoa?.fpoa_initial_agents?.agents_serve_alone === 'Yes' ? 'Yes' : 'No'}</p>
                 </div>
               </div>
             </div>
@@ -6260,8 +6278,7 @@ const POAForm: React.FC = () => {
                   <p className="mb-1"><strong>Co-Agent:</strong> {formData.hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve}</p>
                 )}
                 <p className="mb-1"><strong>Organ Donor:</strong> {formData.hcpoa?.wish_to_be_organ_donor === 'Yes' ? 'Yes' : formData.hcpoa?.wish_to_be_organ_donor === 'No' ? 'No' : 'Not specified'}</p>
-                <p className="mb-1"><strong>Donate Body to Science:</strong> {formData.hcpoa?.wish_to_donate_body_to_science === 'Yes' ? 'Yes' : formData.hcpoa?.wish_to_donate_body_to_science === 'No' ? 'No' : 'Not specified'}</p>
-                <p className="mb-0"><strong>No Blood Transfusions:</strong> {formData.hcpoa?.no_blood_transfusion === 'Yes' ? 'Yes (religious objection)' : 'No'}</p>
+                <p className="mb-0"><strong>Donate Body to Science:</strong> {formData.hcpoa?.wish_to_donate_body_to_science === 'Yes' ? 'Yes' : formData.hcpoa?.wish_to_donate_body_to_science === 'No' ? 'No' : 'Not specified'}</p>
               </div>
             </div>
           </div>
@@ -6277,8 +6294,7 @@ const POAForm: React.FC = () => {
                     <p className="mb-1"><strong>Co-Agent:</strong> {formData.spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve}</p>
                   )}
                   <p className="mb-1"><strong>Organ Donor:</strong> {formData.spouse_hcpoa?.wish_to_be_organ_donor === 'Yes' ? 'Yes' : formData.spouse_hcpoa?.wish_to_be_organ_donor === 'No' ? 'No' : 'Not specified'}</p>
-                  <p className="mb-1"><strong>Donate Body to Science:</strong> {formData.spouse_hcpoa?.wish_to_donate_body_to_science === 'Yes' ? 'Yes' : 'No'}</p>
-                  <p className="mb-0"><strong>No Blood Transfusions:</strong> {formData.spouse_hcpoa?.no_blood_transfusion === 'Yes' ? 'Yes' : 'No'}</p>
+                  <p className="mb-0"><strong>Donate Body to Science:</strong> {formData.spouse_hcpoa?.wish_to_donate_body_to_science === 'Yes' ? 'Yes' : 'No'}</p>
                 </div>
               </div>
             </div>
@@ -6303,7 +6319,7 @@ const POAForm: React.FC = () => {
               <div className="card-body">
                 <p className="mb-1"><strong>Life Support Preference:</strong> {getLifeSupportLabel(formData.hcd?.life_support_option)}</p>
                 {formData.hcd?.life_support_option === 'CHOOSE' && (
-                  <p className="mb-1"><strong>Withhold:</strong> {getHCDChoices(formData.hcd?.client_hcds || [])}</p>
+                  <p className="mb-1"><strong>Continue:</strong> {getHCDChoices(formData.hcd?.client_hcds || [])}</p>
                 )}
               </div>
             </div>
@@ -6317,7 +6333,7 @@ const POAForm: React.FC = () => {
                 <div className="card-body">
                   <p className="mb-1"><strong>Life Support Preference:</strong> {getLifeSupportLabel(formData.spouse_hcd?.life_support_option)}</p>
                   {formData.spouse_hcd?.life_support_option === 'CHOOSE' && (
-                    <p className="mb-1"><strong>Withhold:</strong> {getHCDChoices(formData.spouse_hcd?.spouse_hcds || [])}</p>
+                    <p className="mb-1"><strong>Continue:</strong> {getHCDChoices(formData.spouse_hcd?.spouse_hcds || [])}</p>
                   )}
                 </div>
               </div>
@@ -6443,7 +6459,29 @@ const POAForm: React.FC = () => {
               </div>
             )}
 
-            {/* Progress Bar */}
+            {/* Intake mode toggle: Guided Form vs. AI Attorney. Both edit the
+                same formData; this only swaps which UI shows. */}
+            <div className="d-flex justify-content-center mb-4">
+              <div className="btn-group" role="group" aria-label="Intake mode">
+                <button
+                  type="button"
+                  className={`btn ${mode === 'form' ? 'btn-primary' : 'btn-outline-primary'}`}
+                  onClick={() => setMode('form')}
+                >
+                  <i className="fas fa-list me-2"></i>Guided Form
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${mode === 'ai' ? 'btn-primary' : 'btn-outline-primary'}`}
+                  onClick={() => setMode('ai')}
+                >
+                  <i className="fas fa-comments me-2"></i>Talk to an Attorney (AI)
+                </button>
+              </div>
+            </div>
+
+            {/* Progress Bar (guided form only) */}
+            {mode === 'form' && (
             <div className="poa-progress mb-4">
               <div className="d-flex justify-content-between mb-2 flex-wrap">
                 {pages.map((page, index) => (
@@ -6463,6 +6501,7 @@ const POAForm: React.FC = () => {
                 <div className="progress-bar bg-success" style={{ width: `${progress}%` }}></div>
               </div>
             </div>
+            )}
 
             {/* Save Message */}
             {saveMessage && (
@@ -6475,8 +6514,33 @@ const POAForm: React.FC = () => {
             {/* Form Content */}
             <div className="poa-form-container card">
               <div className="card-body p-4">
-                {renderCurrentPage()}
+                {mode === 'ai' ? (
+                  <AIAttorneyChat
+                    formType={formType}
+                    formData={formData}
+                    onApplyPatch={applyAiPatch}
+                    onSwitchToForm={() => setMode('form')}
+                  />
+                ) : (
+                  renderCurrentPage()
+                )}
               </div>
+              {mode === 'ai' ? (
+                <div className="card-footer d-flex justify-content-end align-items-center">
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary"
+                    onClick={() => handleSave('inprogress')}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? (
+                      <><span className="spinner-border spinner-border-sm me-2"></span>Saving...</>
+                    ) : (
+                      <><i className="fas fa-save me-2"></i>Save Progress</>
+                    )}
+                  </button>
+                </div>
+              ) : (
               <div className="card-footer d-flex justify-content-between align-items-center">
                 <button
                   type="button"
@@ -6521,6 +6585,7 @@ const POAForm: React.FC = () => {
                   )}
                 </div>
               </div>
+              )}
             </div>
           </div>
         </div>

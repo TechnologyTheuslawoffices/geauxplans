@@ -150,8 +150,8 @@ const Header: React.FC = () => {
                       <Link to="#"><span className="d-none d-sm-inline">{user?.firstName || user?.email}</span></Link>
                     </div>
                     <ul>
-                      <li><Link to="/my-account/my-estate-planning">My Estate Plans</Link></li>
-                      <li><Link to="/my-account/business-planning">My Companies</Link></li>
+                      <li><Link to="/my-account">Dashboard</Link></li>
+                      <li><Link to="/my-account/my-estate-planning">My Plans</Link></li>
                       <li><Link to="/my-account/edit-account">Edit Profile</Link></li>
                       <li><Link to="/my-account/orders">View Orders</Link></li>
                       <li>
