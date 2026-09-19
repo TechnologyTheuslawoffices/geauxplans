@@ -1091,6 +1091,12 @@ const POAForm: React.FC = () => {
   const [saveMessage, setSaveMessage] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [existingSubmissionId, setExistingSubmissionId] = useState<number | null>(null);
+  // Edit-access gate. `accessChecked` stays false until the load resolves so we
+  // never flash the editable form; `accessExpired` locks it out entirely once
+  // the backend reports the grace period is over.
+  const [accessChecked, setAccessChecked] = useState<boolean>(false);
+  const [accessExpired, setAccessExpired] = useState<boolean>(false);
+  const [accessMessage, setAccessMessage] = useState<string>('');
   const [hasOtherParties, setHasOtherParties] = useState<string>('');
   const [collapsedAgentPanels, setCollapsedAgentPanels] = useState<Record<string, boolean>>({});
   const toggleAgentPanel = (id: string) =>
@@ -1125,20 +1131,36 @@ const POAForm: React.FC = () => {
     const loadSubmission = async () => {
       try {
         const response = await api.get(`/submissions/by-type/${formType}`);
-        if (response.success && response.data && response.data.formData) {
-          // Deep merge saved data with initial data to ensure all required fields exist
-          const savedData = response.data.formData;
-          const mergedData = stripRemovedHcdCodes(deepMerge(initialFormData, savedData));
-          setFormData(mergedData);
-          setExistingSubmissionId(response.data.id);
+        if (response.success && response.data) {
+          // Grace period over: don't load the form into an editable state — lock
+          // the page so the user can't waste time filling a form they can't save.
+          if ((response.data as any).canEdit === false) {
+            setAccessExpired(true);
+            setAccessMessage(
+              (response.data as any).accessMessage ||
+                'Your editing period has expired. Purchase a subscription to continue editing.'
+            );
+            return;
+          }
+          if (response.data.formData) {
+            // Deep merge saved data with initial data to ensure all required fields exist
+            const savedData = response.data.formData;
+            const mergedData = stripRemovedHcdCodes(deepMerge(initialFormData, savedData));
+            setFormData(mergedData);
+            setExistingSubmissionId(response.data.id);
+          }
         }
       } catch (error) {
         console.error('Failed to load submission:', error);
+      } finally {
+        setAccessChecked(true);
       }
     };
 
     if (isAuthenticated) {
       loadSubmission();
+    } else {
+      setAccessChecked(true);
     }
   }, [formType, isAuthenticated]);
 
@@ -6435,6 +6457,46 @@ const POAForm: React.FC = () => {
   };
 
   const progress = ((currentPage + 1) / pages.length) * 100;
+
+  // Hold the form back until the edit-access check resolves, so an expired user
+  // never even sees the editable form.
+  if (isAuthenticated && !accessChecked) {
+    return (
+      <div className="poa-form-page">
+        <div className="container py-5 text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Editing period is over — show a locked screen with a way to extend access
+  // instead of the form itself.
+  if (accessExpired) {
+    return (
+      <div className="poa-form-page">
+        <div className="container py-5">
+          <div className="row justify-content-center">
+            <div className="col-lg-8">
+              <div className="card border-0 shadow-sm">
+                <div className="card-body text-center p-5">
+                  <i className="fas fa-lock mb-3" style={{ fontSize: '2.5rem', color: '#dc3545' }}></i>
+                  <h3 className="mb-3">Editing period expired</h3>
+                  <p className="text-muted mb-4">{accessMessage}</p>
+                  <div className="d-flex gap-2 justify-content-center flex-wrap">
+                    <a href="/checkout?product=1367" className="btn btn-primary">Extend Access</a>
+                    <a href="/dashboard" className="btn btn-outline-secondary">Back to Dashboard</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="poa-form-page">
