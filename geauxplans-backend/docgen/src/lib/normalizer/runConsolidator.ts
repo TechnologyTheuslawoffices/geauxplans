@@ -151,7 +151,19 @@ export function consolidateParagraph(
     } else {
       const mergedText = runs.slice(g.start, g.end + 1).map((r) => r.text).join('');
       stats.runsConsolidated += g.end - g.start;
-      replacement = buildMergedRun(first.rPr, mergedText);
+      // Preserve markup sitting *between* the merged runs. The replacement below
+      // overwrites the whole span [first.outerStart..last.outerEnd], so any
+      // bookmarkStart/End (or perm/comment range) markers nested between the runs
+      // would be lost. Word splits a heading's text into runs around zero-length
+      // cross-reference bookmarks (e.g. "THE L|<bookmark>|IFETIME TRUST"); dropping
+      // that bookmark orphans every REF field pointing at it and Word then renders
+      // "Error! Reference source not found." Hoist the inter-run markup ahead of the
+      // merged run — its position within the paragraph is immaterial for a REF target.
+      let preserved = '';
+      for (let k = g.start; k < g.end; k++) {
+        preserved += working.substring(runs[k].outerEnd, runs[k + 1].outerStart);
+      }
+      replacement = preserved + buildMergedRun(first.rPr, mergedText);
     }
     replacements.push({ start: first.outerStart, end: last.outerEnd, replacement });
   }
