@@ -65,6 +65,20 @@ const PRODUCTS = {
   1367: { name: 'Legal Edge Plan', price: 999, price2person: 999, type: 'subscription', interval: 'month' },
 };
 
+// Predefined Stripe Price IDs, keyed by internal product id + form type.
+// Checkout references these directly instead of building price_data inline, so
+// no throwaway products are created in Stripe on every session. PRODUCTS above
+// stays the source of truth for names and amounts (used by the webhook, coupon
+// subtotal math, etc.); the amounts here must match the Prices in Stripe.
+// Legal Edge is a single monthly price shared by both form types.
+const STRIPE_PRICES = {
+  606: { solo: 'price_1SpvwaHQjfjZ1dW7FrJg2qyG', '2person': 'price_1UIrqYHQjfjZ1dW7ZhBmuKkj' },
+  614: { solo: 'price_1SpvvgHQjfjZ1dW79YusgiZ0', '2person': 'price_1UIrrQHQjfjZ1dW76jjn3jdO' },
+  673: { solo: 'price_1Spvw4HQjfjZ1dW77WCMvu4X', '2person': 'price_1UIrryHQjfjZ1dW78nLHmdLb' },
+  676: { solo: 'price_1SpvwvHQjfjZ1dW7bH18jVZX', '2person': 'price_1UIrpiHQjfjZ1dW72czaM6eg' },
+  1367: { solo: 'price_1UIrvdHQjfjZ1dW7DOECJHcK', '2person': 'price_1UIrvdHQjfjZ1dW7DOECJHcK' },
+};
+
 /**
  * Generate unique order number
  */
@@ -82,9 +96,9 @@ function generateOrderNumber() {
  * Request body (new): { items: [{ productId, formType }, ...] }
  * Request body (legacy, still supported): { productId, formType }
  *
- * Mixing one-time + subscription products is supported via Stripe's
- * `subscription_data.add_invoice_items` pattern: any one-time line items
- * are charged on the first invoice, and the subscription recurs thereafter.
+ * Mixing one-time + subscription products is supported by putting all Prices
+ * in line_items: in subscription mode the one-time lines bill on the first
+ * invoice and the subscription recurs thereafter.
  */
 router.post('/create-checkout-session', optionalAuth, async (req, res) => {
   // Accept either { items: [...] } or { productId, formType } (back-compat)
@@ -107,88 +121,23 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
     const product = PRODUCTS[pid];
     const formType = it.formType === '2person' ? '2person' : 'solo';
     const unitAmount = formType === '2person' ? product.price2person : product.price;
-    const planLabel = formType === '2person' ? ' (2 Person)' : '';
-    resolved.push({ productId: pid, product, formType, unitAmount, planLabel });
+    const priceId = STRIPE_PRICES[pid]?.[formType];
+    if (!priceId) {
+      return res.status(400).json({ success: false, error: `No price configured for product ${pid} (${formType})` });
+    }
+    resolved.push({ productId: pid, product, formType, unitAmount, priceId });
   }
 
   const hasSubscription = resolved.some(r => r.product.type === 'subscription');
   const mode = hasSubscription ? 'subscription' : 'payment';
 
   try {
-    let lineItems;
-    let subscriptionData;
-
-    if (hasSubscription) {
-      // Subscriptions require recurring price_data. One-time items go under
-      // subscription_data.add_invoice_items so they bill on the first invoice.
-      lineItems = [];
-      const addInvoiceItems = [];
-
-      for (const r of resolved) {
-        if (r.product.type === 'subscription') {
-          lineItems.push({
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: r.product.name + r.planLabel,
-                description: `GeauxPlans ${r.product.name}${r.planLabel}`,
-              },
-              unit_amount: r.unitAmount,
-              recurring: { interval: r.product.interval || 'month' },
-            },
-            quantity: 1,
-          });
-        } else {
-          addInvoiceItems.push({
-            price_data: {
-              currency: 'usd',
-              product: undefined, // ad-hoc product
-              product_data: undefined,
-              unit_amount: r.unitAmount,
-            },
-            quantity: 1,
-          });
-        }
-      }
-
-      // Stripe's add_invoice_items requires an existing Stripe Product.
-      // For ad-hoc one-time items in subscription mode we must create products
-      // on the fly. Create them here, then reference price_data with `product`.
-      const builtAddInvoiceItems = [];
-      for (let i = 0; i < resolved.length; i++) {
-        const r = resolved[i];
-        if (r.product.type === 'subscription') continue;
-        const stripeProduct = await stripe.products.create({
-          name: r.product.name + r.planLabel,
-          description: `GeauxPlans ${r.product.name}${r.planLabel}`,
-        });
-        builtAddInvoiceItems.push({
-          price_data: {
-            currency: 'usd',
-            product: stripeProduct.id,
-            unit_amount: r.unitAmount,
-          },
-          quantity: 1,
-        });
-      }
-
-      subscriptionData = builtAddInvoiceItems.length > 0
-        ? { add_invoice_items: builtAddInvoiceItems }
-        : undefined;
-    } else {
-      // All one-time products — use plain payment mode with price_data
-      lineItems = resolved.map(r => ({
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: r.product.name + r.planLabel,
-            description: `GeauxPlans ${r.product.name}${r.planLabel}`,
-          },
-          unit_amount: r.unitAmount,
-        },
-        quantity: 1,
-      }));
-    }
+    // Reference predefined Stripe Prices. Checkout accepts one-time and
+    // recurring prices in the same session: in subscription mode the one-time
+    // lines are billed on the first invoice and the recurring line recurs, so a
+    // mixed cart needs nothing special. (The old subscription_data.add_invoice_items
+    // path is gone — the current Stripe API version rejects it.)
+    const lineItems = resolved.map(r => ({ price: r.priceId, quantity: 1 }));
 
     // Metadata: stringify the items array, plus first-item legacy fields
     const metadataItems = JSON.stringify(
@@ -232,10 +181,6 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
       },
       customer_email: req.user?.email || undefined,
     };
-
-    if (subscriptionData) {
-      sessionParams.subscription_data = subscriptionData;
-    }
 
     if (mode === 'payment') {
       // Keep the card on file so the post-purchase Legal Edge Plan offer can be
@@ -409,7 +354,23 @@ async function handleSuccessfulPayment(session) {
       for (const r of resolved) {
         if (r.product.type !== 'subscription') continue;
         try {
-          const expiresAt = new Date();
+          // Stack onto existing time instead of resetting to now: re-buying the
+          // Legal Edge Plan while a paid month is still active should ADD an
+          // interval on top of the remaining time, not throw it away.
+          const { data: existingSub } = await supabase
+            .from('user_subscriptions')
+            .select('expires_at')
+            .eq('user_id', userId)
+            .eq('product_id', r.productId)
+            .eq('status', 'active')
+            .gte('expires_at', new Date().toISOString())
+            .order('expires_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          const expiresAt = existingSub && existingSub.expires_at
+            ? new Date(existingSub.expires_at)
+            : new Date();
           if (r.product.interval === 'year') {
             expiresAt.setFullYear(expiresAt.getFullYear() + 1);
           } else {
@@ -434,6 +395,36 @@ async function handleSuccessfulPayment(session) {
           }
         } catch (subErr) {
           console.error('Failed to create subscription record:', subErr);
+        }
+      }
+    }
+
+    // Re-purchasing an estate plan reopens that plan's 30-day editing window.
+    // Each plan type is gated individually (accessControl.canEditForm keys off
+    // the submission's first_submitted_at), so resetting it to now restarts the
+    // 30-day clock for every submission of the matching form type. The Legal
+    // Edge Plan is a subscription and is handled above — it never lands here.
+    if (userId && supabase) {
+      const { FORM_TYPE_PRODUCTS } = require('../config/constants');
+      for (const r of resolved) {
+        if (r.product.type === 'subscription') continue;
+        const formTypes = Object.keys(FORM_TYPE_PRODUCTS)
+          .filter((ft) => FORM_TYPE_PRODUCTS[ft].productId === r.productId);
+        if (formTypes.length === 0) continue;
+        try {
+          const { error: reopenError } = await supabase
+            .from('poa_submissions')
+            .update({ first_submitted_at: new Date().toISOString() })
+            .eq('user_id', userId)
+            .in('form_type', formTypes)
+            .not('first_submitted_at', 'is', null);
+          if (reopenError) {
+            console.error('Error reopening edit window:', reopenError);
+          } else {
+            console.log(`Edit window reopened for user ${userId}, form types ${formTypes.join(', ')}`);
+          }
+        } catch (reopenErr) {
+          console.error('Failed to reopen edit window:', reopenErr);
         }
       }
     }

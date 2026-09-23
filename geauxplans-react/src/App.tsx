@@ -44,46 +44,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './styles/main.css';
 
-// Development Banner Component
-const DevBanner: React.FC = () => {
-  const [dismissed, setDismissed] = React.useState(false);
-
-  if (dismissed) return null;
-
-  return (
-    <div
-      style={{
-        background: 'linear-gradient(90deg, #f59e0b, #d97706)',
-        color: '#000',
-        padding: '10px 20px',
-        textAlign: 'center',
-        fontSize: '14px',
-        fontWeight: '500',
-        position: 'relative',
-        zIndex: 9999,
-      }}
-    >
-      <span style={{ marginRight: '8px' }}>&#9888;</span>
-      <strong>Beta Version:</strong> This website is under active development. Some features may not work as expected.
-      <button
-        onClick={() => setDismissed(true)}
-        style={{
-          background: 'rgba(0,0,0,0.2)',
-          border: 'none',
-          color: '#000',
-          marginLeft: '15px',
-          padding: '2px 10px',
-          borderRadius: '4px',
-          cursor: 'pointer',
-          fontSize: '12px',
-        }}
-      >
-        Dismiss
-      </button>
-    </div>
-  );
-};
-
 /**
  * Shown for any URL with no matching route.
  *
@@ -116,7 +76,6 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div className="App">
-      {!isDesignMode && <DevBanner />}
       {!isDesignMode && <Header />}
       {children}
       {!isDesignMode && <Footer />}
