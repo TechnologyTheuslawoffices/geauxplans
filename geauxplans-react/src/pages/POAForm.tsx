@@ -6487,7 +6487,7 @@ const POAForm: React.FC = () => {
                   <p className="text-muted mb-4">{accessMessage}</p>
                   <div className="d-flex gap-2 justify-content-center flex-wrap">
                     <a href="/checkout?product=1367" className="btn btn-primary">Extend Access</a>
-                    <a href="/dashboard" className="btn btn-outline-secondary">Back to Dashboard</a>
+                    <a href="/my-account" className="btn btn-outline-secondary">Back to Dashboard</a>
                   </div>
                 </div>
               </div>
@@ -6509,7 +6509,7 @@ const POAForm: React.FC = () => {
                 <strong onClick={handleTitleClick} style={{ cursor: 'default' }}>Editing Submission</strong>
                 <p className="mb-0 mt-1">
                   You are editing an existing form submission. Your progress is automatically saved as you move between pages.
-                  Changes will be finalized when you complete the form. <a href="/dashboard">Back to Dashboard</a>
+                  Changes will be finalized when you complete the form. <a href="/my-account">Back to Dashboard</a>
                 </p>
               </div>
             ) : (
