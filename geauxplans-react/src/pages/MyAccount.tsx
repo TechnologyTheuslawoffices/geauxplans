@@ -69,7 +69,7 @@ const MyAccount: React.FC = () => {
         <div className="container">
           <h1 style={{ marginBottom: '40px' }}>My Account</h1>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', gap: '40px' }}>
+          <div className="my-account-grid">
             {/* Sidebar */}
             <div>
               <nav>

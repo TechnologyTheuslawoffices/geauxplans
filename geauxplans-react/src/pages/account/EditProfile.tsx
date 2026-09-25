@@ -100,7 +100,7 @@ const EditProfile: React.FC = () => {
       )}
 
       <form onSubmit={handleSubmit}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+        <div className="form-row-2col">
           <div>
             <label style={labelStyle}>
               First Name <span style={{ color: '#e74c3c' }}>*</span>

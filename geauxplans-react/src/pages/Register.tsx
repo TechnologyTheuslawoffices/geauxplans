@@ -176,7 +176,7 @@ const Register: React.FC = () => {
             )}
 
             <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+              <div className="form-row-2col">
                 <div>
                   <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
                     First Name *

@@ -257,3 +257,31 @@
     grid-column: 1 / -1;
   }
 }
+
+@media (max-width: 600px) {
+  .cart-hero {
+    padding: 40px 0 20px;
+  }
+
+  .cart-hero h1 {
+    font-size: 30px;
+  }
+
+  /* Full stack on small phones: name, then price row, then qty, then remove */
+  .cart-item {
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+  }
+
+  .cart-item-main,
+  .cart-item-qty,
+  .cart-item-price,
+  .cart-item-remove {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .cart-summary {
+    padding: 20px;
+  }
+}

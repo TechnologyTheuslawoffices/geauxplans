@@ -729,6 +729,20 @@
   }
 }
 
+/* Tablet: three-column card rows are cramped at full width but leave dead
+   space as a single column — show two across in this range instead. Placed
+   after the max-width:992px block so it wins for 769px–992px. */
+@media (min-width: 769px) and (max-width: 992px) {
+  .llc-features-grid,
+  .process-steps,
+  .testimonials-grid,
+  .process-grid,
+  .process-cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+}
+
 /* ========================================
    LLC Wizard Modal Styles
    ======================================== */

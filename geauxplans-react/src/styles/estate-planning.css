@@ -587,6 +587,30 @@
 }
 
 /* Responsive */
+
+/* Tablet: two-column content blocks are too cramped side by side, collapse
+   them here instead of waiting until the phone breakpoint. */
+@media (max-width: 992px) {
+  .ep-landing-grid,
+  .learning-grid,
+  .louisiana-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .louisiana-image {
+    order: -1;
+  }
+
+  .numbers-grid {
+    gap: 24px;
+  }
+
+  .ep-landing-content h2 {
+    font-size: 2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .ep-option-btn {
     padding: 15px 20px;
