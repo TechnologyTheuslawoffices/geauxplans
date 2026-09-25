@@ -134,6 +134,15 @@ button:hover {
   }
 }
 
+/* On very large monitors (1440p, 4K, ultrawide) the 1320px cap leaves the
+   content stranded in a narrow strip. Widen it so the layout uses the screen
+   without stretching text past a comfortable measure. */
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1440px;
+  }
+}
+
 /* Header Styles */
 .site-header, .header {
   background: var(--white);
@@ -837,14 +846,14 @@ button:hover {
 
 .hero-section h1 {
   color: var(--white);
-  font-size: 36px;
+  font-size: clamp(1.75rem, 1.2rem + 2.5vw, 2.5rem);
   margin-bottom: 20px;
   line-height: 1.2;
 }
 
 .hero-section h2 {
   color: var(--white);
-  font-size: 20px;
+  font-size: clamp(1.1rem, 0.95rem + 0.9vw, 1.35rem);
   font-weight: 400;
   line-height: 1.4;
   margin-bottom: 40px;
@@ -1165,14 +1174,6 @@ button:hover {
     padding: 80px 0 50px;
   }
 
-  .hero-section h1 {
-    font-size: 28px;
-  }
-
-  .hero-section h2 {
-    font-size: 18px;
-  }
-
   .document-item {
     padding: 0 20px;
   }
@@ -1397,12 +1398,15 @@ button:hover {
   margin-bottom: 10px;
 }
 
+/* Fluid size so the headline scales smoothly from small phones to large
+   monitors instead of jumping at breakpoints. No nowrap: on mid-size screens
+   (992-1200px) the half-width hero column can't fit it on one line, so it must
+   be allowed to wrap rather than overflow the viewport. */
 .hero-title {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 1rem + 2.2vw, 2.25rem);
   line-height: 1.2;
   margin-bottom: 15px;
   color: var(--text-color);
-  white-space: nowrap;
 }
 
 .text-blue {
@@ -1525,7 +1529,7 @@ button:hover {
 }
 
 .hello-title h2 {
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 1.5rem + 4vw, 4rem);
   font-weight: 400;
   margin: 0;
   color: var(--text-color);
@@ -1623,12 +1627,6 @@ button:hover {
     max-width: 400px;
   }
 
-  /* Was nowrap for the desktop one-line look; on narrow screens that forced
-     the headline off the side of the viewport and created horizontal scroll. */
-  .hero-title {
-    white-space: normal;
-  }
-
   .hero-buttons {
     justify-content: center;
   }
@@ -1644,14 +1642,6 @@ button:hover {
 }
 
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 1.75rem;
-  }
-
-  .hello-title h2 {
-    font-size: 3rem;
-  }
-
   /* Keep the circular family photo inside the phone viewport */
   .hero-image-wrapper {
     height: auto;
@@ -1670,9 +1660,46 @@ button:hover {
 }
 
 @media (max-width: 480px) {
+  .hero-home {
+    padding: 40px 0 50px;
+  }
+
   .hero-family {
     width: 80%;
     height: 80%;
+  }
+
+  /* The joined pill group can exceed the width of a 320-360px phone. Let the
+     two halves shrink their padding and center as a unit. */
+  .btn-pill-left,
+  .btn-pill-right {
+    padding: 12px 18px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Smallest phones (iPhone SE, older Androids, folded devices). Fully stack the
+   pill buttons so neither half is clipped, and tighten the outer gutter. */
+@media (max-width: 360px) {
+  .hero-buttons.pill-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-pill-left {
+    border-radius: 50px 50px 0 0;
+  }
+
+  .btn-pill-right {
+    border-left: 2px solid var(--primary-color);
+    border-top: none;
+    border-radius: 0 0 50px 50px;
+  }
+
+  .btn-pill-left,
+  .btn-pill-right {
+    text-align: center;
   }
 }
 
