@@ -128,9 +128,31 @@ button:hover {
   width: 100%;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 576px) {
   .container {
-    padding: 0 16px;
+    padding: 0 12px;
+  }
+}
+
+/* Edge-to-edge cards on phones. A tinted page background + container gutter +
+   card margin/radius + card padding stack up and waste horizontal space. Let
+   white cards bleed to the screen edges so there is a single gutter — the
+   card's own padding. The -12px matches the container/column gutter, so a card
+   reaches the viewport edge whether it sits directly in .container or inside a
+   Bootstrap column (the row's negative gutter cancels the container padding,
+   leaving the column's 12px). body has overflow-x:hidden, which absorbs any
+   sub-pixel rounding from the bleed. */
+@media (max-width: 576px) {
+  .card,
+  .poa-form-container,
+  .account-form,
+  .cart-summary,
+  .cart-item {
+    margin-left: -12px;
+    margin-right: -12px;
+    border-radius: 0;
+    border-left-width: 0;
+    border-right-width: 0;
   }
 }
 

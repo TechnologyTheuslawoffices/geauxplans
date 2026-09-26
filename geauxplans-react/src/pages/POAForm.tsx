@@ -6574,7 +6574,7 @@ const POAForm: React.FC = () => {
             )}
 
             {/* Form Content */}
-            <div className="poa-form-container card">
+            <div className={`poa-form-container card ${mode === 'ai' ? 'ai-mode' : ''}`}>
               <div className="card-body p-4">
                 {mode === 'ai' ? (
                   <AIAttorneyChat

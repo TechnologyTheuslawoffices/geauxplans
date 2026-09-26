@@ -248,3 +248,66 @@
     display: none;
   }
 }
+
+/* ===== AI Attorney chat ===== */
+
+/* Desktop: comfortable panel height (previously set via inline styles). The
+   transcript flex-grows between the header and the composer. */
+.ai-attorney-chat {
+  min-height: 520px;
+}
+
+.ai-chat-list {
+  max-height: 420px;
+}
+
+/*
+ * Phones: the card padding, borders and rounded corners waste vertical space
+ * and make the conversation feel cramped. When the AI attorney is active we
+ * take over the whole viewport like a messaging app — the transcript fills the
+ * screen and the composer sticks to the bottom. /poa-form runs in design mode
+ * (site header/footer hidden), so a full-screen takeover is safe here.
+ */
+@media (max-width: 768px) {
+  .poa-form-container.ai-mode {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .poa-form-container.ai-mode .card-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    padding: 12px !important;
+  }
+
+  .poa-form-container.ai-mode .ai-attorney-chat {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+  }
+
+  /* Grow the transcript to fill the screen instead of a fixed 420px cap. */
+  .poa-form-container.ai-mode .ai-chat-list {
+    max-height: none;
+    margin-bottom: 12px !important;
+  }
+
+  /* Trim the header so more of the screen is conversation. */
+  .poa-form-container.ai-mode .ai-chat-header {
+    margin-bottom: 10px !important;
+  }
+
+  .poa-form-container.ai-mode .card-footer {
+    flex-direction: row;
+    padding: 8px 12px;
+  }
+}

@@ -92,8 +92,8 @@ const AIAttorneyChat: React.FC<AIAttorneyChatProps> = ({
   };
 
   return (
-    <div className="ai-attorney-chat d-flex flex-column" style={{ minHeight: '520px' }}>
-      <div className="d-flex justify-content-between align-items-center mb-3">
+    <div className="ai-attorney-chat d-flex flex-column">
+      <div className="ai-chat-header d-flex justify-content-between align-items-center mb-3">
         <div>
           <h5 className="mb-0">Talk to an Attorney (AI)</h5>
           <small className="text-muted">
@@ -117,8 +117,8 @@ const AIAttorneyChat: React.FC<AIAttorneyChatProps> = ({
 
       <div
         ref={listRef}
-        className="flex-grow-1 border rounded p-3 mb-3"
-        style={{ overflowY: 'auto', maxHeight: '420px', background: '#f8f9fa' }}
+        className="ai-chat-list flex-grow-1 border rounded p-3 mb-3"
+        style={{ overflowY: 'auto', background: '#f8f9fa' }}
       >
         {messages.map((m, idx) => (
           <div
@@ -149,7 +149,7 @@ const AIAttorneyChat: React.FC<AIAttorneyChatProps> = ({
         <div className="alert alert-danger py-1 px-2 mb-2 small">{errorMsg}</div>
       )}
 
-      <div className="d-flex gap-2 align-items-end">
+      <div className="ai-chat-input d-flex gap-2 align-items-end">
         <textarea
           className="form-control"
           rows={2}
