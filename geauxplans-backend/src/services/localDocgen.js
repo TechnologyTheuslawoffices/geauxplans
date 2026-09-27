@@ -103,6 +103,9 @@ async function processSubmission(submission) {
 
     console.log(`localDocgen: submission ${label} → "${appName}", ${documents.length} document(s)`);
 
+    // Returns assembled DOCX. The DOCX → PDF conversion is deliberately NOT done
+    // here: the route drives it one document at a time (services/pdfConvert.js)
+    // so it can report per-document progress while a plan renders.
     return {
       success: true,
       recordId: makeRecordId(submission.id),

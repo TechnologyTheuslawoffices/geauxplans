@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -79,10 +79,14 @@ interface KnacklyDocument {
   base64?: string;      // Full base64 data (only when fetching individual docs)
   storedUrl?: string;   // External storage URL (Supabase)
   hasData?: boolean;    // Summary flag from list endpoint
+  // Per-document generation state, written incrementally by
+  // generate-documents. 'pending' shows a spinner; 'ready' is downloadable.
+  status?: 'pending' | 'ready';
 }
 
 interface ApiSubmission {
   id: number;
+  submissionNumber?: number;
   formType: string;
   submissionStatus: 'inprogress' | 'completed';
   formData: any;
@@ -158,24 +162,46 @@ const ViewPlans: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
-  // No auto-refresh - let user click the button to avoid flickering
-  // Poll every 30 seconds ONLY if there are submissions with knacklyStatus === 'processing'
+  // Poll while any completed plan is still drafting. Generation now writes the
+  // document manifest one document at a time, so a short interval lets each card
+  // fill in as the files land. (The old 30s/record-id-gated poll never fired for
+  // the new flow, whose plans start processing with no record id yet.)
   useEffect(() => {
-    const hasProcessing = submissions.some(sub => {
-      return sub.submissionStatus === 'completed' &&
-        sub.knacklyRecordId && sub.knacklyStatus === 'processing';
-    });
+    const hasProcessing = submissions.some(
+      sub => sub.submissionStatus === 'completed' && sub.knacklyStatus === 'processing'
+    );
 
-    if (hasProcessing && !refreshing && !loading) {
+    if (hasProcessing && !loading) {
       const intervalId = setInterval(() => {
-        console.log('Polling for document updates...');
         fetchSubmissions();
-      }, 30000); // Poll every 30 seconds
+      }, 4000); // Poll every 4 seconds while documents render
 
       return () => clearInterval(intervalId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submissions, refreshing, loading]);
+  }, [submissions, loading]);
+
+  // Kick off generation for any completed plan the server has marked ready but
+  // not yet started. Submit no longer generates inline (it would block the
+  // request past Vercel's limit and freeze on the client), so the dashboard is
+  // what actually starts the slow work — in its own request, once per plan.
+  // The ref guard stops the 4s poll from re-firing a generation already running.
+  const kickedRef = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    submissions.forEach(sub => {
+      const needsKick =
+        sub.submissionStatus === 'completed' &&
+        sub.knacklyStatus === 'processing' &&
+        (sub.knacklyDocuments || []).length === 0 &&
+        (sub.documentBlockers || []).length === 0;
+
+      if (needsKick && !kickedRef.current.has(sub.id)) {
+        kickedRef.current.add(sub.id);
+        kickGeneration(sub.id);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submissions]);
 
   // Get auth headers using the session token from context
   const getAuthHeaders = (): Record<string, string> => {
@@ -202,6 +228,35 @@ const ViewPlans: React.FC = () => {
     } finally {
       setLoading(false);
       setLastRefreshed(new Date());
+    }
+  };
+
+  // Start generation in its own request and let the poll show progress. This is
+  // deliberately not awaited by its callers: the request runs long (it drafts
+  // and converts every document), and the 4s poll reads the per-document
+  // manifest as it fills. When it finally resolves we fetch once more to settle
+  // on the final state.
+  const kickGeneration = async (submissionId: number) => {
+    try {
+      const response = await api.post(
+        `/submissions/${submissionId}/generate-documents`,
+        {},
+        getAuthHeaders()
+      );
+      if (!response.success) {
+        console.error('Generate documents failed:', response.error);
+        setRefreshError({
+          id: submissionId,
+          message: response.error || 'Documents could not be generated.',
+        });
+        // Allow a manual retry after a failure.
+        kickedRef.current.delete(submissionId);
+      }
+    } catch (error) {
+      console.error('Failed to generate documents:', error);
+      kickedRef.current.delete(submissionId);
+    } finally {
+      await fetchSubmissions();
     }
   };
 
@@ -494,6 +549,69 @@ const ViewPlans: React.FC = () => {
       }
     }
 
+    // Drafting in progress. Generation writes the manifest one document at a
+    // time, so show each document with a spinner that flips to a download link
+    // as it lands, plus a running "X of Y ready" count. An empty manifest means
+    // generation has been marked ready but not seeded yet (the auto-kick is
+    // firing), so show a single "preparing" spinner.
+    if (submission.knacklyStatus === 'processing') {
+      const docs = submission.knacklyDocuments || [];
+      const total = docs.length;
+      const ready = docs.filter(d => d.status === 'ready').length;
+
+      return (
+        <>
+          <p className="mb-0" style={{ lineHeight: '14px' }}>
+            <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
+          </p>
+          {total === 0 ? (
+            <p className="mb-0 mt-1 d-flex align-items-center gap-2" style={{ color: '#ff9900' }}>
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+              <strong>Preparing your documents…</strong>
+            </p>
+          ) : (
+            <>
+              <p className="mb-0 mt-1" style={{ fontSize: '13px', color: '#666' }}>
+                <strong>{ready} of {total} ready</strong>
+              </p>
+              <ol className="gpx_ep_documents_ul" style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
+                {docs.map((doc: any, index: number) => {
+                  const docName = doc.name || `Document ${index + 1}`;
+                  const directUrl = doc.storedUrl || doc.publicUrl || doc.url;
+
+                  if (doc.status === 'ready' && directUrl) {
+                    return (
+                      <li key={doc.id || index}>
+                        <a href={directUrl} target="_blank" rel="noopener noreferrer">{docName}</a>
+                      </li>
+                    );
+                  }
+                  if (doc.status === 'ready' && doc.base64) {
+                    return (
+                      <li key={doc.id || index}>
+                        <button
+                          onClick={() => downloadDocument(submission.id, index, docName)}
+                          style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, color: '#0000ff', textDecoration: 'underline', font: 'inherit' }}
+                        >
+                          {docName}
+                        </button>
+                      </li>
+                    );
+                  }
+                  return (
+                    <li key={doc.id || index} style={{ color: '#999' }} className="d-flex align-items-center gap-2">
+                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ width: '0.9rem', height: '0.9rem' }} />
+                      <span>{docName} <em>(preparing…)</em></span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </>
+          )}
+        </>
+      );
+    }
+
     if (submission.knacklyRecordId) {
       const isRefreshing = refreshing === submission.id;
       return (
@@ -547,7 +665,7 @@ const ViewPlans: React.FC = () => {
           </ul>
           {submission.canEdit !== false && (
             <Link
-              to={`/poa-form?type=${submission.formType}`}
+              to={`/poa-form?type=${submission.formType}&submission=${submission.id}`}
               className="btn btn-sm btn-primary mt-2"
               style={{ fontSize: '12px' }}
             >
@@ -651,11 +769,11 @@ const ViewPlans: React.FC = () => {
                   <h6 className="mb-0">
                     {submission.canEdit !== false ? (
                       <>
-                        <Link to={`/poa-form?type=${submission.formType}`}>
+                        <Link to={`/poa-form?type=${submission.formType}&submission=${submission.id}`}>
                           {formConfig?.name || submission.formType}
                         </Link>
                         <Link
-                          to={`/poa-form?type=${submission.formType}`}
+                          to={`/poa-form?type=${submission.formType}&submission=${submission.id}`}
                           className="poa-edit-icon"
                           title="Edit/Start Form"
                           style={{ color: '#0000ff', textDecoration: 'none', marginLeft: '8px' }}
@@ -678,6 +796,32 @@ const ViewPlans: React.FC = () => {
                     )}
                   </h6>
                   <small style={{ color: '#999' }}>{formConfig?.description}</small>
+                  {/* Human-readable set number so users (and support) can tell
+                      repeat purchases of the same plan apart at a glance. */}
+                  {submission.submissionNumber != null && (
+                    <div style={{ fontSize: '12px', color: '#007bff', fontWeight: 600 }}>
+                      Plan #GP-{String(submission.submissionNumber).padStart(6, '0')}
+                    </div>
+                  )}
+                  {/* Per-set label so users can tell repeat purchases of the
+                      same plan apart — each card is an independent set. */}
+                  {submission.createdAt && (
+                    <div style={{ fontSize: '12px', color: '#999' }}>
+                      Started {new Date(submission.createdAt).toLocaleDateString()}
+                    </div>
+                  )}
+                  {/* Re-purchase: the webhook creates a fresh blank set with its
+                      own 30-day window, which appears here as a new card. */}
+                  {product && (
+                    <div className="mt-1" style={{ fontSize: '12px' }}>
+                      <Link
+                        to={`/checkout?product=${product.id}`}
+                        style={{ color: '#007bff' }}
+                      >
+                        Start another
+                      </Link>
+                    </div>
+                  )}
 
                   {/* Access Warning */}
                   {submission.submissionStatus === 'completed' && submission.canEdit === false && (

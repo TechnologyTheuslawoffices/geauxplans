@@ -10,6 +10,7 @@ const { supabase } = require('../config/supabase');
 const { canEditForm, getFormAccessStatus, getDaysRemaining } = require('../helpers/accessControl');
 const { keapService, submissionTags, configuredTagIds } = require('../services/keap');
 const { checkGenerationPreconditions } = require('../services/docPreconditions');
+const { convertDocxToPdf, pdfName } = require('../services/pdfConvert');
 
 /**
  * Which engine assembles documents.
@@ -100,8 +101,9 @@ const documentService = {
  * form_data, so any route can recompute them with checkGenerationPreconditions
  * rather than risk a stored copy drifting out of date.
  */
-function submissionSaveResponse(id, submissionStatus, docResult) {
+function submissionSaveResponse(id, submissionStatus, docResult, submissionNumber) {
   const data = { id, status: submissionStatus };
+  if (submissionNumber != null) data.submissionNumber = submissionNumber;
 
   if (submissionStatus !== 'completed' || !docResult) {
     return { success: true, message: 'Progress saved', data };
@@ -145,6 +147,72 @@ async function recordFailedGeneration(submissionId, docResult) {
       `Could not flag failed generation for submission ${submissionId}: ${error.message}`
     );
   }
+}
+
+/**
+ * Handle the "completed" half of a save WITHOUT generating documents inline.
+ *
+ * Assembling a full estate plan and converting each DOCX to PDF takes far longer
+ * than a request should block a user for, and on Vercel a continuation started
+ * after the response is flushed is frozen — so generation cannot simply be
+ * "fired and forgotten" here. Instead the save marks the plan ready-to-generate
+ * and returns immediately; the client redirects to the dashboard and calls
+ * POST /:id/generate-documents, which does the slow work in its own request and
+ * writes per-document progress the dashboard polls.
+ *
+ * The precondition check stays inline on purpose: it is cheap and it is the only
+ * feedback that tells a client their will/trust is missing (e.g.) a residuary
+ * legatee before they leave the form. A blocked plan is flagged and is NOT
+ * queued for generation.
+ *
+ * Returns the JSON body for the caller to send.
+ */
+async function completeSubmissionDeferred(id, formType, formData) {
+  const { ok, blockers } = checkGenerationPreconditions(formType, formData);
+
+  if (!ok) {
+    const docResult = {
+      success: false,
+      blocked: true,
+      blockers,
+      error:
+        'Your answers are saved, but a few details are still needed before we ' +
+        'can prepare your documents. Please reopen the plan and complete them:',
+    };
+    console.warn(
+      `Blocked document generation for submission ${id} (${formType}): ${blockers.join(' | ')}`
+    );
+    await recordFailedGeneration(id, docResult);
+    // Interview-complete milestone still fires; documents are not generated.
+    await syncSubmissionToKeap(id, formData, formType, false);
+    return submissionSaveResponse(id, 'completed', docResult);
+  }
+
+  // Mark ready-to-generate. knackly_documents is cleared so the dashboard shows
+  // a clean "generating" state that fills in per document, and knackly_record_id
+  // is nulled so a stale record from an earlier run is never mistaken for this
+  // one. The generate step seeds the manifest and flips status to 'completed'.
+  if (supabase) {
+    await supabase
+      .from('poa_submissions')
+      .update({
+        knackly_status: 'processing',
+        knackly_documents: [],
+        knackly_record_id: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id);
+  }
+
+  // Interview-complete milestone. The documents-complete milestone fires later,
+  // from POST /:id/generate-documents once generation actually finishes.
+  await syncSubmissionToKeap(id, formData, formType, false);
+
+  return {
+    success: true,
+    message: 'Submission completed',
+    data: { id, status: 'completed', generationPending: true },
+  };
 }
 
 const router = express.Router();
@@ -234,11 +302,17 @@ async function uploadDocumentsToStorage(documents, submissionId) {
         const buffer = Buffer.from(doc.base64, 'base64');
         const filePath = `submissions/${submissionId}/${doc.name}`;
 
+        // Content type must match the actual file. localDocgen converts DOCX to
+        // PDF, so a hardcoded DOCX type would make the browser mishandle PDFs.
+        const contentType = /\.pdf$/i.test(doc.name)
+          ? 'application/pdf'
+          : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
         // Upload to Supabase Storage (documents bucket)
         const { error: uploadError } = await supabase.storage
           .from('user-documents')
           .upload(filePath, buffer, {
-            contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            contentType,
             upsert: true, // Overwrite if exists
           });
 
@@ -290,6 +364,122 @@ async function uploadDocumentsToStorage(documents, submissionId) {
   }
 
   return uploadedDocs;
+}
+
+/**
+ * Generate a submission's documents with per-document progress.
+ *
+ * The engine is called once to ASSEMBLE the documents (DOCX, for the local
+ * engine). Each is then converted to PDF and uploaded one at a time, and the
+ * running manifest is written back to poa_submissions after every document. A
+ * dashboard polling GET /submissions therefore watches documents flip from
+ * pending to ready as they finish, instead of seeing nothing until the whole
+ * batch is done.
+ *
+ * knackly_documents entries: { name, status: 'pending'|'ready', storedUrl?, base64? }.
+ * knackly_status: 'processing' during the run, 'completed' at the end.
+ *
+ * Best-effort per document: a conversion that cannot be produced is delivered as
+ * the DOCX; an upload that fails keeps base64 so the file is still downloadable.
+ * Returns the same {success, documents|error, blockers} shape the synchronous
+ * paths used, so callers stay simple.
+ */
+async function generateDocumentsWithProgress(submission) {
+  const result = await documentService.processSubmission({
+    id: submission.id,
+    form_type: submission.form_type,
+    form_data: submission.form_data,
+  });
+
+  if (!result.success) {
+    await recordFailedGeneration(submission.id, result);
+    return result;
+  }
+
+  const assembled = result.documents || [];
+
+  // Asynchronous engines (doctools/knackly) return a record with no inline
+  // documents — there is nothing to convert here. Store the record and let the
+  // existing refresh polling collect the files. Per-document progress is a
+  // property of the local engine, which returns its documents inline.
+  if (assembled.length === 0) {
+    if (supabase) {
+      await supabase
+        .from('poa_submissions')
+        .update({
+          knackly_record_id: result.recordId,
+          knackly_status: result.status || 'processing',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', submission.id);
+    }
+    return result;
+  }
+
+  // Seed the manifest so the client immediately knows the full document list and
+  // can show one spinner per document.
+  const manifest = assembled.map((d) => ({ name: pdfName(d.name), status: 'pending' }));
+  if (supabase) {
+    await supabase
+      .from('poa_submissions')
+      .update({
+        knackly_record_id: result.recordId,
+        knackly_status: 'processing',
+        knackly_documents: manifest,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', submission.id);
+  }
+
+  for (let i = 0; i < assembled.length; i++) {
+    const doc = assembled[i];
+    let outName = doc.name;
+    let outBase64 = doc.base64;
+
+    // Convert DOCX → PDF (doctools already returns .pdf, so this is a no-op for
+    // it). Falls back to the DOCX on any failure.
+    if (/\.docx$/i.test(doc.name)) {
+      const pdf = await convertDocxToPdf(Buffer.from(doc.base64, 'base64'), doc.name);
+      if (pdf) {
+        outName = pdfName(doc.name);
+        outBase64 = pdf.toString('base64');
+      }
+    }
+
+    // Upload this one document; uploadDocumentsToStorage chooses the content
+    // type from the extension and keeps base64 only when storage is unavailable.
+    const [stored] = await uploadDocumentsToStorage(
+      [{ name: outName, base64: outBase64 }],
+      submission.id
+    );
+
+    // Keep the row small: rely on storedUrl in the normal case, fall back to
+    // base64 only when the upload did not yield a URL. (Persisting base64 for
+    // every document on every write would grow the row quadratically.)
+    manifest[i] = stored && stored.storedUrl
+      ? { name: outName, status: 'ready', storedUrl: stored.storedUrl }
+      : { name: outName, status: 'ready', base64: outBase64 || null };
+
+    if (supabase) {
+      await supabase
+        .from('poa_submissions')
+        .update({ knackly_documents: manifest, updated_at: new Date().toISOString() })
+        .eq('id', submission.id);
+    }
+  }
+
+  if (supabase) {
+    await supabase
+      .from('poa_submissions')
+      .update({
+        knackly_status: 'completed',
+        knackly_documents: manifest,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', submission.id);
+  }
+
+  return { success: true, recordId: result.recordId, status: 'completed', documents: manifest };
 }
 
 /**
@@ -492,6 +682,7 @@ router.get('/', authenticate, async (req, res) => {
 
       return {
         id: s.id,
+        submissionNumber: s.submission_number,
         formType: s.form_type,
         submissionStatus: s.submission_status,
         formData: s.form_data,
@@ -518,6 +709,89 @@ router.get('/', authenticate, async (req, res) => {
   } catch (error) {
     console.error('List submissions error:', error);
     res.status(500).json({ success: false, error: 'Failed to list submissions' });
+  }
+});
+
+/**
+ * POST /api/submissions/:id/generate-documents
+ *
+ * Kick off document generation for a completed submission, reporting progress
+ * per document. The completed-save paths (POST / and PUT /:id) no longer
+ * generate synchronously — they mark the plan 'processing' and return — so the
+ * dashboard calls this once and then polls GET /submissions to watch each
+ * document flip from pending to ready.
+ *
+ * Idempotent enough for the dashboard's auto-kick: if documents already exist it
+ * returns them instead of regenerating.
+ */
+router.post('/:id/generate-documents', authenticate, async (req, res) => {
+  if (!isSupabaseConfigured()) {
+    return res.status(500).json({ success: false, error: 'Database not configured' });
+  }
+
+  const { id } = req.params;
+
+  try {
+    const { data: submission, error } = await supabase
+      .from('poa_submissions')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (error || !submission) {
+      return res.status(404).json({ success: false, error: 'Submission not found' });
+    }
+
+    if (submission.submission_status !== 'completed') {
+      return res.status(400).json({
+        success: false,
+        error: 'Submission must be completed before generating documents',
+      });
+    }
+
+    // Already generated — return what we have rather than regenerate.
+    const existingDocs = (submission.knackly_documents || []).filter((d) => d.name !== '__zip__');
+    if (submission.knackly_status === 'completed' && existingDocs.length > 0) {
+      return res.json({
+        success: true,
+        message: 'Documents ready',
+        data: { id: submission.id, knacklyStatus: 'completed', knacklyDocuments: existingDocs },
+      });
+    }
+
+    const result = await generateDocumentsWithProgress(submission);
+
+    // Documents-complete Keap milestone (interview-complete already fired when
+    // the plan was saved). The tag-delta tracking in syncSubmissionToKeap keeps
+    // this from re-firing on the dashboard's auto-kick.
+    await syncSubmissionToKeap(
+      submission.id,
+      submission.form_data,
+      submission.form_type,
+      result.success === true
+    );
+
+    if (!result.success) {
+      return res.json({
+        success: false,
+        error: result.error || 'Document generation failed',
+        blockers: result.blockers || [],
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Documents generated',
+      data: {
+        id: submission.id,
+        knacklyStatus: 'completed',
+        knacklyDocuments: (result.documents || []).filter((d) => d.name !== '__zip__'),
+      },
+    });
+  } catch (err) {
+    console.error('Generate documents error:', err);
+    return res.status(500).json({ success: false, error: 'Failed to generate documents' });
   }
 });
 
@@ -554,43 +828,22 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
         });
       }
 
-      // Trigger Doc Tools generation
-      const result = await documentService.processSubmission({
-        id: submission.id,
-        form_type: submission.form_type,
-        form_data: submission.form_data,
-      });
+      // Assemble, convert and store one document at a time, writing the running
+      // manifest back after each so a polling dashboard shows per-document
+      // progress. recordFailedGeneration is handled inside the helper.
+      const result = await generateDocumentsWithProgress(submission);
 
       if (result.success) {
-        // Upload documents to Supabase Storage and get URLs
-        const storedDocs = await uploadDocumentsToStorage(result.documents, submission.id);
-
-        // Update with record ID and documents (with URLs)
-        await supabase
-          .from('poa_submissions')
-          .update({
-            knackly_record_id: result.recordId,
-            knackly_status: result.status || 'completed',
-            knackly_documents: storedDocs,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', id);
-
         return res.json({
           success: true,
           message: 'Documents generated successfully',
           data: {
             id: submission.id,
-            knacklyStatus: 'completed',
-            knacklyDocuments: storedDocs,
+            knacklyStatus: result.status || 'completed',
+            knacklyDocuments: result.documents || [],
           },
         });
       } else {
-        // Flag the row the same way the save paths do, so a plan refused here
-        // does not keep presenting a Generate Documents button that can only
-        // ever be refused again.
-        await recordFailedGeneration(submission.id, result);
-
         return res.json({
           success: false,
           error: result.error || 'Document generation failed',
@@ -700,35 +953,18 @@ router.post('/:id/refresh-documents', authenticate, async (req, res) => {
     // Create a NEW record for regeneration (explicit regenerate or after completion)
     console.log('Creating new record for regeneration (old record:', submission.knackly_record_id, ')');
 
-    // Process submission to create new record and generate documents
-    const result = await documentService.processSubmission({
-      id: submission.id,
-      form_type: submission.form_type,
-      form_data: submission.form_data,
-    });
+    // Process submission to create new record and generate documents, again
+    // with per-document progress written back as each file finishes.
+    const result = await generateDocumentsWithProgress(submission);
 
     if (result.success) {
-      // Upload documents to Supabase Storage and get URLs
-      const storedDocs = await uploadDocumentsToStorage(result.documents, submission.id);
-
-      // Update with new record ID and documents (with URLs)
-      await supabase
-        .from('poa_submissions')
-        .update({
-          knackly_record_id: result.recordId,
-          knackly_status: result.status || 'completed',
-          knackly_documents: storedDocs,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id);
-
       return res.json({
         success: true,
         message: 'Documents regenerated successfully',
         data: {
           id: submission.id,
           knacklyStatus: result.status || 'completed',
-          knacklyDocuments: storedDocs,
+          knacklyDocuments: result.documents || [],
         },
       });
     }
@@ -866,6 +1102,7 @@ router.get('/:id', authenticate, async (req, res) => {
       success: true,
       data: {
         id: submission.id,
+        submissionNumber: submission.submission_number,
         formType: submission.form_type,
         submissionStatus: submission.submission_status,
         formData: submission.form_data,
@@ -904,15 +1141,22 @@ router.post('/', authenticate, async (req, res) => {
   }
 
   try {
-    // Check for existing submission
+    // Find the newest existing set of this form type. Multiple sets can exist
+    // (each estate-plan re-purchase creates a new independent set), so take the
+    // most recent and never throw when several rows match.
     const { data: existing } = await supabase
       .from('poa_submissions')
       .select('id, submission_status')
       .eq('user_id', req.user.id)
       .eq('form_type', form_type)
-      .single();
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-    if (existing) {
+    // Only reuse (update) the newest set when it is still an in-progress draft.
+    // A POST without an id must never overwrite a completed set — instead it
+    // falls through to insert a fresh row below.
+    if (existing && existing.submission_status === 'inprogress') {
       // Check if user can still edit this form
       const { data: fullSubmission } = await supabase
         .from('poa_submissions')
@@ -955,42 +1199,14 @@ router.post('/', authenticate, async (req, res) => {
         return res.status(500).json({ success: false, error: 'Failed to update submission' });
       }
 
-      // ALWAYS regenerate documents when submission is completed
-      // (Previously only triggered if status changed TO completed, but we need fresh docs on resubmit)
-      let docResult = null;
+      // A completed save no longer generates documents inline — it marks the
+      // plan ready and returns fast, and the client kicks
+      // POST /:id/generate-documents. See completeSubmissionDeferred.
       if (submission_status === 'completed') {
-        // Old documents are intentionally left in place until new ones exist.
-        // This used to null knackly_documents before generating, which meant a
-        // resubmit that failed preconditions destroyed the documents the client
-        // had already been given. A successful run overwrites the column
-        // wholesale below, so clearing first bought nothing.
-        docResult = await documentService.processSubmission({
-          id: existing.id,
-          form_type,
-          form_data,
-        });
-
-        if (docResult.success) {
-          // Upload documents to Supabase Storage and get URLs
-          const storedDocs = await uploadDocumentsToStorage(docResult.documents, existing.id);
-          await supabase
-            .from('poa_submissions')
-            .update({
-              knackly_record_id: docResult.recordId,
-              knackly_status: 'completed',
-              knackly_documents: storedDocs,
-            })
-            .eq('id', existing.id);
-        } else {
-          await recordFailedGeneration(existing.id, docResult);
-        }
-
-        // Sync to Keap CRM. Awaited so the lambda cannot be frozen mid-flight;
-        // never throws, so it cannot fail an otherwise successful submission.
-        await syncSubmissionToKeap(existing.id, form_data, form_type, docResult.success === true);
+        return res.json(await completeSubmissionDeferred(existing.id, form_type, form_data));
       }
 
-      return res.json(submissionSaveResponse(existing.id, submission_status, docResult));
+      return res.json(submissionSaveResponse(existing.id, submission_status, null));
     }
 
     // Create new submission
@@ -1017,36 +1233,24 @@ router.post('/', authenticate, async (req, res) => {
       return res.status(500).json({ success: false, error: 'Failed to create submission' });
     }
 
-    // Trigger document generation if completed
-    let docResult = null;
+    // Mark ready-to-generate and return fast when completed; the client kicks
+    // POST /:id/generate-documents. See completeSubmissionDeferred.
     if (submission_status === 'completed') {
-      docResult = await documentService.processSubmission({
-        id: newSubmission.id,
-        form_type,
-        form_data,
-      });
-
-      if (docResult.success) {
-        // Upload documents to Supabase Storage and get URLs
-        const storedDocs = await uploadDocumentsToStorage(docResult.documents, newSubmission.id);
-        await supabase
-          .from('poa_submissions')
-          .update({
-            knackly_record_id: docResult.recordId,
-            knackly_status: 'completed',
-            knackly_documents: storedDocs,
-          })
-          .eq('id', newSubmission.id);
-      } else {
-        await recordFailedGeneration(newSubmission.id, docResult);
-      }
-
-      // Sync to Keap CRM. Awaited so the lambda cannot be frozen mid-flight;
-      // never throws, so it cannot fail an otherwise successful submission.
-      await syncSubmissionToKeap(newSubmission.id, form_data, form_type, docResult.success === true);
+      return res
+        .status(201)
+        .json(await completeSubmissionDeferred(newSubmission.id, form_type, form_data));
     }
 
-    res.status(201).json(submissionSaveResponse(newSubmission.id, submission_status, docResult));
+    res
+      .status(201)
+      .json(
+        submissionSaveResponse(
+          newSubmission.id,
+          submission_status,
+          null,
+          newSubmission.submission_number
+        )
+      );
   } catch (error) {
     console.error('Create submission error:', error);
     res.status(500).json({ success: false, error: 'Failed to save submission' });
@@ -1124,43 +1328,15 @@ router.put('/:id', authenticate, async (req, res) => {
     // edit saved but kept documents rendered from the superseded answers, with
     // nothing anywhere to say so. POST /submissions has always regenerated
     // unconditionally; this makes the two paths agree.
-    let docResult = null;
     if (submission_status === 'completed') {
       const effectiveFormType = form_type || existing.form_type;
-
-      docResult = await documentService.processSubmission({
-        id: existing.id,
-        form_type: effectiveFormType,
-        form_data,
-      });
-
-      if (docResult.success) {
-        // Upload documents to Supabase Storage and get URLs
-        const storedDocs = await uploadDocumentsToStorage(docResult.documents, existing.id);
-        await supabase
-          .from('poa_submissions')
-          .update({
-            knackly_record_id: docResult.recordId,
-            knackly_status: 'completed',
-            knackly_documents: storedDocs,
-          })
-          .eq('id', id);
-      } else {
-        await recordFailedGeneration(existing.id, docResult);
-      }
-
-      // This path previously skipped Keap entirely, so a plan completed through
-      // PUT never reached the CRM. The tag-delta tracking in syncSubmissionToKeap
-      // stops the repeat calls from re-firing campaigns.
-      await syncSubmissionToKeap(
-        existing.id,
-        form_data,
-        effectiveFormType,
-        docResult.success === true
-      );
+      // Deferred generation (see completeSubmissionDeferred): mark ready, return
+      // fast, let the client kick POST /:id/generate-documents. Keap is synced
+      // inside the helper, which fixes this path having previously skipped Keap.
+      return res.json(await completeSubmissionDeferred(existing.id, effectiveFormType, form_data));
     }
 
-    return res.json(submissionSaveResponse(existing.id, submission_status, docResult));
+    return res.json(submissionSaveResponse(existing.id, submission_status, null));
   } catch (error) {
     console.error('Update submission error:', error);
     res.status(500).json({ success: false, error: 'Failed to update submission' });
@@ -1179,12 +1355,17 @@ router.get('/by-type/:formType', authenticate, async (req, res) => {
   const { formType } = req.params;
 
   try {
+    // Return the newest set of this form type. Multiple sets can exist (each
+    // estate-plan re-purchase creates a new independent set), so order by
+    // created_at and take one — maybeSingle never throws when several match.
     const { data: submission, error } = await supabase
       .from('poa_submissions')
       .select('*')
       .eq('user_id', req.user.id)
       .eq('form_type', formType)
-      .single();
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (error || !submission) {
       return res.json({
@@ -1204,6 +1385,7 @@ router.get('/by-type/:formType', authenticate, async (req, res) => {
       success: true,
       data: {
         id: submission.id,
+        submissionNumber: submission.submission_number,
         formType: submission.form_type,
         submissionStatus: submission.submission_status,
         formData: submission.form_data,

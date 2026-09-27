@@ -1078,7 +1078,9 @@ const POAForm: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const formType = searchParams.get('type') || 'powerOfAttorneyForm';
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // A specific set to open by its submission id. When present the load is
+  // id-centric (GET /submissions/:id); otherwise we fall back to the newest set
+  // of this form type (GET /submissions/by-type/:formType).
   const submissionId = searchParams.get('submission');
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -1091,6 +1093,7 @@ const POAForm: React.FC = () => {
   const [saveMessage, setSaveMessage] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [existingSubmissionId, setExistingSubmissionId] = useState<number | null>(null);
+  const [submissionNumber, setSubmissionNumber] = useState<number | null>(null);
   // Edit-access gate. `accessChecked` stays false until the load resolves so we
   // never flash the editable form; `accessExpired` locks it out entirely once
   // the backend reports the grace period is over.
@@ -1130,7 +1133,11 @@ const POAForm: React.FC = () => {
   useEffect(() => {
     const loadSubmission = async () => {
       try {
-        const response = await api.get(`/submissions/by-type/${formType}`);
+        // Open a specific set by id when the URL names one; otherwise load the
+        // newest set of this form type as a convenience fallback.
+        const response = submissionId
+          ? await api.get(`/submissions/${submissionId}`)
+          : await api.get(`/submissions/by-type/${formType}`);
         if (response.success && response.data) {
           // Grace period over: don't load the form into an editable state — lock
           // the page so the user can't waste time filling a form they can't save.
@@ -1142,12 +1149,18 @@ const POAForm: React.FC = () => {
             );
             return;
           }
+          // Bind saves to this exact set so PUT /:id targets the right row.
+          if (response.data.id) {
+            setExistingSubmissionId(response.data.id);
+          }
+          if ((response.data as any).submissionNumber != null) {
+            setSubmissionNumber((response.data as any).submissionNumber);
+          }
           if (response.data.formData) {
             // Deep merge saved data with initial data to ensure all required fields exist
             const savedData = response.data.formData;
             const mergedData = stripRemovedHcdCodes(deepMerge(initialFormData, savedData));
             setFormData(mergedData);
-            setExistingSubmissionId(response.data.id);
           }
         }
       } catch (error) {
@@ -1162,7 +1175,7 @@ const POAForm: React.FC = () => {
     } else {
       setAccessChecked(true);
     }
-  }, [formType, isAuthenticated]);
+  }, [formType, submissionId, isAuthenticated]);
 
   // Set married flag based on form type
   // For POA forms: always false (matching WordPress behavior)
@@ -2017,12 +2030,31 @@ const POAForm: React.FC = () => {
         if (!existingSubmissionId && response.data?.id) {
           setExistingSubmissionId(response.data.id);
         }
+        if (response.data?.submissionNumber != null) {
+          setSubmissionNumber(response.data.submissionNumber);
+        }
 
         if (status === 'completed') {
-          setSaveMessage('You Successfully Saved Your Changes. You will now be redirected to your dashboard.');
-          setTimeout(() => {
+          // A plan can save successfully yet still be refused document
+          // generation (e.g. a will/trust missing a residuary legatee). In that
+          // case keep the client on the form to fix it rather than sending them
+          // to a dashboard that will only ever show "generating" with nothing to
+          // download.
+          const data = response.data as any;
+          if (data?.documentsBlocked) {
+            const blockers: string[] = data.blockers || [];
+            setSaveMessage(
+              `${data.documentMessage || 'A few details are still needed before we can prepare your documents.'}` +
+              (blockers.length ? `\n• ${blockers.join('\n• ')}` : '')
+            );
+            setTimeout(() => setSaveMessage(''), 12000);
+          } else {
+            // Documents now generate in a follow-up request the dashboard drives,
+            // so there is nothing to wait for here — redirect immediately and let
+            // the dashboard show per-document progress.
+            setSaveMessage('Your plan is submitted. Redirecting to your dashboard…');
             navigate('/my-account/my-estate-planning');
-          }, 3000);
+          }
         } else {
           setSaveMessage('Progress saved!');
           setTimeout(() => setSaveMessage(''), 5000);
@@ -6506,7 +6538,14 @@ const POAForm: React.FC = () => {
             {/* Editing Submission Notice */}
             {submissionId ? (
               <div className="alert alert-info mb-4">
-                <strong onClick={handleTitleClick} style={{ cursor: 'default' }}>Editing Submission</strong>
+                <strong onClick={handleTitleClick} style={{ cursor: 'default' }}>
+                  Editing Submission
+                  {submissionNumber != null && (
+                    <span className="ms-2 badge bg-primary">
+                      #GP-{String(submissionNumber).padStart(6, '0')}
+                    </span>
+                  )}
+                </strong>
                 <p className="mb-0 mt-1">
                   You are editing an existing form submission. Your progress is automatically saved as you move between pages.
                   Changes will be finalized when you complete the form. <a href="/my-account">Back to Dashboard</a>
@@ -6514,7 +6553,14 @@ const POAForm: React.FC = () => {
               </div>
             ) : (
               <div className="alert alert-light border mb-4" onClick={handleTitleClick} style={{ cursor: 'default' }}>
-                <strong>New Submission</strong>
+                <strong>
+                  New Submission
+                  {submissionNumber != null && (
+                    <span className="ms-2 badge bg-primary">
+                      #GP-{String(submissionNumber).padStart(6, '0')}
+                    </span>
+                  )}
+                </strong>
                 <p className="mb-0 mt-1">
                   Your progress will be saved as you move between pages.
                 </p>

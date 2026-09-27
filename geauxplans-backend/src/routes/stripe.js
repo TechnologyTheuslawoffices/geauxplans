@@ -399,32 +399,46 @@ async function handleSuccessfulPayment(session) {
       }
     }
 
-    // Re-purchasing an estate plan reopens that plan's 30-day editing window.
-    // Each plan type is gated individually (accessControl.canEditForm keys off
-    // the submission's first_submitted_at), so resetting it to now restarts the
-    // 30-day clock for every submission of the matching form type. The Legal
+    // Re-purchasing an estate plan creates a NEW, independent "set" — a fresh
+    // blank submission with its own 30-day editing window. Old sets stay locked
+    // and untouched; there is no time-stacking across sets. The window starts
+    // only when the new set is completed (first_submitted_at stays null here),
+    // and accessControl.canEditForm gates each set on its own row. The Legal
     // Edge Plan is a subscription and is handled above — it never lands here.
     if (userId && supabase) {
       const { FORM_TYPE_PRODUCTS } = require('../config/constants');
+      // Reverse resolver: productId + ('solo'|'2person') → concrete form_type.
+      // POA is the only product whose keys don't follow the <base>Solo /
+      // <base>2Person convention, so match on productId + variant suffix.
+      const resolveFormType = (productId, variant) => {
+        const wants2Person = variant === '2person';
+        return Object.keys(FORM_TYPE_PRODUCTS).find((ft) => {
+          if (FORM_TYPE_PRODUCTS[ft].productId !== productId) return false;
+          const is2Person = ft.endsWith('2Person');
+          return wants2Person ? is2Person : !is2Person;
+        }) || null;
+      };
       for (const r of resolved) {
         if (r.product.type === 'subscription') continue;
-        const formTypes = Object.keys(FORM_TYPE_PRODUCTS)
-          .filter((ft) => FORM_TYPE_PRODUCTS[ft].productId === r.productId);
-        if (formTypes.length === 0) continue;
+        const concreteFormType = resolveFormType(r.productId, r.formType);
+        if (!concreteFormType) continue;
         try {
-          const { error: reopenError } = await supabase
+          const { error: insertError } = await supabase
             .from('poa_submissions')
-            .update({ first_submitted_at: new Date().toISOString() })
-            .eq('user_id', userId)
-            .in('form_type', formTypes)
-            .not('first_submitted_at', 'is', null);
-          if (reopenError) {
-            console.error('Error reopening edit window:', reopenError);
+            .insert({
+              user_id: userId,
+              form_type: concreteFormType,
+              form_data: {},
+              submission_status: 'inprogress',
+              first_submitted_at: null,
+            });
+          if (insertError) {
+            console.error('Error creating new estate-plan set:', insertError);
           } else {
-            console.log(`Edit window reopened for user ${userId}, form types ${formTypes.join(', ')}`);
+            console.log(`New estate-plan set created for user ${userId}, form type ${concreteFormType}`);
           }
-        } catch (reopenErr) {
-          console.error('Failed to reopen edit window:', reopenErr);
+        } catch (setErr) {
+          console.error('Failed to create new estate-plan set:', setErr);
         }
       }
     }
