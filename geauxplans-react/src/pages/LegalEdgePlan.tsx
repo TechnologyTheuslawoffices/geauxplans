@@ -5,8 +5,13 @@ import '../styles/legal-edge-plan.css';
 
 const LegalEdgePlan: React.FC = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
-  const { addItem, clearCart } = useCart();
+  const { addItem, clearCart, cart } = useCart();
   const navigate = useNavigate();
+
+  // A user who reached this page mid-purchase still has their plan in the cart.
+  // Give them an explicit path back to checkout so the informational detour
+  // doesn't strand them outside the buying flow.
+  const hasPendingOrder = cart.itemCount > 0;
 
   const toggleItem = (id: string) => {
     setExpandedItem(expandedItem === id ? null : id);
@@ -20,6 +25,20 @@ const LegalEdgePlan: React.FC = () => {
 
   return (
     <main className="legal-edge-page">
+      {/* Return navigation so the page is never a dead end mid-purchase */}
+      <div className="lep-topnav">
+        <div className="container">
+          <button type="button" className="lep-back-link" onClick={() => navigate(-1)}>
+            ← Back
+          </button>
+          {hasPendingOrder && (
+            <Link to="/checkout" className="btn btn-solid btn-sm lep-resume-btn">
+              Return to your order →
+            </Link>
+          )}
+        </div>
+      </div>
+
       {/* Main Content Section */}
       <section className="lep-main-section">
         <div className="container">
