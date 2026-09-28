@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import PurchaseModal from '../components/PurchaseModal';
 
 interface Product {
   id: number;
   name: string;
   price: string;
+  priceSolo: number;
+  priceCouple: number;
   description: string;
   features: string[];
   url: string;
@@ -12,9 +15,11 @@ interface Product {
 
 const products: Product[] = [
   {
-    id: 1,
+    id: 606,
     name: 'Minor Child-Centered Estate Plan',
     price: '$199',
+    priceSolo: 199,
+    priceCouple: 299,
     description: 'The Minor Child-Centered Estate Plan is well suited for families with young children.',
     features: [
       'Last Will and Testament',
@@ -26,9 +31,11 @@ const products: Product[] = [
     url: '/minor-child-centered-estate-plan',
   },
   {
-    id: 2,
+    id: 614,
     name: 'Power of Attorney Supplement',
     price: '$99',
+    priceSolo: 99,
+    priceCouple: 149,
     description: 'Create Financial and Healthcare Power of Attorney documents for your adult child.',
     features: [
       'Durable Financial Power of Attorney',
@@ -38,9 +45,11 @@ const products: Product[] = [
     url: '/power-of-attorney-plan',
   },
   {
-    id: 3,
+    id: 673,
     name: 'Will-Based Estate Plan',
     price: '$199',
+    priceSolo: 199,
+    priceCouple: 299,
     description: 'Create a will-based plan to control your legacy.',
     features: [
       'Last Will and Testament',
@@ -52,9 +61,11 @@ const products: Product[] = [
     url: '/will-based-estate-plan',
   },
   {
-    id: 4,
+    id: 676,
     name: 'Trust-Based Estate Plan',
     price: '$399',
+    priceSolo: 399,
+    priceCouple: 599,
     description: 'Create a trust-based plan to avoid probate and transfer assets to your loved ones.',
     features: [
       'Revocable Living Trust',
@@ -71,6 +82,8 @@ const products: Product[] = [
 ];
 
 const Shop: React.FC = () => {
+  const [selected, setSelected] = useState<Product | null>(null);
+
   return (
     <main>
       <section className="plans-section">
@@ -90,6 +103,9 @@ const Shop: React.FC = () => {
                   padding: '30px',
                   backgroundColor: '#fff',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
                 }}
               >
                 <h3 style={{ marginBottom: '10px' }}>{product.name}</h3>
@@ -105,13 +121,28 @@ const Shop: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  to={product.url}
-                  className="btn btn-primary"
-                  style={{ width: '100%', display: 'block', textAlign: 'center' }}
-                >
-                  Get Started
-                </Link>
+                <div style={{ marginTop: 'auto' }}>
+                  <button
+                    onClick={() => setSelected(product)}
+                    className="btn btn-primary"
+                    style={{ width: '100%', display: 'block', textAlign: 'center' }}
+                  >
+                    Get Started
+                  </button>
+                  <Link
+                    to={product.url}
+                    style={{
+                      display: 'block',
+                      textAlign: 'center',
+                      marginTop: '12px',
+                      fontSize: '14px',
+                      color: '#004d71',
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    Learn more
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -127,6 +158,19 @@ const Shop: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {selected && (
+        <PurchaseModal
+          product={{
+            id: selected.id,
+            name: selected.name,
+            description: selected.description,
+            priceSolo: selected.priceSolo,
+            priceCouple: selected.priceCouple,
+          }}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </main>
   );
 };

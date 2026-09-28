@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -29,21 +29,38 @@ const Checkout: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const { cart } = useCart();
+  const { cart, addEstatePlan } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [testMode, setTestMode] = useState(false);
   const [keySequence, setKeySequence] = useState('');
+  const addAttempted = useRef(false);
 
   const returnUrl = '/checkout';
   const hasItems = cart.items.length > 0;
   const firstItem = cart.items[0];
 
+  const productParam = searchParams.get('product');
+  const typeParam = searchParams.get('type');
+  const hasValidProduct = !!productParam && !!PRODUCTS[productParam];
+
+  // When the cart is empty, either seed it from a valid ?product= (so the quiz
+  // recommendation and direct links land on a populated checkout) or, if there
+  // is no product to fall back on, bounce to the shop.
   useEffect(() => {
-    if (!hasItems) {
+    if (hasItems || addAttempted.current) return;
+
+    if (hasValidProduct) {
+      addAttempted.current = true;
+      addEstatePlan(
+        Number(productParam),
+        typeParam === '2person' ? '2person' : 'solo',
+        false
+      );
+    } else {
       navigate('/shop');
     }
-  }, [hasItems, navigate]);
+  }, [hasItems, hasValidProduct, productParam, typeParam, addEstatePlan, navigate]);
 
   // Easter egg: Listen for key sequence "geaux" to enable test mode
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
@@ -122,6 +139,19 @@ const Checkout: React.FC = () => {
   };
 
   if (!hasItems) {
+    // While seeding the cart from a valid ?product= param, show a brief holding
+    // state instead of returning null so there is no flash of the /shop bounce.
+    if (hasValidProduct) {
+      return (
+        <main>
+          <section className="plans-section">
+            <div className="container" style={{ textAlign: 'center', padding: '80px 20px' }}>
+              <p style={{ color: '#707070', fontSize: '18px' }}>Preparing your order...</p>
+            </div>
+          </section>
+        </main>
+      );
+    }
     return null;
   }
 
