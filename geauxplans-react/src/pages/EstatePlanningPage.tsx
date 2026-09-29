@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import PurchaseModal from '../components/PurchaseModal';
 import '../styles/estate-planning-page.css';
 
 const US_STATES = [
@@ -84,6 +85,13 @@ const EstatePlanningPage: React.FC = () => {
   });
   const [recommendedProduct, setRecommendedProduct] = useState<typeof PRODUCTS.MINOR_CHILD | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [modalProduct, setModalProduct] = useState<{
+    id: number;
+    name: string;
+    description: string;
+    priceSolo: number;
+    priceCouple: number;
+  } | null>(null);
 
   const scrollToQuiz = () => {
     quizRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -137,6 +145,9 @@ const EstatePlanningPage: React.FC = () => {
   const plans = [
     {
       id: 'minor-child',
+      productId: 606,
+      priceSolo: 199,
+      priceCouple: 299,
       price: 'From $199',
       name: 'Minor Child-Centered Estate Plan',
       description: 'Create a will-based plan to appoint a Tutor for a minor child to act as a surrogate parent for you if something should ever happen to you.',
@@ -145,6 +156,9 @@ const EstatePlanningPage: React.FC = () => {
     },
     {
       id: 'poa',
+      productId: 614,
+      priceSolo: 99,
+      priceCouple: 149,
       price: 'From $99',
       name: 'Power of Attorney Plan',
       description: 'The Power of Attorney Supplement to your estate plan is well suited for families with a young adult child or student, or with an aging parent or family member so you can help them.',
@@ -153,6 +167,9 @@ const EstatePlanningPage: React.FC = () => {
     },
     {
       id: 'trust',
+      productId: 676,
+      priceSolo: 399,
+      priceCouple: 599,
       price: 'From $399',
       name: 'Trust-Based Estate Plan',
       description: 'The Trust-Based Estate Plan includes a Revocable Living Trust, Pourover Will, Financial Power of Attorney, Medical Power of Attorney, as well as an Advance Healthcare Directive (a/k/a "Living Will").',
@@ -161,6 +178,9 @@ const EstatePlanningPage: React.FC = () => {
     },
     {
       id: 'will',
+      productId: 673,
+      priceSolo: 199,
+      priceCouple: 299,
       price: 'From $199',
       name: 'Will-Based Estate Plan',
       description: 'The Will-Based Estate Plan includes a Last Will and Testament, Financial Power of Attorney, Medical Power of Attorney, as well as an Advance Healthcare Directive (a/k/a "Living Will").',
@@ -607,7 +627,18 @@ const EstatePlanningPage: React.FC = () => {
                   <p className="plan-description">{plan.description}</p>
                 </div>
                 <div className="plan-card-footer">
-                  <Link to={plan.formLink} className="btn btn-solid">Start My Plan</Link>
+                  <button
+                    className="btn btn-solid"
+                    onClick={() => setModalProduct({
+                      id: plan.productId,
+                      name: plan.name,
+                      description: plan.description,
+                      priceSolo: plan.priceSolo,
+                      priceCouple: plan.priceCouple,
+                    })}
+                  >
+                    Start My Plan
+                  </button>
                   <Link to={plan.link} className="btn btn-link">Learn More &rarr;</Link>
                 </div>
               </div>
@@ -662,6 +693,13 @@ const EstatePlanningPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {modalProduct && (
+        <PurchaseModal
+          product={modalProduct}
+          onClose={() => setModalProduct(null)}
+        />
+      )}
     </main>
   );
 };
