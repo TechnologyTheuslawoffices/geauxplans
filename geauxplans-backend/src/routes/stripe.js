@@ -9,6 +9,7 @@ const { supabase } = require('../config/supabase');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 const { keapService } = require('../services/keap');
 const { validateCoupon, recordRedemption } = require('../services/coupons');
+const { SECOND_PERSON_UPGRADE } = require('../config/constants');
 const upsell = require('../services/upsell');
 
 const router = express.Router();
@@ -224,6 +225,93 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
 });
 
 /**
+ * POST /api/stripe/create-second-person-session
+ *
+ * The paid, in-interview "add a second person" add-on. The 1-vs-2 choice no
+ * longer exists at checkout — everyone buys the solo plan — so a client who
+ * later wants to include a spouse/second principal pays the exact price delta
+ * here and the interview upgrades to the 2-person variant on return.
+ *
+ * Body: { submissionId, productId }
+ *
+ * Guards: the submission must belong to the caller, still be a solo variant,
+ * and not already be paid. The upgrade mapping (config/constants.js) is keyed
+ * by the stored solo form_type, so it doubles as the whitelist of what can be
+ * upgraded and to what.
+ */
+router.post('/create-second-person-session', authenticate, async (req, res) => {
+  if (!supabase) {
+    return res.status(500).json({ success: false, error: 'Database not configured' });
+  }
+
+  const submissionId = req.body.submissionId;
+  const productId = parseInt(req.body.productId, 10);
+
+  if (!submissionId) {
+    return res.status(400).json({ success: false, error: 'submissionId is required' });
+  }
+
+  try {
+    // Ownership + current state. Select the fields the guards need only.
+    const { data: existing, error: fetchError } = await supabase
+      .from('poa_submissions')
+      .select('id, form_type, second_person_paid')
+      .eq('id', submissionId)
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (fetchError || !existing) {
+      return res.status(404).json({ success: false, error: 'Submission not found' });
+    }
+
+    if (existing.second_person_paid) {
+      return res.status(400).json({ success: false, error: 'A second person has already been added to this plan.' });
+    }
+
+    const upgrade = SECOND_PERSON_UPGRADE[existing.form_type];
+    if (!upgrade) {
+      // Either already a 2-person variant, or a form type with no second-person
+      // option. Nothing to sell.
+      return res.status(400).json({ success: false, error: 'This plan cannot add a second person.' });
+    }
+
+    // productId is advisory (the client tells us which product it thinks this
+    // is); trust the mapping derived from the stored form_type instead.
+    const pid = upgrade.productId;
+    const product = PRODUCTS[pid];
+    const planLabel = product?.name || 'your plan';
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: [{
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          unit_amount: upgrade.deltaCents,
+          product_data: { name: `Add Second Person – ${planLabel}` },
+        },
+      }],
+      success_url: `${SITE_URL}/poa-form?product=${pid}&type=${upgrade.twoPersonType}&submission=${existing.id}&upgraded=1`,
+      // Back to the same solo interview if they change their mind.
+      cancel_url: `${SITE_URL}/poa-form?product=${pid}&type=${existing.form_type}&submission=${existing.id}`,
+      metadata: {
+        kind: 'second_person',
+        upgradeSubmissionId: String(existing.id),
+        productId: String(pid),
+        userId: req.user.id?.toString() || '',
+      },
+      customer_email: req.user?.email || undefined,
+    });
+
+    res.json({ success: true, data: { sessionId: session.id, url: session.url } });
+  } catch (error) {
+    console.error('Second-person session error:', error);
+    res.status(500).json({ success: false, error: 'Failed to start the add-second-person checkout' });
+  }
+});
+
+/**
  * POST /api/stripe/webhook
  * Handle Stripe webhooks
  */
@@ -263,6 +351,14 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
  */
 async function handleSuccessfulPayment(session) {
   const { userId } = session.metadata;
+
+  // Second-person add-on: a distinct flow from a product purchase. It upgrades
+  // an existing solo submission to its 2-person variant instead of creating a
+  // new set, so it branches out before the multi-item order logic below.
+  if (session.metadata.kind === 'second_person') {
+    await handleSecondPersonUpgrade(session);
+    return;
+  }
 
   // Count the coupon only now that money has actually moved. Doing it at
   // session creation would let anyone burn down a limited-use code by opening
@@ -496,6 +592,98 @@ async function handleSuccessfulPayment(session) {
     }
   } catch (error) {
     console.error('Error creating order from payment:', error);
+  }
+}
+
+/**
+ * Apply a paid second-person upgrade to an existing submission.
+ *
+ * Flips form_type to the 2-person variant and sets second_person_paid, which is
+ * what the PUT guard in submissions-supabase.js checks before it will accept a
+ * solo->2Person escalation from the interview. Records an order for the delta so
+ * it appears in the customer's history.
+ *
+ * Idempotent on session id: Stripe redelivers checkout.session.completed until
+ * it gets a 2xx, so a redelivery must not double-charge the customer's order
+ * history or re-run against an already-upgraded row.
+ */
+async function handleSecondPersonUpgrade(session) {
+  const upgradeSubmissionId = session.metadata.upgradeSubmissionId;
+  const userId = session.metadata.userId;
+
+  if (!upgradeSubmissionId || !supabase) {
+    console.error('Second-person upgrade missing submission id or supabase:', session.id);
+    return;
+  }
+
+  try {
+    // Load the row so we can map its solo form_type to the 2-person variant and
+    // check we have not already applied this.
+    const { data: existing, error: fetchError } = await supabase
+      .from('poa_submissions')
+      .select('id, form_type, second_person_paid')
+      .eq('id', upgradeSubmissionId)
+      .single();
+
+    if (fetchError || !existing) {
+      console.error('Second-person upgrade: submission not found:', upgradeSubmissionId);
+      return;
+    }
+
+    if (existing.second_person_paid) {
+      console.log(`Second-person upgrade already applied for submission ${upgradeSubmissionId}`);
+      return;
+    }
+
+    const upgrade = SECOND_PERSON_UPGRADE[existing.form_type];
+    if (!upgrade) {
+      console.error(`Second-person upgrade: no mapping for form_type ${existing.form_type}`);
+      return;
+    }
+
+    const { error: updateError } = await supabase
+      .from('poa_submissions')
+      .update({
+        form_type: upgrade.twoPersonType,
+        second_person_paid: true,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', upgradeSubmissionId);
+
+    if (updateError) {
+      console.error('Second-person upgrade update failed:', updateError);
+      return;
+    }
+
+    // Record the delta as an order for the customer's history (best-effort).
+    if (db) {
+      const pid = upgrade.productId;
+      const product = PRODUCTS[pid];
+      const delta = upgrade.deltaCents / 100;
+      try {
+        const orderResult = db.prepare(`
+          INSERT INTO orders (user_id, order_number, status, subtotal, tax, total, payment_method, stripe_session_id)
+          VALUES (?, ?, 'completed', ?, 0, ?, 'stripe', ?)
+        `).run(userId || null, generateOrderNumber(), delta, delta, session.id);
+
+        db.prepare(`
+          INSERT INTO order_items (order_id, product_id, name, quantity, price, total)
+          VALUES (?, ?, ?, 1, ?, ?)
+        `).run(
+          orderResult.lastInsertRowid,
+          pid,
+          `Add Second Person – ${product?.name || 'Plan'}`,
+          delta,
+          delta
+        );
+      } catch (orderErr) {
+        console.error('Second-person upgrade: failed to record order:', orderErr);
+      }
+    }
+
+    console.log(`Second-person upgrade applied: submission ${upgradeSubmissionId} -> ${upgrade.twoPersonType}`);
+  } catch (error) {
+    console.error('Second-person upgrade error:', error);
   }
 }
 

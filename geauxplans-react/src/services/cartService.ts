@@ -409,6 +409,25 @@ export async function getSavedPaymentMethods(): Promise<ApiResponse<{
   return api.get('/checkout/saved-payment-methods');
 }
 
+/**
+ * Start a Stripe Checkout session for the in-interview "add a second person"
+ * add-on, charging the exact price delta between the solo and 2-person plans.
+ *
+ * The backend derives the price and the target 2-person form_type from the
+ * submission's stored solo form_type — `productId` is advisory. On success it
+ * returns a Stripe URL to redirect to; the success_url returns the client to
+ * the interview already upgraded to the 2-person variant.
+ */
+export async function createSecondPersonSession(
+  submissionId: number | string,
+  productId: number
+): Promise<ApiResponse<{ sessionId: string; url: string }>> {
+  return api.post<{ sessionId: string; url: string }>(
+    '/stripe/create-second-person-session',
+    { submissionId, productId }
+  );
+}
+
 // WordPress AJAX fallback methods (legacy — unused)
 export const wpCart = {
   async purchasePlan(productIds: number[]): Promise<ApiResponse<any>> {
@@ -453,6 +472,7 @@ const cartService = {
   applyCoupon,
   removeCoupon,
   calculateTotals,
+  createSecondPersonSession,
   checkout,
   validateCheckout,
   getPaymentMethods,

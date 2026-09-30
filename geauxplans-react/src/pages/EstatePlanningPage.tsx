@@ -120,8 +120,9 @@ const EstatePlanningPage: React.FC = () => {
   };
 
   const handleGetStarted = (product: typeof PRODUCTS.MINOR_CHILD) => {
-    const formType = formData.isMarried === 'Yes' ? '2person' : 'solo';
-    navigate(`/checkout?product=${product.id}&type=${formType}`);
+    // Everyone buys the solo plan now; a second person is a paid add-on offered
+    // inside the interview, so the marriage answer no longer picks the variant.
+    navigate(`/checkout?product=${product.id}&type=solo`);
   };
 
   const resetQuiz = () => {

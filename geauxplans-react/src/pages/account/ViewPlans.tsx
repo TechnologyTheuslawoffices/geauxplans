@@ -67,7 +67,7 @@ const STATUS_COLORS: Record<string, string> = {
   'Submitted': '#666',
   'Processing': '#ff9900',
   'Action Needed': '#c0392b',
-  'Complete': '#0000ff',
+  'Complete': '#1a1acc',
 };
 
 interface KnacklyDocument {
@@ -150,7 +150,6 @@ const ViewPlans: React.FC = () => {
   // Purchase modal state
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
-  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
   const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
   // Cache for full document data (fetched on demand)
   const [documentCache, setDocumentCache] = useState<Record<number, KnacklyDocument[]>>({});
@@ -445,7 +444,7 @@ const ViewPlans: React.FC = () => {
         return (
           <>
             <p className="mb-0" style={{ lineHeight: '14px' }}>
-              <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
+              <span style={{ color: '#1a1acc' }}><strong>Your documents:</strong></span>
             </p>
             <ol className="gpx_ep_documents_ul" style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
               {documents.map((doc: any, index: number) => {
@@ -479,7 +478,7 @@ const ViewPlans: React.FC = () => {
                           background: 'none',
                           border: 'none',
                           padding: 0,
-                          color: '#0000ff',
+                          color: '#1a1acc',
                           textDecoration: 'underline',
                           font: 'inherit'
                         }}
@@ -529,7 +528,7 @@ const ViewPlans: React.FC = () => {
         return (
           <>
             <p className="mb-0" style={{ lineHeight: '14px' }}>
-              <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
+              <span style={{ color: '#1a1acc' }}><strong>Your documents:</strong></span>
             </p>
             <p className="mb-0 mt-0">
               <strong style={{ color: '#ff9900' }}>
@@ -562,7 +561,7 @@ const ViewPlans: React.FC = () => {
       return (
         <>
           <p className="mb-0" style={{ lineHeight: '14px' }}>
-            <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
+            <span style={{ color: '#1a1acc' }}><strong>Your documents:</strong></span>
           </p>
           {total === 0 ? (
             <p className="mb-0 mt-1 d-flex align-items-center gap-2" style={{ color: '#ff9900' }}>
@@ -591,7 +590,7 @@ const ViewPlans: React.FC = () => {
                       <li key={doc.id || index}>
                         <button
                           onClick={() => downloadDocument(submission.id, index, docName)}
-                          style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, color: '#0000ff', textDecoration: 'underline', font: 'inherit' }}
+                          style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, color: '#1a1acc', textDecoration: 'underline', font: 'inherit' }}
                         >
                           {docName}
                         </button>
@@ -651,7 +650,7 @@ const ViewPlans: React.FC = () => {
       return (
         <>
           <p className="mb-0" style={{ lineHeight: '14px' }}>
-            <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
+            <span style={{ color: '#1a1acc' }}><strong>Your documents:</strong></span>
           </p>
           <p className="mb-0 mt-0">
             <strong style={{ color: '#c0392b' }}>
@@ -679,7 +678,7 @@ const ViewPlans: React.FC = () => {
     return (
       <>
         <p className="mb-0" style={{ lineHeight: '14px' }}>
-          <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
+          <span style={{ color: '#1a1acc' }}><strong>Your documents:</strong></span>
         </p>
         <p className="mb-0 mt-0">
           <strong style={{ color: '#28a745' }}>
@@ -776,7 +775,7 @@ const ViewPlans: React.FC = () => {
                           to={`/poa-form?type=${submission.formType}&submission=${submission.id}`}
                           className="poa-edit-icon"
                           title="Edit/Start Form"
-                          style={{ color: '#0000ff', textDecoration: 'none', marginLeft: '8px' }}
+                          style={{ color: '#1a1acc', textDecoration: 'none', marginLeft: '8px' }}
                         >
                           <EditIcon />
                         </Link>
@@ -890,7 +889,6 @@ const ViewPlans: React.FC = () => {
                 className="plan_not_purchased"
                 onClick={() => {
                   setSelectedProduct(product.formType);
-                  setNumPersons('1');
                   setSubscribeLEP('1');
                   setShowPurchaseModal(true);
                 }}
@@ -981,12 +979,12 @@ const ViewPlans: React.FC = () => {
                 alt="Plan Builder"
                 style={{ width: '48px', marginBottom: '20px' }}
               />
-              <h2 style={{ color: '#0000ff' }}>{PRODUCT_CONFIG[selectedProduct].name}</h2>
+              <h2 style={{ color: '#1a1acc' }}>{PRODUCT_CONFIG[selectedProduct].name}</h2>
               <p className="text-muted fst-italic">
                 {PRODUCT_CONFIG[selectedProduct].description}
               </p>
               <p className="mb-4">
-                Average time to build a plan: <strong style={{ color: '#0000ff' }}>{PRODUCT_CONFIG[selectedProduct].avgTime}</strong>
+                Average time to build a plan: <strong style={{ color: '#1a1acc' }}>{PRODUCT_CONFIG[selectedProduct].avgTime}</strong>
               </p>
             </div>
 
@@ -996,27 +994,8 @@ const ViewPlans: React.FC = () => {
             </p>
 
             <div className="mb-3">
-              <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
-              <select
-                className="form-select"
-                value={numPersons}
-                onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '16px',
-                }}
-              >
-                <option value="1">For one person</option>
-                <option value="2">For two people</option>
-              </select>
-            </div>
-
-            <div className="mb-3">
               <label className="form-label">
-                <strong>2.</strong> Would you like to subscribe to the{' '}
+                Would you like to subscribe to the{' '}
                 <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
                   Legal Edge Plan
                 </a>{' '}
@@ -1042,7 +1021,7 @@ const ViewPlans: React.FC = () => {
             <div className="mb-4">
               <strong>Final Price:</strong>{' '}
               <strong style={{ fontSize: '1.25rem' }}>
-                ${numPersons === '1' ? PRODUCT_CONFIG[selectedProduct].soloPrice : PRODUCT_CONFIG[selectedProduct].couplePrice}
+                ${PRODUCT_CONFIG[selectedProduct].soloPrice}
                 {subscribeLEP === '1' ? ' + $9.99/mo' : ''}
               </strong>
             </div>
@@ -1050,8 +1029,8 @@ const ViewPlans: React.FC = () => {
             <button
               onClick={async () => {
                 const config = PRODUCT_CONFIG[selectedProduct];
-                const formType = numPersons === '1' ? 'solo' : '2person';
-                await addEstatePlan(config.productId, formType, subscribeLEP === '1');
+                // Everyone buys solo; second person is a paid in-interview add-on.
+                await addEstatePlan(config.productId, 'solo', subscribeLEP === '1');
                 setShowPurchaseModal(false);
                 navigate('/checkout');
               }}

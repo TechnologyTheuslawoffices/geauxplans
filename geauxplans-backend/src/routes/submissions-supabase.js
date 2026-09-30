@@ -1209,6 +1209,30 @@ router.post('/', authenticate, async (req, res) => {
       return res.json(submissionSaveResponse(existing.id, submission_status, null));
     }
 
+    // Never create a fresh 2Person set through this open create path. A 2Person
+    // row is only ever produced by a paid purchase (the Stripe webhook inserts
+    // one) or by the second-person add-on upgrading an existing solo row. Left
+    // open, this would let a client delete their draft, edit the URL's ?type=
+    // param to a 2Person variant, and POST a free couple's plan.
+    if (form_type && form_type.endsWith('2Person')) {
+      const { data: paidTwoPerson } = await supabase
+        .from('poa_submissions')
+        .select('id')
+        .eq('user_id', req.user.id)
+        .eq('form_type', form_type)
+        .eq('second_person_paid', true)
+        .limit(1)
+        .maybeSingle();
+
+      if (!paidTwoPerson) {
+        return res.status(402).json({
+          success: false,
+          error: 'Adding a second person requires payment.',
+          code: 'SECOND_PERSON_UNPAID',
+        });
+      }
+    }
+
     // Create new submission
     const insertData = {
       user_id: req.user.id,
@@ -1277,13 +1301,31 @@ router.put('/:id', authenticate, async (req, res) => {
     // Check submission exists and belongs to user
     const { data: existing, error: fetchError } = await supabase
       .from('poa_submissions')
-      .select('id, submission_status, form_type, first_submitted_at')
+      .select('id, submission_status, form_type, first_submitted_at, second_person_paid')
       .eq('id', id)
       .eq('user_id', req.user.id)
       .single();
 
     if (fetchError || !existing) {
       return res.status(404).json({ success: false, error: 'Submission not found' });
+    }
+
+    // Block a free solo->2Person self-upgrade. The interview reads form_type
+    // from the URL's ?type= param and submits it back, so a client could edit
+    // the URL to a 2Person variant and unlock the spouse pages without paying.
+    // The second-person add-on is what flips the stored form_type (via the
+    // Stripe webhook, which also sets second_person_paid); until that has
+    // happened, reject any incoming 2Person type for a solo row.
+    if (form_type) {
+      const incomingIs2Person = form_type.endsWith('2Person');
+      const existingIsSolo = !existing.form_type.endsWith('2Person');
+      if (incomingIs2Person && existingIsSolo && !existing.second_person_paid) {
+        return res.status(402).json({
+          success: false,
+          error: 'Adding a second person requires payment.',
+          code: 'SECOND_PERSON_UNPAID',
+        });
+      }
     }
 
     // Check if user can still edit this form

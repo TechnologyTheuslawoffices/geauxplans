@@ -7,7 +7,6 @@ const WillBasedEstatePlan: React.FC = () => {
   const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
   const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
   const navigate = useNavigate();
   const { addEstatePlan } = useCart();
@@ -20,14 +19,12 @@ const WillBasedEstatePlan: React.FC = () => {
     setExpandedFaq(expandedFaq === id ? null : id);
   };
 
-  const getPrice = () => {
-    return numPersons === '1' ? 199 : 299;
-  };
+  // Everyone buys the solo plan; a second person is a paid in-interview add-on.
+  const getPrice = () => 199;
 
   const handlePurchase = async () => {
     // Product 673 = Will-Based Estate Plan
-    const formType = numPersons === '1' ? 'solo' : '2person';
-    await addEstatePlan(673, formType, subscribeLEP === '1');
+    await addEstatePlan(673, 'solo', subscribeLEP === '1');
     navigate('/checkout');
   };
 
@@ -224,11 +221,11 @@ const WillBasedEstatePlan: React.FC = () => {
                 alt="Plan Builder"
                 style={{ width: '48px', marginBottom: '20px' }}
               />
-              <h2 style={{ color: '#0000ff' }}>Will-Based Estate Plan</h2>
+              <h2 style={{ color: '#1a1acc' }}>Will-Based Estate Plan</h2>
               <p className="text-muted fst-italic">
                 The Will-Based Estate Plan includes a Last Will and Testament, Financial Power of Attorney, Medical Power of Attorney, as well as an Advanced Healthcare Directive (a/k/a "Living Will").
               </p>
-              <p className="mb-4">Average time to build a plan: <strong style={{ color: '#0000ff' }}>15 minutes</strong></p>
+              <p className="mb-4">Average time to build a plan: <strong style={{ color: '#1a1acc' }}>15 minutes</strong></p>
             </div>
 
             <h4 className="mb-3">Build your plan</h4>
@@ -237,20 +234,8 @@ const WillBasedEstatePlan: React.FC = () => {
             </p>
 
             <div className="mb-3">
-              <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
-              <select
-                className="form-select"
-                value={numPersons}
-                onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
-              >
-                <option value="1">For one person</option>
-                <option value="2">For two people</option>
-              </select>
-            </div>
-
-            <div className="mb-3">
               <label className="form-label">
-                <strong>2.</strong> Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
+                Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
               </label>
               <select
                 className="form-select"

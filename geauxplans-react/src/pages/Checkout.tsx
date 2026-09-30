@@ -41,7 +41,6 @@ const Checkout: React.FC = () => {
   const firstItem = cart.items[0];
 
   const productParam = searchParams.get('product');
-  const typeParam = searchParams.get('type');
   const hasValidProduct = !!productParam && !!PRODUCTS[productParam];
 
   // When the cart is empty, either seed it from a valid ?product= (so the quiz
@@ -52,15 +51,14 @@ const Checkout: React.FC = () => {
 
     if (hasValidProduct) {
       addAttempted.current = true;
-      addEstatePlan(
-        Number(productParam),
-        typeParam === '2person' ? '2person' : 'solo',
-        false
-      );
+      // Everyone buys the solo plan at checkout now — a second person is a paid
+      // add-on inside the interview. The ?type= param is ignored for pricing so
+      // an old ?type=2person link can no longer put a couple's plan in the cart.
+      addEstatePlan(Number(productParam), 'solo', false);
     } else {
       navigate('/shop');
     }
-  }, [hasItems, hasValidProduct, productParam, typeParam, addEstatePlan, navigate]);
+  }, [hasItems, hasValidProduct, productParam, addEstatePlan, navigate]);
 
   // Easter egg: Listen for key sequence "geaux" to enable test mode
   const handleKeyPress = useCallback((event: KeyboardEvent) => {

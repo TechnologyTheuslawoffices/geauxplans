@@ -63,24 +63,21 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const [selectedPlan, setSelectedPlan] = useState<PlanCard | null>(null);
-  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
   const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
 
   const openModal = (plan: PlanCard) => {
     setSelectedPlan(plan);
-    setNumPersons('1');
     setSubscribeLEP('1');
   };
 
   const closeModal = () => setSelectedPlan(null);
 
-  const getPrice = () =>
-    selectedPlan ? (numPersons === '1' ? selectedPlan.priceSolo : selectedPlan.priceCouple) : 0;
+  // Everyone buys the solo plan; a second person is a paid in-interview add-on.
+  const getPrice = () => (selectedPlan ? selectedPlan.priceSolo : 0);
 
   const handlePurchase = async () => {
     if (!selectedPlan) return;
-    const formType = numPersons === '1' ? 'solo' : '2person';
-    await addEstatePlan(selectedPlan.productId, formType, subscribeLEP === '1');
+    await addEstatePlan(selectedPlan.productId, 'solo', subscribeLEP === '1');
     navigate('/checkout');
   };
 
@@ -173,7 +170,7 @@ const Dashboard: React.FC = () => {
                 alt="Plan Builder"
                 style={{ width: '48px', marginBottom: '20px' }}
               />
-              <h2 style={{ color: '#0000ff' }}>{selectedPlan.title}</h2>
+              <h2 style={{ color: '#1a1acc' }}>{selectedPlan.title}</h2>
               <p className="text-muted fst-italic">{selectedPlan.description}</p>
             </div>
 
@@ -183,20 +180,8 @@ const Dashboard: React.FC = () => {
             </p>
 
             <div className="mb-3">
-              <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
-              <select
-                className="form-select"
-                value={numPersons}
-                onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
-              >
-                <option value="1">For one person</option>
-                <option value="2">For two people</option>
-              </select>
-            </div>
-
-            <div className="mb-3">
               <label className="form-label">
-                <strong>2.</strong> Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
+                Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
               </label>
               <select
                 className="form-select"
