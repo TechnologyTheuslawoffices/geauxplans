@@ -291,7 +291,7 @@
 }
 
 .plan-list a {
-  color: #0000ff;
+  color: #1a1acc;
   font-size: 1.1rem;
   text-decoration: none;
 }
@@ -422,7 +422,7 @@
 .number-card .number {
   font-size: 4rem;
   font-weight: 700;
-  color: #0000ff;
+  color: #1a1acc;
   display: block;
   margin-bottom: 15px;
 }
@@ -489,7 +489,7 @@
   top: 20px;
   width: 80px;
   height: 100%;
-  background: #0000ff;
+  background: #1a1acc;
   z-index: 0;
 }
 
@@ -528,7 +528,7 @@
 .learning-column h4 {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #0000ff;
+  color: #1a1acc;
   margin-bottom: 10px;
 }
 
@@ -552,7 +552,7 @@
   border-bottom: none;
 }
 
-.article-date {
+.article-list .article-date {
   display: block;
   font-size: 0.8rem;
   color: #999;
@@ -566,7 +566,7 @@
 }
 
 .article-list a:hover {
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 /* Contact Section */

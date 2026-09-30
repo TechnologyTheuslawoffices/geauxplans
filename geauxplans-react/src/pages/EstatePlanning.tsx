@@ -576,28 +576,6 @@ const EstatePlanning: React.FC = () => {
         </div>
       </section>
 
-      {/* GeauxPlans in Numbers Section */}
-      <section className="numbers-section">
-        <div className="container">
-          <h3>GeauxPlans in numbers</h3>
-          <p className="numbers-subtitle">In the course of our work</p>
-          <div className="numbers-grid">
-            <div className="number-card">
-              <span className="number">140</span>
-              <p>Years total experience of our specialists in the field of law</p>
-            </div>
-            <div className="number-card">
-              <span className="number">#1</span>
-              <p>Online Estate and Business planning company in Louisiana</p>
-            </div>
-            <div className="number-card">
-              <span className="number">5k</span>
-              <p>Happy clients across the United States</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Louisiana Business Section */}
       <section className="louisiana-business-section">
         <div className="container">
