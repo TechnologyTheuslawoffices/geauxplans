@@ -1156,30 +1156,45 @@ const POAForm: React.FC = () => {
       try {
         // Open a specific set by id when the URL names one; otherwise load the
         // newest set of this form type as a convenience fallback.
-        const response = submissionId
+        const openedById = Boolean(submissionId);
+        const response = openedById
           ? await api.get(`/submissions/${submissionId}`)
           : await api.get(`/submissions/by-type/${formType}`);
         if (response.success && response.data) {
-          // Grace period over: don't load the form into an editable state — lock
-          // the page so the user can't waste time filling a form they can't save.
-          if ((response.data as any).canEdit === false) {
-            setAccessExpired(true);
-            setAccessMessage(
-              (response.data as any).accessMessage ||
-                'Your editing period has expired. Purchase a subscription to continue editing.'
-            );
-            return;
+          const data = response.data as any;
+          if (openedById) {
+            // The user explicitly opened this exact set (the Dashboard "edit"
+            // link). Grace period over → lock the page so they can't waste time
+            // filling a form they can't save.
+            if (data.canEdit === false) {
+              setAccessExpired(true);
+              setAccessMessage(
+                data.accessMessage ||
+                  'Your editing period has expired. Purchase a subscription to continue editing.'
+              );
+              return;
+            }
+          } else {
+            // Bare form URL — a new Stripe purchase or the geaux tester. Each is
+            // a fresh start, so only RESUME an in-progress draft (the mid-fill
+            // refresh case, where the id lives only in React state). A completed
+            // set is a finished purchase and a lapsed set is locked; never adopt
+            // or lock onto either here — fall through to a brand-new form. The
+            // Dashboard's ?submission=<id> link is the way to reopen those.
+            if (data.submissionStatus !== 'inprogress') {
+              return;
+            }
           }
           // Bind saves to this exact set so PUT /:id targets the right row.
-          if (response.data.id) {
-            setExistingSubmissionId(response.data.id);
+          if (data.id) {
+            setExistingSubmissionId(data.id);
           }
-          if ((response.data as any).submissionNumber != null) {
-            setSubmissionNumber((response.data as any).submissionNumber);
+          if (data.submissionNumber != null) {
+            setSubmissionNumber(data.submissionNumber);
           }
-          if (response.data.formData) {
+          if (data.formData) {
             // Deep merge saved data with initial data to ensure all required fields exist
-            const savedData = response.data.formData;
+            const savedData = data.formData;
             const mergedData = stripRemovedHcdCodes(deepMerge(initialFormData, savedData));
             setFormData(mergedData);
           }
