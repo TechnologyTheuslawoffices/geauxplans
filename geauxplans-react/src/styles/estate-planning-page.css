@@ -6,7 +6,7 @@
 
 /* Utility Classes */
 .text-blue {
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 /* Hero Section */
@@ -119,9 +119,9 @@
 
 /* Button Styles */
 .btn-solid {
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
-  border: 2px solid #0000ff;
+  border: 2px solid #1a1acc;
   padding: 12px 30px;
   border-radius: 6px;
   font-weight: 600;
@@ -132,15 +132,15 @@
 }
 
 .btn-solid:hover {
-  background: #0000cc;
-  border-color: #0000cc;
+  background: #141499;
+  border-color: #141499;
   color: #fff;
 }
 
 .btn-outline {
   background: transparent;
-  color: #0000ff;
-  border: 2px solid #0000ff;
+  color: #1a1acc;
+  border: 2px solid #1a1acc;
   padding: 12px 30px;
   border-radius: 6px;
   font-weight: 600;
@@ -151,7 +151,7 @@
 }
 
 .btn-outline:hover {
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
 }
 
@@ -161,7 +161,7 @@
 }
 
 .btn-link {
-  color: #0000ff;
+  color: #1a1acc;
   text-decoration: none;
   font-weight: 500;
 }
@@ -186,7 +186,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 30px;
-  border-top: 4px solid #0000ff;
+  border-top: 4px solid #1a1acc;
 }
 
 .epp-quiz-header {
@@ -244,7 +244,7 @@
 
 .recommended-plan-card {
   background: #fff;
-  border: 2px solid #0000ff;
+  border: 2px solid #1a1acc;
   border-radius: 12px;
   padding: 30px;
   margin-bottom: 20px;
@@ -257,14 +257,14 @@
 
 .recommended-plan-card .plan-price {
   font-size: 2rem;
-  color: #0000ff;
+  color: #1a1acc;
   margin-bottom: 20px;
 }
 
 .read-more-link {
   display: block;
   margin-top: 15px;
-  color: #0000ff;
+  color: #1a1acc;
   text-decoration: none;
 }
 
@@ -306,8 +306,8 @@
 }
 
 .plan-card:hover {
-  border-color: #0000ff;
-  box-shadow: 0 8px 30px rgba(0, 0, 255, 0.1);
+  border-color: #1a1acc;
+  box-shadow: 0 8px 30px rgba(26, 26, 204, 0.1);
 }
 
 .plan-card-header {
@@ -319,7 +319,7 @@
 
 .plan-label {
   display: inline-block;
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
   padding: 3px 12px;
   border-radius: 15px;
@@ -367,7 +367,7 @@
 }
 
 .plan-price {
-  color: #0000ff;
+  color: #1a1acc;
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 10px;
@@ -427,7 +427,7 @@
 
 .process-label {
   display: inline-block;
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
   padding: 5px 15px;
   border-radius: 20px;
@@ -443,7 +443,7 @@
 
 .process-subtitle {
   font-size: 1.3rem;
-  color: #0000ff;
+  color: #1a1acc;
   margin-bottom: 5px;
 }
 
@@ -464,7 +464,7 @@
 .step-number {
   width: 60px;
   height: 60px;
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
   border-radius: 50%;
   display: flex;
@@ -538,7 +538,7 @@
 }
 
 .epp-about .established {
-  color: #0000ff;
+  color: #1a1acc;
   font-size: 1rem;
   margin-bottom: 25px;
 }
@@ -574,7 +574,7 @@
 .guarantee-number {
   width: 60px;
   height: 60px;
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
   border-radius: 50%;
   display: flex;
@@ -588,7 +588,7 @@
 .guarantee-icon {
   width: 80px;
   height: 80px;
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
   border-radius: 50%;
   display: flex;
@@ -651,7 +651,7 @@
 }
 
 .toggle-icon {
-  color: #0000ff;
+  color: #1a1acc;
   font-size: 1.5rem;
   font-weight: 300;
 }
@@ -676,7 +676,7 @@
 /* CTA Section */
 .epp-cta {
   padding: 80px 0;
-  background: linear-gradient(135deg, #0000ff 0%, #0000cc 100%);
+  background: linear-gradient(135deg, #1a1acc 0%, #141499 100%);
   text-align: center;
 }
 
@@ -697,7 +697,7 @@
 
 .epp-cta .btn-solid {
   background: #fff !important;
-  color: #0000ff !important;
+  color: #1a1acc !important;
 }
 
 .epp-cta .btn-solid:hover {
@@ -767,7 +767,7 @@
 
 .progress-bar {
   height: 100%;
-  background: #0000ff;
+  background: #1a1acc;
   transition: width 0.3s ease;
 }
 
@@ -807,11 +807,11 @@
 }
 
 .quiz-option:hover {
-  border-color: #0000ff;
+  border-color: #1a1acc;
 }
 
 .quiz-option.selected {
-  border-color: #0000ff;
+  border-color: #1a1acc;
   background: #f0f0ff;
 }
 
@@ -823,12 +823,12 @@
 
 .quiz-buttons .btn-outline {
   background: transparent;
-  color: #0000ff;
-  border: 2px solid #0000ff;
+  color: #1a1acc;
+  border: 2px solid #1a1acc;
 }
 
 .quiz-buttons .btn-outline:hover {
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
 }
 
@@ -864,7 +864,7 @@
 
 .quiz-result .recommended-plan .plan-price {
   font-size: 2rem;
-  color: #0000ff;
+  color: #1a1acc;
   margin-bottom: 15px;
 }
 
@@ -883,6 +883,147 @@
   color: #666;
   text-align: center;
   margin-top: 10px;
+}
+
+/* ============================================================
+   Scoped polish overrides
+   The global main.css / Bootstrap `.btn` rules (specificity 0,1,0)
+   were overriding this page's component classes because of CSS load
+   order — most visibly collapsing `.btn-outline` to a borderless,
+   text-only "button" (e.g. "Take the quiz"). Scoping under the page
+   wrapper raises specificity to (0,2,0) so these always win, without
+   touching global styles used elsewhere on the site.
+   ============================================================ */
+
+/* --- Buttons --- */
+.estate-planning-page-main .btn-solid {
+  background: #1a1acc;
+  color: #fff !important;
+  border: 2px solid #1a1acc;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(26, 26, 204, 0.25);
+}
+
+.estate-planning-page-main .btn-solid:hover {
+  background: #141499;
+  border-color: #141499;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(26, 26, 204, 0.35);
+  transform: translateY(-1px);
+}
+
+.estate-planning-page-main .btn-outline {
+  background: transparent;
+  color: #1a1acc !important;
+  border: 2px solid #1a1acc;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.estate-planning-page-main .btn-outline:hover {
+  background: #1a1acc;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(26, 26, 204, 0.3);
+  transform: translateY(-1px);
+}
+
+.estate-planning-page-main .btn-dark {
+  background: #333;
+  color: #fff !important;
+  border: 2px solid #333;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  transition: all 0.25s ease;
+}
+
+.estate-planning-page-main .btn-dark:hover {
+  background: #000;
+  border-color: #000;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.estate-planning-page-main .btn-lg {
+  padding: 15px 40px;
+  font-size: 1.1rem;
+}
+
+/* --- #1 / #2 / #3 accents --- */
+/* Inline quiz step numbers were faint; make them a bold pill badge. */
+.estate-planning-page-main .epp-quiz-step h6 .text-blue {
+  display: inline-block;
+  background: linear-gradient(135deg, #1a1acc 0%, #4a4ae8 100%);
+  color: #fff;
+  font-weight: 800;
+  padding: 2px 12px;
+  border-radius: 20px;
+  margin-right: 6px;
+  box-shadow: 0 3px 10px rgba(26, 26, 204, 0.25);
+}
+
+/* Process + guarantee circles: richer gradient and depth. */
+.estate-planning-page-main .step-number,
+.estate-planning-page-main .guarantee-number {
+  background: linear-gradient(135deg, #1a1acc 0%, #4a4ae8 100%);
+  box-shadow: 0 8px 20px rgba(26, 26, 204, 0.3);
+  font-size: 1.6rem;
+}
+
+/* --- Quiz box depth --- */
+.estate-planning-page-main .epp-quiz-box {
+  border: 1px solid #e8e8f5;
+  border-top: 4px solid #1a1acc;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(26, 26, 204, 0.12);
+}
+
+/* --- Plan card headers get the brand gradient --- */
+.estate-planning-page-main .plan-card-header {
+  background: linear-gradient(135deg, #f4f4ff 0%, #ececff 100%);
+  border-bottom: 1px solid #e0e0f0;
+}
+
+.estate-planning-page-main .plan-card {
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+}
+
+.estate-planning-page-main .plan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(26, 26, 204, 0.15);
+}
+
+/* --- Section headers / titles pop a little more --- */
+.estate-planning-page-main .epp-process-header h2,
+.estate-planning-page-main .section-title {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.estate-planning-page-main .process-step,
+.estate-planning-page-main .guarantee-item {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.estate-planning-page-main .process-step:hover,
+.estate-planning-page-main .guarantee-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* --- About section reads as a centered, card-like band --- */
+.estate-planning-page-main .epp-about .established {
+  display: inline-block;
+  background: #f0f0ff;
+  color: #1a1acc;
+  font-weight: 600;
+  padding: 3px 14px;
+  border-radius: 20px;
 }
 
 /* Responsive */
