@@ -38,7 +38,7 @@
   justify-content: space-between;
   margin-bottom: 40px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #0000ff;
+  border-bottom: 2px solid #1a1acc;
 }
 
 .category-header h2 {
@@ -87,7 +87,7 @@
 }
 
 .article-item h3 a:hover {
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 .article-item p {
@@ -97,7 +97,7 @@
 }
 
 .read-more {
-  color: #0000ff;
+  color: #1a1acc;
   text-decoration: none;
   font-weight: 500;
   font-size: 0.95rem;
@@ -105,7 +105,7 @@
 }
 
 .read-more:hover {
-  color: #0000cc;
+  color: #141499;
 }
 
 /* Category CTA */
@@ -116,8 +116,8 @@
 
 .btn-outline {
   background: transparent;
-  color: #0000ff;
-  border: 2px solid #0000ff;
+  color: #1a1acc;
+  border: 2px solid #1a1acc;
   padding: 12px 30px;
   border-radius: 4px;
   text-decoration: none;
@@ -127,7 +127,7 @@
 }
 
 .btn-outline:hover {
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
 }
 
@@ -176,7 +176,7 @@
 /* CTA Section */
 .learn-cta-section {
   padding: 80px 0;
-  background: linear-gradient(135deg, #0000ff 0%, #0000cc 100%);
+  background: linear-gradient(135deg, #1a1acc 0%, #141499 100%);
 }
 
 .learn-cta-section .cta-content {
@@ -216,12 +216,12 @@
 
 .btn-outline-white:hover {
   background: #fff;
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 .learn-cta-section .btn-solid {
   background: #fff !important;
-  color: #0000ff !important;
+  color: #1a1acc !important;
   border: 2px solid #fff;
   padding: 12px 30px;
   border-radius: 4px;
@@ -231,7 +231,7 @@
 
 .learn-cta-section .btn-solid:hover {
   background: #f0f0f0 !important;
-  color: #0000ff !important;
+  color: #1a1acc !important;
 }
 
 /* Responsive */

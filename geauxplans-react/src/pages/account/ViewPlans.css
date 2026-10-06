@@ -61,7 +61,7 @@
 }
 
 .gpx_ep_documents_ul li a {
-  color: #0000ff;
+  color: #1a1acc;
   text-decoration: none;
 }
 
@@ -123,7 +123,7 @@
 }
 
 .status-complete {
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 /* POA Status Badges */

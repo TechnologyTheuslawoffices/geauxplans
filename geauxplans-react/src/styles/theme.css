@@ -113,7 +113,7 @@ sup {
 	font-size: 14px;
 }
 .ub-block-post-grid header h4.ub-block-post-grid-title a, .ub-block-post-grid header h4.ub-block-post-grid-title a:hover {
-	color: #0000ff;
+	color: #1a1acc;
 	text-decoration: none !important;
 }
 .ub-block-post-grid-excerpt {
@@ -125,7 +125,7 @@ sup {
 }
 .ub-block-post-grid.active_border {
 	border: none;
-	border-left: 1px solid #0000ff;
+	border-left: 1px solid #1a1acc;
 	border-radius: 0
 }
 .ub-block-post-grid .is-list article {
@@ -135,10 +135,10 @@ sup {
 }
 .active_border {
 	border-radius: 5px;
-	border: 1px solid #0000ff;
+	border: 1px solid #1a1acc;
 }
 a {
-	color: #0000ff;
+	color: #1a1acc;
 	text-decoration: none;
 	background-color: transparent;
 }
@@ -288,19 +288,19 @@ template {
 	max-width: 200px;
 }
 .btn_geaux {
-	border: 1px solid #0000ff;
-	color: #0000ff !important;
+	border: 1px solid #1a1acc;
+	color: #1a1acc !important;
 	font-size: 14px;
 }
 .btn_geaux:hover {
 	color: #fff !important;
-	background: #0000ff;
+	background: #1a1acc;
 }
 .site-title {
 	color: #fff;
 	font-size: 1.5rem;
 	font-weight: bold;
-	background: #0000ff;
+	background: #1a1acc;
 	padding: 7px 15px;
 	border-radius: 10px;
 }
@@ -367,7 +367,7 @@ template {
 	color: #000;
 }
 #place_for_my_account a:hover {
-	color: #0000ff;
+	color: #1a1acc;
 }
 #place_for_phone {
 	margin-left: 20px;
@@ -497,7 +497,7 @@ template {
 	margin-right: 40px;
 }
 .primary-menu > li:hover > a {
-	color: #0000ff;
+	color: #1a1acc;
 }
 .primary-menu .alert, .primary-menu-mobile .alert {
 	display: inline-block;
@@ -507,7 +507,7 @@ template {
 	margin-right: 10px;
 }
 .primary-menu li.current-menu-item > a, .primary-menu > li.current-menu-parent > a, .primary-menu > li.current_page_parent >a {
-	color: #0000ff;
+	color: #1a1acc;
 }
 .primary-menu li.current-menu-item > a span, .primary-menu > li.current-menu-parent > a span {
 	color: #000;
@@ -516,7 +516,7 @@ template {
 	display: block;
 }
 .primary-menu > li > ul > li > a:hover {
-	color: #0000ff;
+	color: #1a1acc;
 }
 @font-face {
 	font-family: 'icomoon';
@@ -997,7 +997,7 @@ footer a:hover {
 	display: inline-block;
 	width: auto;
 	padding: 5px 30px;
-	background: #0000ff;
+	background: #1a1acc;
 	border: none;
 	border-radius: 5px;
 	margin: 0 auto;
@@ -1663,7 +1663,7 @@ div.cart.bundle_data:before {
 .woocommerce-cart .wc-proceed-to-checkout a {
 	margin: 0;
 	padding: 18px 20px;
-	background: #0000ff !important;
+	background: #1a1acc !important;
 	color: #fff !important;
 	font-weight: normal;
 	border-radius: 5px;
@@ -1862,7 +1862,7 @@ tr.order-total .woocommerce-Price-amount.amount {
 .woocommerce #payment #place_order, .woocommerce-page #payment #place_order {
 	margin: 0;
 	padding: 18px 20px;
-	background: #0000ff !important;
+	background: #1a1acc !important;
 	color: #fff !important;
 	font-weight: normal;
 	border-radius: 5px;
@@ -1876,7 +1876,7 @@ tr.order-total .woocommerce-Price-amount.amount {
 }
 #purchase_plan:not(.disabled) {
 	border-radius: 5px;
-	background-color: #0000ff
+	background-color: #1a1acc
 }
 #isot_chekout_student_account hr {
 	margin: 40px 0
@@ -1899,7 +1899,7 @@ tr.order-total .woocommerce-Price-amount.amount {
 .woocommerce form.checkout_coupon button.button {
 	margin: 0;
 	padding: 18px 20px;
-	background: #0000ff !important;
+	background: #1a1acc !important;
 	color: #fff !important;
 	font-weight: normal;
 	border-radius: 5px;
@@ -1930,7 +1930,7 @@ tr.order-total .woocommerce-Price-amount.amount {
 .woocommerce-MyAccount-downloads-file.button.alt, .woocommerce-account .woocommerce a.button, .woocommerce-account button.button {
 	margin: 0;
 	padding: 18px 20px;
-	background: #0000ff !important;
+	background: #1a1acc !important;
 	color: #fff !important;
 	font-weight: normal;
 	border-radius: 5px;
@@ -2181,7 +2181,7 @@ ol#sensei-quiz-list > li {
 	display: none;
 }
 .ub_call_to_action_headline_text em {
-	color: #0000ff;
+	color: #1a1acc;
 }
 .ub_cta_button:hover {
 	opacity: 1 !important
@@ -2191,7 +2191,7 @@ ol#sensei-quiz-list > li {
 	font-size: 16px;
 }
 #plan_builder strong {
-	color: #0000ff;
+	color: #1a1acc;
 }
 #plan_builder select {
 	padding: 5px;
@@ -2208,7 +2208,7 @@ ol#sensei-quiz-list > li {
 	top: 160px;
 }
 .wp-block-ub-content-toggle-accordion-title em {
-	color: #0000ff;
+	color: #1a1acc;
 }
 .woocommerce .col2-set .col-1, .woocommerce-page .col2-set .col-1 {
 	display: flex;
@@ -2252,12 +2252,12 @@ ol#sensei-quiz-list > li {
 	content: "\e905";
 	font-family: "icomoon";
 	margin-left: 8px;
-	color: #0000ff;
+	color: #1a1acc;
 	display: inline-block;
 	transition: transform .2s;
 }
 #gpx_loggedin_menu li ul li a:hover {
-	color: #0000ff;
+	color: #1a1acc;
 }
 #gpx_loggedin_menu ul {
 	position: absolute;
@@ -2328,7 +2328,7 @@ nav.woocommerce-MyAccount-navigation ul {
 	border-bottom: 1px dashed #666;
 }
 .plan_not_purchased:hover {
-	color: #0000ff;
+	color: #1a1acc;
 }
 .gpx_highlight {
 	padding: 5px 15px;
@@ -2350,27 +2350,27 @@ nav.woocommerce-MyAccount-navigation ul {
 	border-bottom: 1px dashed #666;
 }
 .a_secondary:hover {
-	color: #0000ff;
+	color: #1a1acc;
 }
 .codeable162119_legal_edge_plan {
 	box-shadow: none;
 	padding: 40px;
-	border: 1px solid #0000ff;
+	border: 1px solid #1a1acc;
 }
 .btn-primary.become_member {
-	background: #0000ff;
+	background: #1a1acc;
 	border: none;
 	font-size: 14px;
 }
 .gpx_btn {
 	padding: 5px 15px;
 	background: #fff;
-	color: #0000ff;
+	color: #1a1acc;
 	border-radius: 5px;
-	border: 1px solid #0000ff
+	border: 1px solid #1a1acc
 }
 .gpx_btn:hover {
-	background: #0000ff;
+	background: #1a1acc;
 	color: #fff;
 }
 .gpx_btn_small {
@@ -2394,7 +2394,7 @@ nav.woocommerce-MyAccount-navigation ul {
 	padding: 3px 10px;
 	border-radius: 3px;
 	background: #d8e1ef;
-	color: #0000ff;
+	color: #1a1acc;
 }
 nav.woocommerce-MyAccount-navigation ul {
 	margin: 0;
@@ -2415,7 +2415,7 @@ nav.woocommerce-MyAccount-navigation ul {
 	margin-bottom: 5px;
 }
 .gpx_ep_documents_ul a:hover {
-	color: #0000ff;
+	color: #1a1acc;
 }
 .codeable162119_legal_edge_plan {
 	padding: 20px 20px;
@@ -2512,33 +2512,33 @@ h3.price {
 	font-size: 14px !important;
 }
 .gpx_btn_high {
-	background: #0000ff;
-	border-color: #0000ff;
+	background: #1a1acc;
+	border-color: #1a1acc;
 	color: #fff;
 	padding: 20px 30px
 }
 .btn-primary.become_member {
-	background: #0000ff;
-	border-color: #0000ff;
+	background: #1a1acc;
+	border-color: #1a1acc;
 }
 a.btn.btn-outline-primary {
-	border-color: #0000ff;
-	color: #0000ff;
+	border-color: #1a1acc;
+	color: #1a1acc;
 }
 a.btn.btn-outline-primary:hover {
-	border-color: #0000ff;
-	background: #0000ff;
+	border-color: #1a1acc;
+	background: #1a1acc;
 	color: #fff;
 }
 .btn-gpx, .btn-gpx:hover {
-	background: #0000ff;
+	background: #1a1acc;
 	color: #fff;
 	font-size: 18px !important;
 	border-radius: 0px 20px 20px 0 !important;
 }
 .gpx-outline {
-	box-shadow: 0px 0px 0px 20px rgba(0, 0, 255, 0.1);
-	background: rgba(0, 0, 255, 0.1);
+	box-shadow: 0px 0px 0px 20px rgba(26, 26, 204, 0.1);
+	background: rgba(26, 26, 204, 0.1);
 	border-radius: 5px;
 	border-radius: 100px;
 }
@@ -2555,7 +2555,7 @@ a.btn.btn-outline-primary:hover {
 }
 .is_active_bis_plan {
 	background: #fff !important;
-	border: 20px solid rgba(0, 0, 255, 0.1);
+	border: 20px solid rgba(26, 26, 204, 0.1);
 	border-radius: 0px;
 }
 #business_plan_builder select, #business_plan_builder textarea {
@@ -2628,7 +2628,7 @@ a.btn.btn-outline-primary:hover {
 	display: block
 }
 .llc_choosed_name {
-	color: #0000ff;
+	color: #1a1acc;
 }
 .btn .llc_choosed_name {
 	color: #fff;
@@ -2699,7 +2699,7 @@ a.btn.btn-outline-primary:hover {
 	font-size: 16px;
 }
 .primary-menu  > li.gpx_mega_menu > ul > li ul a:hover {
-	color: #0000ff;
+	color: #1a1acc;
 }
 .primary-menu  > li.gpx_mega_menu > ul > li ul a .description {
 	font-weight: normal;
@@ -2790,12 +2790,12 @@ a.btn.btn-outline-primary:hover {
 	width: 100%;
 	padding: 3px 20px;
 	outline: none;
-	color: #0000ff;
+	color: #1a1acc;
 	font-weight: bold;
 	border: 1px solid #f1f1f1;
 }
 .gpx_oa_builder select  {
-	color: #0000ff;
+	color: #1a1acc;
 }
 .gpx_oa_builder select option  {
 	color: #000;

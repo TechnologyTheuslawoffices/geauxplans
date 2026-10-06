@@ -12,7 +12,7 @@
 }
 
 .article-breadcrumb a {
-  color: #0000ff;
+  color: #1a1acc;
   text-decoration: none;
 }
 
@@ -64,7 +64,7 @@
   margin-top: 40px;
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 2px solid #0000ff;
+  border-bottom: 2px solid #1a1acc;
 }
 
 .article-body h3 {
@@ -97,7 +97,7 @@
 }
 
 .article-body a {
-  color: #0000ff;
+  color: #1a1acc;
   text-decoration: none;
 }
 
@@ -170,7 +170,7 @@
 .article-cta .btn {
   display: inline-block;
   padding: 14px 35px;
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
   text-decoration: none;
   border-radius: 6px;
@@ -179,7 +179,7 @@
 }
 
 .article-cta .btn:hover {
-  background: #0000cc;
+  background: #141499;
 }
 
 /* Related Articles */
@@ -226,7 +226,7 @@
 }
 
 .related-card h3 a:hover {
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 .related-card p {
@@ -237,7 +237,7 @@
 }
 
 .related-card .read-more {
-  color: #0000ff;
+  color: #1a1acc;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -275,7 +275,7 @@
 .contact-btn .btn {
   display: inline-block;
   padding: 12px 30px;
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
   text-decoration: none;
   border-radius: 6px;
@@ -283,7 +283,7 @@
 }
 
 .contact-btn .btn:hover {
-  background: #0000cc;
+  background: #141499;
 }
 
 /* Responsive */
