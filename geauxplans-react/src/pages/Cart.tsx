@@ -46,8 +46,7 @@ const Cart: React.FC = () => {
             <div className="cart-empty">
               <p>Your cart is empty.</p>
               <div className="cart-empty-actions">
-                <Link to="/estate-planning" className="btn btn-solid">Browse Estate Plans</Link>
-                <Link to="/start-business-llc" className="btn btn-outline">Start an LLC</Link>
+                <Link to="/my-account" className="btn btn-solid">Browse Plans</Link>
               </div>
             </div>
           </div>
@@ -205,7 +204,7 @@ const Cart: React.FC = () => {
                 Proceed to Checkout
               </button>
 
-              <Link to="/estate-planning" className="cart-continue">Continue shopping</Link>
+              <Link to="/my-account" className="cart-continue">Continue shopping</Link>
             </aside>
           </div>
         </div>
