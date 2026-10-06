@@ -80,6 +80,38 @@ const STRIPE_PRICES = {
   1367: { solo: 'price_1UIrvdHQjfjZ1dW7DOECJHcK', '2person': 'price_1UIrvdHQjfjZ1dW7DOECJHcK' },
 };
 
+// Business / LLC-formation catalog. These SKUs are custom cart items
+// (geauxplans-react StartBusinessLLC.tsx, productId 0) identified by `sku`.
+//
+// This stays the SERVER-SIDE source of truth for what a business SKU costs: the
+// frontend sends only the sku, never a price, so an edited localStorage cart
+// cannot change the charge (same posture as the estate PRODUCTS catalog above).
+// The amounts also drive the webhook order math and coupon subtotal, so they
+// must equal the unit_amount of the matching Stripe Price in BUSINESS_PRICES.
+// LLC amounts fold in the state filing fee the wizard bundles into its price
+// (base + filing: 89+100, 329+100, 349+130). Keys match keap.js
+// BUSINESS_PRODUCT_TAGS so the webhook can hand the sku straight to Keap.
+const BUSINESS_SKUS = {
+  gpx_llc_1: { name: 'Economy LLC Package', amount: 18900 },
+  gpx_llc_2: { name: 'Standard LLC Package', amount: 42900 },
+  gpx_llc_3: { name: 'Express Gold LLC Package', amount: 47900 },
+  gpx_og_1: { name: 'Operating Agreement', amount: 14900 },
+  gpx_og_2: { name: 'Operating Agreement + EIN', amount: 19900 },
+  gpx_og_3: { name: 'Operating Agreement + EIN + Licenses', amount: 29900 },
+  'registered-agent': { name: 'Registered Agent Service', amount: 24900 },
+};
+
+// Predefined Stripe Price IDs for the business SKUs, keyed by sku. Checkout
+// references these directly so each sale lands on a real catalog Product in
+// Stripe reporting instead of an ad-hoc inline price_data product. Populate via
+// `node scripts/create-business-prices.js` (one-time, run with the live key),
+// which creates the Products/Prices and prints this map ready to paste. A sku
+// missing here falls back to inline price_data from BUSINESS_SKUS so checkout
+// never fails on a not-yet-created Price.
+const BUSINESS_PRICES = {
+  // gpx_llc_1: 'price_...',
+};
+
 /**
  * Generate unique order number
  */
@@ -115,6 +147,14 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
   // Validate and resolve each item
   const resolved = [];
   for (const it of items) {
+    // Business SKUs are custom cart items (productId 0) identified by `sku`.
+    // They resolve to a predefined Stripe Price (BUSINESS_PRICES) when one
+    // exists, else fall back to an inline price_data amount from BUSINESS_SKUS.
+    if (it.sku && BUSINESS_SKUS[it.sku]) {
+      const b = BUSINESS_SKUS[it.sku];
+      resolved.push({ business: true, sku: it.sku, name: b.name, unitAmount: b.amount, priceId: BUSINESS_PRICES[it.sku] });
+      continue;
+    }
     const pid = parseInt(it.productId, 10);
     if (!pid || !PRODUCTS[pid]) {
       return res.status(400).json({ success: false, error: `Invalid product: ${it.productId}` });
@@ -129,7 +169,7 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
     resolved.push({ productId: pid, product, formType, unitAmount, priceId });
   }
 
-  const hasSubscription = resolved.some(r => r.product.type === 'subscription');
+  const hasSubscription = resolved.some(r => r.product?.type === 'subscription');
   const mode = hasSubscription ? 'subscription' : 'payment';
 
   try {
@@ -138,11 +178,28 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
     // lines are billed on the first invoice and the recurring line recurs, so a
     // mixed cart needs nothing special. (The old subscription_data.add_invoice_items
     // path is gone — the current Stripe API version rejects it.)
-    const lineItems = resolved.map(r => ({ price: r.priceId, quantity: 1 }));
+    // Both estate and business items reference a predefined Stripe Price. A
+    // business sku without one yet falls back to inline price_data from its
+    // server-side amount, so a not-yet-created Price never blocks checkout.
+    const lineItems = resolved.map(r => {
+      if (r.business && !r.priceId) {
+        return {
+          price_data: {
+            currency: 'usd',
+            product_data: { name: r.name },
+            unit_amount: r.unitAmount,
+          },
+          quantity: 1,
+        };
+      }
+      return { price: r.priceId, quantity: 1 };
+    });
 
     // Metadata: stringify the items array, plus first-item legacy fields
     const metadataItems = JSON.stringify(
-      resolved.map(r => ({ productId: r.productId, formType: r.formType }))
+      resolved.map(r => (r.business
+        ? { sku: r.sku }
+        : { productId: r.productId, formType: r.formType }))
     );
 
     // Re-validate the coupon here rather than trusting anything the cart sent.
@@ -171,9 +228,11 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
       cancel_url: `${SITE_URL}/checkout/cancelled`,
       metadata: {
         items: metadataItems,
-        // Legacy single-item fields for back-compat with success page + webhook
-        productId: resolved[0].productId.toString(),
-        formType: resolved[0].formType,
+        // Legacy single-item fields for back-compat with success page + webhook.
+        // A business-only cart has no numeric productId, so these fall back to 0;
+        // the webhook reads metadata.items (which carries the sku) regardless.
+        productId: (resolved[0].productId ?? 0).toString(),
+        formType: resolved[0].formType || 'solo',
         userId: req.user?.id?.toString() || '',
         // Carried so the webhook can record the redemption after payment
         // succeeds, rather than counting a code the customer never used.
@@ -239,7 +298,7 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
  * by the stored solo form_type, so it doubles as the whitelist of what can be
  * upgraded and to what.
  */
-router.post('/create-second-person-session', authenticate, async (req, res) => {
+router.post('/create-second-person-session', authenticateSupabase, async (req, res) => {
   if (!supabase) {
     return res.status(500).json({ success: false, error: 'Database not configured' });
   }
@@ -399,6 +458,12 @@ async function handleSuccessfulPayment(session) {
   // Validate items
   const resolved = [];
   for (const it of items) {
+    // Business SKU items carry a `sku`, no numeric product id.
+    if (it.sku && BUSINESS_SKUS[it.sku]) {
+      const b = BUSINESS_SKUS[it.sku];
+      resolved.push({ business: true, sku: it.sku, name: b.name, priceInCents: b.amount });
+      continue;
+    }
     const pid = parseInt(it.productId, 10);
     const product = PRODUCTS[pid];
     if (!product) {
@@ -435,20 +500,21 @@ async function handleSuccessfulPayment(session) {
 
       orderId = orderResult.lastInsertRowid;
 
-      // Add one order_item per resolved product
+      // Add one order_item per resolved product. Business SKUs have no numeric
+      // product id, so they record 0 and carry their catalog name.
       for (const r of resolved) {
         const lineSubtotal = r.priceInCents / 100;
         db.prepare(`
           INSERT INTO order_items (order_id, product_id, name, quantity, price, total)
           VALUES (?, ?, ?, 1, ?, ?)
-        `).run(orderId, r.productId, r.product.name, lineSubtotal, lineSubtotal);
+        `).run(orderId, r.business ? 0 : r.productId, r.business ? r.name : r.product.name, lineSubtotal, lineSubtotal);
       }
     }
 
     // Handle subscription products — create user_subscriptions row(s)
     if (userId && supabase) {
       for (const r of resolved) {
-        if (r.product.type !== 'subscription') continue;
+        if (r.business || r.product.type !== 'subscription') continue;
         try {
           // Stack onto existing time instead of resetting to now: re-buying the
           // Legal Edge Plan while a paid month is still active should ADD an
@@ -515,7 +581,7 @@ async function handleSuccessfulPayment(session) {
         }) || null;
       };
       for (const r of resolved) {
-        if (r.product.type === 'subscription') continue;
+        if (r.business || r.product.type === 'subscription') continue;
         const concreteFormType = resolveFormType(r.productId, r.formType);
         if (!concreteFormType) continue;
         try {
@@ -544,7 +610,7 @@ async function handleSuccessfulPayment(session) {
     if (userId && db) {
       const estatePlanTypes = [606, 614, 673, 676];
       for (const r of resolved) {
-        if (r.product.type === 'subscription') continue;
+        if (r.business || r.product.type === 'subscription') continue;
         if (!estatePlanTypes.includes(r.productId)) continue;
         db.prepare(`
           INSERT INTO estate_plans (user_id, order_id, name, type, status)
@@ -573,22 +639,36 @@ async function handleSuccessfulPayment(session) {
     const customerName = session.customer_details?.name || '';
     const nameParts = customerName.split(' ');
 
-    if (customerEmail && resolved.length > 0) {
-      try {
-        const keapResult = await keapService.handlePurchase({
-          email: customerEmail,
-          firstName: nameParts[0] || '',
-          lastName: nameParts.slice(1).join(' ') || '',
-          phone: session.customer_details?.phone || '',
-        }, resolved[0].productId);
+    if (customerEmail) {
+      const customerData = {
+        email: customerEmail,
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' ') || '',
+        phone: session.customer_details?.phone || '',
+      };
 
-        if (keapResult.success) {
-          console.log(`Keap contact synced for purchase ${orderNumber}: ${keapResult.contactId}`);
-        } else {
-          console.error(`Keap purchase sync failed for order ${orderNumber}: ${keapResult.error}`);
+      // handlePurchase takes a product identifier and applies that SKU's trigger
+      // tags. Estate plans keep the long-standing "first product only" behaviour;
+      // business items each carry a distinct SKU (an LLC + RA + OA cart must fire
+      // all three), so they are tagged individually by their string sku code.
+      const syncTargets = [];
+      const firstEstate = resolved.find(r => !r.business);
+      if (firstEstate) syncTargets.push(firstEstate.productId);
+      for (const r of resolved) {
+        if (r.business) syncTargets.push(r.sku);
+      }
+
+      for (const target of syncTargets) {
+        try {
+          const keapResult = await keapService.handlePurchase(customerData, target);
+          if (keapResult.success) {
+            console.log(`Keap contact synced for purchase ${orderNumber} (${target}): ${keapResult.contactId}`);
+          } else {
+            console.error(`Keap purchase sync failed for order ${orderNumber} (${target}): ${keapResult.error}`);
+          }
+        } catch (err) {
+          console.error(`Keap purchase sync threw for order ${orderNumber} (${target}):`, err);
         }
-      } catch (err) {
-        console.error(`Keap purchase sync threw for order ${orderNumber}:`, err);
       }
     }
   } catch (error) {
@@ -1021,3 +1101,6 @@ router.get('/subscription-product', async (req, res) => {
 });
 
 module.exports = router;
+// Shared with scripts/create-business-prices.js so the Price-creation script and
+// the checkout route bill from the same amounts.
+module.exports.BUSINESS_SKUS = BUSINESS_SKUS;

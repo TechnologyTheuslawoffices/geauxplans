@@ -110,10 +110,22 @@ const Checkout: React.FC = () => {
     setError('');
 
     try {
-      const items = cart.items.map(i => ({
-        productId: i.productId,
-        formType: i.variationId === 2 ? '2person' : 'solo',
-      }));
+      const items = cart.items.map(i => {
+        // Business items are custom cart entries (productId 0). The backend
+        // bills and tags them by their SKU code: LLC / operating-agreement
+        // items carry it in metadata.packageType; the registered-agent item
+        // has no package code, so its cart `type` is the sku.
+        if (i.productId === 0) {
+          const sku = i.type === 'registered-agent'
+            ? 'registered-agent'
+            : (i.metadata?.packageType as string | undefined);
+          return { productId: 0, sku };
+        }
+        return {
+          productId: i.productId,
+          formType: i.variationId === 2 ? '2person' : 'solo',
+        };
+      });
 
       // The code is sent, not the discount. The backend re-validates it against
       // its own coupon table and computes the reduction itself, so an edited
