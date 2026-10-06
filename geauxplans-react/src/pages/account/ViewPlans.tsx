@@ -150,6 +150,7 @@ const ViewPlans: React.FC = () => {
   // Purchase modal state
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
   const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
   // Cache for full document data (fetched on demand)
   const [documentCache, setDocumentCache] = useState<Record<number, KnacklyDocument[]>>({});
@@ -889,6 +890,7 @@ const ViewPlans: React.FC = () => {
                 className="plan_not_purchased"
                 onClick={() => {
                   setSelectedProduct(product.formType);
+                  setNumPersons('1');
                   setSubscribeLEP('1');
                   setShowPurchaseModal(true);
                 }}
@@ -994,8 +996,27 @@ const ViewPlans: React.FC = () => {
             </p>
 
             <div className="mb-3">
+              <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
+              <select
+                className="form-select"
+                value={numPersons}
+                onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                }}
+              >
+                <option value="1">For one person</option>
+                <option value="2">For two people</option>
+              </select>
+            </div>
+
+            <div className="mb-3">
               <label className="form-label">
-                Would you like to subscribe to the{' '}
+                <strong>2.</strong> Would you like to subscribe to the{' '}
                 <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
                   Legal Edge Plan
                 </a>{' '}
@@ -1021,7 +1042,7 @@ const ViewPlans: React.FC = () => {
             <div className="mb-4">
               <strong>Final Price:</strong>{' '}
               <strong style={{ fontSize: '1.25rem' }}>
-                ${PRODUCT_CONFIG[selectedProduct].soloPrice}
+                ${numPersons === '1' ? PRODUCT_CONFIG[selectedProduct].soloPrice : PRODUCT_CONFIG[selectedProduct].couplePrice}
                 {subscribeLEP === '1' ? ' + $9.99/mo' : ''}
               </strong>
             </div>
@@ -1029,8 +1050,8 @@ const ViewPlans: React.FC = () => {
             <button
               onClick={async () => {
                 const config = PRODUCT_CONFIG[selectedProduct];
-                // Everyone buys solo; second person is a paid in-interview add-on.
-                await addEstatePlan(config.productId, 'solo', subscribeLEP === '1');
+                const formType = numPersons === '1' ? 'solo' : '2person';
+                await addEstatePlan(config.productId, formType, subscribeLEP === '1');
                 setShowPurchaseModal(false);
                 navigate('/checkout');
               }}

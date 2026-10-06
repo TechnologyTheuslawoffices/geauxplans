@@ -17,17 +17,15 @@ interface PurchaseModalProps {
 }
 
 const PurchaseModal: React.FC<PurchaseModalProps> = ({ product, onClose }) => {
+  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
   const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
   const navigate = useNavigate();
   const { addEstatePlan } = useCart();
 
-  // Everyone buys the solo plan. Including a second person is now a paid add-on
-  // offered inside the interview (POAForm personal-info step), not a choice at
-  // checkout, so this modal no longer asks "for how many people".
-  const price = product.priceSolo;
+  const price = numPersons === '1' ? product.priceSolo : product.priceCouple;
 
   const handlePurchase = async () => {
-    await addEstatePlan(product.id, 'solo', subscribeLEP === '1');
+    await addEstatePlan(product.id, numPersons === '1' ? 'solo' : '2person', subscribeLEP === '1');
     navigate('/checkout');
   };
 
@@ -53,8 +51,20 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ product, onClose }) => {
         </p>
 
         <div className="mb-3">
+          <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
+          <select
+            className="form-select"
+            value={numPersons}
+            onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
+          >
+            <option value="1">For one person</option>
+            <option value="2">For two people</option>
+          </select>
+        </div>
+
+        <div className="mb-3">
           <label className="form-label">
-            Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
+            <strong>2.</strong> Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
           </label>
           <select
             className="form-select"

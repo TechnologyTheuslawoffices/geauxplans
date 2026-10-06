@@ -2,21 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import { createSecondPersonSession } from '../services/cartService';
 import AIAttorneyChat from './AIAttorneyChat';
 import '../styles/poa-form.css';
-
-// Solo -> 2-person upgrade offered inside the interview on the personal-info
-// step. Keys are the solo form_type strings from formTypes.ts (which are the
-// URL ?type= values); deltaDisplay is the exact price difference the client
-// pays via Stripe. Kept in sync with the backend SECOND_PERSON_UPGRADE map in
-// geauxplans-backend/src/config/constants.js.
-const SECOND_PERSON_UPGRADE: Record<string, { deltaDisplay: string }> = {
-  powerOfAttorneyForm: { deltaDisplay: '$50' },
-  willBasedEstatePlan: { deltaDisplay: '$100' },
-  minorChildEstatePlan: { deltaDisplay: '$100' },
-  trustBasedEstatePlanSolo: { deltaDisplay: '$200' },
-};
 
 /**
  * Deep merge two objects, ensuring all fields from defaults exist
@@ -1095,10 +1082,6 @@ const POAForm: React.FC = () => {
   // id-centric (GET /submissions/:id); otherwise we fall back to the newest set
   // of this form type (GET /submissions/by-type/:formType).
   const submissionId = searchParams.get('submission');
-  // Which product this interview belongs to, used only to tell the
-  // add-second-person checkout which product's delta to charge. The backend
-  // derives the authoritative price from the stored form_type regardless.
-  const productParam = searchParams.get('product');
 
   const [currentPage, setCurrentPage] = useState(0);
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -1118,10 +1101,6 @@ const POAForm: React.FC = () => {
   const [accessExpired, setAccessExpired] = useState<boolean>(false);
   const [accessMessage, setAccessMessage] = useState<string>('');
   const [hasOtherParties, setHasOtherParties] = useState<string>('');
-  // Redirecting to Stripe for the add-second-person add-on. Disables the card
-  // button so a double-click cannot open two checkout sessions.
-  const [isUpgradingSecondPerson, setIsUpgradingSecondPerson] = useState(false);
-  const [upgradeError, setUpgradeError] = useState<string>('');
   const [collapsedAgentPanels, setCollapsedAgentPanels] = useState<Record<string, boolean>>({});
   const toggleAgentPanel = (id: string) =>
     setCollapsedAgentPanels((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -2155,46 +2134,6 @@ const POAForm: React.FC = () => {
     setIsSubmitting(false);
   };
 
-  // Add-second-person add-on. Saves the current draft if it has not been saved
-  // yet (we need a submission id to attach the payment to), then sends the
-  // client to Stripe for the price delta. On return the success_url flips the
-  // URL's ?type= to the 2-person variant and the spouse pages appear.
-  const handleAddSecondPerson = async () => {
-    if (!isAuthenticated) {
-      setUpgradeError('Please log in to add a second person.');
-      return;
-    }
-    setUpgradeError('');
-    setIsUpgradingSecondPerson(true);
-
-    try {
-      // Ensure a saved, owned set exists so the delta payment has a row to
-      // attach to. handleSave returns the id it persisted (state is not updated
-      // within this tick), so use the return value rather than the state var.
-      let submissionForUpgrade: number | null = existingSubmissionId;
-      if (!submissionForUpgrade) {
-        submissionForUpgrade = await handleSave('inprogress');
-      }
-      if (!submissionForUpgrade) {
-        setUpgradeError('Please save your progress and try again.');
-        setIsUpgradingSecondPerson(false);
-        return;
-      }
-
-      const productId = parseInt(productParam || '0', 10);
-      const response = await createSecondPersonSession(submissionForUpgrade, productId);
-      if (response.success && response.data?.url) {
-        window.location.href = response.data.url;
-      } else {
-        setUpgradeError(response.error || 'Could not start checkout. Please try again.');
-        setIsUpgradingSecondPerson(false);
-      }
-    } catch (error) {
-      setUpgradeError('An error occurred. Please try again.');
-      setIsUpgradingSecondPerson(false);
-    }
-  };
-
   const nextPage = () => {
     if (validateCurrentPage()) {
       handleSave('inprogress');
@@ -2281,12 +2220,6 @@ const POAForm: React.FC = () => {
         ? 'Enter the personal information about the persons creating this estate plan here.'
         : 'Enter your personal information below.';
 
-    // Offer to add a second person only on solo plans that have a 2-person
-    // counterpart. Once upgraded (formType is a 2Person variant) the card is
-    // gone and the spouse pages render instead.
-    const secondPersonOffer = !isTwoPerson ? SECOND_PERSON_UPGRADE[formType] : undefined;
-    const partnerNoun = isPOA ? 'a second principal' : 'a spouse or partner';
-
     return (
       <div className="poa-page">
         <h2>{getStepNumber('personal_info')}. {heading}</h2>
@@ -2296,33 +2229,6 @@ const POAForm: React.FC = () => {
             Select if you and the second person creating this plan together are unmarried life partners.
             Otherwise, GeauxPlans will assume you are legally married.
           </p>
-        )}
-
-        {secondPersonOffer && (
-          <div className="card mb-4" style={{ borderColor: '#0a5c36', borderWidth: 2 }}>
-            <div className="card-body">
-              <h4 className="card-title" style={{ color: '#0a5c36' }}>
-                Do you have another person you'd like to include in these documents?
-              </h4>
-              <p className="card-text mb-3">
-                Add {partnerNoun} to this plan and we'll prepare the documents for both
-                of you together. You'll only pay the difference for the two-person plan.
-              </p>
-              {upgradeError && (
-                <div className="alert alert-danger py-2" role="alert">{upgradeError}</div>
-              )}
-              <button
-                type="button"
-                className="btn btn-solid"
-                onClick={handleAddSecondPerson}
-                disabled={isUpgradingSecondPerson || isSaving}
-              >
-                {isUpgradingSecondPerson
-                  ? 'Redirecting to secure checkout…'
-                  : `Add another person — ${secondPersonOffer.deltaDisplay}`}
-              </button>
-            </div>
-          </div>
         )}
 
         {/* First Principal Section */}

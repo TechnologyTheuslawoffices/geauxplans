@@ -7,6 +7,7 @@ const MinorChildEstatePlan: React.FC = () => {
   const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
   const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
   const navigate = useNavigate();
   const { addEstatePlan } = useCart();
@@ -19,12 +20,14 @@ const MinorChildEstatePlan: React.FC = () => {
     setExpandedFaq(expandedFaq === id ? null : id);
   };
 
-  // Everyone buys the solo plan; a second person is a paid in-interview add-on.
-  const getPrice = () => 199;
+  const getPrice = () => {
+    return numPersons === '1' ? 199 : 299;
+  };
 
   const handlePurchase = async () => {
     // Product 606 = Minor Child-Centered Estate Plan
-    await addEstatePlan(606, 'solo', subscribeLEP === '1');
+    const formType = numPersons === '1' ? 'solo' : '2person';
+    await addEstatePlan(606, formType, subscribeLEP === '1');
     navigate('/checkout');
   };
 
@@ -234,8 +237,20 @@ const MinorChildEstatePlan: React.FC = () => {
             </p>
 
             <div className="mb-3">
+              <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
+              <select
+                className="form-select"
+                value={numPersons}
+                onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
+              >
+                <option value="1">For one person</option>
+                <option value="2">For two people</option>
+              </select>
+            </div>
+
+            <div className="mb-3">
               <label className="form-label">
-                Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
+                <strong>2.</strong> Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
               </label>
               <select
                 className="form-select"

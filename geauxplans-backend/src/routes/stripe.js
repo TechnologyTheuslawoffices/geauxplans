@@ -527,6 +527,7 @@ async function handleSuccessfulPayment(session) {
               form_data: {},
               submission_status: 'inprogress',
               first_submitted_at: null,
+              second_person_paid: concreteFormType.endsWith('2Person'),
             });
           if (insertError) {
             console.error('Error creating new estate-plan set:', insertError);
