@@ -54,6 +54,10 @@ const Header: React.FC = () => {
               <div id="place_for_menu">
                 <nav id="header_navigation" className="header_navigation">
                   <ul className="primary-menu list-reset d-none d-lg-block">
+                    {/* Marketing nav is hidden once signed in so the account
+                        experience stays focused on the customer's own plans. */}
+                    {!isAuthenticated && (
+                    <>
                     {/* Estate Planning Mega Menu */}
                     <li className="menu-item menu-item-has-children gp_mega_menu">
                       <Link to="/estate-planning">Estate Planning</Link>
@@ -118,6 +122,8 @@ const Header: React.FC = () => {
                         <li><Link to="/register-for-webinar">Free Webinar</Link></li>
                       </ul>
                     </li>
+                    </>
+                    )}
                   </ul>
                 </nav>
               </div>
@@ -187,6 +193,8 @@ const Header: React.FC = () => {
           </div>
           <div id="place_for_mobile_menu" className="py-2 px-3">
             <ul className="primary-menu-mobile list-reset">
+              {!isAuthenticated && (
+              <>
               <li className="menu-item menu-item-has-children">
                 <Link to="/estate-planning" onClick={closeMobileMenu}>Estate Planning</Link>
                 <ul className="sub-menu">
@@ -212,6 +220,8 @@ const Header: React.FC = () => {
                   <li><Link to="/register-for-webinar" onClick={closeMobileMenu}>Free Webinar</Link></li>
                 </ul>
               </li>
+              </>
+              )}
               <li><Link to="/my-account" onClick={closeMobileMenu}>My Account</Link></li>
             </ul>
           </div>

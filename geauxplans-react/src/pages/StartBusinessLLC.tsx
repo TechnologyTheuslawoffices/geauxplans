@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { checkLLCAvailability } from '../services/businessService';
@@ -37,7 +37,7 @@ const StartBusinessLLC: React.FC = () => {
    */
   const oaOnly = searchParams.get('product') === 'oa';
 
-  const [businessName, setBusinessName] = useState('');
+  const [businessName, setBusinessName] = useState(searchParams.get('name') || '');
   const [isChecking, setIsChecking] = useState(false);
   const [result, setResult] = useState<AvailabilityResult | null>(null);
 
@@ -127,6 +127,15 @@ const StartBusinessLLC: React.FC = () => {
       checkAvailability();
     }
   };
+
+  // When the dashboard business modal hands off a name (?name=), run the
+  // availability check on mount so the customer lands straight in the flow.
+  useEffect(() => {
+    if (searchParams.get('name')) {
+      checkAvailability();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const goBack = () => {
     if (oaOnly) {
@@ -304,7 +313,7 @@ const StartBusinessLLC: React.FC = () => {
               disabled={isChecking}
               style={{
                 display: 'block',
-                background: isChecking ? '#6666ff' : '#0000ff',
+                background: isChecking ? '#6666ff' : '#1a1acc',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '0 50px 50px 0',
