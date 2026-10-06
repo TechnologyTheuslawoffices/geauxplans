@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import StartBusinessLLC from '../StartBusinessLLC';
 import '../../styles/estate-plan-page.css';
 
 interface PlanCard {
@@ -81,21 +82,11 @@ const Dashboard: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<PlanCard | null>(null);
   const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
   const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
-  const [businessName, setBusinessName] = useState('');
 
   const openModal = (plan: PlanCard) => {
     setSelectedPlan(plan);
     setNumPersons('1');
     setSubscribeLEP('1');
-    setBusinessName('');
-  };
-
-  // The business modal's name check hands off to the LLC wizard, which owns the
-  // real Secretary of State lookup; we just pass the typed name along.
-  const startBusiness = () => {
-    const name = businessName.trim();
-    const target = selectedPlan?.route || '/start-business-llc';
-    navigate(name ? `${target}?name=${encodeURIComponent(name)}` : target);
   };
 
   const closeModal = () => setSelectedPlan(null);
@@ -187,65 +178,23 @@ const Dashboard: React.FC = () => {
         </p>
       </div>
 
-      {/* Purchase Modal */}
-      {selectedPlan && (
+      {/* Business flow modal — the whole LLC wizard runs inline here instead
+          of navigating off to the /start-business-llc page. */}
+      {selectedPlan && selectedPlan.route && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="business-flow-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={closeModal}>&times;</button>
+            <StartBusinessLLC embedded />
+          </div>
+        </div>
+      )}
+
+      {/* Estate purchase modal */}
+      {selectedPlan && !selectedPlan.route && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content purchase-modal" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={closeModal}>&times;</button>
 
-            {selectedPlan.route ? (
-            <>
-            <div className="text-center mb-4">
-              <img
-                src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
-                alt="Plan Builder"
-                style={{ width: '48px', marginBottom: '20px' }}
-              />
-              <h2 style={{ color: '#1a1acc' }}>Start your business in Louisiana</h2>
-              <p className="text-muted fst-italic">We've got you covered. Let's Geaux!</p>
-              <p className="text-muted">
-                Find out if an LLC is right for you – enter your preferred business name to get started. <strong>Starts at $89</strong> + filing fees.
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', marginBottom: '25px' }}>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="What do you want to call LLC?"
-                value={businessName}
-                onChange={(e) => setBusinessName(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') startBusiness(); }}
-                style={{ borderRadius: '50px 0 0 50px' }}
-              />
-              <button
-                type="button"
-                onClick={startBusiness}
-                className="btn btn-solid"
-                style={{ borderRadius: '0 50px 50px 0', whiteSpace: 'nowrap' }}
-              >
-                Check
-              </button>
-            </div>
-
-            <div style={{ display: 'grid', gap: '18px' }}>
-              {[
-                { title: 'Asset Protection', text: 'Protect yourself from personal liability for business risks.' },
-                { title: 'Keep It Simple', text: 'LLCs have fewer formalities compared to corporations.' },
-                { title: 'Optimize Taxes', text: 'You decide how your LLC is taxed – as disregarded entity, partnership, or corporation.' },
-              ].map((f) => (
-                <div key={f.title} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                  <span style={{ color: '#f5a623', fontSize: '22px', lineHeight: 1 }}>★</span>
-                  <div>
-                    <strong>{f.title}</strong>
-                    <p style={{ margin: 0, color: '#555', fontSize: '14px' }}>{f.text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            </>
-            ) : (
-            <>
             <div className="text-center mb-4">
               <img
                 src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
@@ -300,8 +249,6 @@ const Dashboard: React.FC = () => {
             >
               Purchase
             </button>
-            </>
-            )}
           </div>
         </div>
       )}

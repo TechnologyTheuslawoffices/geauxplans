@@ -454,6 +454,21 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
+/* Wide modal shell that hosts the embedded LLC wizard. The wizard itself is
+   full-width page content, so it needs far more room than the estate
+   purchase modal. */
+.business-flow-modal {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 1040px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
 .modal-close {
   position: absolute;
   top: 15px;
@@ -464,6 +479,7 @@
   cursor: pointer;
   color: #666;
   line-height: 1;
+  z-index: 1;
 }
 
 .modal-close:hover {

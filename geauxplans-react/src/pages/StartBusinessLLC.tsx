@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { checkLLCAvailability } from '../services/businessService';
@@ -23,7 +23,14 @@ interface BusinessFormData {
   llcPackage: string;
 }
 
-const StartBusinessLLC: React.FC = () => {
+interface StartBusinessLLCProps {
+  // When true the flow is rendered inside the dashboard modal, so the
+  // marketing sections are dropped and the full-bleed wizard styling is
+  // reined in to fit the modal (see .business-llc-page--embedded).
+  embedded?: boolean;
+}
+
+const StartBusinessLLC: React.FC<StartBusinessLLCProps> = ({ embedded = false }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [searchParams] = useSearchParams();
@@ -37,7 +44,7 @@ const StartBusinessLLC: React.FC = () => {
    */
   const oaOnly = searchParams.get('product') === 'oa';
 
-  const [businessName, setBusinessName] = useState(searchParams.get('name') || '');
+  const [businessName, setBusinessName] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [result, setResult] = useState<AvailabilityResult | null>(null);
 
@@ -127,15 +134,6 @@ const StartBusinessLLC: React.FC = () => {
       checkAvailability();
     }
   };
-
-  // When the dashboard business modal hands off a name (?name=), run the
-  // availability check on mount so the customer lands straight in the flow.
-  useEffect(() => {
-    if (searchParams.get('name')) {
-      checkAvailability();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const goBack = () => {
     if (oaOnly) {
@@ -776,11 +774,13 @@ const StartBusinessLLC: React.FC = () => {
   );
 
   return (
-    <main className="business-llc-page">
+    <main className={`business-llc-page${embedded ? ' business-llc-page--embedded' : ''}`}>
       {!showWizard ? (
         <>
           {renderStep1()}
 
+          {!embedded && (
+          <>
           {/* Ready Set Geaux Section */}
           <section className="llc-info-section">
             <div className="container">
@@ -898,6 +898,8 @@ const StartBusinessLLC: React.FC = () => {
               </div>
             </div>
           </section>
+          </>
+          )}
         </>
       ) : (
         renderWizard()
