@@ -12,6 +12,13 @@ interface PlanCard {
   productId: number;
   priceSolo: number;
   priceCouple: number;
+  // When set, the card navigates straight to this route (its own wizard)
+  // instead of opening the estate purchase modal. Used by the business plan,
+  // which has its own package tiers and no per-person / Legal Edge options.
+  route?: string;
+  // Optional price text shown on the card face (e.g. the business tiers, which
+  // start at a package price rather than a single solo/couple amount).
+  priceLabel?: string;
 }
 
 const PLANS: PlanCard[] = [
@@ -54,6 +61,18 @@ const PLANS: PlanCard[] = [
     productId: 676,
     priceSolo: 399,
     priceCouple: 599,
+  },
+  {
+    title: 'Business Formation',
+    subtitle: 'Louisiana LLC',
+    description:
+      'Form your Louisiana LLC with a Secretary of State name check, operating agreement, EIN, and registered agent options — all in one guided wizard.',
+    icon: 'fas fa-building',
+    productId: 0,
+    priceSolo: 0,
+    priceCouple: 0,
+    route: '/start-business-llc',
+    priceLabel: 'Starting at $189',
   },
 ];
 
@@ -126,16 +145,21 @@ const Dashboard: React.FC = () => {
                   <span style={{ fontSize: '14px', color: '#707070' }}>{plan.subtitle}</span>
                 </div>
               </div>
-              <p style={{ color: '#555', fontSize: '14px', marginBottom: '20px', flexGrow: 1 }}>
+              <p style={{ color: '#555', fontSize: '14px', marginBottom: '15px', flexGrow: 1 }}>
                 {plan.description}
               </p>
+              {plan.priceLabel && (
+                <p style={{ fontWeight: 600, color: '#1a1acc', marginBottom: '15px' }}>
+                  {plan.priceLabel}
+                </p>
+              )}
               <button
                 type="button"
-                onClick={() => openModal(plan)}
+                onClick={() => (plan.route ? navigate(plan.route) : openModal(plan))}
                 className="btn btn_geaux"
                 style={{ width: '100%', textAlign: 'center' }}
               >
-                Start my Plan
+                {plan.route ? 'Start my Business' : 'Start my Plan'}
               </button>
             </div>
           ))}
