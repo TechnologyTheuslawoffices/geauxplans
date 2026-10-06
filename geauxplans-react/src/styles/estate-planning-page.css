@@ -967,10 +967,16 @@
   box-shadow: 0 3px 10px rgba(26, 26, 204, 0.25);
 }
 
-/* Process + guarantee circles: richer gradient and depth. */
+/* Process + guarantee circles: richer gradient and depth.
+   Global .step-number rules in confirmation-pages.css (#999, italic)
+   and business-llc.css (#abb8c3, normal weight) otherwise wash the
+   number out to faint grey, so we force bold white text here. */
 .estate-planning-page-main .step-number,
 .estate-planning-page-main .guarantee-number {
   background: linear-gradient(135deg, #1a1acc 0%, #4a4ae8 100%);
+  color: #fff;
+  font-weight: 700;
+  font-style: normal;
   box-shadow: 0 8px 20px rgba(26, 26, 204, 0.3);
   font-size: 1.6rem;
 }
