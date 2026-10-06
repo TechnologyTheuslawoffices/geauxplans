@@ -41,6 +41,43 @@ const PRODUCT_TAGS = {
 };
 
 /**
+ * Business / LLC-formation SKU -> Keap trigger tags applied on a completed
+ * purchase.
+ *
+ * Keyed by the string SKU code the business wizard carries on each cart item
+ * (geauxplans-react StartBusinessLLC.tsx): LLC and Operating-Agreement items
+ * use their `metadata.packageType` (the gpx_* code); the registered-agent item
+ * has no package code, so it is keyed by its cart `type`, 'registered-agent'.
+ *
+ * 1424 "(Any Business Product)" is the business parallel to 1400 and sits
+ * alongside the SKU-specific trigger, exactly as 1400 does for estate products.
+ * It is deliberately separate from 1400: the account distinguishes a generic
+ * purchase from a business purchase, and the "Any Product" estate funnels must
+ * not pick up an LLC buyer.
+ *
+ * NOTE (tier naming): the wizard's middle LLC tier is labelled "Standard"
+ * (gpx_llc_2) but the only middle Keap trigger is "Express" (1436). They are
+ * treated as the same tier here; if a distinct "Standard" tag is later added,
+ * remap gpx_llc_2.
+ *
+ * These keys are string SKU codes, never numeric Stripe ids, so they cannot
+ * collide with PRODUCT_TAGS. Nothing resolves business cart items to these
+ * codes at checkout yet — business items still reach Stripe as productId 0 —
+ * so this map is wired through handlePurchase ready for that resolution.
+ */
+const ANY_BUSINESS_PRODUCT_TAG = 1424; // GeauxPlans - Completed Purchase (Any Business Product)
+
+const BUSINESS_PRODUCT_TAGS = {
+  gpx_llc_1: [ANY_BUSINESS_PRODUCT_TAG, 1406], // LLC Organization (Economy)
+  gpx_llc_2: [ANY_BUSINESS_PRODUCT_TAG, 1436], // LLC Organization (Express) — wizard "Standard"
+  gpx_llc_3: [ANY_BUSINESS_PRODUCT_TAG, 1440], // LLC Organization (Express Gold)
+  gpx_og_1: [ANY_BUSINESS_PRODUCT_TAG, 1404],  // Operating Agreement
+  gpx_og_2: [ANY_BUSINESS_PRODUCT_TAG, 1426],  // Operating Agreement + EIN
+  gpx_og_3: [ANY_BUSINESS_PRODUCT_TAG, 1428],  // Operating Agreement + EIN + Licensing
+  'registered-agent': [ANY_BUSINESS_PRODUCT_TAG, 1444], // Registered Agent
+};
+
+/**
  * Form type -> Keap trigger tags applied when the client finishes the
  * interview.
  *
@@ -85,6 +122,11 @@ const LEAD_SOURCE_TAGS = {
   contact: [],
   webinar_rsvp: [318],          // Webinar Registrant (GeauxPlans)
   webinar_registration: [318],  // Webinar Registrant (GeauxPlans)
+  // Lead-magnet downloads. Each tag is the "Start Lead Magnet Sequence" trigger
+  // that drops the contact into its nurture sequence in campaign 212; the
+  // campaign owns the matching "Download" history tag (1656 / 1658).
+  lead_magnet_ep_made_simple: [1654],     // Start Lead Magnet Sequence (EP Made Simple)
+  lead_magnet_top_10_mistakes: [1464],    // Start Lead Magnet Sequence (Top 10 EP Mistakes)
 };
 
 /**
@@ -112,6 +154,7 @@ function submissionTags(formType, { documentsGenerated = false } = {}) {
 function configuredTagIds() {
   return [...new Set([
     ...Object.values(PRODUCT_TAGS).flat(),
+    ...Object.values(BUSINESS_PRODUCT_TAGS).flat(),
     ...Object.values(FORM_TYPE_TAGS).flat(),
     ...DOCUMENTS_COMPLETE_TAGS,
     ...Object.values(LEAD_SOURCE_TAGS).flat(),
@@ -348,6 +391,11 @@ class KeapService {
 
   /**
    * Handle purchase - send contact to Keap with product tags
+   *
+   * @param {object} customerData
+   * @param {number|string} productId - a numeric Stripe product id for estate
+   *   plans (PRODUCT_TAGS) or a string business SKU code for LLC/OA/registered
+   *   agent (BUSINESS_PRODUCT_TAGS). An unknown id applies no tags.
    */
   async handlePurchase(customerData, productId) {
     const contactData = {
@@ -356,7 +404,7 @@ class KeapService {
       lastName: customerData.lastName || '',
       phone: customerData.phone || '',
       source: `GeauxPlans Purchase: Product ${productId}`,
-      tags: PRODUCT_TAGS[productId] || [],
+      tags: PRODUCT_TAGS[productId] || BUSINESS_PRODUCT_TAGS[productId] || [],
     };
 
     if (!contactData.email) {
@@ -393,6 +441,7 @@ module.exports = {
   keapService,
   KeapService,
   PRODUCT_TAGS,
+  BUSINESS_PRODUCT_TAGS,
   FORM_TYPE_TAGS,
   DOCUMENTS_COMPLETE_TAGS,
   LEAD_SOURCE_TAGS,

@@ -22,13 +22,21 @@ const { keapService, LEAD_SOURCE_TAGS } = require('../services/keap');
 
 const router = express.Router();
 
-const SOURCES = ['contact', 'webinar_rsvp', 'webinar_registration'];
+const SOURCES = [
+  'contact',
+  'webinar_rsvp',
+  'webinar_registration',
+  'lead_magnet_ep_made_simple',
+  'lead_magnet_top_10_mistakes',
+];
 
 /** Human-readable opt-in reason recorded on the Keap contact. */
 const SOURCE_LABELS = {
   contact: 'GeauxPlans Contact Form',
   webinar_rsvp: 'GeauxPlans Webinar RSVP',
   webinar_registration: 'GeauxPlans Webinar Registration',
+  lead_magnet_ep_made_simple: 'GeauxPlans Lead Magnet: Estate Planning Made Simple',
+  lead_magnet_top_10_mistakes: 'GeauxPlans Lead Magnet: Top 10 EP Mistakes',
 };
 
 
