@@ -94,8 +94,9 @@
    pill badge so the step numbers clearly stand out. */
 .process-step h3 .text-blue {
   display: inline-block;
-  background: linear-gradient(135deg, #1a1acc 0%, #4a4ae8 100%);
-  color: #fff;
+  background-color: #1a1acc;
+  background-image: linear-gradient(135deg, #1a1acc 0%, #4a4ae8 100%);
+  color: #fff !important;
   font-style: normal;
   font-weight: 800;
   padding: 2px 12px;

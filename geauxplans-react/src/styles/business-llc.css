@@ -413,7 +413,6 @@
 
 .cta-card p {
   margin-bottom: 30px;
-  opacity: 0.9;
 }
 
 .cta-card .btn {
@@ -491,6 +490,21 @@
 .process-grid .process-step h3 {
   font-size: 1.1rem;
   margin-bottom: 15px;
+}
+
+/* #1/#2/#3 markers: white number on a blue pill so they don't read as black
+   navy text. Matches the estate plan pages (estate-plan-page.css). */
+.process-grid .process-step h3 .text-blue {
+  display: inline-block;
+  background-color: #1a1acc;
+  background-image: linear-gradient(135deg, #1a1acc 0%, #4a4ae8 100%);
+  color: #fff !important;
+  font-style: normal;
+  font-weight: 800;
+  padding: 2px 12px;
+  border-radius: 20px;
+  margin-right: 6px;
+  box-shadow: 0 3px 10px rgba(26, 26, 204, 0.25);
 }
 
 .process-grid .process-step p {
