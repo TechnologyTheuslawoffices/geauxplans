@@ -4,8 +4,9 @@
  * Provides shopping cart state and methods throughout the app.
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import cartService from '../services/cartService';
+import { useAuth } from './AuthContext';
 import type { Cart } from '../types';
 
 interface CustomCartItem {
@@ -51,6 +52,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [cart, setCart] = useState<Cart>(emptyCart);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  // Remembers the previous auth state so the effect below can tell a login
+  // (false -> true) from a logout (true -> false) from a mere re-render.
+  const prevAuthRef = useRef<boolean | null>(null);
 
   // Load cart on mount
   useEffect(() => {
@@ -71,6 +76,40 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       setIsLoading(false);
     }
   }, []);
+
+  // React to login/logout: bind the cart to the account while signed in, and
+  // cut it loose on sign-out. Gated on authLoading so we act only on a settled
+  // auth state, never on the transient null during the initial session probe.
+  useEffect(() => {
+    if (authLoading) return;
+
+    const prev = prevAuthRef.current;
+    prevAuthRef.current = isAuthenticated;
+    if (prev === isAuthenticated) return;
+
+    let cancelled = false;
+
+    (async () => {
+      if (isAuthenticated) {
+        // Logged in: fold the guest cart into the account cart, adopt the
+        // merged result, then keep mirroring future changes upward.
+        cartService.setServerSyncEnabled(false);
+        const merged = await cartService.mergeServerCart();
+        cartService.setServerSyncEnabled(true);
+        if (!cancelled) setCart(merged);
+      } else {
+        // Logged out: stop syncing and clear this browser's cart so the next
+        // user does not inherit the previous account's items.
+        cartService.setServerSyncEnabled(false);
+        const empty = cartService.resetLocalCart();
+        if (!cancelled) setCart(empty);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, authLoading]);
 
   const addItem = useCallback(async (
     productId: number,

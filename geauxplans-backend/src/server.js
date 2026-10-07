@@ -68,7 +68,9 @@ if (USE_SUPABASE) {
   // DO NOT require any SQLite-dependent routes - they will crash Vercel
   const submissionsRoutes = require('./routes/submissions-supabase');
   app.use('/api/submissions', submissionsRoutes);
-  console.log('Loaded Supabase submissions routes');
+  const cartRoutes = require('./routes/cart-supabase');
+  app.use('/api/cart', cartRoutes);
+  console.log('Loaded Supabase submissions + cart routes');
 } else {
   // SQLite mode - use all routes (local development only)
   // This block is ignored by Vercel when SUPABASE env vars are set

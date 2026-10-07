@@ -159,10 +159,82 @@ function recalc(items: CartItem[], coupon?: AppliedCoupon): Cart {
 // Module-level cache, initialized once
 let _cart: Cart = loadCart();
 
-function setCart(cart: Cart): Cart {
+// ---------------------------------------------------------------------------
+// Server sync
+//
+// While a user is logged in, the cart is mirrored to a per-account `carts` row
+// (/api/cart) so it follows them across devices. The switch is off by default:
+// guests, and the first paint before auth resolves, use localStorage only.
+// CartContext flips it on after login (and off on logout). Every server call is
+// best-effort — a failure (offline, table not migrated yet, 401) is swallowed
+// and the localStorage copy remains the working cart.
+// ---------------------------------------------------------------------------
+
+let _serverSync = false;
+
+export function setServerSyncEnabled(enabled: boolean): void {
+  _serverSync = enabled;
+}
+
+function pushServerCart(cart: Cart): void {
+  if (!_serverSync) return;
+  // Fire-and-forget; never block a cart mutation on the network.
+  void api
+    .put('/cart', { items: cart.items, coupon: cart.coupon ?? null })
+    .catch(() => {
+      /* non-fatal: localStorage stays authoritative */
+    });
+}
+
+function setCart(cart: Cart, pushServer: boolean = true): Cart {
   _cart = cart;
   saveCart(cart);
+  if (pushServer) pushServerCart(cart);
   return cart;
+}
+
+/**
+ * Pull the account cart from the server and make it the local cart, without
+ * echoing it straight back up. Used once right after login/merge.
+ */
+export async function loadServerCart(): Promise<Cart> {
+  try {
+    const response = await api.get<{ items: CartItem[]; coupon?: AppliedCoupon | null }>('/cart');
+    if (response.success && response.data) {
+      return setCart(recalc(response.data.items || [], response.data.coupon || undefined), false);
+    }
+  } catch {
+    /* non-fatal */
+  }
+  return _cart;
+}
+
+/**
+ * On login, reconcile the guest localStorage cart into the account cart and
+ * adopt the merged result. Union-by-id on the server keeps this idempotent, so
+ * it is safe if the login effect re-runs.
+ */
+export async function mergeServerCart(): Promise<Cart> {
+  try {
+    const response = await api.post<{ items: CartItem[]; coupon?: AppliedCoupon | null }>(
+      '/cart/merge',
+      { items: _cart.items, coupon: _cart.coupon ?? null }
+    );
+    if (response.success && response.data) {
+      return setCart(recalc(response.data.items || [], response.data.coupon || undefined), false);
+    }
+  } catch {
+    /* non-fatal */
+  }
+  return _cart;
+}
+
+/**
+ * Empty the local cart without touching the server. Used on logout so the next
+ * user does not inherit the previous account's cart from this browser.
+ */
+export function resetLocalCart(): Cart {
+  return setCart(recalc([]), false);
 }
 
 function ok<T>(data: T): ApiResponse<T> {
@@ -472,6 +544,10 @@ const cartService = {
   applyCoupon,
   removeCoupon,
   calculateTotals,
+  setServerSyncEnabled,
+  loadServerCart,
+  mergeServerCart,
+  resetLocalCart,
   createSecondPersonSession,
   checkout,
   validateCheckout,
