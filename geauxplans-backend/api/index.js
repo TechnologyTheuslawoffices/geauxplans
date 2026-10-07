@@ -71,6 +71,12 @@ const submissionsRoutes = require('../src/routes/submissions-supabase');
 app.use('/api/submissions', submissionsRoutes);
 console.log('Loaded Supabase submissions routes');
 
+// Server-persisted cart — Supabase-only, so it loads here as well as in
+// src/server.js. (This entry point is what production actually serves.)
+const cartRoutes = require('../src/routes/cart-supabase');
+app.use('/api/cart', cartRoutes);
+console.log('Loaded cart routes');
+
 // Public lead capture — Supabase + Keap only, no SQLite.
 const leadsRoutes = require('../src/routes/leads');
 app.use('/api/leads', leadsRoutes);
