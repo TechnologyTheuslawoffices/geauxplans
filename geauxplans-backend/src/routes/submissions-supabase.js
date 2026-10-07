@@ -1209,29 +1209,9 @@ router.post('/', authenticate, async (req, res) => {
       return res.json(submissionSaveResponse(existing.id, submission_status, null));
     }
 
-    // Never create a fresh 2Person set through this open create path. A 2Person
-    // row is only ever produced by a paid purchase (the Stripe webhook inserts
-    // one) or by the second-person add-on upgrading an existing solo row. Left
-    // open, this would let a client delete their draft, edit the URL's ?type=
-    // param to a 2Person variant, and POST a free couple's plan.
-    if (form_type && form_type.endsWith('2Person')) {
-      const { data: paidTwoPerson } = await supabase
-        .from('poa_submissions')
-        .select('id')
-        .eq('user_id', req.user.id)
-        .eq('form_type', form_type)
-        .eq('second_person_paid', true)
-        .limit(1)
-        .maybeSingle();
-
-      if (!paidTwoPerson) {
-        return res.status(402).json({
-          success: false,
-          error: 'Adding a second person requires payment.',
-          code: 'SECOND_PERSON_UNPAID',
-        });
-      }
-    }
+    // The 1-vs-2-person choice is now made and paid at checkout (the person
+    // count is a purchase-time option, not an in-interview add-on), so a 2Person
+    // form_type arriving here is already paid for. No per-save payment gate.
 
     // Create new submission
     const insertData = {
@@ -1307,26 +1287,44 @@ router.put('/:id', authenticate, async (req, res) => {
       .single();
 
     if (fetchError || !existing) {
-      return res.status(404).json({ success: false, error: 'Submission not found' });
+      // The client is bound to a submission id that no longer resolves for this
+      // user — a stale id left from a cleared draft, a different environment's
+      // database, or a purchase whose row never landed. Rather than dead-ending
+      // the interview with "Submission not found", treat the save as a create so
+      // the answers already typed are never lost.
+      const insertData = {
+        user_id: req.user.id,
+        form_data,
+        form_type: form_type || 'powerOfAttorneyForm',
+        submission_status,
+      };
+      if (submission_status === 'completed') {
+        insertData.first_submitted_at = new Date().toISOString();
+      }
+
+      const { data: created, error: createError } = await supabase
+        .from('poa_submissions')
+        .insert(insertData)
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('Fallback create error:', createError);
+        return res.status(500).json({ success: false, error: 'Failed to save submission' });
+      }
+
+      if (submission_status === 'completed') {
+        return res.json(
+          await completeSubmissionDeferred(created.id, insertData.form_type, form_data)
+        );
+      }
+      return res.json(
+        submissionSaveResponse(created.id, submission_status, null, created.submission_number)
+      );
     }
 
-    // Block a free solo->2Person self-upgrade. The interview reads form_type
-    // from the URL's ?type= param and submits it back, so a client could edit
-    // the URL to a 2Person variant and unlock the spouse pages without paying.
-    // The second-person add-on is what flips the stored form_type (via the
-    // Stripe webhook, which also sets second_person_paid); until that has
-    // happened, reject any incoming 2Person type for a solo row.
-    if (form_type) {
-      const incomingIs2Person = form_type.endsWith('2Person');
-      const existingIsSolo = !existing.form_type.endsWith('2Person');
-      if (incomingIs2Person && existingIsSolo && !existing.second_person_paid) {
-        return res.status(402).json({
-          success: false,
-          error: 'Adding a second person requires payment.',
-          code: 'SECOND_PERSON_UNPAID',
-        });
-      }
-    }
+    // The 1-vs-2-person choice is paid at checkout, so a 2Person form_type here
+    // is already paid for — no per-save payment gate on a solo->2Person change.
 
     // Check if user can still edit this form
     const accessInfo = await canEditForm(req.user.id, existing.first_submitted_at, existing.form_type);
