@@ -84,9 +84,9 @@ const Checkout: React.FC = () => {
     }
   }, [searchParams]);
 
-  // Map first cart item's product ID + form type to its form URL (test bypass)
-  const getFormUrl = () => {
-    if (!firstItem) return '/';
+  // Resolve the first cart item's product ID + variant to the concrete form_type
+  // the interview and backend use (test bypass).
+  const getFormTarget = () => {
     const productId = String(firstItem.productId);
     const formType = firstItem.variationId === 2 ? '2person' : 'solo';
     const formTypeMap: Record<string, Record<string, string>> = {
@@ -97,12 +97,40 @@ const Checkout: React.FC = () => {
     };
     const productMap = formTypeMap[productId] || formTypeMap['614'];
     const mappedType = productMap[formType] || productMap.solo || 'powerOfAttorneyForm';
-    return `/poa-form?product=${productId}&type=${mappedType}`;
+    return { productId, mappedType };
   };
 
-  // Bypass checkout and go directly to form (test mode)
-  const handleTestBypass = () => {
-    navigate(getFormUrl());
+  // Bypass checkout and go directly to form (test mode).
+  //
+  // To mirror a real purchase, pre-create the blank "set" the Stripe webhook
+  // would have created (same shape POAForm saves), so it lands on the dashboard
+  // with its GP-###### number and the form opens that specific set. This needs a
+  // signed-in user to own the row; signed out (or if the create fails) we fall
+  // back to opening a fresh form with no pre-made set.
+  const handleTestBypass = async () => {
+    if (!firstItem) {
+      navigate('/');
+      return;
+    }
+    const { productId, mappedType } = getFormTarget();
+
+    if (isAuthenticated) {
+      try {
+        const response = await api.post<{ id: number }>('/submissions', {
+          form_data: {},
+          form_type: mappedType,
+          submission_status: 'inprogress',
+        });
+        if (response.success && response.data?.id) {
+          navigate(`/poa-form?product=${productId}&type=${mappedType}&submission=${response.data.id}`);
+          return;
+        }
+      } catch {
+        // fall through to the plain bypass below
+      }
+    }
+
+    navigate(`/poa-form?product=${productId}&type=${mappedType}`);
   };
 
   const handleCheckout = async () => {
