@@ -6,17 +6,24 @@ import { useCart } from '../context/CartContext';
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const { cart } = useCart();
 
   const [headerHeight, setHeaderHeight] = useState(0);
 
+  // Re-measure so the sticky spacer stays correct after the header changes
+  // height — login/logout swaps the nav, the cart badge appears, or the device
+  // rotates. Measuring once on mount left a stale gap/jump.
   useEffect(() => {
-    const header = document.getElementById('site-header');
-    if (header) {
-      setHeaderHeight(header.offsetHeight);
-    }
-  }, []);
+    const measure = () => {
+      const header = document.getElementById('site-header');
+      if (header) setHeaderHeight(header.offsetHeight);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [isAuthenticated, cart.itemCount]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -150,14 +157,27 @@ const Header: React.FC = () => {
                 </div>
               ) : (
                 <ul id="gpx_loggedin_menu">
-                  <li>
-                    <div className="d-flex align-items-center">
-                      <img src="/img/account.svg" alt="Account" />
-                      <Link to="#"><span className="d-none d-sm-inline">{user?.firstName || user?.email}</span></Link>
-                    </div>
-                    <ul>
+                  <li className={accountMenuOpen ? 'open' : ''}>
+                    {/* Click-toggle (not :hover) so it opens on touch; the old
+                        `<Link to="#">` did nothing on a phone and left a # in
+                        the URL. */}
+                    <button
+                      type="button"
+                      className="gpx_account_trigger d-flex align-items-center"
+                      aria-expanded={accountMenuOpen}
+                      aria-label="Account menu"
+                      onClick={() => setAccountMenuOpen((o) => !o)}
+                    >
+                      <img src="/img/account.svg" alt="" />
+                      <span className="d-none d-sm-inline">{user?.firstName || user?.email}</span>
+                    </button>
+                    <ul
+                      onClick={(e) => {
+                        if ((e.target as HTMLElement).closest('a, button')) setAccountMenuOpen(false);
+                      }}
+                    >
                       <li><Link to="/my-account">Dashboard</Link></li>
-                      <li><Link to="/my-account/my-estate-planning">My Plans</Link></li>
+                      <li><Link to="/my-account/my-estate-planning">Estate Plan</Link></li>
                       <li><Link to="/my-account/edit-account">Edit Profile</Link></li>
                       <li><Link to="/my-account/orders">View Orders</Link></li>
                       <li>
@@ -222,7 +242,26 @@ const Header: React.FC = () => {
               </li>
               </>
               )}
-              <li><Link to="/my-account" onClick={closeMobileMenu}>My Account</Link></li>
+              {isAuthenticated ? (
+                <>
+                  <li><Link to="/my-account" onClick={closeMobileMenu}>Dashboard</Link></li>
+                  <li><Link to="/my-account/my-estate-planning" onClick={closeMobileMenu}>Estate Plan</Link></li>
+                  <li><Link to="/my-account/business-planning" onClick={closeMobileMenu}>My Companies</Link></li>
+                  <li><Link to="/my-account/orders" onClick={closeMobileMenu}>View Orders</Link></li>
+                  <li><Link to="/my-account/edit-account" onClick={closeMobileMenu}>Edit Profile</Link></li>
+                  <li>
+                    <button
+                      onClick={() => { logout(); closeMobileMenu(); }}
+                      className="btn btn_geaux"
+                      style={{ width: '100%', marginTop: '10px' }}
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <li><Link to="/my-account" onClick={closeMobileMenu}>My Account</Link></li>
+              )}
             </ul>
           </div>
         </div>

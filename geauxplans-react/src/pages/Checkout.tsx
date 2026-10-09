@@ -201,7 +201,7 @@ const Checkout: React.FC = () => {
             style={{
               maxWidth: '600px',
               margin: '0 auto',
-              padding: '40px',
+              padding: 'clamp(20px, 5vw, 40px)',
             }}
           >
             <h1 style={{ textAlign: 'center', marginBottom: '10px' }}>Checkout</h1>
@@ -306,12 +306,13 @@ const Checkout: React.FC = () => {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'flex-start',
+                      gap: '12px',
                       paddingBottom: '20px',
                       borderBottom: '1px solid #eaeaea',
                       marginBottom: '20px',
                     }}
                   >
-                    <div>
+                    <div style={{ minWidth: 0 }}>
                       <h3 style={{ fontSize: '18px', marginBottom: '5px' }}>{item.name}</h3>
                       {productMeta?.description && (
                         <p style={{ color: '#707070', fontSize: '14px', margin: 0 }}>
@@ -334,7 +335,7 @@ const Checkout: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#004d71' }}>
+                    <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#004d71', whiteSpace: 'nowrap' }}>
                       ${item.price.toFixed(2)}{isSub ? '/mo' : ''}
                     </span>
                   </div>

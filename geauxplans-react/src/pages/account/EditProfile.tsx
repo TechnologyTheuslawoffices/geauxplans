@@ -221,6 +221,8 @@ const EditProfile: React.FC = () => {
           style={{
             padding: '15px 40px',
             cursor: 'pointer',
+            width: '100%',
+            maxWidth: '320px',
           }}
         >
           Save Changes

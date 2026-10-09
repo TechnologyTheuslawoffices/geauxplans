@@ -203,6 +203,10 @@
   margin-left: 2px;
 }
 
+.poa-progress-mobile-label {
+  display: none;
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .poa-progress-step .step-name {
@@ -246,6 +250,30 @@
 @media (max-width: 576px) {
   .poa-progress-step .step-name {
     display: none;
+  }
+
+  /* Was: 12-13 bare numbered circles wrapping onto 2-3 ragged rows with no
+     "which step am I on". Now: a text label names the current step, and the
+     circles sit in one horizontally-scrollable row. */
+  .poa-progress-mobile-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1a1acc;
+    margin-bottom: 10px;
+  }
+
+  .poa-progress-steps {
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    overflow-x: auto;
+    gap: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .poa-progress-step .step-number {
+    width: 36px;
+    height: 36px;
   }
 }
 
@@ -309,5 +337,34 @@
   .poa-form-container.ai-mode .card-footer {
     flex-direction: row;
     padding: 8px 12px;
+  }
+}
+
+/* Repeating-section fields (signer/entity/residuary) use -sm controls (~14px);
+   iOS zooms the viewport on focus of anything under 16px, jolting the layout.
+   Pin them to 16px on phones. */
+@media (max-width: 767px) {
+  .poa-form-container .form-control-sm,
+  .poa-form-container .form-select-sm {
+    font-size: 16px;
+  }
+}
+
+/* The intake-mode toggle (Guided Form / Talk to an Attorney) was squeezed and
+   wrapped on narrow phones; stack it full-width instead. */
+@media (max-width: 480px) {
+  .poa-mode-toggle {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .poa-mode-toggle .btn {
+    width: 100%;
+    border-radius: 6px !important;
+  }
+
+  .poa-mode-toggle .btn:not(:last-child) {
+    margin-bottom: 8px;
   }
 }

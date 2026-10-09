@@ -656,12 +656,18 @@ button:hover {
   margin-right: 8px;
 }
 
-/* Mobile Menu Toggle */
+/* Mobile Menu Toggle. Padded to a >=44px tap target (the icon alone was 32px). */
 #show_mobile_menu, .mobile_menu_toggle {
-  margin-right: 25px;
-  width: 32px;
+  margin-right: 17px;
   display: none;
   cursor: pointer;
+  padding: 8px;
+  line-height: 0;
+}
+
+#show_mobile_menu img, .mobile_menu_toggle img {
+  width: 28px;
+  height: 28px;
 }
 
 @media (max-width: 991px) {
@@ -704,7 +710,8 @@ button:hover {
   left: 0;
   right: 0;
   opacity: 1;
-  z-index: 1;
+  /* Above the sticky header (99) so the dim covers it, below the sidenav (1100). */
+  z-index: 1050;
 }
 
 .close_mobile_menu {
@@ -1069,6 +1076,8 @@ button:hover {
   font-size: 18px;
   margin-left: 10px;
   text-decoration: none !important;
+  display: inline-block;
+  padding: 6px;
 }
 
 .bottom_line_holder {
@@ -1092,6 +1101,8 @@ button:hover {
 .footer-menu li a {
   font-size: 14px;
   color: #000;
+  display: inline-block;
+  padding: 10px 0;
 }
 
 .footer-menu li a:hover {
@@ -1154,8 +1165,26 @@ button:hover {
   z-index: 100;
 }
 
-#gpx_loggedin_menu > li:hover ul {
+#gpx_loggedin_menu > li:hover ul,
+#gpx_loggedin_menu > li.open > ul {
   display: block;
+}
+
+/* Click trigger for the account dropdown (works on touch, unlike :hover). */
+.gpx_account_trigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  gap: 8px;
+  padding: 10px;
+  min-height: 44px;
+  color: inherit;
+  font: inherit;
+}
+
+.gpx_account_trigger img {
+  width: 24px;
+  height: 24px;
 }
 
 #gpx_loggedin_menu ul li {
@@ -1200,6 +1229,10 @@ button:hover {
     padding: 0 20px;
   }
 
+  .process-hero-text {
+    padding: 15px 20px 30px;
+  }
+
   .footer-contact {
     text-align: center;
   }
@@ -1209,80 +1242,18 @@ button:hover {
   }
 }
 
-/* Sidenav Mobile Menu */
+/* Sidenav Mobile Menu. Width capped so the tap-to-close strip survives on the
+   narrowest phones (a flat 300px left almost no overlay at <=320px). */
 .sidenav {
   position: fixed;
   top: 0;
   left: -300px;
-  width: 300px;
+  width: min(300px, 85vw);
   height: 100%;
   background: var(--white);
   z-index: 1100;
   transition: left 0.3s ease;
   overflow-y: auto;
-}
-
-.sidenav.open {
-  left: 0;
-}
-
-.sidenav-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
-}
-
-.close-btn img {
-  width: 20px;
-  height: 20px;
-}
-
-.mobile-nav {
-  padding: 20px;
-}
-
-.mobile-nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.mobile-nav li {
-  margin-bottom: 15px;
-}
-
-.mobile-nav a {
-  color: var(--text-color);
-  font-size: 18px;
-  display: block;
-}
-
-.mobile-nav a:hover {
-  color: var(--primary-color);
-}
-
-.site-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1050;
-  display: none;
-}
-
-.site-overlay.open {
-  display: block;
 }
 
 /* Form Styles */

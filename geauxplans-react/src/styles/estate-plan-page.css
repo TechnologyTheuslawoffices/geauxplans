@@ -426,6 +426,16 @@
   .benefits-images {
     grid-template-columns: 1fr;
   }
+
+  /* These cards kept their desktop 40-60px side padding on phones, leaving only
+     ~256px of content on a 360px screen. */
+  .ep-build-card {
+    padding: 30px 20px;
+  }
+
+  .contact-card {
+    padding: 40px 20px;
+  }
 }
 
 /* Purchase Modal */

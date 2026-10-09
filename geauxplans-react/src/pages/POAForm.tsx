@@ -6594,7 +6594,7 @@ const POAForm: React.FC = () => {
             {/* Intake mode toggle: Guided Form vs. AI Attorney. Both edit the
                 same formData; this only swaps which UI shows. */}
             <div className="d-flex justify-content-center mb-4">
-              <div className="btn-group" role="group" aria-label="Intake mode">
+              <div className="btn-group poa-mode-toggle" role="group" aria-label="Intake mode">
                 <button
                   type="button"
                   className={`btn ${mode === 'form' ? 'btn-primary' : 'btn-outline-primary'}`}
@@ -6615,7 +6615,10 @@ const POAForm: React.FC = () => {
             {/* Progress Bar (guided form only) */}
             {mode === 'form' && (
             <div className="poa-progress mb-4">
-              <div className="d-flex justify-content-between mb-2 flex-wrap">
+              <div className="poa-progress-mobile-label">
+                Step {currentPage + 1} of {pages.length} — {getPageDisplayName(pages[currentPage])}
+              </div>
+              <div className="d-flex justify-content-between mb-2 flex-wrap poa-progress-steps">
                 {pages.map((page, index) => (
                   <button
                     key={page}

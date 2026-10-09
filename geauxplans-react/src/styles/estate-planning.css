@@ -653,6 +653,20 @@
     flex-direction: column;
   }
 
+  .louisiana-content h2 {
+    font-size: 1.6rem;
+  }
+
+  /* The decorative offset bar is a desktop split-layout device; on phones it
+     just narrows the stacked image. */
+  .louisiana-image .blue-rectangle {
+    display: none;
+  }
+
+  .louisiana-image img {
+    max-width: 100%;
+  }
+
   .quiz-modal {
     margin: 10px;
   }

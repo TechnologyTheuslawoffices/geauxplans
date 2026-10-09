@@ -741,6 +741,16 @@
   .oa-hero-buttons .btn {
     border-radius: 25px;
   }
+
+  /* These headings kept their full desktop size on phones (~40px). */
+  .oa-hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .llc-info-content h2,
+  .agent-content h2 {
+    font-size: 1.8rem;
+  }
 }
 
 /* Tablet: three-column card rows are cramped at full width but leave dead
