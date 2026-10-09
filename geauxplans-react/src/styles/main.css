@@ -1886,6 +1886,40 @@ button:hover {
   }
 }
 
+/* Account sidebar toggle. Hidden on desktop, where the full sidebar always
+   shows. On phones the stacked sidebar (six links + a help card) pushed the
+   content panel far down the page, so it collapses behind this toggle and is
+   closed by default; the content then sits right under the toggle. */
+.account-menu-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .account-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 16px;
+    background-color: #004d71;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .account-sidebar-body {
+    display: none;
+    margin-top: 12px;
+  }
+
+  .account-sidebar-body.open {
+    display: block;
+  }
+}
+
 /* Two-up form rows (first/last name, etc.) used by Register and Edit Profile.
    Side by side on desktop; stack on narrow phones so fields aren't cramped. */
 .form-row-2col {

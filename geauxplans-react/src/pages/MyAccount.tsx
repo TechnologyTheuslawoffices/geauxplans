@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Dashboard from './account/Dashboard';
@@ -12,6 +12,10 @@ const MyAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  // The account menu collapses on mobile so the content panel isn't pushed far
+  // below a tall stacked sidebar. Closed by default; irrelevant on desktop,
+  // where the sidebar always shows and the toggle is hidden.
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -67,11 +71,31 @@ const MyAccount: React.FC = () => {
     <main>
       <section className="plans-section">
         <div className="container">
-          <h1 style={{ marginBottom: '40px' }}>My Account</h1>
+          <h1 style={{ marginBottom: '4px' }}>My Account</h1>
+          <p style={{ marginBottom: '36px', color: '#707070', fontSize: '14px' }}>
+            Signed in as <strong style={{ color: '#004d71' }}>{user.email}</strong>
+          </p>
 
           <div className="my-account-grid">
-            {/* Sidebar */}
-            <div>
+            {/* Sidebar — collapses behind a toggle on mobile so the content
+                panel isn't pushed far below a tall stacked menu. */}
+            <div className="account-sidebar">
+              <button
+                type="button"
+                className="account-menu-toggle"
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen((o) => !o)}
+              >
+                <span><i className="fas fa-bars" style={{ marginRight: '10px' }}></i>Account Menu</span>
+                <i className={`fas fa-chevron-${menuOpen ? 'up' : 'down'}`}></i>
+              </button>
+              <div
+                className={`account-sidebar-body ${menuOpen ? 'open' : ''}`}
+                onClick={(e) => {
+                  // Tapping a nav link closes the menu so the content shows.
+                  if ((e.target as HTMLElement).closest('a')) setMenuOpen(false);
+                }}
+              >
               <nav>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                   <li style={{ marginBottom: '10px' }}>
@@ -140,15 +164,13 @@ const MyAccount: React.FC = () => {
                   borderRadius: '8px',
                 }}
               >
-                <p style={{ fontSize: '14px', color: '#707070', marginBottom: '15px' }}>
-                  {user.email}
-                </p>
                 <p style={{ fontWeight: '600', marginBottom: '10px' }}>Need Help or Advice?</p>
                 <p style={{ fontSize: '14px', color: '#707070', marginBottom: 0 }}>
                   <strong>Call us:</strong><br />
                   +1 (855) 213-6300<br />
                   M-F, 8am-5pm CST
                 </p>
+              </div>
               </div>
             </div>
 
