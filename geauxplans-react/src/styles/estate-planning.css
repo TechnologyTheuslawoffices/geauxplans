@@ -656,4 +656,18 @@
   .quiz-modal {
     margin: 10px;
   }
+
+  /* The 30px header/body padding crowded the quiz on phones. Trim it and give
+     the header room to clear the close button. */
+  .quiz-modal-header {
+    padding: 28px 18px 0;
+  }
+
+  .quiz-modal-body {
+    padding: 16px 18px 24px;
+  }
+
+  .quiz-modal .ep-progress {
+    padding: 0 18px;
+  }
 }

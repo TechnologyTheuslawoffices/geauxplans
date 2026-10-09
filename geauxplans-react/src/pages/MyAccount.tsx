@@ -107,7 +107,7 @@ const MyAccount: React.FC = () => {
                   <li style={{ marginBottom: '10px' }}>
                     <Link to="/my-account/my-estate-planning" style={navLinkStyle('/my-account/my-estate-planning')}>
                       <i className="fas fa-file-alt" style={{ marginRight: '10px', width: '16px' }}></i>
-                      My Plans
+                      Estate Plan
                     </Link>
                   </li>
                   <li style={{ marginBottom: '10px' }}>

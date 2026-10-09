@@ -509,3 +509,38 @@
 .purchase-modal .btn-solid:hover {
   background: #141499;
 }
+
+/* Mobile: these modals were cramped — 30px body padding inside the overlay
+   gutter left little room, the panel was vertically centered so tall content
+   clipped, and headings crowded the close button. Give the overlay a thin
+   gutter, top-align the panel, trim the padding, and add head-room for the x. */
+@media (max-width: 600px) {
+  .modal-overlay {
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  .modal-content,
+  .business-flow-modal {
+    padding: 22px 18px 24px;
+    padding-top: 42px;
+    max-height: 95vh;
+    border-radius: 10px;
+  }
+
+  .modal-close {
+    top: 10px;
+    right: 12px;
+    font-size: 26px;
+    padding: 4px 8px;
+  }
+
+  .purchase-modal h2 {
+    font-size: 1.4rem;
+  }
+
+  .purchase-modal .btn-solid {
+    width: 100%;
+    padding: 14px 20px;
+  }
+}

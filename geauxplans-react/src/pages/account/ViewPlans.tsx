@@ -152,6 +152,9 @@ const ViewPlans: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
   const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
+  // Once the user already has plans, the "Start a New Plan" chooser is collapsed
+  // by default so the page isn't a long list of every product.
+  const [showNewPlanOptions, setShowNewPlanOptions] = useState(false);
   // Cache for full document data (fetched on demand)
   const [documentCache, setDocumentCache] = useState<Record<number, KnacklyDocument[]>>({});
 
@@ -871,44 +874,57 @@ const ViewPlans: React.FC = () => {
         <div className="mb-4 p-4" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
           <p className="text-muted mb-0">You haven't started any estate plans yet.</p>
           <Link to="/estate-planning" className="btn btn-primary mt-3">
-            Browse Estate Plans
+            Start a New Plan
           </Link>
         </div>
       )}
 
-      {/* Available Plans Section */}
-      {availableProducts.length > 0 && (
+      {/* Start a New Plan — only once they already have plans (the empty state
+          above offers it otherwise). Collapsed by default so the page isn't a
+          long list of every product; the chooser reveals on click. */}
+      {activePlans.length > 0 && availableProducts.length > 0 && (
         <>
           <hr />
-          <div>
-            <p><span className="gpx_highlight">Start a New Plan:</span></p>
-          </div>
+          <button
+            type="button"
+            className="btn btn-primary"
+            aria-expanded={showNewPlanOptions}
+            onClick={() => setShowNewPlanOptions((o) => !o)}
+          >
+            <i className="fas fa-plus me-2"></i>
+            Start a New Plan
+          </button>
 
-          {availableProducts.map((product, index) => (
-            <div key={`${product.formType}-${index}`} className="mb-2">
-              <button
-                className="plan_not_purchased"
-                onClick={() => {
-                  setSelectedProduct(product.formType);
-                  setNumPersons('1');
-                  setSubscribeLEP('1');
-                  setShowPurchaseModal(true);
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                {product.name}
-              </button>
-              <span className="ma_starting_at"> from ${product.price}</span>
-              <br />
-              <em style={{ color: '#666' }}>{product.shortDescription}</em>
+          {showNewPlanOptions && (
+            <div className="mt-3">
+              <p><span className="gpx_highlight">Choose a plan:</span></p>
+              {availableProducts.map((product, index) => (
+                <div key={`${product.formType}-${index}`} className="mb-2">
+                  <button
+                    className="plan_not_purchased"
+                    onClick={() => {
+                      setSelectedProduct(product.formType);
+                      setNumPersons('1');
+                      setSubscribeLEP('1');
+                      setShowPurchaseModal(true);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                  >
+                    {product.name}
+                  </button>
+                  <span className="ma_starting_at"> from ${product.price}</span>
+                  <br />
+                  <em style={{ color: '#666' }}>{product.shortDescription}</em>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </>
       )}
 
@@ -946,16 +962,6 @@ const ViewPlans: React.FC = () => {
         >
           <div
             className="modal-content purchase-modal"
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: '8px',
-              padding: '30px',
-              maxWidth: '500px',
-              width: '90%',
-              maxHeight: '90vh',
-              overflow: 'auto',
-              position: 'relative',
-            }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
