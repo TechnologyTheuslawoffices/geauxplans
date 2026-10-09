@@ -40,14 +40,20 @@ const BusinessPlanning: React.FC = () => {
             border: '1px solid #eaeaea',
           }}
         >
-          <i className="fas fa-building" style={{ fontSize: '48px', color: '#ccc', marginBottom: '20px', display: 'block' }}></i>
-          <h3 style={{ marginBottom: '10px' }}>No Business Entities Yet</h3>
-          <p style={{ color: '#707070', marginBottom: '20px' }}>
-            You haven't set up any business entities yet.
+          <i className="fas fa-building" style={{ fontSize: '48px', color: '#1a1acc', marginBottom: '20px', display: 'block' }}></i>
+          <h3 style={{ marginBottom: '10px' }}>Start your first business plan</h3>
+          <p style={{ color: '#707070', marginBottom: '25px' }}>
+            You don't have any companies yet. Form a Louisiana LLC in minutes, or add an
+            operating agreement to a company you already run.
           </p>
-          <Link to="/contact" className="btn btn-primary">
-            Contact Us to Get Started
-          </Link>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/start-business-llc" className="btn btn-primary">
+              Start a Business Plan
+            </Link>
+            <Link to="/operating-agreement-llc" className="btn btn-outline-primary">
+              Get an Operating Agreement
+            </Link>
+          </div>
         </div>
       )}
 
