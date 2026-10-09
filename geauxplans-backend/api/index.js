@@ -104,6 +104,11 @@ const couponRoutes = require('../src/routes/coupons');
 app.use('/api/coupons', couponRoutes);
 console.log('Loaded coupon routes');
 
+// Referral codes (GeauxCounsel member referrals). Supabase-only.
+const referralRoutes = require('../src/routes/referrals');
+app.use('/api/referrals', referralRoutes);
+console.log('Loaded referral routes');
+
 // AI Attorney conversational intake. Supabase auth + Anthropic only, no SQLite,
 // so it loads in both entry points.
 const aiAttorneyRoutes = require('../src/routes/aiAttorney');

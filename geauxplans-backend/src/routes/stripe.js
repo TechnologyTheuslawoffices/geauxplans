@@ -9,6 +9,7 @@ const { supabase } = require('../config/supabase');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 const { keapService } = require('../services/keap');
 const { validateCoupon, recordRedemption } = require('../services/coupons');
+const { validateReferral, recordReferral } = require('../services/referrals');
 const { SECOND_PERSON_UPGRADE } = require('../config/constants');
 const upsell = require('../services/upsell');
 
@@ -202,20 +203,31 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
         : { productId: r.productId, formType: r.formType }))
     );
 
-    // Re-validate the coupon here rather than trusting anything the cart sent.
-    // /api/coupons/validate is only a preview for display; this is the request
-    // that determines the amount charged, so the discount is recomputed from
-    // the database against a subtotal we derived ourselves from PRODUCTS.
+    // Re-validate the discount here rather than trusting anything the cart sent.
+    // The /validate endpoints are only a preview for display; this is the
+    // request that determines the amount charged, so the discount is recomputed
+    // from the database against a subtotal we derive ourselves from PRODUCTS.
+    //
+    // A referral code and a coupon are mutually exclusive; if both arrive the
+    // referral wins (it also earns the referring member a commission). Failing
+    // the checkout on an invalid code — rather than dropping it — avoids
+    // charging more than the page promised.
+    const subtotalCents = resolved.reduce((sum, r) => sum + r.unitAmount, 0);
     let appliedCoupon = null;
-    if (req.body.couponCode) {
-      const subtotalCents = resolved.reduce((sum, r) => sum + r.unitAmount, 0);
+    let appliedReferral = null;
+
+    if (req.body.referralCode) {
+      const result = await validateReferral(req.body.referralCode, subtotalCents);
+      if (result.valid) {
+        appliedReferral = result;
+      } else {
+        return res.status(400).json({ success: false, error: result.message });
+      }
+    } else if (req.body.couponCode) {
       const result = await validateCoupon(req.body.couponCode, subtotalCents);
       if (result.valid) {
         appliedCoupon = result;
       } else {
-        // Fail the checkout instead of quietly dropping the discount. The
-        // customer is looking at a total that includes it; charging more than
-        // the page promised is worse than making them try again.
         return res.status(400).json({ success: false, error: result.message });
       }
     }
@@ -238,6 +250,12 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
         // succeeds, rather than counting a code the customer never used.
         couponCode: appliedCoupon?.code || '',
         couponDiscountCents: appliedCoupon ? String(appliedCoupon.discountCents) : '',
+        // Same idea for a referral: recorded post-payment. commissionPercent is
+        // carried so the webhook can compute the member's credit from the
+        // amount actually paid.
+        referralCode: appliedReferral?.code || '',
+        referralCommissionPercent: appliedReferral ? String(appliedReferral.commissionPercent) : '',
+        referralDiscountCents: appliedReferral ? String(appliedReferral.refereeDiscountCents) : '',
       },
       customer_email: req.user?.email || undefined,
     };
@@ -265,6 +283,15 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
           ? { percent_off: appliedCoupon.amount, duration: 'once', name: appliedCoupon.code.toUpperCase() }
           : { amount_off: appliedCoupon.discountCents, currency: 'usd', duration: 'once', name: appliedCoupon.code.toUpperCase() }
       );
+      sessionParams.discounts = [{ coupon: stripeCoupon.id }];
+    } else if (appliedReferral && appliedReferral.refereeDiscountCents > 0) {
+      // The client's referral discount, shown on the Stripe page and receipt.
+      // `duration: 'once'` keeps it off any recurring Legal Edge Plan line.
+      const stripeCoupon = await stripe.coupons.create({
+        percent_off: appliedReferral.refereeDiscountPercent,
+        duration: 'once',
+        name: `REF ${appliedReferral.code.toUpperCase()}`,
+      });
       sessionParams.discounts = [{ coupon: stripeCoupon.id }];
     }
 
@@ -430,6 +457,21 @@ async function handleSuccessfulPayment(session) {
       userId,
       email: session.customer_email || session.customer_details?.email,
       discountCents: parseInt(session.metadata.couponDiscountCents, 10) || 0,
+    });
+  }
+
+  // Attribute the referral now that money has moved. The member's commission is
+  // computed in recordReferral from amount_total (what the client actually
+  // paid) and the carried commission percent. Idempotent on the session id.
+  if (session.metadata.referralCode) {
+    await recordReferral({
+      code: session.metadata.referralCode,
+      stripeSessionId: session.id,
+      refereeUserId: userId,
+      refereeEmail: session.customer_email || session.customer_details?.email,
+      amountPaidCents: session.amount_total ?? 0,
+      refereeDiscountCents: parseInt(session.metadata.referralDiscountCents, 10) || 0,
+      commissionPercent: parseFloat(session.metadata.referralCommissionPercent) || 0,
     });
   }
 

@@ -30,6 +30,8 @@ interface CartContextType {
   clearCart: () => Promise<boolean>;
   applyCoupon: (code: string) => Promise<boolean>;
   removeCoupon: () => Promise<boolean>;
+  applyReferral: (code: string) => Promise<boolean>;
+  removeReferral: () => Promise<boolean>;
   refreshCart: () => Promise<void>;
   clearError: () => void;
 }
@@ -253,6 +255,52 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   }, []);
 
+  const applyReferral = useCallback(async (code: string): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await cartService.applyReferral(code);
+
+      if (response.success && response.data) {
+        setCart(response.data);
+        setIsLoading(false);
+        return true;
+      } else {
+        setError(response.error || 'Invalid referral code');
+        setIsLoading(false);
+        return false;
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
+      setIsLoading(false);
+      return false;
+    }
+  }, []);
+
+  const removeReferral = useCallback(async (): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await cartService.removeReferral();
+
+      if (response.success && response.data) {
+        setCart(response.data);
+        setIsLoading(false);
+        return true;
+      } else {
+        setError(response.error || 'Failed to remove referral code');
+        setIsLoading(false);
+        return false;
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
+      setIsLoading(false);
+      return false;
+    }
+  }, []);
+
   // Add custom item to cart (for LLC wizard and custom products).
   // Delegates to the service so the item is written to localStorage like every
   // other line; keeping it in React state alone meant it did not survive a
@@ -301,6 +349,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     clearCart: clearCartItems,
     applyCoupon,
     removeCoupon,
+    applyReferral,
+    removeReferral,
     refreshCart,
     clearError,
   };

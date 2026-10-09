@@ -184,6 +184,8 @@ export interface Cart {
    * this changes the number on screen and nothing that is charged.
    */
   coupon?: AppliedCoupon;
+  /** A GeauxCounsel referral code; mutually exclusive with `coupon`. */
+  referral?: AppliedReferral;
   discount?: number;
 }
 
@@ -201,6 +203,21 @@ export interface CouponValidationResponse {
   code?: string;
   discountType?: 'percent' | 'fixed_cart';
   amount?: number;
+}
+
+export interface AppliedReferral {
+  code: string;
+  refereeDiscountPercent: number;
+  commissionPercent: number;
+}
+
+export interface ReferralValidationResponse {
+  valid: boolean;
+  message: string;
+  refereeDiscountCents: number;
+  code?: string;
+  refereeDiscountPercent?: number;
+  commissionPercent?: number;
 }
 
 export interface CartItem {

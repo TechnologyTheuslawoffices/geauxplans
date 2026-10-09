@@ -20,6 +20,8 @@ import type {
   ApiResponse,
   AppliedCoupon,
   CouponValidationResponse,
+  AppliedReferral,
+  ReferralValidationResponse,
 } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -98,7 +100,7 @@ function loadCart(): Cart {
     if (!raw) return { ...emptyCart, items: [] };
     const parsed = JSON.parse(raw) as Cart;
     if (!parsed || !Array.isArray(parsed.items)) return { ...emptyCart, items: [] };
-    return recalc(parsed.items, parsed.coupon);
+    return recalc(parsed.items, parsed.coupon, parsed.referral);
   } catch {
     return { ...emptyCart, items: [] };
   }
@@ -128,20 +130,39 @@ function saveCart(cart: Cart): void {
  * its own discount when it creates the Stripe session, so a tampered
  * localStorage cart changes the number on screen and nothing that is charged.
  */
-function recalc(items: CartItem[], coupon?: AppliedCoupon): Cart {
+function recalc(items: CartItem[], coupon?: AppliedCoupon, referral?: AppliedReferral): Cart {
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const tax = 0;
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
 
-  if (!coupon || items.length === 0) {
+  if (items.length === 0 || (!coupon && !referral)) {
     return { items, subtotal, tax, total: subtotal + tax, itemCount };
   }
 
   const subtotalCents = Math.round(subtotal * 100);
+
+  // A referral and a coupon are mutually exclusive; if somehow both are set the
+  // referral wins (it also earns the referring member a commission). The
+  // backend enforces the same precedence when it prices the Stripe session.
+  if (referral) {
+    const rawCents = Math.round((subtotalCents * referral.refereeDiscountPercent) / 100);
+    const discountCents = Math.min(rawCents, subtotalCents);
+    const discount = discountCents / 100;
+    return {
+      items,
+      subtotal,
+      tax,
+      total: Math.max(0, subtotal - discount) + tax,
+      itemCount,
+      referral,
+      discount,
+    };
+  }
+
   const rawCents =
-    coupon.discountType === 'percent'
-      ? Math.round((subtotalCents * coupon.amount) / 100)
-      : Math.round(coupon.amount * 100);
+    coupon!.discountType === 'percent'
+      ? Math.round((subtotalCents * coupon!.amount) / 100)
+      : Math.round(coupon!.amount * 100);
   const discountCents = Math.min(rawCents, subtotalCents);
   const discount = discountCents / 100;
 
@@ -151,7 +172,7 @@ function recalc(items: CartItem[], coupon?: AppliedCoupon): Cart {
     tax,
     total: Math.max(0, subtotal - discount) + tax,
     itemCount,
-    coupon: { ...coupon, discountCents },
+    coupon: { ...coupon!, discountCents },
     discount,
   };
 }
@@ -295,7 +316,7 @@ export async function addToCart(
     items.push(newItem);
   }
 
-  return ok(setCart(recalc(items, _cart.coupon)));
+  return ok(setCart(recalc(items, _cart.coupon, _cart.referral)));
 }
 
 /**
@@ -339,7 +360,7 @@ export function addCustomItem(item: {
     });
   }
 
-  return setCart(recalc(items, _cart.coupon));
+  return setCart(recalc(items, _cart.coupon, _cart.referral));
 }
 
 /**
@@ -352,7 +373,7 @@ export async function updateCartItem(
   const items = _cart.items
     .map(i => (i.id === itemId ? { ...i, quantity } : i))
     .filter(i => i.quantity > 0);
-  return ok(setCart(recalc(items, _cart.coupon)));
+  return ok(setCart(recalc(items, _cart.coupon, _cart.referral)));
 }
 
 /**
@@ -360,7 +381,7 @@ export async function updateCartItem(
  */
 export async function removeFromCart(itemId: string): Promise<ApiResponse<Cart>> {
   const items = _cart.items.filter(i => i.id !== itemId);
-  return ok(setCart(recalc(items, _cart.coupon)));
+  return ok(setCart(recalc(items, _cart.coupon, _cart.referral)));
 }
 
 /**
@@ -419,6 +440,56 @@ export async function applyCoupon(code: string): Promise<ApiResponse<Cart>> {
  */
 export async function removeCoupon(): Promise<ApiResponse<Cart>> {
   return ok(setCart(recalc(_cart.items, undefined)));
+}
+
+/**
+ * Apply a GeauxCounsel referral code.
+ *
+ * Validated against the backend (which owns the referral_codes table). On
+ * success the referee sees the discount; the backend re-validates it and records
+ * the referring member's commission when the Stripe session completes. A
+ * referral and a coupon are mutually exclusive, so applying one clears the
+ * other. Display-only, like the coupon — the charge is decided server-side.
+ */
+export async function applyReferral(code: string): Promise<ApiResponse<Cart>> {
+  const trimmed = code.trim();
+  if (!trimmed) {
+    return { success: false, error: 'Enter a referral code.' };
+  }
+  if (_cart.items.length === 0) {
+    return { success: false, error: 'Add something to your cart first.' };
+  }
+
+  const subtotalCents = Math.round(_cart.subtotal * 100);
+  const response = await api.post<ReferralValidationResponse>('/referrals/validate', {
+    code: trimmed,
+    subtotalCents,
+  });
+
+  if (!response.success || !response.data) {
+    return { success: false, error: response.error || 'Could not check that referral code. Try again.' };
+  }
+
+  const result = response.data;
+  if (!result.valid) {
+    return { success: false, error: result.message };
+  }
+
+  const applied: AppliedReferral = {
+    code: result.code || trimmed.toLowerCase(),
+    refereeDiscountPercent: result.refereeDiscountPercent || 0,
+    commissionPercent: result.commissionPercent || 0,
+  };
+
+  // recalc with no coupon clears any applied coupon (mutually exclusive).
+  return ok(setCart(recalc(_cart.items, undefined, applied)));
+}
+
+/**
+ * Remove the applied referral code.
+ */
+export async function removeReferral(): Promise<ApiResponse<Cart>> {
+  return ok(setCart(recalc(_cart.items, undefined, undefined)));
 }
 
 /**
@@ -543,6 +614,8 @@ const cartService = {
   clearCart,
   applyCoupon,
   removeCoupon,
+  applyReferral,
+  removeReferral,
   calculateTotals,
   setServerSyncEnabled,
   loadServerCart,

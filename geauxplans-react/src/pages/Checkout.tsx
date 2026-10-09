@@ -29,12 +29,14 @@ const Checkout: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const { cart, addEstatePlan } = useCart();
+  const { cart, addEstatePlan, applyReferral, removeReferral } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [testMode, setTestMode] = useState(false);
   const [keySequence, setKeySequence] = useState('');
+  const [refInput, setRefInput] = useState('');
   const addAttempted = useRef(false);
+  const refApplied = useRef(false);
 
   const returnUrl = '/checkout';
   const hasItems = cart.items.length > 0;
@@ -59,6 +61,16 @@ const Checkout: React.FC = () => {
       navigate('/shop');
     }
   }, [hasItems, hasValidProduct, productParam, addEstatePlan, navigate]);
+
+  // Auto-apply a referral code from the URL (?ref=CODE) — the link an attorney
+  // shares with a client. Waits until the cart has items, runs once.
+  useEffect(() => {
+    if (refApplied.current) return;
+    const ref = searchParams.get('ref');
+    if (!ref || cart.items.length === 0) return;
+    refApplied.current = true;
+    applyReferral(ref);
+  }, [searchParams, cart.items.length, applyReferral]);
 
   // Easter egg: Listen for key sequence "geaux" to enable test mode
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
@@ -160,7 +172,7 @@ const Checkout: React.FC = () => {
       // localStorage cart cannot buy anything cheaply.
       const response = await api.post<{ sessionId: string; url: string }>(
         '/stripe/create-checkout-session',
-        { items, couponCode: cart.coupon?.code }
+        { items, couponCode: cart.coupon?.code, referralCode: cart.referral?.code }
       );
 
       if (response.success && response.data?.url) {
@@ -344,7 +356,7 @@ const Checkout: React.FC = () => {
 
               {/* Shown so the total does not silently differ from the sum of
                   the lines above it. */}
-              {cart.coupon && cart.discount ? (
+              {cart.discount && (cart.coupon || cart.referral) ? (
                 <div
                   style={{
                     display: 'flex',
@@ -354,7 +366,11 @@ const Checkout: React.FC = () => {
                     marginBottom: '12px',
                   }}
                 >
-                  <span>Discount ({cart.coupon.code.toUpperCase()})</span>
+                  <span>
+                    {cart.referral
+                      ? `Referral (${cart.referral.code.toUpperCase()})`
+                      : `Discount (${cart.coupon!.code.toUpperCase()})`}
+                  </span>
                   <span>&minus;${cart.discount.toFixed(2)}</span>
                 </div>
               ) : null}
@@ -370,6 +386,52 @@ const Checkout: React.FC = () => {
                 <span>Total</span>
                 <span style={{ color: '#004d71' }}>${cart.total.toFixed(2)}</span>
               </div>
+            </div>
+
+            {/* Referral code — a GeauxCounsel member's code gives the client a
+                discount and credits the member. Auto-filled from a ?ref= link. */}
+            <div style={{ marginBottom: '20px' }}>
+              {cart.referral ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '12px',
+                    fontSize: '14px',
+                    color: '#1f7a3f',
+                  }}
+                >
+                  <span>
+                    Referral <strong>{cart.referral.code.toUpperCase()}</strong> applied — {cart.referral.refereeDiscountPercent}% off
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeReferral()}
+                    style={{ background: 'none', border: 'none', color: '#004d71', textDecoration: 'underline', cursor: 'pointer', fontSize: '13px' }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={refInput}
+                    onChange={(e) => setRefInput(e.target.value)}
+                    placeholder="Referral code (optional)"
+                    style={{ flex: 1, minWidth: 0, padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => { if (refInput.trim()) applyReferral(refInput.trim()); }}
+                    className="btn btn-outline-primary"
+                    style={{ padding: '10px 16px', whiteSpace: 'nowrap' }}
+                  >
+                    Apply
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Checkout Button or Login Prompt */}
