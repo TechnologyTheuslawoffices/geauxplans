@@ -1857,38 +1857,44 @@ button:hover {
   }
 }
 
-/* Account sidebar toggle. Hidden on desktop, where the full sidebar always
-   shows. On phones the stacked sidebar (six links + a help card) pushed the
-   content panel far down the page, so it collapses behind this toggle and is
-   closed by default; the content then sits right under the toggle. */
-.account-menu-toggle {
-  display: none;
+/* My Account accordion (mobile only). Each section opens under its own button
+   so its content sits right there instead of far below a tall stacked menu. */
+.account-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-@media (max-width: 768px) {
-  .account-menu-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 14px 16px;
-    background-color: #004d71;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-  }
+.account-acc-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #212529;
+  cursor: pointer;
+  text-align: left;
+}
 
-  .account-sidebar-body {
-    display: none;
-    margin-top: 12px;
-  }
+.account-acc-header.open {
+  background: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
 
-  .account-sidebar-body.open {
-    display: block;
-  }
+.account-acc-body {
+  border: 1px solid var(--primary-color);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 18px 16px;
 }
 
 /* Two-up form rows (first/last name, etc.) used by Register and Edit Profile.

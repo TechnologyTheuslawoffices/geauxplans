@@ -8,14 +8,33 @@ import Orders from './account/Orders';
 import EditProfile from './account/EditProfile';
 import ScheduleAppointment from './account/ScheduleAppointment';
 
+// The account sections. On desktop these are sidebar links to routed sub-pages;
+// on mobile each one is an accordion whose body renders the section inline, so a
+// tap opens that content directly under its own button instead of pushing it
+// far down the page beneath a tall stacked menu.
+interface AccountSection {
+  key: string;
+  label: string;
+  icon: string;
+  path: string;
+  element: React.ReactNode;
+}
+
 const MyAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  // The account menu collapses on mobile so the content panel isn't pushed far
-  // below a tall stacked sidebar. Closed by default; irrelevant on desktop,
-  // where the sidebar always shows and the toggle is hidden.
-  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Accordion on phones, sidebar + routed panel on desktop.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -36,10 +55,27 @@ const MyAccount: React.FC = () => {
     return location.pathname.startsWith(path);
   };
 
+  const sections: AccountSection[] = [
+    { key: 'dashboard', label: 'Dashboard', icon: 'fa-tachometer-alt', path: '/my-account', element: <Dashboard /> },
+    { key: 'estate', label: 'Estate Plan', icon: 'fa-file-alt', path: '/my-account/my-estate-planning', element: <ViewPlans /> },
+    { key: 'companies', label: 'My Companies', icon: 'fa-building', path: '/my-account/business-planning', element: <BusinessPlanning /> },
+    { key: 'meeting', label: 'Schedule Meeting', icon: 'fa-calendar-alt', path: '/my-account/interview', element: <ScheduleAppointment /> },
+    { key: 'orders', label: 'View Orders', icon: 'fa-shopping-bag', path: '/my-account/orders', element: <Orders /> },
+    { key: 'profile', label: 'Edit Profile', icon: 'fa-user-edit', path: '/my-account/edit-account', element: <EditProfile /> },
+  ];
+
+  // On mobile, open the section matching the current URL (so a deep link opens
+  // the right panel); otherwise the dashboard. The array is reversed so a more
+  // specific path (e.g. /orders) is matched before the catch-all dashboard.
+  const [openKey, setOpenKey] = useState<string>(() => {
+    const match = [...sections].reverse().find((s) => isActive(s.path));
+    return match ? match.key : 'dashboard';
+  });
+
   const navLinkStyle = (path: string): React.CSSProperties => ({
     display: 'block',
     padding: '10px 15px',
-    backgroundColor: isActive(path) ? '#004d71' : 'transparent',
+    backgroundColor: isActive(path) ? '#1a1acc' : 'transparent',
     color: isActive(path) ? '#fff' : '#707070',
     borderRadius: '4px',
     border: isActive(path) ? 'none' : '1px solid #eaeaea',
@@ -67,111 +103,119 @@ const MyAccount: React.FC = () => {
     return null; // Will redirect via useEffect
   }
 
+  const header = (
+    <>
+      <h1 style={{ marginBottom: '4px' }}>My Account</h1>
+      <p style={{ marginBottom: '28px', color: '#707070', fontSize: '14px' }}>
+        Signed in as <strong style={{ color: '#1a1acc' }}>{user.email}</strong>
+      </p>
+    </>
+  );
+
+  const helpCard = (
+    <div
+      style={{
+        marginTop: '20px',
+        padding: '20px',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '8px',
+      }}
+    >
+      <p style={{ fontWeight: '600', marginBottom: '10px' }}>Need Help or Advice?</p>
+      <p style={{ fontSize: '14px', color: '#707070', marginBottom: 0 }}>
+        <strong>Call us:</strong><br />
+        +1 (855) 213-6300<br />
+        M-F, 8am-5pm CST
+      </p>
+    </div>
+  );
+
+  const logoutButton = (fullWidth: boolean) => (
+    <button
+      onClick={handleLogout}
+      className={fullWidth ? 'btn btn_geaux' : undefined}
+      style={
+        fullWidth
+          ? { width: '100%', marginTop: '16px' }
+          : {
+              display: 'block',
+              width: '100%',
+              padding: '10px 15px',
+              color: '#707070',
+              border: '1px solid #eaeaea',
+              borderRadius: '4px',
+              backgroundColor: 'transparent',
+              cursor: 'pointer',
+              textAlign: 'left',
+            }
+      }
+    >
+      <i className="fas fa-sign-out-alt" style={{ marginRight: '10px', width: '16px' }}></i>
+      Logout
+    </button>
+  );
+
+  // ---- Mobile: each section is its own accordion ----
+  if (isMobile) {
+    return (
+      <main>
+        <section className="plans-section">
+          <div className="container">
+            {header}
+            <div className="account-accordion">
+              {sections.map((s) => {
+                const open = openKey === s.key;
+                return (
+                  <div key={s.key} className="account-acc-item">
+                    <button
+                      type="button"
+                      className={`account-acc-header ${open ? 'open' : ''}`}
+                      aria-expanded={open}
+                      onClick={() => setOpenKey(open ? '' : s.key)}
+                    >
+                      <span>
+                        <i className={`fas ${s.icon}`} style={{ marginRight: '10px', width: '16px' }}></i>
+                        {s.label}
+                      </span>
+                      <i className={`fas fa-chevron-${open ? 'up' : 'down'}`}></i>
+                    </button>
+                    {open && <div className="account-acc-body">{s.element}</div>}
+                  </div>
+                );
+              })}
+            </div>
+
+            {logoutButton(true)}
+            {helpCard}
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  // ---- Desktop: sidebar + routed content ----
   return (
     <main>
       <section className="plans-section">
         <div className="container">
-          <h1 style={{ marginBottom: '4px' }}>My Account</h1>
-          <p style={{ marginBottom: '36px', color: '#707070', fontSize: '14px' }}>
-            Signed in as <strong style={{ color: '#004d71' }}>{user.email}</strong>
-          </p>
+          {header}
 
           <div className="my-account-grid">
-            {/* Sidebar — collapses behind a toggle on mobile so the content
-                panel isn't pushed far below a tall stacked menu. */}
-            <div className="account-sidebar">
-              <button
-                type="button"
-                className="account-menu-toggle"
-                aria-expanded={menuOpen}
-                onClick={() => setMenuOpen((o) => !o)}
-              >
-                <span><i className="fas fa-bars" style={{ marginRight: '10px' }}></i>Account Menu</span>
-                <i className={`fas fa-chevron-${menuOpen ? 'up' : 'down'}`}></i>
-              </button>
-              <div
-                className={`account-sidebar-body ${menuOpen ? 'open' : ''}`}
-                onClick={(e) => {
-                  // Tapping a nav link closes the menu so the content shows.
-                  if ((e.target as HTMLElement).closest('a')) setMenuOpen(false);
-                }}
-              >
+            <div>
               <nav>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  <li style={{ marginBottom: '10px' }}>
-                    <Link to="/my-account" style={navLinkStyle('/my-account')}>
-                      <i className="fas fa-tachometer-alt" style={{ marginRight: '10px', width: '16px' }}></i>
-                      Dashboard
-                    </Link>
-                  </li>
-                  <li style={{ marginBottom: '10px' }}>
-                    <Link to="/my-account/my-estate-planning" style={navLinkStyle('/my-account/my-estate-planning')}>
-                      <i className="fas fa-file-alt" style={{ marginRight: '10px', width: '16px' }}></i>
-                      Estate Plan
-                    </Link>
-                  </li>
-                  <li style={{ marginBottom: '10px' }}>
-                    <Link to="/my-account/business-planning" style={navLinkStyle('/my-account/business-planning')}>
-                      <i className="fas fa-building" style={{ marginRight: '10px', width: '16px' }}></i>
-                      My Companies
-                    </Link>
-                  </li>
-                  <li style={{ marginBottom: '10px' }}>
-                    <Link to="/my-account/interview" style={navLinkStyle('/my-account/interview')}>
-                      <i className="fas fa-calendar-alt" style={{ marginRight: '10px', width: '16px' }}></i>
-                      Schedule Meeting
-                    </Link>
-                  </li>
-                  <li style={{ marginBottom: '10px' }}>
-                    <Link to="/my-account/orders" style={navLinkStyle('/my-account/orders')}>
-                      <i className="fas fa-shopping-bag" style={{ marginRight: '10px', width: '16px' }}></i>
-                      View Orders
-                    </Link>
-                  </li>
-                  <li style={{ marginBottom: '10px' }}>
-                    <Link to="/my-account/edit-account" style={navLinkStyle('/my-account/edit-account')}>
-                      <i className="fas fa-user-edit" style={{ marginRight: '10px', width: '16px' }}></i>
-                      Edit Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      style={{
-                        display: 'block',
-                        width: '100%',
-                        padding: '10px 15px',
-                        color: '#707070',
-                        border: '1px solid #eaeaea',
-                        borderRadius: '4px',
-                        backgroundColor: 'transparent',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                      }}
-                    >
-                      <i className="fas fa-sign-out-alt" style={{ marginRight: '10px', width: '16px' }}></i>
-                      Logout
-                    </button>
-                  </li>
+                  {sections.map((s) => (
+                    <li key={s.key} style={{ marginBottom: '10px' }}>
+                      <Link to={s.path} style={navLinkStyle(s.path)}>
+                        <i className={`fas ${s.icon}`} style={{ marginRight: '10px', width: '16px' }}></i>
+                        {s.label}
+                      </Link>
+                    </li>
+                  ))}
+                  <li>{logoutButton(false)}</li>
                 </ul>
               </nav>
-
-              <div
-                style={{
-                  marginTop: '30px',
-                  padding: '20px',
-                  backgroundColor: '#f5f5f5',
-                  borderRadius: '8px',
-                }}
-              >
-                <p style={{ fontWeight: '600', marginBottom: '10px' }}>Need Help or Advice?</p>
-                <p style={{ fontSize: '14px', color: '#707070', marginBottom: 0 }}>
-                  <strong>Call us:</strong><br />
-                  +1 (855) 213-6300<br />
-                  M-F, 8am-5pm CST
-                </p>
-              </div>
-              </div>
+              {helpCard}
             </div>
 
             {/* Main Content */}
