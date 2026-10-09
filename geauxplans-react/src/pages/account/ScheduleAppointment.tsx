@@ -18,14 +18,27 @@ const ONCEHUB_SRC = 'https://cdn.oncehub.com/mergedjs/so.js';
 
 const ScheduleAppointment: React.FC = () => {
   useEffect(() => {
-    // Appended once and left in place: OnceHub's script scans for its target
-    // div on load, and re-adding the tag on every visit stacks duplicate
-    // widgets rather than refreshing the one that is already there.
-    if (document.querySelector(`script[src="${ONCEHUB_SRC}"]`)) return;
+    // OnceHub's script scans the DOM for its target div only when it loads. This
+    // component now mounts on demand — expanded inside the account accordion on
+    // mobile, or reached by client-side navigation on desktop — i.e. after the
+    // script's one scan has already run and found nothing, so the freshly
+    // mounted div stays empty (the "calendar doesn't show" bug).
+    //
+    // Re-inject the script on every mount to force a fresh scan of the div that
+    // now exists. There is only one OnceHub div in the app and the previous one
+    // unmounts with this component, so this refreshes rather than stacks. The
+    // tag is removed on unmount so the next mount re-runs the scan.
+    const existing = document.querySelector(`script[src="${ONCEHUB_SRC}"]`);
+    if (existing) existing.remove();
+
     const script = document.createElement('script');
     script.src = ONCEHUB_SRC;
     script.async = true;
     document.body.appendChild(script);
+
+    return () => {
+      script.remove();
+    };
   }, []);
 
   return (
