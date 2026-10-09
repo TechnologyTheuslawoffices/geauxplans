@@ -206,11 +206,6 @@ const PowerOfAttorneyPlan: React.FC = () => {
             <button className="modal-close" onClick={() => setShowPurchaseModal(false)}>&times;</button>
 
             <div className="text-center mb-4">
-              <img
-                src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
-                alt="Plan Builder"
-                style={{ width: '48px', marginBottom: '20px' }}
-              />
               <h2 style={{ color: '#1a1acc' }}>Power of Attorney Plan</h2>
               <p className="text-muted fst-italic">
                 Create durable powers of attorney and other important documents for your college student, an aging parent, or any other person you need to assist if something happens.

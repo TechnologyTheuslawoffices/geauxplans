@@ -35,11 +35,6 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ product, onClose }) => {
         <button className="modal-close" onClick={onClose}>&times;</button>
 
         <div className="text-center mb-4">
-          <img
-            src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
-            alt="Plan Builder"
-            style={{ width: '48px', marginBottom: '20px' }}
-          />
           <h2 style={{ color: '#1a1acc' }}>{product.name}</h2>
           <p className="text-muted fst-italic">{product.description}</p>
           <p className="mb-4">Average time to build a plan: <strong style={{ color: '#1a1acc' }}>20 minutes</strong></p>

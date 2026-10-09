@@ -276,11 +276,6 @@ const TrustBasedEstatePlan: React.FC = () => {
             <button className="modal-close" onClick={() => setShowPurchaseModal(false)}>&times;</button>
 
             <div className="text-center mb-4">
-              <img
-                src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
-                alt="Plan Builder"
-                style={{ width: '48px', marginBottom: '20px' }}
-              />
               <h2 style={{ color: '#1a1acc' }}>Trust-Based Estate Plan</h2>
               <p className="text-muted fst-italic">
                 The Trust-Based Estate Plan includes a Revocable Living Trust, a Pourover Last Will and Testament, Financial Power of Attorney, Medical Power of Attorney, as well as an Advanced Healthcare Directive (a/k/a "Living Will") for you (and your spouse if married).

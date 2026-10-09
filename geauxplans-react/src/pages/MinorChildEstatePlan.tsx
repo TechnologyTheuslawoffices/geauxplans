@@ -219,11 +219,6 @@ const MinorChildEstatePlan: React.FC = () => {
             <button className="modal-close" onClick={() => setShowPurchaseModal(false)}>&times;</button>
 
             <div className="text-center mb-4">
-              <img
-                src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
-                alt="Plan Builder"
-                style={{ width: '48px', marginBottom: '20px' }}
-              />
               <h2 style={{ color: '#1a1acc' }}>Minor Child-Centered Estate Plan</h2>
               <p className="text-muted fst-italic">
                 The Minor Child-Centered Estate Plan includes a Last Will and Testament with nomination of Tutors, Financial Power of Attorney, Medical Power of Attorney, as well as an Advance Healthcare Directive (a/k/a "Living Will").

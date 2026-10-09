@@ -546,7 +546,18 @@
   }
 
   .purchase-modal h2 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+  }
+
+  /* Tighten the stacked copy (the logo above is gone too) so the Purchase
+     button is visible without scrolling on a phone. */
+  .purchase-modal .mb-4 {
+    margin-bottom: 0.9rem !important;
+  }
+
+  .purchase-modal .fst-italic {
+    font-size: 0.9rem;
   }
 
   .purchase-modal .btn-solid {

@@ -982,11 +982,6 @@ const ViewPlans: React.FC = () => {
             </button>
 
             <div className="text-center mb-4">
-              <img
-                src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
-                alt="Plan Builder"
-                style={{ width: '48px', marginBottom: '20px' }}
-              />
               <h2 style={{ color: '#1a1acc' }}>{PRODUCT_CONFIG[selectedProduct].name}</h2>
               <p className="text-muted fst-italic">
                 {PRODUCT_CONFIG[selectedProduct].description}
