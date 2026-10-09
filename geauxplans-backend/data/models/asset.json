@@ -1,0 +1,697 @@
+{
+  "_id": "5d6e9d4e7088283efd88d674",
+  "summary": "{[AssetSummaryTemplate]}",
+  "label": " ",
+  "type": "object",
+  "name": "asset",
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 3,
+      "rows": [
+        [
+          {
+            "content": "AssetType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "id": "a68dbfd0-0190-11ee-9d92-2b4455ee8ead"
+          },
+          {
+            "id": "a8357c60-0190-11ee-9d92-2b4455ee8ead",
+            "content": "Value",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "IncludeMineralTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "7151f4b0-ad2f-11f0-b66c-d34299312fb2"
+          }
+        ],
+        [
+          {
+            "content": "AssetIsRenouncedTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "283a7250-7f34-11ee-a92c-8de70b6f92ad",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "2e3b4fd0-7f34-11ee-a92c-8de70b6f92ad",
+            "content": "AssetIsSpecificBequestTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "BankName",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "a68dbfd2-0190-11ee-9d92-2b4455ee8ead"
+          },
+          {
+            "content": "AccountNo",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "a68dbfd3-0190-11ee-9d92-2b4455ee8ead"
+          }
+        ],
+        [
+          {
+            "content": "Accountholders",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 2,
+            "id": "a68dbfd4-0190-11ee-9d92-2b4455ee8ead"
+          }
+        ],
+        [
+          {
+            "content": "Year",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "a68dbfd5-0190-11ee-9d92-2b4455ee8ead"
+          },
+          {
+            "content": "Make",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "a68de6e0-0190-11ee-9d92-2b4455ee8ead"
+          },
+          {
+            "content": "Model",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "a68de6e1-0190-11ee-9d92-2b4455ee8ead"
+          }
+        ],
+        [
+          {
+            "content": "VIN",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "a68de6e2-0190-11ee-9d92-2b4455ee8ead"
+          }
+        ],
+        [
+          {
+            "content": "BusinessName",
+            "list": [],
+            "class": "question",
+            "id": "a68de6e3-0190-11ee-9d92-2b4455ee8ead",
+            "offset": 0,
+            "span": 2
+          }
+        ],
+        [
+          {
+            "content": "BusinessEntityType",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "44e2dd20-00e3-11f0-b417-65e125cca2a0",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "475b0910-00e3-11f0-b417-65e125cca2a0",
+            "content": "BusinessOrgState",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "RealPropAddress1",
+            "list": [],
+            "class": "question",
+            "id": "a68de6e4-0190-11ee-9d92-2b4455ee8ead"
+          }
+        ],
+        [
+          {
+            "content": "RealPropAddress2",
+            "list": [],
+            "class": "question",
+            "id": "a68de6e5-0190-11ee-9d92-2b4455ee8ead"
+          }
+        ],
+        [
+          {
+            "content": "RealPropCity",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "a68de6e6-0190-11ee-9d92-2b4455ee8ead"
+          },
+          {
+            "content": "RealPropState",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "a68de6e7-0190-11ee-9d92-2b4455ee8ead"
+          },
+          {
+            "id": "b2117970-783a-11ee-b9c1-05a18e19b8bc",
+            "content": "RealPropZip",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "a9d503d0-783a-11ee-b9c1-05a18e19b8bc",
+            "content": "RealPropParish",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "RealPropLegal",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "a68de6e9-0190-11ee-9d92-2b4455ee8ead"
+          }
+        ],
+        [
+          {
+            "content": "MiscDesc",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "a68de6ea-0190-11ee-9d92-2b4455ee8ead"
+          }
+        ],
+        [
+          {
+            "content": "AssetLocation",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "a68de6eb-0190-11ee-9d92-2b4455ee8ead"
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2023-01-05T22:26:33.789Z",
+      "_id": "647a66153bf0704dd868c686"
+    }
+  ],
+  "properties": [
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": true,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Financial institution:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Bank or investment account\" || AssetType == \"Retirement account\" || AssetType == \"Life Insurance or annuity account\"",
+      "type": "text",
+      "name": "BankName",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:50:34.130Z",
+      "_id": "647a66153bf0704dd868c672"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Account number, if any:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Bank or investment account\" || AssetType == \"Retirement account\" || AssetType == \"Life Insurance or annuity account\"",
+      "type": "text",
+      "name": "AccountNo",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:50:34.130Z",
+      "_id": "647a66153bf0704dd868c673"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Year:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Vehicle\"",
+      "type": "text",
+      "name": "Year",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:48:06.006Z",
+      "_id": "647a66153bf0704dd868c674"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Make:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Vehicle\"",
+      "type": "text",
+      "name": "Make",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:48:06.006Z",
+      "_id": "647a66153bf0704dd868c675"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Model:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Vehicle\"",
+      "type": "text",
+      "name": "Model",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:48:06.006Z",
+      "_id": "647a66153bf0704dd868c676"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "VIN:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Vehicle\"",
+      "type": "text",
+      "name": "VIN",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:48:06.006Z",
+      "_id": "647a66153bf0704dd868c677"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Bank or investment account\"},{\"Name\":\"Retirement account\"},{\"Name\":\"Life Insurance or annuity account\"},{\"Name\":\"Business interest\"},{\"Name\":\"Vehicle\"},{\"Name\":\"Real property\"},{\"Name\":\"Miscellaneous\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Type of asset:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "selection",
+      "name": "AssetType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-04-12T16:34:04.502Z",
+      "_id": "647a66153bf0704dd868c678"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Name of business:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Business interest\"",
+      "type": "text",
+      "name": "BusinessName",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:51:23.551Z",
+      "_id": "647a66153bf0704dd868c679"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 8,
+      "allowBreaks": true,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Legal description; for spaces between paragraphs, make sure to use two returns.",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Real property\"",
+      "type": "text",
+      "name": "RealPropLegal",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:54:11.417Z",
+      "_id": "647a66153bf0704dd868c67a"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Street address:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Real property\"",
+      "type": "text",
+      "name": "RealPropAddress1",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:54:11.417Z",
+      "_id": "647a66153bf0704dd868c67b"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Second line of street address, if any:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Real property\"",
+      "type": "text",
+      "name": "RealPropAddress2",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:54:11.417Z",
+      "_id": "647a66153bf0704dd868c67c"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "City:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Real property\"",
+      "type": "text",
+      "name": "RealPropCity",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:54:11.417Z",
+      "_id": "647a66153bf0704dd868c67d"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "State:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Real property\"",
+      "type": "selection",
+      "name": "RealPropState",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:54:11.417Z",
+      "_id": "647a66153bf0704dd868c67e"
+    },
+    {
+      "style": "textbox",
+      "pattern": "99999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Zip:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Real property\"",
+      "type": "text",
+      "name": "RealPropZip",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:54:11.417Z",
+      "_id": "647a66153bf0704dd868c67f"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 2,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Value or amount:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "number",
+      "name": "Value",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-04-12T16:33:49.043Z",
+      "_id": "647a66153bf0704dd868c680"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "AssetLocation",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-16T19:42:50.386Z",
+      "_id": "647a66153bf0704dd868c681"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "PotentialAgents|map: NameCO",
+      "isList": true,
+      "label": "Account holders:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Bank or investment account\"",
+      "type": "text",
+      "name": "Accountholders",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-04-21T17:55:00.906Z",
+      "_id": "647a66153bf0704dd868c682"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 3,
+      "allowBreaks": true,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Describe:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Miscellaneous\"",
+      "type": "text",
+      "name": "MiscDesc",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-04-12T16:35:23.082Z",
+      "_id": "647a66153bf0704dd868c683"
+    },
+    {
+      "style": "textbox",
+      "options": "parishes",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "_id": "65413cd8cb14cb5929f32d6c",
+      "name": "RealPropParish",
+      "isList": false,
+      "label": "Enter the Parish in which the immovable (real) property is located:",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Real property\"",
+      "type": "text",
+      "_options": "ParishSuggestions",
+      "height": 1,
+      "suggestion": "userData"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "654d2e899e031a35c85e7e01",
+      "name": "AssetIsRenouncedTF",
+      "isList": false,
+      "label": "Is this assets to be disclaimed or renounced? ",
+      "helpText": "If selected, this asset will be included in a Renunciation. Do NOT select this option unless the Renunciation is \"partial\" vs. full or complete. In the event of a full or complete renunciation, the heir or legatee will be renouncing their entire interest in the succession and should be manually removed as a residual heir or legatee (by de-selecting that role).",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "654d2ea29e031a35c85e7e02",
+      "name": "AssetIsSpecificBequestTF",
+      "isList": false,
+      "label": "Is this asset part of a specific bequest?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "name": "BusinessEntityType",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Business interest\"",
+      "_id": "67d441310573eeb4b4dcea28",
+      "type": "selection",
+      "style": "",
+      "options": "entities",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable"
+    },
+    {
+      "name": "BusinessOrgState",
+      "isList": false,
+      "label": "State of organization",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Business interest\"",
+      "_id": "67d441790573eeb4b4dcea29",
+      "type": "selection",
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable"
+    },
+    {
+      "name": "IncludeMineralTF",
+      "isList": false,
+      "label": "Include mineral rights language? ",
+      "helpText": "",
+      "forceRelevance": "AssetType == \"Real property\"",
+      "_id": "68f552b7fc1542e5b5068733",
+      "type": "true/false",
+      "style": "radiobutton columns"
+    }
+  ],
+  "formulas": [
+    {
+      "name": "ParishSuggestions",
+      "isList": true,
+      "label": "",
+      "expression": "[\"peek(this.RealPropState == \\\"Louisiana\\\")\\n   ? (parishes|map: Name)\\n   : []\"]",
+      "ref": "",
+      "_id": "68f7e7cb007275692baaa5a4",
+      "type": "text",
+      "contentType": ""
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[if AssetType == \"Vehicle\"]}{[Year]} {[Make]} {[Model]}, VIN {[VIN]}{[elseif AssetType == \"Bank or investment account\"]}Account {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Retirement account\"]}Retirement account {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Life Insurance or annuity account\"]}Life insurance or annuity {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Business interest\"]}Interest in {[BusinessName]}{[elseif AssetType == \"Real property\"]}Real property{[if this.RealPropAddress1]} located at {[InlineAddress]}{[elseif RealPropLegal]} ({[RealPropLegal.first(125)]}...){[endif]}{[elseif AssetType == \"Miscellaneous\"]}{[MiscDesc]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "AssetSummaryTemplate",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-04-12T17:06:46.768Z",
+      "_id": "647a66153bf0704dd868c684",
+      "content": "{[if AssetType == \"Vehicle\"]}{[Year]} {[Make]} {[Model]}, VIN {[VIN]}{[elseif AssetType == \"Bank or investment account\"]}Account {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Retirement account\"]}Retirement account {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Life Insurance or annuity account\"]}Life insurance or annuity {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Business interest\"]}Interest in {[BusinessName]}{[elseif AssetType == \"Real property\"]}Real property{[if this.RealPropAddress1]} located at {[InlineAddress]}{[elseif RealPropLegal]} ({[RealPropLegal.first(125)]}...){[endif]}{[elseif AssetType == \"Miscellaneous\"]}{[MiscDesc]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[RealPropAddress1]}{[if RealPropAddress2]}, {[RealPropAddress2]}{[endif]}, {[RealPropCity]}, {[RealPropState]} {[RealPropZip]}",
+      "label": "",
+      "type": "text",
+      "name": "InlineAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-15T19:52:26.976Z",
+      "_id": "647a66153bf0704dd868c685",
+      "content": "{[RealPropAddress1]}{[if RealPropAddress2]}, {[RealPropAddress2]}{[endif]}, {[RealPropCity]}, {[RealPropState]} {[RealPropZip]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.AssetType == \"Vehicle\"]}{[if this.Year && this.Make && this.Model]}the {[this.Year]} {[this.Make]} {[this.Model]}{[if this.VIN]}, VIN: {[this.VIN]}{[endif]}{[elseif this.VIN]}the vehicle with VIN #{[this.VIN]}{[else]}____________________{[endif]}{[elseif this.AssetType == \"Bank or investment account\"]}{[this.BankName|else: \"_________________\"]} account number {[this.AccountNo|else: \"_________________\"]}{[elseif this.AssetType == \"Retirement account\"]}{[this.BankName|else: \"_________________\"]} retirement account number {[this.AccountNo|else: \"_________________\"]}{[elseif this.AssetType == \"Life Insurance or annuity account\"]}{[this.BankName|else: \"_________________\"]} life insurance or annuity account #{[this.AccountNo|else: \"_________________\"]}{[elseif this.AssetType == \"Business interest\"]}{[this.BusinessName|else: \"_________________\"]} {[BusinessOrgState.AAn|lower]} {[BusinessOrgState]} {[BusinessEntityType.Match|titlecaps]}{[elseif this.AssetType == \"Miscellaneous\"]}{[this.MiscDesc|else: \"_________________\"]}{[elseif this.AssetType == \"Real property\"]}Immovable property located in {[this.RealPropParish]} {[this.RealPropState.ParishCounty]}, State of {[this.RealPropState]} described as follows:{[endif]}\n{[if this.AssetType == \"Real property\"]}\n{[if this.RealPropAddress1]}Municipal Address:   {[this.InlineAddress]}{[elseif this.RealPropLegal]}with legal description as follows{[else]}identified as ______________________{[endif]}\n{[if IncludeMineralTF]}\nAll right, title, and interest in and to any and all oil, gas and other minerals in, under and which may be produced from the following described property:\n{[endif]}\n{[this.RealPropLegal|else: \"FULL LEGAL DESCRIPTION REQUIRED\"]}\n{[endif]}",
+      "_id": "66e44f50ad950b7ccc61704a",
+      "name": "SpecificBequestDescription",
+      "label": "",
+      "type": "text",
+      "content": "{[if this.AssetType == \"Vehicle\"]}{[if this.Year && this.Make && this.Model]}the {[this.Year]} {[this.Make]} {[this.Model]}{[if this.VIN]}, VIN: {[this.VIN]}{[endif]}{[elseif this.VIN]}the vehicle with VIN #{[this.VIN]}{[else]}____________________{[endif]}{[elseif this.AssetType == \"Bank or investment account\"]}{[this.BankName|else: \"_________________\"]} account number {[this.AccountNo|else: \"_________________\"]}{[elseif this.AssetType == \"Retirement account\"]}{[this.BankName|else: \"_________________\"]} retirement account number {[this.AccountNo|else: \"_________________\"]}{[elseif this.AssetType == \"Life Insurance or annuity account\"]}{[this.BankName|else: \"_________________\"]} life insurance or annuity account #{[this.AccountNo|else: \"_________________\"]}{[elseif this.AssetType == \"Business interest\"]}{[this.BusinessName|else: \"_________________\"]} {[BusinessOrgState.AAn|lower]} {[BusinessOrgState]} {[BusinessEntityType.Match|titlecaps]}{[elseif this.AssetType == \"Miscellaneous\"]}{[this.MiscDesc|else: \"_________________\"]}{[elseif this.AssetType == \"Real property\"]}Immovable property located in {[this.RealPropParish]} {[this.RealPropState.ParishCounty]}, State of {[this.RealPropState]} described as follows:{[endif]}\n{[if this.AssetType == \"Real property\"]}\n{[if this.RealPropAddress1]}Municipal Address:   {[this.InlineAddress]}{[elseif this.RealPropLegal]}with legal description as follows{[else]}identified as ______________________{[endif]}\n{[if IncludeMineralTF]}\nAll right, title, and interest in and to any and all oil, gas and other minerals in, under and which may be produced from the following described property:\n{[endif]}\n{[this.RealPropLegal|else: \"FULL LEGAL DESCRIPTION REQUIRED\"]}\n{[endif]}"
+    },
+    {
+      "name": "AssetAcctSumTemplate",
+      "label": "",
+      "_id": "69431699ea22bb64af1aafde",
+      "type": "text",
+      "contentType": "",
+      "text": "{[if AssetType == \"Vehicle\"]}{[Year]} {[Make]} {[Model]}, VIN {[VIN]}{[elseif AssetType == \"Bank or investment account\"]}account {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Retirement account\"]}retirement account {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Life Insurance or annuity account\"]}life insurance or annuity {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Business interest\"]}interest in {[BusinessName]}{[elseif AssetType == \"Real property\"]}real property{[if this.RealPropAddress1]} located at {[InlineAddress]}{[elseif RealPropLegal]} ({[RealPropLegal.first(125)]}...){[endif]}{[elseif AssetType == \"Miscellaneous\"]}{[MiscDesc|lower]}{[endif]}",
+      "content": "{[if AssetType == \"Vehicle\"]}{[Year]} {[Make]} {[Model]}, VIN {[VIN]}{[elseif AssetType == \"Bank or investment account\"]}account {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Retirement account\"]}retirement account {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Life Insurance or annuity account\"]}life insurance or annuity {[AccountNo]} at {[BankName]}{[elseif AssetType == \"Business interest\"]}interest in {[BusinessName]}{[elseif AssetType == \"Real property\"]}real property{[if this.RealPropAddress1]} located at {[InlineAddress]}{[elseif RealPropLegal]} ({[RealPropLegal.first(125)]}...){[endif]}{[elseif AssetType == \"Miscellaneous\"]}{[MiscDesc|lower]}{[endif]}"
+    }
+  ],
+  "__v": 1260,
+  "apps": [],
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}

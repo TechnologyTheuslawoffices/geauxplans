@@ -89,13 +89,29 @@
   margin-bottom: 15px;
 }
 
+/* The #1/#2/#3 markers render in the brand navy (#1a1acc), which at this
+   small italic size reads almost black. Make them a white number on a blue
+   pill badge so the step numbers clearly stand out. */
+.process-step h3 .text-blue {
+  display: inline-block;
+  background-color: #1a1acc;
+  background-image: linear-gradient(135deg, #1a1acc 0%, #4a4ae8 100%);
+  color: #fff !important;
+  font-style: normal;
+  font-weight: 800;
+  padding: 2px 12px;
+  border-radius: 20px;
+  margin-right: 6px;
+  box-shadow: 0 3px 10px rgba(26, 26, 204, 0.25);
+}
+
 .process-step p {
   color: #333;
 }
 
 /* Build Plan Section */
 .ep-build-section {
-  background: linear-gradient(90deg, #0000ff 29%, #fff 29%);
+  background: linear-gradient(90deg, #1a1acc 29%, #fff 29%);
   padding: 60px 0;
 }
 
@@ -108,7 +124,7 @@
 
 .ep-build-card {
   background: #fff;
-  border: 3px solid #0000ff;
+  border: 3px solid #1a1acc;
   padding: 40px;
   text-align: center;
 }
@@ -174,7 +190,7 @@
 }
 
 .toggle-icon {
-  color: #0000ff;
+  color: #1a1acc;
   font-size: 1.5rem;
   font-weight: 300;
 }
@@ -331,7 +347,7 @@
 /* Button Styles */
 .btn-outline-blue {
   background: #f1f1f1;
-  color: #0000ff !important;
+  color: #1a1acc !important;
   border: none;
 }
 
@@ -409,5 +425,132 @@
 
   .benefits-images {
     grid-template-columns: 1fr;
+  }
+
+  /* These cards kept their desktop 40-60px side padding on phones, leaving only
+     ~256px of content on a 360px screen. */
+  .ep-build-card {
+    padding: 30px 20px;
+  }
+
+  .contact-card {
+    padding: 40px 20px;
+  }
+}
+
+/* Purchase Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Wide modal shell that hosts the embedded LLC wizard. The wizard itself is
+   full-width page content, so it needs far more room than the estate
+   purchase modal. */
+.business-flow-modal {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 1040px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  line-height: 1;
+  z-index: 1;
+}
+
+.modal-close:hover {
+  color: #000;
+}
+
+.purchase-modal h2 {
+  margin-bottom: 15px;
+}
+
+.purchase-modal .form-select {
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+.purchase-modal .btn-solid {
+  background: #1a1acc;
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.purchase-modal .btn-solid:hover {
+  background: #141499;
+}
+
+/* Mobile: these modals were cramped — 30px body padding inside the overlay
+   gutter left little room, the panel was vertically centered so tall content
+   clipped, and headings crowded the close button. Give the overlay a thin
+   gutter, top-align the panel, trim the padding, and add head-room for the x. */
+@media (max-width: 600px) {
+  .modal-overlay {
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  .modal-content,
+  .business-flow-modal {
+    padding: 22px 18px 24px;
+    padding-top: 42px;
+    max-height: 95vh;
+    border-radius: 10px;
+  }
+
+  .modal-close {
+    top: 10px;
+    right: 12px;
+    font-size: 26px;
+    padding: 4px 8px;
+  }
+
+  .purchase-modal h2 {
+    font-size: 1.4rem;
+  }
+
+  .purchase-modal .btn-solid {
+    width: 100%;
+    padding: 14px 20px;
   }
 }

@@ -99,10 +99,26 @@ export interface BusinessDocument {
   downloadUrl: string;
 }
 
-export interface LLCAvailabilityResponse {
-  available: boolean;
+export interface SimilarEntity {
   name: string;
-  similarNames?: string[];
+  type?: string;
+  status?: string;
+  charterNumber?: string;
+}
+
+export interface LLCAvailabilityResponse {
+  /**
+   * Three-valued on purpose. `null` means the Secretary of State lookup did not
+   * complete, which is not the same as the name being free — conflating the two
+   * is what let customers buy a registration for a name already taken.
+   */
+  available: boolean | null;
+  name: string;
+  state?: string;
+  message: string;
+  similar: SimilarEntity[];
+  /** False when the lookup could not run, so the UI can say so plainly. */
+  checked: boolean;
 }
 
 // Order types
@@ -160,6 +176,48 @@ export interface Cart {
   tax: number;
   total: number;
   itemCount: number;
+  /**
+   * Applied discount code, as validated by the backend.
+   *
+   * `discount` is for display only. The server recalculates it from its own
+   * copy of the coupon when it creates the Stripe session, so tampering with
+   * this changes the number on screen and nothing that is charged.
+   */
+  coupon?: AppliedCoupon;
+  /** A GeauxCounsel referral code; mutually exclusive with `coupon`. */
+  referral?: AppliedReferral;
+  discount?: number;
+}
+
+export interface AppliedCoupon {
+  code: string;
+  discountType: 'percent' | 'fixed_cart';
+  amount: number;
+  discountCents: number;
+}
+
+export interface CouponValidationResponse {
+  valid: boolean;
+  message: string;
+  discountCents: number;
+  code?: string;
+  discountType?: 'percent' | 'fixed_cart';
+  amount?: number;
+}
+
+export interface AppliedReferral {
+  code: string;
+  refereeDiscountPercent: number;
+  commissionPercent: number;
+}
+
+export interface ReferralValidationResponse {
+  valid: boolean;
+  message: string;
+  refereeDiscountCents: number;
+  code?: string;
+  refereeDiscountPercent?: number;
+  commissionPercent?: number;
 }
 
 export interface CartItem {

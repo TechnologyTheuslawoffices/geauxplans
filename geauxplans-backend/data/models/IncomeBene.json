@@ -1,0 +1,125 @@
+{
+  "_id": "654fa885ee4a70cd002cf0f5",
+  "summary": "",
+  "name": "IncomeBene",
+  "type": "object",
+  "label": "",
+  "kind": "model",
+  "properties": [
+    {
+      "style": "popup",
+      "options": "NewAgents",
+      "optionTemplate": "{[NameCO]}",
+      "typeOfVariable": "userData",
+      "_id": "654fa948d3358941a0d7686c",
+      "name": "IncomeBene",
+      "isList": true,
+      "label": "Enter the Income Beneficiaries of the Lifetime Trust:",
+      "helpText": "The income (current) beneficiaries will be entitled to distributions of income and/or principal of the Lifetime Trust during the lifetime of the Settlor(s). Thereafter, the Lifetime Trust will be distributed to principal (remainder) beneficiaries.",
+      "forceRelevance": "",
+      "lastModified": "2022-09-26T18:07:27.658Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "object",
+      "typeDef": "5d7fb617d09dd97a37d5a60f",
+      "typeName": "agent"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "_id": "654fac21d3358941a0d76871",
+      "name": "SuccessorIncomeBene",
+      "isList": true,
+      "label": "Enter Successor Income Beneficiaries",
+      "helpText": "If a primary income beneficiary predeceases a Settlor, you may appoint successor income (current) beneficiaries to receive distributions during the lifetime of Settlor. ",
+      "forceRelevance": "",
+      "type": "object",
+      "typeDef": "5d7fb617d09dd97a37d5a60f",
+      "typeName": "agent"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "relationships",
+      "_id": "654fad76d3358941a0d76872",
+      "name": "ResiduaryRelationship",
+      "isList": false,
+      "label": "Select or type in the beneficiary's relationship to Settlors. Leave blank if entity:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "654fadded3358941a0d76873",
+      "name": "IncomeBeneShare",
+      "isList": false,
+      "label": "Enter the amount of the income beneficiary's share (i.e. 1/3, 50%, etc.). Be sure to include the % symbol if you are entering as percentages.",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2021-01-06T18:33:45.329Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    }
+  ],
+  "formulas": [
+    {
+      "_id": "654fab81d3358941a0d7686f",
+      "name": "MultiBenesTotal",
+      "isList": false,
+      "label": "",
+      "expression": "MultipleBenes|reduce: _result + BenefPercent : 0",
+      "ref": "",
+      "lastModified": "2022-09-26T17:12:18.853Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "number"
+    },
+    {
+      "_id": "654fab96d3358941a0d76870",
+      "name": "MultiBenesInd",
+      "isList": true,
+      "label": "",
+      "expression": "[\"MultipleBenes|filter: Benef.IndividualTF\"]",
+      "ref": "benefssplit",
+      "lastModified": "2020-09-04T16:39:47.503Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "object"
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[if SingleRecipientTF]}{[if MultipleBenes]}{[list MultipleBenes|punc: \"1, 2, and 3\"]}{[Benef.NameCO|else: \"_________________\"]}{[endlist]}{[else]}_________________{[endif]}{[else]}{[ResiduaryBenef.NameCO|else: \"_________________\"]}{[endif]}",
+      "_id": "654fab03d3358941a0d7686d",
+      "name": "AllBenes",
+      "label": "",
+      "lastModified": "2022-12-19T21:10:32.365Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text",
+      "content": "{[if SingleRecipientTF]}{[if MultipleBenes]}{[list MultipleBenes|punc: \"1, 2, and 3\"]}{[Benef.NameCO|else: \"_________________\"]}{[endlist]}{[else]}_________________{[endif]}{[else]}{[ResiduaryBenef.NameCO|else: \"_________________\"]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[list MultipleBenes|punc: \"1, 2, and 3\"]}{[Benef.NameCO|else: \"_________________\"]}{[endlist]}",
+      "_id": "654fab17d3358941a0d7686e",
+      "name": "ListofMultis",
+      "label": "",
+      "lastModified": "2022-12-19T21:09:26.110Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text",
+      "content": "{[list MultipleBenes|punc: \"1, 2, and 3\"]}{[Benef.NameCO|else: \"_________________\"]}{[endlist]}"
+    }
+  ],
+  "layouts": [],
+  "apps": [],
+  "__v": 0
+}

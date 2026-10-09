@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap');
 
 :root {
-  --primary-color: #0000ff;
+  --primary-color: #1a1acc;
   --secondary-color: #212529;
   --white: #ffffff;
   --light-gray: #f5f5f5;
@@ -25,8 +25,26 @@ body {
   color: var(--text-color);
   line-height: 1.75;
   background-color: var(--white);
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Media should never force horizontal scroll on small screens */
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Smaller base type on phones keeps long headings from overflowing */
+@media (max-width: 768px) {
+  html { font-size: 16px; }
+}
+
+@media (max-width: 480px) {
+  html { font-size: 15px; }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -44,7 +62,38 @@ a {
 }
 
 a:hover {
-  color: #0000cc;
+  color: #141499;
+}
+
+/* Placeholder styling - faded appearance */
+::placeholder {
+  color: #999 !important;
+  opacity: 0.6 !important;
+  font-style: italic;
+}
+
+::-webkit-input-placeholder {
+  color: #999 !important;
+  opacity: 0.6 !important;
+  font-style: italic;
+}
+
+::-moz-placeholder {
+  color: #999 !important;
+  opacity: 0.6 !important;
+  font-style: italic;
+}
+
+:-ms-input-placeholder {
+  color: #999 !important;
+  opacity: 0.6 !important;
+  font-style: italic;
+}
+
+/* Also style select default options that act as placeholders */
+select option[value=""] {
+  color: #999;
+  font-style: italic;
 }
 
 /* Prevent hover color change on buttons - buttons should maintain their own text colors */
@@ -76,6 +125,44 @@ button:hover {
   max-width: 1320px;
   margin: 0 auto;
   padding: 0 20px;
+  width: 100%;
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding: 0 12px;
+  }
+}
+
+/* Edge-to-edge cards on phones. A tinted page background + container gutter +
+   card margin/radius + card padding stack up and waste horizontal space. Let
+   white cards bleed to the screen edges so there is a single gutter — the
+   card's own padding. The -12px matches the container/column gutter, so a card
+   reaches the viewport edge whether it sits directly in .container or inside a
+   Bootstrap column (the row's negative gutter cancels the container padding,
+   leaving the column's 12px). body has overflow-x:hidden, which absorbs any
+   sub-pixel rounding from the bleed. */
+@media (max-width: 576px) {
+  .card,
+  .poa-form-container,
+  .account-form,
+  .cart-summary,
+  .cart-item {
+    margin-left: -12px;
+    margin-right: -12px;
+    border-radius: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+  }
+}
+
+/* On very large monitors (1440p, 4K, ultrawide) the 1320px cap leaves the
+   content stranded in a narrow strip. Widen it so the layout uses the screen
+   without stretching text past a comfortable measure. */
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1440px;
+  }
 }
 
 /* Header Styles */
@@ -387,7 +474,7 @@ button:hover {
 .estate-planning-mega .plan-price {
   display: block;
   font-size: 0.7rem;
-  color: #0000ff;
+  color: #1a1acc;
   font-style: italic;
   margin-bottom: 2px;
 }
@@ -569,12 +656,18 @@ button:hover {
   margin-right: 8px;
 }
 
-/* Mobile Menu Toggle */
+/* Mobile Menu Toggle. Padded to a >=44px tap target (the icon alone was 32px). */
 #show_mobile_menu, .mobile_menu_toggle {
-  margin-right: 25px;
-  width: 32px;
+  margin-right: 17px;
   display: none;
   cursor: pointer;
+  padding: 8px;
+  line-height: 0;
+}
+
+#show_mobile_menu img, .mobile_menu_toggle img {
+  width: 28px;
+  height: 28px;
 }
 
 @media (max-width: 991px) {
@@ -617,7 +710,8 @@ button:hover {
   left: 0;
   right: 0;
   opacity: 1;
-  z-index: 1;
+  /* Above the sticky header (99) so the dim covers it, below the sidenav (1100). */
+  z-index: 1050;
 }
 
 .close_mobile_menu {
@@ -721,8 +815,8 @@ button:hover {
 }
 
 .btn-solid:hover {
-  background: #0000cc;
-  border-color: #0000cc;
+  background: #141499;
+  border-color: #141499;
 }
 
 .btn-white {
@@ -771,7 +865,7 @@ button:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 255, 0.3);
+  background: rgba(26, 26, 204, 0.3);
 }
 
 .hero-content {
@@ -781,14 +875,14 @@ button:hover {
 
 .hero-section h1 {
   color: var(--white);
-  font-size: 36px;
+  font-size: clamp(1.75rem, 1.2rem + 2.5vw, 2.5rem);
   margin-bottom: 20px;
   line-height: 1.2;
 }
 
 .hero-section h2 {
   color: var(--white);
-  font-size: 20px;
+  font-size: clamp(1.1rem, 0.95rem + 0.9vw, 1.35rem);
   font-weight: 400;
   line-height: 1.4;
   margin-bottom: 40px;
@@ -860,7 +954,7 @@ button:hover {
 }
 
 .learn-more:hover {
-  color: #0000cc;
+  color: #141499;
 }
 
 /* Louisiana Banner */
@@ -891,7 +985,7 @@ button:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 255, 0.6);
+  background: rgba(26, 26, 204, 0.6);
 }
 
 .process-hero .hero-content {
@@ -907,7 +1001,7 @@ button:hover {
 }
 
 .process-hero-text {
-  background: rgba(0, 0, 255, 0.6);
+  background: rgba(26, 26, 204, 0.6);
   padding: 15px 50px 50px;
   text-align: center;
 }
@@ -982,6 +1076,8 @@ button:hover {
   font-size: 18px;
   margin-left: 10px;
   text-decoration: none !important;
+  display: inline-block;
+  padding: 6px;
 }
 
 .bottom_line_holder {
@@ -1005,6 +1101,8 @@ button:hover {
 .footer-menu li a {
   font-size: 14px;
   color: #000;
+  display: inline-block;
+  padding: 10px 0;
 }
 
 .footer-menu li a:hover {
@@ -1067,8 +1165,26 @@ button:hover {
   z-index: 100;
 }
 
-#gpx_loggedin_menu > li:hover ul {
+#gpx_loggedin_menu > li:hover ul,
+#gpx_loggedin_menu > li.open > ul {
   display: block;
+}
+
+/* Click trigger for the account dropdown (works on touch, unlike :hover). */
+.gpx_account_trigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  gap: 8px;
+  padding: 10px;
+  min-height: 44px;
+  color: inherit;
+  font: inherit;
+}
+
+.gpx_account_trigger img {
+  width: 24px;
+  height: 24px;
 }
 
 #gpx_loggedin_menu ul li {
@@ -1109,16 +1225,12 @@ button:hover {
     padding: 80px 0 50px;
   }
 
-  .hero-section h1 {
-    font-size: 28px;
-  }
-
-  .hero-section h2 {
-    font-size: 18px;
-  }
-
   .document-item {
     padding: 0 20px;
+  }
+
+  .process-hero-text {
+    padding: 15px 20px 30px;
   }
 
   .footer-contact {
@@ -1130,80 +1242,18 @@ button:hover {
   }
 }
 
-/* Sidenav Mobile Menu */
+/* Sidenav Mobile Menu. Width capped so the tap-to-close strip survives on the
+   narrowest phones (a flat 300px left almost no overlay at <=320px). */
 .sidenav {
   position: fixed;
   top: 0;
   left: -300px;
-  width: 300px;
+  width: min(300px, 85vw);
   height: 100%;
   background: var(--white);
   z-index: 1100;
   transition: left 0.3s ease;
   overflow-y: auto;
-}
-
-.sidenav.open {
-  left: 0;
-}
-
-.sidenav-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
-}
-
-.close-btn img {
-  width: 20px;
-  height: 20px;
-}
-
-.mobile-nav {
-  padding: 20px;
-}
-
-.mobile-nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.mobile-nav li {
-  margin-bottom: 15px;
-}
-
-.mobile-nav a {
-  color: var(--text-color);
-  font-size: 18px;
-  display: block;
-}
-
-.mobile-nav a:hover {
-  color: var(--primary-color);
-}
-
-.site-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1050;
-  display: none;
-}
-
-.site-overlay.open {
-  display: block;
 }
 
 /* Form Styles */
@@ -1341,12 +1391,15 @@ button:hover {
   margin-bottom: 10px;
 }
 
+/* Fluid size so the headline scales smoothly from small phones to large
+   monitors instead of jumping at breakpoints. No nowrap: on mid-size screens
+   (992-1200px) the half-width hero column can't fit it on one line, so it must
+   be allowed to wrap rather than overflow the viewport. */
 .hero-title {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 1rem + 2.2vw, 2.25rem);
   line-height: 1.2;
   margin-bottom: 15px;
   color: var(--text-color);
-  white-space: nowrap;
 }
 
 .text-blue {
@@ -1401,8 +1454,8 @@ button:hover {
 }
 
 .btn-pill-left:hover {
-  background: #0000cc;
-  border-color: #0000cc;
+  background: #141499;
+  border-color: #141499;
 }
 
 .btn-pill-right {
@@ -1469,7 +1522,7 @@ button:hover {
 }
 
 .hello-title h2 {
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 1.5rem + 4vw, 4rem);
   font-weight: 400;
   margin: 0;
   color: var(--text-color);
@@ -1538,6 +1591,14 @@ button:hover {
 }
 
 /* Responsive Homepage */
+
+/* Tablet: soften the jump from 3 columns straight to 1 */
+@media (max-width: 991px) and (min-width: 769px) {
+  .features-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 @media (max-width: 991px) {
   .hero-grid {
     grid-template-columns: 1fr;
@@ -1574,11 +1635,280 @@ button:hover {
 }
 
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
+  /* Keep the circular family photo inside the phone viewport */
+  .hero-image-wrapper {
+    height: auto;
+    aspect-ratio: 1 / 1;
+    max-width: 300px;
   }
 
-  .hello-title h2 {
-    font-size: 3rem;
+  .hero-family {
+    width: 70%;
+    height: 70%;
+  }
+
+  .hero-swoosh {
+    position: relative;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-home {
+    padding: 40px 0 50px;
+  }
+
+  .hero-family {
+    width: 80%;
+    height: 80%;
+  }
+
+  /* The joined pill group can exceed the width of a 320-360px phone. Let the
+     two halves shrink their padding and center as a unit. */
+  .btn-pill-left,
+  .btn-pill-right {
+    padding: 12px 18px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Smallest phones (iPhone SE, older Androids, folded devices). Fully stack the
+   pill buttons so neither half is clipped, and tighten the outer gutter. */
+@media (max-width: 360px) {
+  .hero-buttons.pill-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-pill-left {
+    border-radius: 50px 50px 0 0;
+  }
+
+  .btn-pill-right {
+    border-left: 2px solid var(--primary-color);
+    border-top: none;
+    border-radius: 0 0 50px 50px;
+  }
+
+  .btn-pill-left,
+  .btn-pill-right {
+    text-align: center;
+  }
+}
+
+/* ===== POA Form Page Compact Styling ===== */
+.poa-page {
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.poa-page h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.poa-page h3 {
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.poa-page h4 {
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.poa-page p {
+  margin-bottom: 0.5rem;
+}
+
+.poa-page p.text-muted {
+  font-size: 15px;
+  line-height: 1.55;
+  margin-bottom: 0.5rem;
+}
+
+.poa-page .mb-3 {
+  margin-bottom: 0.75rem !important;
+}
+
+.poa-page .mb-4 {
+  margin-bottom: 1rem !important;
+}
+
+.poa-page .form-label {
+  font-size: 15px;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.poa-page .form-check-label {
+  font-size: 15px;
+}
+
+.poa-page .form-select,
+.poa-page .form-control {
+  font-size: 15px;
+  padding: 0.4rem 0.75rem;
+}
+
+.poa-page .card {
+  margin-bottom: 0.75rem;
+}
+
+.poa-page .card-header {
+  padding: 0.5rem 0.75rem;
+  font-size: 15px;
+}
+
+.poa-page .card-body {
+  padding: 0.75rem;
+}
+
+.poa-page .alert {
+  font-size: 14px;
+  padding: 0.5rem 0.75rem;
+  line-height: 1.5;
+}
+
+.poa-page .btn {
+  font-size: 15px;
+  padding: 0.4rem 0.75rem;
+}
+
+.poa-page hr {
+  margin: 1.5rem 0;
+}
+
+/* On phones the compact desktop sizing hurts: 15px inputs trigger iOS
+   focus-zoom and the 0.4rem buttons are hard to tap. Relax it here. */
+@media (max-width: 768px) {
+  .poa-page {
+    font-size: 16px;
+  }
+
+  .poa-page .form-select,
+  .poa-page .form-control {
+    font-size: 16px;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .poa-page .btn {
+    font-size: 16px;
+    padding: 0.6rem 1rem;
+  }
+
+  /* Inline maxWidth caps on small selects/inputs shouldn't squeeze on phones */
+  .poa-page .form-select[style],
+  .poa-page .form-control[style] {
+    max-width: 100% !important;
+  }
+
+  .poa-page .card-body,
+  .poa-page .card-header {
+    padding: 0.75rem;
+  }
+}
+
+/* Header cart indicator — only rendered when the cart has items (Header.tsx) */
+.header-cart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.header-cart-link:hover {
+  text-decoration: underline;
+}
+
+.header-cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: #0d6efd;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* My Account shell: fixed 250px sidebar beside the content panel on desktop.
+   On tablets/phones the fixed column squeezes the panel, so drop the sidebar
+   above the content in a single column. */
+.my-account-grid {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 40px;
+}
+
+@media (max-width: 768px) {
+  .my-account-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* My Account accordion (mobile only). Each section opens under its own button
+   so its content sits right there instead of far below a tall stacked menu. */
+.account-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.account-acc-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #212529;
+  cursor: pointer;
+  text-align: left;
+}
+
+.account-acc-header.open {
+  background: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.account-acc-body {
+  border: 1px solid var(--primary-color);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 18px 16px;
+}
+
+/* Two-up form rows (first/last name, etc.) used by Register and Edit Profile.
+   Side by side on desktop; stack on narrow phones so fields aren't cramped. */
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 480px) {
+  .form-row-2col {
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
 }

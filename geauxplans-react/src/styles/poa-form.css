@@ -203,6 +203,10 @@
   margin-left: 2px;
 }
 
+.poa-progress-mobile-label {
+  display: none;
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .poa-progress-step .step-name {
@@ -246,5 +250,121 @@
 @media (max-width: 576px) {
   .poa-progress-step .step-name {
     display: none;
+  }
+
+  /* Was: 12-13 bare numbered circles wrapping onto 2-3 ragged rows with no
+     "which step am I on". Now: a text label names the current step, and the
+     circles sit in one horizontally-scrollable row. */
+  .poa-progress-mobile-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1a1acc;
+    margin-bottom: 10px;
+  }
+
+  .poa-progress-steps {
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    overflow-x: auto;
+    gap: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .poa-progress-step .step-number {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ===== AI Attorney chat ===== */
+
+/* Desktop: comfortable panel height (previously set via inline styles). The
+   transcript flex-grows between the header and the composer. */
+.ai-attorney-chat {
+  min-height: 520px;
+}
+
+.ai-chat-list {
+  max-height: 420px;
+}
+
+/*
+ * Phones: the card padding, borders and rounded corners waste vertical space
+ * and make the conversation feel cramped. When the AI attorney is active we
+ * take over the whole viewport like a messaging app — the transcript fills the
+ * screen and the composer sticks to the bottom. /poa-form runs in design mode
+ * (site header/footer hidden), so a full-screen takeover is safe here.
+ */
+@media (max-width: 768px) {
+  .poa-form-container.ai-mode {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .poa-form-container.ai-mode .card-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    padding: 12px !important;
+  }
+
+  .poa-form-container.ai-mode .ai-attorney-chat {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+  }
+
+  /* Grow the transcript to fill the screen instead of a fixed 420px cap. */
+  .poa-form-container.ai-mode .ai-chat-list {
+    max-height: none;
+    margin-bottom: 12px !important;
+  }
+
+  /* Trim the header so more of the screen is conversation. */
+  .poa-form-container.ai-mode .ai-chat-header {
+    margin-bottom: 10px !important;
+  }
+
+  .poa-form-container.ai-mode .card-footer {
+    flex-direction: row;
+    padding: 8px 12px;
+  }
+}
+
+/* Repeating-section fields (signer/entity/residuary) use -sm controls (~14px);
+   iOS zooms the viewport on focus of anything under 16px, jolting the layout.
+   Pin them to 16px on phones. */
+@media (max-width: 767px) {
+  .poa-form-container .form-control-sm,
+  .poa-form-container .form-select-sm {
+    font-size: 16px;
+  }
+}
+
+/* The intake-mode toggle (Guided Form / Talk to an Attorney) was squeezed and
+   wrapped on narrow phones; stack it full-width instead. */
+@media (max-width: 480px) {
+  .poa-mode-toggle {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .poa-mode-toggle .btn {
+    width: 100%;
+    border-radius: 6px !important;
+  }
+
+  .poa-mode-toggle .btn:not(:last-child) {
+    margin-bottom: 8px;
   }
 }

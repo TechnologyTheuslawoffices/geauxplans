@@ -1,0 +1,3001 @@
+{
+  "_id": "5e84d28c2314690408e0de0f",
+  "summary": "{[Recipient.NameCO|else: \"Recipient\"]}{[if peek(((ClientWillResiduary|map: id$|contains: id$) && ClientWillDistributionsEqualTF == \"No\") || ((SpouseWillResiduary|map: id$|contains: id$) && SpouseWillDistributionsEqualTF == \"No\"))]}  (share: {[if EstateAppTF]}{[Bequest|else: \"____________\"]}{[else]}{[GeauxBequest|else: \"______\"]}%{[endif]}){[endif]}",
+  "label": "",
+  "type": "object",
+  "name": "willresidual",
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 2,
+      "rows": [
+        [
+          {
+            "content": "###<center><strong>Name of {[_index|ordinal|titlecaps]} Beneficiary</strong></center>",
+            "list": [
+              "Recipient",
+              "BequestRecipient"
+            ],
+            "class": "static",
+            "id": "9ddc7b60-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "BequestRecipient",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b61-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "Recipient",
+            "list": [],
+            "class": "question",
+            "id": "9ddc7b62-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>{[if EstateAppTF]}Bequest{[else]}Percent of Estate{[endif]}</strong></center>",
+            "list": [
+              "SpecificBequestDescribe",
+              "Bequest",
+              "GeauxBequest"
+            ],
+            "class": "static",
+            "expr": "",
+            "id": "9ddc7b63-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "{[if MarriedTF]}If there is no surviving spouse, e{[else]}E{[endif]}ach beneficiary entered in this list will receive a percentage of the estate. The percent across all beneficiaries should total 100%.\n\nFor example, if there are four beneficiaries with unequal amounts, an example might be entering \"20\" here for the first beneficiary, then on the next popup entering \"20\" for the second beneficiary, \"10\" for the third beneficiary, and \"50\" for the fourth beneficiary, so that the total equals 100.",
+            "list": [
+              "GeauxBequest"
+            ],
+            "class": "static",
+            "id": "9ddc7b64-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "GeauxBequest",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b65-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "Bequest",
+            "list": [],
+            "class": "question",
+            "id": "9ddc7b66-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SpecificBequestDescribe",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b67-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>Distribution Options</strong></center>",
+            "list": [
+              "UponDeath",
+              "HowReceive",
+              "WillResidTrustType"
+            ],
+            "class": "static",
+            "id": "9ddc7b68-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "UponDeath",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b69-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "HowReceive",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "9ddc7b6a-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          },
+          {
+            "id": "b9948050-34ca-11ef-ac09-91ab3c91bbee",
+            "content": "WillResidTrustType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "a18a5390-34ca-11ef-ac09-91ab3c91bbee",
+            "content": "SpecificTrustType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "dd55ca80-34ca-11ef-ac09-91ab3c91bbee",
+            "content": "SpecificOutrightTrust",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "42af5640-34ca-11ef-ac09-91ab3c91bbee",
+            "content": "WillSpecialNeedsTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "3d732850-34ca-11ef-ac09-91ab3c91bbee",
+            "content": "IncomeDistributions",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "4be130c0-34bc-11ef-b2cb-7d47fd0bedb7",
+            "content": "TrusteeIncomeDistStandard",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "6ea092f0-34ca-11ef-ac09-91ab3c91bbee",
+            "content": "TrusteePrincipalDistStandard",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>SNT Principal Beneficiaries</strong></center>",
+            "list": [
+              "WillSNTPrincipalBenef"
+            ],
+            "class": "static",
+            "id": "9ddc7b6d-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillSNTPrincipalBenef",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b6e-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "fee06920-34cb-11ef-ac09-91ab3c91bbee",
+            "content": "",
+            "list": [],
+            "class": "static",
+            "expr": "",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "b12f88b0-e2af-11ed-88dd-a5e5930df39f",
+            "content": "###<center><strong>APT Restriction of Principal</strong></center>",
+            "list": [
+              "WillRestrictAccessToPrincipalTF"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "a3785580-e2af-11ed-88dd-a5e5930df39f",
+            "content": "WillRestrictAccessToPrincipalTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "a2069d10-e2af-11ed-88dd-a5e5930df39f",
+            "content": "WillIncomeBeneAge",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>Mandatory Distributions</strong></center>",
+            "list": [
+              "WillResiduaryMandatoryDist"
+            ],
+            "class": "static",
+            "id": "9ddc7b6f-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillAPTMandDistTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "9ddc7b71-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          },
+          {
+            "content": "WillAPTMandSelect",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "9ddc7b72-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillSobrietyPeriod",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "9ddc7b73-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          },
+          {
+            "content": "WillSobrietyYearsAfterDeath",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "9ddc7b74-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillSobrietyCharity",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b75-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillAPTMandDistNU",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b77-e2af-11ed-88dd-a5e5930df39f",
+            "offset": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillAPTMandCustom",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b76-e2af-11ed-88dd-a5e5930df39f",
+            "offset": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>Periodic Distributions</strong></center>",
+            "list": [
+              "WillMandateDistributionsTF"
+            ],
+            "class": "static",
+            "id": "9ddc7b78-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillMandateDistributionsTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b79-e2af-11ed-88dd-a5e5930df39f",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "fbcb73e0-34be-11ef-bf81-3b2bd652b736",
+            "content": "MandateDistributionsTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MandateIncomeTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff68c-33d7-11ef-a3c9-d1f52c565e3c",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "178c98b0-34c0-11ef-bf81-3b2bd652b736",
+            "content": "MinAgeMandateIncomeDist",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "3ae6e3b0-34c0-11ef-bf81-3b2bd652b736",
+            "content": "MandatePrincipalTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "4a80eb30-34c1-11ef-bf81-3b2bd652b736",
+            "content": "PercentPrincipalDist",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "RestrictAccessToPrincipalTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff6a0-33d7-11ef-a3c9-d1f52c565e3c",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "87a58980-34c1-11ef-bf81-3b2bd652b736",
+            "content": "IncomeBeneAge",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "0186b580-34c2-11ef-bf81-3b2bd652b736",
+            "content": "MandatePrincipalCapTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "content": "MandatePrincipalCap",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff692-33d7-11ef-a3c9-d1f52c565e3c",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "8a282e00-34c7-11ef-b89c-13fff2987cb0",
+            "content": "MandatePrincipalCapAge",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MandateDollarAmountTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff699-33d7-11ef-a3c9-d1f52c565e3c",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "content": "MandatoryPeriod",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff69f-33d7-11ef-a3c9-d1f52c565e3c",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MandatoryAmount",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff69d-33d7-11ef-a3c9-d1f52c565e3c",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MaximumAmount",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff6a2-33d7-11ef-a3c9-d1f52c565e3c",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillMandateDollarAmountTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff693-33d7-11ef-a3c9-d1f52c565e3c",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "f77c6840-34c2-11ef-b89c-13fff2987cb0",
+            "content": "MinAgeMandateDistAmount",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillMandatoryAmount",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "9ddc7b7a-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillMandatoryPeriod",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "9ddc7b7b-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "cdbb5530-34c6-11ef-b89c-13fff2987cb0",
+            "content": "InflationIndexingTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MandateEducationTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff69a-33d7-11ef-a3c9-d1f52c565e3c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "1ef85730-34c8-11ef-862e-27edf893b77d",
+            "content": "MandateEarnedIncomeMatchTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "aea3c450-34c3-11ef-b89c-13fff2987cb0",
+            "content": "MinimumAmount",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "bfbeaa00-34c5-11ef-b89c-13fff2987cb0",
+            "content": "MinAgeWageDistributions",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillMaximumAmount",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff697-33d7-11ef-a3c9-d1f52c565e3c",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>Term Trust Type</strong></center>",
+            "list": [
+              "WillTermType"
+            ],
+            "class": "static",
+            "id": "9ddc7b7c-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillTermType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b7d-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>Term Trust Years</strong></center>",
+            "list": [
+              "WillTermYears"
+            ],
+            "class": "static",
+            "id": "9ddc7b7e-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillTermYears",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b7f-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>Distribution Ages</strong></center>",
+            "list": [
+              "ResidDistribs"
+            ],
+            "class": "static",
+            "id": "9ddc7b80-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "This Trust will distribute a part of the property to this beneficiary at certain ages. The amount of the distribution will be determined by how many ages are entered.\n\nIf only one age is entered, the entire Trust property will be distributed to the beneficiary outright when the beneficiary reaches that age. If two ages are entered, half will be distributed when the beneficiary reaches the first age and half when the beneficiary reaches the second age.\n\nFor example, if the beneficiary should recieve 1/3 of the Trust property at age 25, 1/3 at age 30, and the last 1/3 at age 35, you would enter 25, 30, and 35 as the ages in the list below.",
+            "list": [],
+            "class": "static",
+            "expr": "IsGeauxAppTF && HowReceive == \"In Trust\"",
+            "id": "9ddc7b81-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "ResidDistribs",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b82-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>Power of Appointment</strong></center>",
+            "list": [
+              "WillResiduaryTestPowerTF"
+            ],
+            "class": "static",
+            "id": "9ddc7b83-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillResiduaryTestPowerTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "9ddc7b84-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          },
+          {
+            "content": "WillResiduaryPowerLimitDescTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "9ddc7b85-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "842df020-34db-11ef-ac09-91ab3c91bbee",
+            "content": "WillResiduaryTestPowerAgeTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "content": "WillResiduaryTestPowerAge",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff694-33d7-11ef-a3c9-d1f52c565e3c",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "f6c1c8d0-34d8-11ef-ac09-91ab3c91bbee",
+            "content": "WillResiduaryMandatoryDist",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>Beneficiary Control</strong></center>",
+            "list": [],
+            "class": "static",
+            "id": "9ddc7b86-e2af-11ed-88dd-a5e5930df39f",
+            "expr": "peek(WillResidTrustType == \"Asset\")",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillResiduaryBenefControl",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "id": "9ddc7b87-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false,
+            "span": 1
+          },
+          {
+            "content": "WillBenefNameTee",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddca277-e2af-11ed-88dd-a5e5930df39f",
+            "offset": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "ResiduaryBenefControl",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff670-33d7-11ef-a3c9-d1f52c565e3c",
+            "isSelected": false,
+            "span": 1,
+            "offset": 0
+          },
+          {
+            "content": "BenefControlYoungTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff671-33d7-11ef-a3c9-d1f52c565e3c",
+            "isSelected": false,
+            "offset": 1
+          }
+        ],
+        [
+          {
+            "content": "WillBenefControlYoungTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "id": "9ddc7b88-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillResidServeAge",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "id": "9ddc7b8b-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false,
+            "span": 1
+          },
+          {
+            "content": "WillResidControlAge",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "id": "9ddc7b8a-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>Trustee Removal</strong></center>",
+            "list": [
+              "WillResidRighttoRemoveTF"
+            ],
+            "class": "static",
+            "id": "9ddc7b8c-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillResidRighttoRemoveTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "9ddc7b8d-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          },
+          {
+            "content": "WillBenefRemoveReplaceTee",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "9ddc7b8e-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>Trustees</strong></center>",
+            "list": [
+              "WillInitialManageSingleTees",
+              "GeauxInitialTees",
+              "WillInitialDistSingleTees",
+              "ResidInitialTees",
+              "ResidTees",
+              "GeauxInitialTee",
+              "LtdPurposeTrusteeTF"
+            ],
+            "class": "static",
+            "id": "9ddc7b8f-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "",
+            "list": [],
+            "class": "static",
+            "expr": "",
+            "id": "9ddc7b90-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "176b4100-33ef-11ef-a3c9-d1f52c565e3c",
+            "content": "LtdPurposeTrusteeTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "Assets distributed to  {[Recipient.NameCO|else: \"this beneficiary\"]} will be held in trust until the age(s) you deemed old enough to own assets outright free of trust. The trust stipulates how the assets should be managed, and how, when and to whom the assets will be distributed.\n\nAssets inside the trust are managed by a **Trustee** who has legal responsibility for managing and overseeing trust proceeds. \n\nYou may select Co-Trustees (more than one person) to serve at the same time.  Decisions of Co-Trustees would be made jointly by mutual consent.",
+            "list": [
+              "GeauxInitialTees",
+              "GeauxInitialTee"
+            ],
+            "class": "static",
+            "expr": "",
+            "id": "9ddc7b91-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "####<center><strong>Initial Trustees</strong></center>",
+            "list": [
+              "GeauxInitialTees",
+              "GeauxInitialTee"
+            ],
+            "class": "static",
+            "id": "9ddc7b92-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "GeauxInitialTee",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b93-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "FullPurposeInitialTees",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "42453d10-34ba-11ef-b2cb-7d47fd0bedb7",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "69b1d3b0-3404-11ef-81a5-99dc5cffe138",
+            "content": "FullPurposeSuccessorTeesTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "881d2660-3404-11ef-81a5-99dc5cffe138",
+            "content": "FullPurposeSuccessorTees",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "ResidInitialTees",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b94-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "####<center><strong>Successor Trustees</strong></center>\n\nThe successor trustees serve if all of the initial trustees are unable to serve. These successor trustees will serve in the order they are entered. Successor trustees are not required, but are usually recommended.",
+            "list": [
+              "ResidTees",
+              "GeauxInitialTee"
+            ],
+            "class": "static",
+            "id": "9ddc7b95-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillSuccessorTeesTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "9ddc7b96-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          },
+          {
+            "content": "ResidTees",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "9ddc7b97-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "####<center><strong>Managing Trustees</strong></center>",
+            "list": [
+              "WillInitialManageSingleTees"
+            ],
+            "class": "static",
+            "id": "9ddc7b98-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillInitialManageSingleTees",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b99-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          },
+          {
+            "content": "WillResidManageTeeOption",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b89-e2af-11ed-88dd-a5e5930df39f",
+            "offset": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillResidInitialsServeAloneTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b9a-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillSuccManageTee",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b9b-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "####<center><strong>Distribution Trustees</strong></center>",
+            "list": [
+              "WillInitialDistSingleTees"
+            ],
+            "class": "static",
+            "id": "9ddc7b9c-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillInitialDistSingleTees",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddc7b9d-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillDistResidInitialsServeAloneTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddca270-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillSuccDistTee",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "9ddca271-e2af-11ed-88dd-a5e5930df39f",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillBenefNameManageTee",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "9ddca272-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          },
+          {
+            "content": "WillBenefNameDistTee",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "9ddca273-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center><strong>Optional Distribution for Education</strong></center>",
+            "list": [
+              "WillResidEducationTF",
+              "WillBenefNameTee"
+            ],
+            "class": "static",
+            "id": "9ddca274-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillResidEducationTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "9ddca275-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          },
+          {
+            "content": "WillResidTradeSchoolTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "9ddca276-e2af-11ed-88dd-a5e5930df39f",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SNTPrincipalBenef",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff672-33d7-11ef-a3c9-d1f52c565e3c",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "OutrightDistDelayTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff678-33d7-11ef-a3c9-d1f52c565e3c",
+            "offset": 0,
+            "span": 1,
+            "isSelected": false
+          },
+          {
+            "id": "04654760-3983-11ef-9267-2fc8a73d796f",
+            "content": "OutrightDistDelay",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "FullPurposeInitialServeAloneTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff67a-33d7-11ef-a3c9-d1f52c565e3c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SepShareFullPurposeIntialCoTees",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff67d-33d7-11ef-a3c9-d1f52c565e3c",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SepShareFullPurposeIntialCoTees3",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff67e-33d7-11ef-a3c9-d1f52c565e3c",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SepShareFullPurposeIntialCoTees4",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff67f-33d7-11ef-a3c9-d1f52c565e3c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SepShareFullPurposeIntialCoTees5",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff680-33d7-11ef-a3c9-d1f52c565e3c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SepShareFullPurposeIntialCoTees6",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff681-33d7-11ef-a3c9-d1f52c565e3c",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SepShareFullPurposeIntialTees",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff682-33d7-11ef-a3c9-d1f52c565e3c",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SepShareFullPurposeSuccTees",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff683-33d7-11ef-a3c9-d1f52c565e3c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SepShareFullPurposeSuccTeesTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff684-33d7-11ef-a3c9-d1f52c565e3c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "NotResiduaryTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff685-33d7-11ef-a3c9-d1f52c565e3c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "IncomeMandDistSelect",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff68a-33d7-11ef-a3c9-d1f52c565e3c",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MultipleBenes",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff695-33d7-11ef-a3c9-d1f52c565e3c",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SingleRecipientTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff696-33d7-11ef-a3c9-d1f52c565e3c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "Equal",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff6a5-33d7-11ef-a3c9-d1f52c565e3c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "id": "620c2820-34ba-11ef-b2cb-7d47fd0bedb7",
+            "content": "###<center><strong>Lapse</strong></center>",
+            "list": [
+              "AltLapseSelect",
+              "AltLapseSelectSB"
+            ],
+            "class": "static",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "AltLapseSelect",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff673-33d7-11ef-a3c9-d1f52c565e3c",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "AltLapseSelectSB",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff674-33d7-11ef-a3c9-d1f52c565e3c",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "LapsePerson",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "0ecff675-33d7-11ef-a3c9-d1f52c565e3c",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillTermPrincipalBenef",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "2afe2e40-ad2d-11f0-b66c-d34299312fb2",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WillTermPrincipalBenefTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "2afe2e41-ad2d-11f0-b66c-d34299312fb2",
+            "span": 1,
+            "offset": 0,
+            "isSelected": false
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T18:53:23.826Z",
+      "_id": "6446976437340495b27d1ba4"
+    }
+  ],
+  "properties": [
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "{[NameCO]}",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Select the beneficiary{[if IsGeauxAppTF]} (the person recieving this final distribution from the estate){[endif]}:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "selection",
+      "name": "Recipient",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2020-12-22T18:50:20.164Z",
+      "_id": "6446976437340495b27d1b74"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Enter the amount of the beneficiary's share (i.e. 1/3, 50%, etc.):",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "Bequest",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-12-18T17:04:33.062Z",
+      "_id": "6446976437340495b27d1b75"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Select the person or entity to recieve this property:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "BequestRecipient",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-24T22:11:24.160Z",
+      "_id": "6446976437340495b27d1b76"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Describe the specific property being given. Fill in the blank in the following sentence: Trustee shall distribute \"______blank________\" to {[BequestRecipient.NameCO|else: \"this person\"]}.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "SpecificBequestDescribe",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-24T22:11:24.160Z",
+      "_id": "6446976437340495b27d1b77"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Client\"},{\"Name\":\"Spouse\"},{\"Name\":\"Both\"}]",
+      "optionTemplate": "{[this == \"Client\" ? (Client.NameCO + \"'s death, if \" + Client.NameCO + \" passes away first\") : this == \"Spouse\" ? (Spouse.NameCO + \"'s death, if \" + Spouse.NameCO + \" passes away first\") : this == \"Both\" ? (\"Upon the death of the last of \" + Client.NameCO + \" and \" + Spouse.NameCO + \" to die\") : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select when this bequest should be given:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "UponDeath",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-24T22:12:41.566Z",
+      "_id": "6446976437340495b27d1b78"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Outright\"},{\"Name\":\"In Trust\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Should {[Recipient.NameCO|else: \"this beneficiary\"]}'s distribution be outright or in trust?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "HowReceive",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-01-12T17:25:12.812Z",
+      "_id": "6446976437340495b27d1b79"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Successor Trustees for {[Recipient.NameCO|else: \"this beneficiary\"]}'s Trust.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "ResidTees",
+      "typeName": "agent",
+      "typeDef": "5d7fb617d09dd97a37d5a60f",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-01-07T21:06:52.307Z",
+      "_id": "6446976437340495b27d1b7a"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": false,
+      "label": "Initial Trustee(s) for {[Recipient.NameCO|else: \"this beneficiary\"]}'s Trust.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "ResidInitialTees",
+      "typeName": "agent",
+      "typeDef": "5d7fb617d09dd97a37d5a60f",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-01-07T21:06:52.307Z",
+      "_id": "6446976437340495b27d1b7b"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Enter the ages of distributions for {[Recipient.NameCO|else: \"this beneficiary\"]}'s trust.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "ResidDistribs",
+      "typeName": "distributions",
+      "typeDef": "5d9e1299bab5fb328904c471",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-02-19T17:08:31.015Z",
+      "_id": "6446976437340495b27d1b7c"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Term\",\"Description\":\"Term Trust\"},{\"Name\":\"Asset\",\"Description\":\"Asset Protection Trust\"},{\"Name\":\"SNT\",\"Description\":\"Special Needs Trust\"},{\"Name\":\"USA\",\"Description\":\"Under-Stated-Age Beneficiary Trust\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select trust type:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "WillResidTrustType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-30T18:09:51.791Z",
+      "_id": "6446976437340495b27d1b7d"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Does this beneficiary have the right to remove and replace Trustees?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WillResidRighttoRemoveTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-10T20:59:29.154Z",
+      "_id": "6446976437340495b27d1b7e"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Include a trade school in the education distributions?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WillResidTradeSchoolTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2020-12-22T17:14:21.292Z",
+      "_id": "6446976437340495b27d1b7f"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Will the beneficiary be granted a Power of Appointment over their interest in the trust?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WillResiduaryTestPowerTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-14T21:11:37.978Z",
+      "_id": "6446976437340495b27d1b80"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Check to limit the beneficiary’s power of appointment to the beneficiary’s descendants.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WillResiduaryPowerLimitDescTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T17:53:08.738Z",
+      "_id": "6446976437340495b27d1b81"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Select the initial Managing Trustee(s) for the residual trust; everyone selected here will serve as co-Trustees at the same time.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "WillInitialManageSingleTees",
+      "typeName": "singleselection",
+      "typeDef": "5db8510d5f528a0c1a3a7fed",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:54.177Z",
+      "_id": "6446976437340495b27d1b82"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Enter the successor Managing Trustees, if any:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "WillSuccManageTee",
+      "typeName": "agent",
+      "typeDef": "5d7fb617d09dd97a37d5a60f",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:54.177Z",
+      "_id": "6446976437340495b27d1b83"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "{[if IsGeauxAppTF]}Should the beneficiary to be able to select their own trustee? They will not be able to select themself.{[else]}Is this a beneficiary-controlled trust?{[endif]}",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "ResiduaryBenefControl",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-01-06T22:03:29.610Z",
+      "_id": "6446976437340495b27d1b84"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "{[if IsGeauxAppTF]}Is this beneficiary young? If so, you will appoint trustees until the beneficiary reaches an age where you believe they will be able to appoint their own trustees.{[else]}Is this a younger beneficiary (appoint trustees until beneficiary reaches certain age).{[endif]}",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "BenefControlYoungTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-01-06T22:03:29.610Z",
+      "_id": "6446976437340495b27d1b85"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "If any of the above initial Managing Trustees fails or ceases to serve, can the remaining Managing Trustees continue to serve?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WillResidInitialsServeAloneTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:54.178Z",
+      "_id": "6446976437340495b27d1b86"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Age beneficiary may serve with a co-Trustee.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "WillResidServeAge",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:54.178Z",
+      "_id": "6446976437340495b27d1b87"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Managing\",\"Description\":\"Serve with current Managing Trustee\"},{\"Name\":\"Select\",\"Description\":\"Select own co-Trustee\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select whether this beneficiary should serve as co-trustee with then-current Managing Trustee, or should be allowed to select their own co-trustee **after they reach the appropriate age**.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "WillResidManageTeeOption",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:55:07.576Z",
+      "_id": "6446976437340495b27d1b88"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Age upon which Beneficiary may serve alone (i.e., be given effective control of the trust).",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "WillResidControlAge",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:01.190Z",
+      "_id": "6446976437340495b27d1b89"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Select the initial Distribution Trustee(s) for the residual trust; everyone selected here will serve as co-Trustees at the same time.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "WillInitialDistSingleTees",
+      "typeName": "singleselection",
+      "typeDef": "5db8510d5f528a0c1a3a7fed",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:01.190Z",
+      "_id": "6446976437340495b27d1b8a"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "If any of the above initial Distribution Trustees fails or ceases to serve, can the remaining Distribution Trustees continue to serve?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WillDistResidInitialsServeAloneTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:01.190Z",
+      "_id": "6446976437340495b27d1b8b"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Enter the successor Distribution Trustees, if any:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "WillSuccDistTee",
+      "typeName": "agent",
+      "typeDef": "5d7fb617d09dd97a37d5a60f",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:01.190Z",
+      "_id": "6446976437340495b27d1b8c"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Select to create a term for this Asset Protection Trust of less than the lifetime of the beneficiary.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WillAPTMandDistTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:01.190Z",
+      "_id": "6446976437340495b27d1b8d"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Years\"},{\"Name\":\"Sobriety\"},{\"Name\":\"Custom\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select whether to enter a term of years or a custom provision:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "WillAPTMandSelect",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:54:06.309Z",
+      "_id": "6446976437340495b27d1b8e"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Enter the entire custom paragraph to go under the \"Mandatory Date of Distribution\" heading:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "WillAPTMandCustom",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:01.190Z",
+      "_id": "6446976437340495b27d1b8f"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Years of sobriety and employment required:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "WillSobrietyPeriod",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:01.191Z",
+      "_id": "6446976437340495b27d1b90"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Proof of sobriety must be provided \"X\" years after death of Testator:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "WillSobrietyYearsAfterDeath",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:01.191Z",
+      "_id": "6446976437340495b27d1b91"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Exempt 501(c)(3) charitable organization that shall receive distribution if sobriety not achieved within the above time frame: ",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "WillSobrietyCharity",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-10T21:31:28.452Z",
+      "_id": "6446976437340495b27d1b92"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "1",
+      "maximum": "99",
+      "isList": false,
+      "label": "Enter the number of years for the Trust to continue following the date of death of the Testator:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "WillAPTMandDistNU",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:51:01.191Z",
+      "_id": "6446976437340495b27d1b93"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Subject to a Power of Appointment (if any), if the {[if SpecificTrustType == \"SNT\" || HowReceive == \"SNT\"]}**principal{[else]}primary{[endif]} beneficiary** does not survive the term of the trust, enter the age at which the trust should terminate in favor of a substitute beneficairy:",
+      "helpText": "Subject to the exercise of a Power of Appointment by a Beneficiary (if granted), if the beneficiary dies before the trust terminates, a substitute beneficiary will succeeed to the interest of the predeceased beneficiary, who may be a younger person. This will establish a floor age at which the trust terminates in favor of a substitute beneficiary.",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "WillResiduaryMandatoryDist",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T21:52:35.163Z",
+      "_id": "6446976437340495b27d1b94"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Select the principal beneficiary(ies) for the Special Needs Trust.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "SNTPrincipalBenef",
+      "typeName": "singleselection",
+      "typeDef": "5db8510d5f528a0c1a3a7fed",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-03T22:05:31.983Z",
+      "_id": "6446976437340495b27d1b95"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Age Beneficary can replace Trustees?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "WillBenefRemoveReplaceTee",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-04T21:44:26.374Z",
+      "_id": "6446976437340495b27d1b96"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Age to name Managing Trustees?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "WillBenefNameManageTee",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-04T21:46:48.416Z",
+      "_id": "6446976437340495b27d1b97"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Age to name Distribution Trustees?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "WillBenefNameDistTee",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-09-04T21:46:48.416Z",
+      "_id": "6446976437340495b27d1b98"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Do you want the Trustee to use the Trust funds to pay for the beneficiary's education?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WillResidEducationTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2020-12-22T17:14:21.293Z",
+      "_id": "6446976437340495b27d1b99"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is this a bequest to a special needs or disabled person?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WillSpecialNeedsTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-14T20:40:29.506Z",
+      "_id": "6446976437340495b27d1b9a"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Age beneficiary must be to appoint Trustee? (18 or 25 are typical answers)",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "WillBenefNameTee",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-10-13T15:53:01.678Z",
+      "_id": "6446976437340495b27d1b9b"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Mandate periodic distributions for this beneficiary?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WillMandateDistributionsTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-12-08T15:08:16.984Z",
+      "_id": "6446976437340495b27d1b9c"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Amount of periodic distributions:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "WillMandatoryAmount",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-12-08T15:08:16.984Z",
+      "_id": "6446976437340495b27d1b9d"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"per month\"},{\"Name\":\"per quarter\"},{\"Name\":\"per year\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "How often should these distributions occur?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "WillMandatoryPeriod",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-12-08T15:08:16.984Z",
+      "_id": "6446976437340495b27d1b9e"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "0",
+      "maximum": "100",
+      "isList": false,
+      "label": "What percent of the estate should this beneficiary receive?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "GeauxBequest",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-01-06T18:32:00.069Z",
+      "_id": "6446976437340495b27d1b9f"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Do you want to appoint successor Trustees for {[Recipient.NameCO|else: \"this beneficiary\"]}'s Trust?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WillSuccessorTeesTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-01-11T16:30:18.737Z",
+      "_id": "6446976437340495b27d1ba0"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": false,
+      "label": "Select the initial Trustee or initial Co-Trustees for {[Recipient.NameCO|else: \"this beneficiary\"]}'s Trust.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "GeauxInitialTee",
+      "typeName": "agent",
+      "typeDef": "5d7fb617d09dd97a37d5a60f",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-01-11T15:48:58.501Z",
+      "_id": "6446976437340495b27d1ba1"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Ages\"},{\"Name\":\"Years after death\"},{\"Name\":\"Life\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Should the term trust be based on ages, years after the trustor's death, or for life?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "WillTermType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T18:51:34.546Z",
+      "_id": "6446976437340495b27d1ba2"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Enter the years after the Settlor's death in which distributions should occur. The amount of distribution will be automatically calculated based upon how many distributions are entered.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "WillTermYears",
+      "typeName": "termyearsmodel",
+      "typeDef": "62c71197bd128b17a4fde642",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T18:51:34.546Z",
+      "_id": "6446976437340495b27d1ba3"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "_id": "644697644271046ef76f9ec1",
+      "name": "WillIncomeBeneAge",
+      "isList": false,
+      "label": "Age:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "644697644271046ef76f9ec2",
+      "name": "WillRestrictAccessToPrincipalTF",
+      "isList": false,
+      "label": "Restrict beneficiary's access to principal until a certain age?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Descendants\",\"Description\":\"Descendants, equally by roots\"},{\"Name\":\"Residual Beneficiaries\",\"Description\":\"Residuary Legatees, pro rata\"},{\"Name\":\"Principal Beneficiaries\",\"Description\":\"Principal Beneficiaries of SNT (available option ONLY if bequest to SNT)\"},{\"Name\":\"Other Persons\",\"Description\":\"Other Persons\"},{\"Name\":\"Lapse\",\"Description\":\"Lapse (to surviving Residuary Beneficiaries, or their Descendants)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "66748e2e34ffff3ab6982f51",
+      "name": "AltLapseSelect",
+      "isList": false,
+      "label": "Select who should succeed to the interest of the beneficial interest if the beneficiary should predecease.",
+      "helpText": "",
+      "forceRelevance": "!IsGeauxAppTF && ((ClientWillResiduary|map: id$|contains: id$) || (SpouseWillResiduary|map: id$|contains: id$))",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Descendants\",\"Description\":\"Descendants, equally by roots\"},{\"Name\":\"Residuary Beneficiaries\",\"Description\":\"Residuary Legatees, pro rata\"},{\"Name\":\"Principal Beneficiaries\",\"Description\":\"Principal Beneficiaries of SNT (available option ONLY if bequest to SNT)\"},{\"Name\":\"Beneficiaries of Special Bequest\",\"Description\":\"Surviving Specific Beneficiaries (available option ONLY if multiple benes of special bequest)\"},{\"Name\":\"Other Persons\",\"Description\":\"Other Persons\"},{\"Name\":\"Lapses\",\"Description\":\"Lapses\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "667492d934ffff3ab6982f52",
+      "name": "AltLapseSelectSB",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "checkboxes",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6675ae70fec6720b61369a93",
+      "name": "LapsePerson",
+      "isList": true,
+      "label": "Select the person(s) to succeed to the interest of the deceased beneficiary.",
+      "helpText": "",
+      "forceRelevance": "AltLapseSelect == \"Other Persons\" || AltLapseSelectSB == \"Other Persons\"",
+      "type": "selection"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "6675b3ee782b4dd747ba07f6",
+      "name": "LtdPurposeTrusteeTF",
+      "isList": false,
+      "label": "Select if you wish to use Limited Purpose Trustees",
+      "helpText": "Limited Purpose Trustees will include a Managing Trustee and a Distribution Trustee. The Managing Trustee will be charged with managing trust assets, while the Distribution Trustee will be charged with making distribution decisions. \n\n<accent red>**DO NOT USE Full Purpose Trustees for Asset Protection Trusts. Also, do not name a Beneficiary as Distribution Trustee of an Asset Protection Trust.**</accent>",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "24",
+      "_id": "6675b81a782b4dd747ba07f7",
+      "name": "OutrightDistDelay",
+      "isList": false,
+      "label": "Enter the number of MONTHS (up to 24) you wish to delay an outright distribution.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "_id": "6675b845782b4dd747ba07f8",
+      "name": "OutrightDistDelayTF",
+      "isList": false,
+      "label": "Check if you wish to delay this outright distribution for up to 24 MONTHS following the death of the Settlor(s).",
+      "helpText": " Statistically, 70% of the time a beneficiary will squander an inheritance within 18 months of receiving it. A delayed distribution may help avoid this scenario. Ifthis option is selected, the distribution will be withheld for up to 24 months.  ",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "inline",
+      "typeDef": "5db8510d5f528a0c1a3a7fed",
+      "useImport": false,
+      "typeName": "singleselection",
+      "_id": "6675ba98782b4dd747ba07f9",
+      "name": "FullPurposeInitialTees",
+      "isList": true,
+      "label": "Select the **Initial Full Purpose Trustee or Co-Trustees** for the trust (everyone selected here will serve as Co-Trustees at the same time):",
+      "helpText": "Do not select more than one Trustee here unless you wish to utilize Initial Co-Trustees. Everyone selected here will serve as Co-Trustees at the same time. ",
+      "forceRelevance": "",
+      "lastModified": "2020-09-30T17:36:28.219Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "object"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "6675bac3782b4dd747ba07fa",
+      "name": "FullPurposeInitialServeAloneTF",
+      "isList": false,
+      "label": "Select if to allow remaining initial Trustees to continue to serve if any of the above initial Trustees fails or ceases to serve.",
+      "helpText": "If selected, successor trustees will be appointed only if / when all the initial Co-Trustees are unable to serve or to continue to serve.",
+      "forceRelevance": "",
+      "lastModified": "2020-09-30T17:38:29.886Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "true/false"
+    },
+    {
+      "style": "popup",
+      "typeDef": "5d7fb617d09dd97a37d5a60f",
+      "useImport": false,
+      "typeName": "agent",
+      "_id": "6675bae1782b4dd747ba07fb",
+      "name": "FullPurposeSuccessorTees",
+      "isList": true,
+      "label": "**Enter the Successor Trustees**:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-09-30T17:37:59.057Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "object"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6675baee782b4dd747ba07fc",
+      "name": "FullPurposeSuccessorTeesTF",
+      "isList": false,
+      "label": "**Include *Successor* Full Purpose Trustees?**",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6675bb17782b4dd747ba07fd",
+      "name": "SepShareFullPurposeIntialCoTees",
+      "isList": false,
+      "label": "Select the initial Co-Trustee, if any:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6675bb20782b4dd747ba07fe",
+      "name": "SepShareFullPurposeIntialCoTees3",
+      "isList": false,
+      "label": "Select the third initial Co-Trustee, if any:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6675bb33782b4dd747ba07ff",
+      "name": "SepShareFullPurposeIntialCoTees4",
+      "isList": false,
+      "label": "Select the fourth initial Co-Trustee, if any:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6675bb40782b4dd747ba0800",
+      "name": "SepShareFullPurposeIntialCoTees5",
+      "isList": false,
+      "label": "Select the fifth initial Co-Trustee, if any:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6675bb4c782b4dd747ba0801",
+      "name": "SepShareFullPurposeIntialCoTees6",
+      "isList": false,
+      "label": "Select the sixth initial Co-Trustee, if any:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6675bb5b782b4dd747ba0802",
+      "name": "SepShareFullPurposeIntialTees",
+      "isList": false,
+      "label": "Select the initial Trustee:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "popup",
+      "typeDef": "5d7fb617d09dd97a37d5a60f",
+      "useImport": false,
+      "typeName": "agent",
+      "_id": "6675bb6c782b4dd747ba0803",
+      "name": "SepShareFullPurposeSuccTees",
+      "isList": true,
+      "label": "Enter the successor Trustees, if any:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6675bb79782b4dd747ba0804",
+      "name": "SepShareFullPurposeSuccTeesTF",
+      "isList": false,
+      "label": "Do you want to appoint successor Trustees for {[ResiduaryBenef.NameCO|else: \"this beneficiary\"]}'s Trust?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "6675bc5a782b4dd747ba0805",
+      "name": "NotResiduaryTF",
+      "isList": false,
+      "label": "{[if EstateAppTF]}Select if this specific bequest is to someone who is NOT a residual beneficiary, or to establish terms and conditions that are different than the residual bequest to this person (or entity).{[else]}Select if this person (or entity) also receiving part of the final (residual) distribution of your estate.{[endif]}",
+      "helpText": "If the special bequest is to someone who is NOT also a residual beneficiary, then a separate share trust can be created for the recipient if the bequest is not outright free of trust. If the special bequest is in trust to someone who IS a residual beneficiary, then the bequest will directed to the residuary trust as there is no need to create two separate share trusts. That said, if you wish to create a separate share trust with different terms and conditions, then select \"yes\" to create a separate share trust for this specific bequest.",
+      "forceRelevance": "",
+      "lastModified": "2021-04-07T05:17:47.905Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "true/false"
+    },
+    {
+      "style": "",
+      "options": "specificbequesttypes|filter: EstateAppTF || this.Name != \"Usufruct\"",
+      "optionTemplate": "{[peek(IsGeauxAppTF || !StateLawSelect || StateLawSelect == \"Louisiana\") ? this.Name : this.NonLA]}",
+      "typeOfVariable": "userData",
+      "_id": "6675c063ef0dc19b7d1b507f",
+      "name": "SpecificOutrightTrust",
+      "isList": false,
+      "label": "Should this bequest be outright, in trust or in usufruct?",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-12-19T22:58:04.279Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Asset\",\"Description\":\"Asset Protection Trust\"},{\"Name\":\"Term\",\"Description\":\"Term Trust\"},{\"Name\":\"SNT\",\"Description\":\"Special Needs Trust\"},{\"Name\":\"USA\",\"Description\":\"USA reference only - younger beneficiary, no asset or term trust provisions\"},{\"Name\":\"Class\",\"Description\":\"Class Trust\"},{\"Name\":\"Camp\",\"Description\":\"Camp Trust\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6675c0c7ef0dc19b7d1b5080",
+      "name": "SpecificTrustType",
+      "isList": false,
+      "label": "Select trust type:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2021-06-23T16:15:47.234Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "_id": "6675d710ef0dc19b7d1b5081",
+      "name": "IncomeBeneAge",
+      "isList": false,
+      "label": "*Select the Age at which a Trustee may distribute principal of the Trust to the beneficiary*",
+      "helpText": "",
+      "forceRelevance": "WillMandateDistributionsTF && MandatePrincipalTF && RestrictAccessToPrincipalTF",
+      "type": "number"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Income Only\",\"Description\":\"Income Only (No Distributions of Principal)\"},{\"Name\":\"Income + Principal\",\"Description\":\"Income + Discretionary Distributions of Principal\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6675d71def0dc19b7d1b5082",
+      "name": "IncomeDistributions",
+      "isList": false,
+      "label": "Select the scope of permissible distributions to the Beneficiary.",
+      "helpText": "The Trustee will be limited to: Distributions of income (only); or Distributions of income and principal. The standards for distribution of income and/or principal can be different for income and principal.   ",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Death of Settlor\"},{\"Name\":\"Death of the Income Beneficiary\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6675d728ef0dc19b7d1b5083",
+      "name": "IncomeMandDistSelect",
+      "isList": false,
+      "label": "Select the event upon which the trust for the Income Beneficiary will terminate.",
+      "helpText": "The income interest will terminate upon the selected event and, thereafter, be disributed pursuant to the following Articles",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6675d734ef0dc19b7d1b5084",
+      "name": "MandateEarnedIncomeMatchTF",
+      "isList": false,
+      "label": "Select to mandate distributions equal to earned annual income of the beneficiary.",
+      "helpText": "This is sometimes referred to as a \"wage matching\" provision. If selected, the Trustee will make a distribution equal to earned income of the Beneficiary.  ",
+      "forceRelevance": "WillMandateDistributionsTF",
+      "type": "true/false"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6675d73eef0dc19b7d1b5085",
+      "name": "MandateIncomeTF",
+      "isList": false,
+      "label": "Mandate the distribution of annual net income from the Trust?",
+      "helpText": "If selected, the Trustee will distribute net income at least annually, or at more frequent intervals in the discretion of the Trustee.",
+      "forceRelevance": "WillMandateDistributionsTF",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "_id": "6675d748ef0dc19b7d1b5086",
+      "name": "MinAgeMandateIncomeDist",
+      "isList": false,
+      "label": "*At what age should mandatory distributions of income commence?*",
+      "helpText": "",
+      "forceRelevance": "WillMandateDistributionsTF && MandateIncomeTF",
+      "type": "number"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Pure Discretion\",\"Pure\":\"Pure and total discretion\"},{\"Name\":\"MESH\",\"Pure\":\"Maintenance, education, support, and health\"},{\"Name\":\"Education Only\",\"Pure\":\"Education only\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6675d754ef0dc19b7d1b5087",
+      "name": "TrusteeIncomeDistStandard",
+      "isList": false,
+      "label": "Select the INCOME distribution standard for the Trustee",
+      "helpText": "The distribution stanard may range from pure discretion with no ascertainable standard to discretionary distributions for maintenance, education, support, and health. The more discretion afforded to the Trustee to say \"no\", the greater the asset protection afforded to the trust. ",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Pure Discretion\",\"sdf\":\"Pure and total discretion\"},{\"Name\":\"MESH\",\"sdf\":\"Maintenance, education, support, and health\"},{\"Name\":\"Education Only\",\"sdf\":\"Education Only\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6675dc5def0dc19b7d1b5088",
+      "name": "TrusteePrincipalDistStandard",
+      "isList": false,
+      "label": "Select the PRINCIPAL distribution standard for the Trustee",
+      "helpText": "The distribution standard may range from pure discretion with no ascertainable standard to discretionary distributions for maintenance, education, support, and health. The more discretion afforded to the Trustee to say \"no\", the greater the asset protection afforded to the trust. ",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6679a6ef70ef3cab8d3701ff",
+      "name": "MandatePrincipalCapTF",
+      "isList": false,
+      "label": "Do you wish to impose a cap / max on the percentage of principal that can be distributed to a beneficiary in the discretion of the Trustee?",
+      "helpText": "For example, principal distributions can be limited to 2% per year.",
+      "forceRelevance": "WillMandateDistributionsTF && MandatePrincipalTF",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "18",
+      "maximum": "99",
+      "_id": "6679a75d70ef3cab8d370200",
+      "name": "MandatePrincipalCapAge",
+      "isList": false,
+      "label": "*Enter the age at which the cap / limit on principal distributions will be removed to allow unlimited distributions of principal in the discretion of the Trustee*",
+      "helpText": "For example, enter age 65 to allow unlimited distributions of principal at such age. Principal distributions will be limited to a stated percentage until such time. ",
+      "forceRelevance": "WillMandateDistributionsTF && MandatePrincipalTF && MandatePrincipalCapTF",
+      "type": "number"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 2,
+      "minimum": "1",
+      "maximum": "100",
+      "_id": "6679a7b470ef3cab8d370201",
+      "name": "MandatePrincipalCap",
+      "isList": false,
+      "label": "*Enter the maximum percentage of principal that can be distributed to the beneficiary on an annual basis.*",
+      "helpText": "For example, if 2% is entered, then the Trustee will be prohibited from distributing more than 2% of principal on an annual basis.",
+      "forceRelevance": "WillMandateDistributionsTF && MandatePrincipalTF && MandatePrincipalCapTF",
+      "type": "number"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6679b6912f8267c751ed24b3",
+      "name": "WillMandateDollarAmountTF",
+      "isList": false,
+      "label": "Mandate a set dollar amount for required distributions?",
+      "helpText": "For example, the Trustee shall distribute $1,000.00 per month to the beneficiary.",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "18",
+      "maximum": "",
+      "_id": "6679e0ba2f8267c751ed24b4",
+      "name": "WillResiduaryTestPowerAge",
+      "isList": false,
+      "label": "Enter the age at which the Beneficiary should be allowed to exercise a Testamentary Power of Appointment.",
+      "helpText": "You must set a minimum age for a Beneficiary to be allowed to exercise a Power of Appointment considering the maturity level and circumstances of the Beneficiary. ",
+      "forceRelevance": "",
+      "type": "number"
+    },
+    {
+      "style": "popup",
+      "typeDef": "5e739dd3a488517ba6a40faa",
+      "useImport": false,
+      "typeName": "benefssplit",
+      "_id": "6679e714eb8baa5e1f6ced4a",
+      "name": "MultipleBenes",
+      "isList": true,
+      "label": "Enter all the beneficiaries recieving this property here.",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-09-26T18:06:19.968Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "object"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6679e740eb8baa5e1f6ced4d",
+      "name": "SingleRecipientTF",
+      "isList": false,
+      "label": "Is this bequest to multiple recipients? i.e., if this bequest is a house and you are giving the house to both John and Jane, then there are multiple recipients.",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-09-26T18:06:19.968Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "_id": "6679e9a32f8267c751ed24b5",
+      "name": "WillMaximumAmount",
+      "isList": false,
+      "label": "*Maximum annual distribution amount:*",
+      "helpText": "The Trustee will be prohibited from distributing more than this amount on an annual basis.",
+      "forceRelevance": "",
+      "type": "number"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "6679f0ac526da1c7c6fcd4bb",
+      "name": "MandateDistributionsTF",
+      "isList": false,
+      "label": "Mandate periodic distributions for this beneficiary?",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-07-05T16:10:35.696Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "true/false"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6679f0ac526da1c7c6fcd4ba",
+      "name": "MandateDollarAmountTF",
+      "isList": false,
+      "label": "Mandate a set dollar amount for required distributions?",
+      "helpText": "For example, the Trustee shall distribute $1,000.00 per month to the beneficiary.",
+      "forceRelevance": "WillMandateDistributionsTF",
+      "type": "true/false"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6679f0ac526da1c7c6fcd4bc",
+      "name": "MandateEducationTF",
+      "isList": false,
+      "label": "Mandate distributions for educational expenses?",
+      "helpText": "This will require the Trustee to make distributions for college, post-secondary studies, or trade school.  ",
+      "forceRelevance": "WillMandateDistributionsTF",
+      "type": "true/false"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6679f0ac526da1c7c6fcd4bd",
+      "name": "MandatePrincipalTF",
+      "isList": false,
+      "label": "Mandate distributions of a percentage of the principal of the Trust?",
+      "helpText": "If selected, the Trustee will distribute a percentage of the Trust princpal at least annually. ",
+      "forceRelevance": "WillMandateDistributionsTF",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "18",
+      "maximum": "99",
+      "_id": "6679f182526da1c7c6fcd4be",
+      "name": "MinAgeMandateDistAmount",
+      "isList": false,
+      "label": "*At what age should mandatory distributions of of a set dollar amount commence?*",
+      "helpText": "",
+      "forceRelevance": "WillMandateDistributionsTF && MandateDollarAmountTF",
+      "type": "number"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "_id": "6679f201526da1c7c6fcd4bf",
+      "name": "MandatoryAmount",
+      "isList": false,
+      "label": "*Amount of mandatory distributions:*",
+      "helpText": "",
+      "forceRelevance": "WillMandateDistributionsTF && MandateDollarAmountTF",
+      "lastModified": "2022-07-01T15:33:14.111Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "number"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "6679f2a1526da1c7c6fcd4c0",
+      "name": "InflationIndexingTF",
+      "isList": false,
+      "label": "Select if the mandatory distribution amount should be adjusted annually for inflation.",
+      "helpText": "For example, if distributions of $1,000 per month are mandated for life, select this option to index the amount for inflation.",
+      "forceRelevance": "WillMandateDistributionsTF && MandateDollarAmountTF",
+      "type": "true/false"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"per month\"},{\"Name\":\"per quarter\"},{\"Name\":\"per year\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6679f2b1526da1c7c6fcd4c1",
+      "name": "MandatoryPeriod",
+      "isList": false,
+      "label": "How often should these distributions occur?",
+      "helpText": "",
+      "forceRelevance": "WillMandateDistributionsTF && MandateDollarAmountTF",
+      "lastModified": "2022-07-01T15:33:14.111Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6679f3ff1e3cea85a366ed5a",
+      "name": "RestrictAccessToPrincipalTF",
+      "isList": false,
+      "label": "Restrict distributions of principal to the beneficiary until a certain age?",
+      "helpText": "If selected, the Trustee will be precluded from distributing principal of the Trust to or on behalf of the Beneficiary until the designated age.",
+      "forceRelevance": "WillMandateDistributionsTF && MandatePrincipalTF",
+      "type": "true/false"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "1",
+      "maximum": "100",
+      "_id": "6679f40f1e3cea85a366ed5b",
+      "name": "PercentPrincipalDist",
+      "isList": false,
+      "label": "*Enter the percent of the principal of the Trust to be distributed annually.*",
+      "helpText": "",
+      "forceRelevance": "WillMandateDistributionsTF && MandatePrincipalTF",
+      "type": "number"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "_id": "6679f4d71e3cea85a366ed5c",
+      "name": "MaximumAmount",
+      "isList": false,
+      "label": "*Maximum annual distribution amount:*",
+      "helpText": "The Trustee will be prohibited from distributing more than this amount on an annual basis.",
+      "forceRelevance": "",
+      "type": "number"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "_id": "6679f4d71e3cea85a366ed5d",
+      "name": "MinAgeWageDistributions",
+      "isList": false,
+      "label": "*Select the minimum age to commence minimum distributions for purposes of Wage Matching*",
+      "helpText": "Minimum distributions will commence at this age. Make sure there is no conflict with other mandatory distributions (if any); Note any minimum distribution may be nominal (e.g., One Dollar). ",
+      "forceRelevance": "WillMandateDistributionsTF && MandateEarnedIncomeMatchTF",
+      "type": "number"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "_id": "6679f4d71e3cea85a366ed5e",
+      "name": "MinimumAmount",
+      "isList": false,
+      "label": "*Minimum annual distribution amount:*",
+      "helpText": "The Trustee will be required to distribute at least this amount annually.",
+      "forceRelevance": "WillMandateDistributionsTF && MandateEarnedIncomeMatchTF",
+      "type": "number"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "_id": "6679f62c1e3cea85a366ed5f",
+      "name": "Equal",
+      "isList": false,
+      "label": "Are the recipients getting equal shares of this bequest? i.e., if you are giving the property to John and Jane, should they each own 50% of the property?",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-09-26T18:06:19.968Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "true/false"
+    },
+    {
+      "style": "popup",
+      "typeDef": "5db8510d5f528a0c1a3a7fed",
+      "useImport": false,
+      "typeName": "singleselection",
+      "_id": "667ae7956d76d727e61ed331",
+      "name": "WillSNTPrincipalBenef",
+      "isList": true,
+      "label": "Select the principal beneficiary(ies) for the Special Needs Trust.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object"
+    },
+    {
+      "style": "checkbox",
+      "_id": "667ae8076d76d727e61ed332",
+      "name": "WillResiduaryBenefControl",
+      "isList": false,
+      "label": "{[if IsGeauxAppTF]}Should the beneficiary to be able to select their own trustee? They will not be able to select themself.{[else]}Is this a beneficiary-controlled trust?{[endif]}",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "checkbox",
+      "_id": "667ae81b6d76d727e61ed333",
+      "name": "WillBenefControlYoungTF",
+      "isList": false,
+      "label": "{[if IsGeauxAppTF]}Is this beneficiary young? If so, you will appoint trustees until the beneficiary reaches an age where you believe they will be able to appoint their own trustees.{[else]}Is this a younger beneficiary (appoint trustees until beneficiary reaches certain age).{[endif]}",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "667df2a20ad6e538a15d1e69",
+      "name": "WillResiduaryTestPowerAgeTF",
+      "isList": false,
+      "label": "Select to set an minimum age for a Beneficiary to exercise a Testamentary Power of Appointment.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "name": "WillTermPrincipalBenef",
+      "isList": true,
+      "label": "Select the **Principal Beneficiary(ies)**:",
+      "helpText": "{[ResidTitle|else: \"The individual reciepient of this bequest\"]} is the Income (current) Beneficiary of the Lifetime Term Trust. The Principal (Remainder) Beneficiary(ies) will receive the balance of trust assets upon the death of {[ResidTitle|else: \"the Income  (current) Beneficiary\"]}.",
+      "forceRelevance": "",
+      "_id": "6894fb2be95f96c7c2e03d8e",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "5db8510d5f528a0c1a3a7fed",
+      "useImport": false,
+      "typeName": "singleselection"
+    },
+    {
+      "name": "WillTermPrincipalBenefTF",
+      "isList": false,
+      "label": "Select to include a **Principal (Remainder) Beneficiary** for this Term Trust.  ",
+      "helpText": "If selected, the Primary (Income) Beneficiary will receive distributions for their lifetime with the remainder interest distributed to the Principal Beneficiary(ies). If NOT selected, the balance of the Separate Share will be distributed to the Descencdants of the Primary Beneficiary, subject to the excercise of a Power of Appointment (if included). ",
+      "forceRelevance": "",
+      "_id": "6894fb2be95f96c7c2e03d8f",
+      "type": "true/false",
+      "style": "switch"
+    }
+  ],
+  "formulas": [
+    {
+      "_id": "6679e733eb8baa5e1f6ced4c",
+      "name": "IsMultipleBenesTF",
+      "isList": false,
+      "label": "",
+      "expression": "this.SingleRecipientTF",
+      "ref": "",
+      "type": "true/false"
+    },
+    {
+      "_id": "6679e74ceb8baa5e1f6ced4e",
+      "name": "MandatoryDistributionsTextList",
+      "isList": true,
+      "label": "",
+      "expression": "[\"MandateDollarAmountTF\\n    ? {id$: \\\"MandateDollar1234\\\",\\n       TextVar: (\\\"Upon the \\\" + MandatoryDistributionIncomeBeneReference + \\\" attaining \\\" + (MinAgeMandateDistAmount|cardinal|else: \\\"__________________\\\") + \\\" (\\\" + (MinAgeMandateDistAmount|format: \\\"0,0\\\"|else: \\\"______\\\") + \\\") years of age, the sum of \\\" + (MandatoryAmount|cardinal|titlecaps|else: \\\"__________________\\\") + \\\" and No/100 ($\\\" + (MandatoryAmount|format: \\\"0,0.00\\\"|else: \\\"______\\\") + \\\") Dollars \\\" + (MandatoryPeriod.Name|else: \\\"per _________\\\") + (InflationIndexingTF ? \\\", which distribution amount (the “Base Distribution Amount”) shall be adjusted for inflation (the “Adjusted Distribution Amount”) as follows:\\\" : \\\".\\\")),\\n       TriggerDollarAmountInflationTF: InflationIndexingTF\\n       }\\n       \\n    : null\",\"MandateEducationTF\\n   ? {id$: \\\"MandateEducation1233\\\",\\n      TextVar: \\\"All room, board, tuition, and other costs of education of \\\" + MandatoryDistributionAnBeneficiaryReference + \\\", including a reasonable allowance for transportation, in the event \\\" + MandatoryDistributionAnBeneficiaryReference + \\\" is enrolled full-time as a bona fide candidate for a degree at a college preparatory school, or an accredited college or university for both secondary or post-secondary studies, or trade school.\\\"\\n      }\\n   : null\",\"MandateIncomeTF\\n   ? {id$: \\\"MandateIncome1233\\\",\\n      TextVar: \\\"Upon the \\\" + MandatoryDistributionIncomeBeneReference + \\\" attaining \\\" + (MinAgeMandateIncomeDist|cardinal|else: \\\"__________________\\\") + \\\" (\\\" + (MinAgeMandateIncomeDist|format: \\\"0,0\\\"|else: \\\"______\\\") + \\\") years of age, all net income of the Trust at least annually, or at more frequent intervals in the discretion of the Trustee.\\\"\\n      }\\n   : null\",\"MandatePrincipalTF\\n   ? {id$: \\\"MandatePrincipal1233\\\",\\n      TextVar: (RestrictAccessToPrincipalTF ? \\\"Upon the \\\" + MandatoryDistributionIncomeBeneReference + \\\" attaining \\\" + (IncomeBeneAge|cardinal) + \\\" (\\\" + IncomeBeneAge + \\\") years of age, \\\" : \\\"\\\") + (PercentPrincipalDist|cardinal|titlecaps|else: \\\"__________________\\\") + \\\" Percent (\\\" + (PercentPrincipalDist|format: \\\"0,0.00\\\"|else: \\\"______\\\") + \\\"%) of the principal of the Trust at least annually, or at more frequent intervals in the discretion of the Trustee\\\" + (MandatePrincipalCapTF ? \\\"; provided, however, the \\\" + TrusteeReference + \\\" shall be prohibited from distributing more than \\\" + (MandatePrincipalCap|cardinal|lower|else: \\\"__________________\\\") + \\\" (\\\" + (MandatePrincipalCap|format: \\\"0,0.00\\\"|else: \\\"______\\\") + \\\"%) percent of the principal of the Trust annually until such time as the Beneficiary attains \\\" + (MandatePrincipalCapAge|cardinal|else: \\\"__________________\\\") + \\\" (\\\" + (MandatePrincipalCapAge|format: \\\"0,0\\\"|else: \\\"______\\\") + \\\") years of age\\\" : \\\".\\\")\\n      }\\n   : null\",\"MandateEarnedIncomeMatchTF\\n   ? {id$: \\\"MandateEarnedIncomeMatch1233\\\",\\n      TextVar: \\\"An amount equal to the greater of: (i) the sum of \\\" + (MinimumAmount|cardinal|titlecaps|else: \\\"__________________\\\") + \\\" and No/100 ($\\\" + (MinimumAmount|format: \\\"0,0.00\\\"|else: \\\"______\\\") + \\\") Dollars, provided the Beneficiary has attained \\\" + (MinAgeWageDistributions|cardinal|else: \\\"__________________\\\") + \\\" (\\\" + (MinAgeWageDistributions|format: \\\"0,0\\\"|else: \\\"______\\\") + \\\") years of age; or (ii) Gross Earned Annual Income of the \\\" + MandatoryDistributionIncomeBeneReference + \\\" to be determined as follows:\\\",\\n      TriggerEarnedIncomeMatchTF: true\\n      }\\n   : null\"]",
+      "ref": "textforlists",
+      "type": "object",
+      "contentType": ""
+    },
+    {
+      "contentType": "",
+      "_id": "6679eff4526da1c7c6fcd4b8",
+      "name": "MandatoryDistributionIncomeBeneReference",
+      "isList": false,
+      "label": "",
+      "expression": "\"Beneficiary\"",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "6679eff4526da1c7c6fcd4b9",
+      "name": "MandatoryDistributionAnBeneficiaryReference",
+      "isList": false,
+      "label": "",
+      "expression": "\"a Beneficiary\"",
+      "ref": "",
+      "type": "text"
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[if peek(this.LtdPurposeTrusteeTF)]}Distribution {[endif]}Trustee",
+      "_id": "6679e721eb8baa5e1f6ced4b",
+      "name": "TrusteeReference",
+      "label": "",
+      "type": "text",
+      "content": "{[if peek(this.LtdPurposeTrusteeTF)]}Distribution {[endif]}Trustee"
+    }
+  ],
+  "__v": 499,
+  "apps": [],
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}

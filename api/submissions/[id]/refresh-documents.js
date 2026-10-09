@@ -2,7 +2,7 @@ import { supabaseAdmin } from '../../lib/supabase.js';
 import { requireAuth, handleCors } from '../../lib/auth.js';
 import { processSubmission, getDocuments } from '../../lib/knackly.js';
 
-const CONVERTAPI_SECRET = process.env.CONVERTAPI_SECRET || 'K8fKJ4TsD5q39R31xw3Ja9ktOiKW28M1';
+const CONVERTAPI_SECRET = process.env.CONVERTAPI_SECRET;
 
 export default async function handler(req, res) {
   if (handleCors(req, res)) return;

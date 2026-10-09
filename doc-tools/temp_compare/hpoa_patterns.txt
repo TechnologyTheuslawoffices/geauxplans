@@ -1,0 +1,102 @@
+{[ SignerFullName]}
+{[Client.Gender.DoesDo]}
+{[Client.Gender.HeShe]}
+{[Client.Gender.HeSheHasHave]}
+{[Client.Gender.HeSheStateStates]}
+{[Client.Gender.HimHer]}
+{[Client.Gender.HimselfHerself]}
+{[Client.Gender.HisHer]}
+{[Client.NameCO]}
+{[Client.PartyBlockAddress]}
+{[Client.PartyParish|else: "__________"]}
+{[Client.PartyParishCounty|else: "__________"]}
+{[Client.PartyState]}
+{[Client.SelectNotary.Commission|else: "____________________"]}
+{[Client.SelectNotary.FullName|else: "______________"]}
+{[Client.SelectNotary.NumberText|else: "_____________________"]}
+{[Client.SelectNotary.Parish|else: "_____________________"]}
+{[Client.SSNorEIN|else: "______"]}
+{[else]}
+{[else}
+{[elseif (EstateAppTF &amp;&amp; POACoAgentsMC == "Unanimous") || IsGeauxAppTF]}
+{[elseif ClientAgentsHPOA.ShouldAgentBeImmediateTF == "Yes"]}
+{[elseif ClientAgentsHPOA.TrueAgents.length &gt; 1]}
+{[elseif CoAgentSelect]}
+{[elseif EstateAppTF &amp;&amp; POACoAgentsMC == "Separately"]}
+{[endif]}
+{[endlist]}
+{[ExecutionDT|format: "Do [day of] MMMM, YYYY"|else: "___ day of ___________, _____"]}
+{[ExecutionDT|format: "MMMM D, YYYY"|upper|else: "_________________"]}
+{[if !IsGeauxAppTF &amp;&amp; ClientNoBloodTF]}
+{[if !IsGeauxAppTF &amp;&amp; StateLawSelect.Name == "Louisiana"]}
+{[if !IsGeauxAppTF]}
+{[if (ClientAgentsHPOA.SpouseIsTrueAgentTF || ClientAgentsHPOA.ShouldAgentBeImmediateTF == "Yes") &amp;&amp; (ClientAgentsHPOA.TrueAgents.length &gt; 1 || ClientHPOASuccessors)]}
+{[if (EstateAppTF &amp;&amp; ClientAgentsHPOA.TrueAgents.length &gt; 1 &amp;&amp; ClientAgentsHPOA.AgentServeAlone) || ClientHPOASuccessors]}
+{[if (EstateAppTF &amp;&amp; POACoAgentsMC == "Jointly") || IsGeauxAppTF]}
+{[if _index &lt; ClientAgentsHPOA.TrueAgents.length]}
+{[if _index &lt; ClientAgentsHPOA.TrueAgentsNoSpouse.length]}
+{[if _index &lt; ClientHPOASuccAgents.length]}
+{[if _index &lt; TrueAgents.length]}
+{[if ClientAgentsHPOA.ImmediateAgents.length &gt; 1]}
+{[if ClientAgentsHPOA.SpouseIsTrueAgentTF]}
+{[if ClientAgentsHPOA.TrueAgents.length &gt; 1]}
+{[if ClientAgentsHPOA.TrueAgents.length &gt; 2]}
+{[if ClientAgentsHPOA.TrueAgents.length == 1]}
+{[if ClientAgentsHPOA.TrueAgentsNoSpouse.length &gt; 0]}
+{[if ClientDonateScienceTF]}
+{[if ClientHPOASuccessors]}
+{[if ClientOrganTF || ClientDonateScienceTF]}
+{[if ClientOrganTF]}
+{[if EstateAppTF &amp;&amp; !ClientSpringingHPOA]}
+{[if EstateAppTF &amp;&amp; AgentServeAlone]}
+{[if EstateAppTF &amp;&amp; Client.SelectNotary]}
+{[if EstateAppTF &amp;&amp; ClientAgentsHPOA.AgentServeAlone]}
+{[if EstateAppTF &amp;&amp; ClientAgentsHPOA.TrueAgents.length &gt; 1 &amp;&amp; ClientAgentsHPOA.AgentServeAlone &amp;&amp; !ClientHPOASuccessors]}
+{[if EstateAppTF &amp;&amp; ClientRevokePriorHPOATF]}
+{[if EstateAppTF &amp;&amp; DuplicateOriginalsTF]}
+{[if EstateAppTF &amp;&amp; ESignTF]}
+{[if EstateAppTF &amp;&amp; ExecutionDateTF]}
+{[if EstateAppTF &amp;&amp; SelectNotary]}
+{[if EstateAppTF &amp;&amp; StateLawSelect.Name == "Louisiana"]}
+{[if EstateAppTF]}
+{[if IsGeauxAppTF  || (EstateAppTF &amp;&amp; StateLawSelect.Name == "Louisiana")]}
+{[if IsGeauxAppTF &amp;&amp; !IndividualTF]}
+{[if IsGeauxAppTF || (!IsGeauxAppTF  &amp;&amp; StateLawSelect.Name == "Louisiana")]}
+{[if IsGeauxAppTF || (!IsGeauxAppTF &amp;&amp; StateLawSelect.Name == "Louisiana")]}
+{[if IsGeauxAppTF || StateLawSelect.Name == "Louisiana"]}
+{[if MarriedTF &amp;&amp; (ClientAgentsHPOA.TrueAgents|any: id$ == Spouse.id$)]}
+{[if StateLawSelect.Name == "Louisiana"]}
+{[if TrueAgents.length &gt; 1]}
+{[if TrueAgents.length &gt; 2]}
+{[if TrueAgents.length == 1]}
+{[list ClientAgentsHPOA.ImmediateAgents|filter: NameCO|punc:"1, 2, and 3"]}
+{[list ClientAgentsHPOA.TrueAgents]}
+{[list ClientAgentsHPOA.TrueAgents|filter: NameCO|punc:"1, 2, and 3"]}
+{[list ClientAgentsHPOA.TrueAgents|filter: NameCO|punc:"1, 2, or 3"]}
+{[list ClientAgentsHPOA.TrueAgentsNoSpouse]}
+{[list ClientHPOASuccAgents]}
+{[list GeauxSigners]}
+{[list GeauxSigners|punc: "1, 2, and 3"]}
+{[list TrueAgents]}
+{[list TrueAgents|filter: NameCO|punc:"1, 2, and 3"]}
+{[list TrueAgents|filter: NameCO|punc:"1, 2, or 3"]}
+{[NameCO]}
+{[NameCO|else: "_________________"]}
+{[NotaryBlockParish|else: "______________"]}
+{[NotaryBlockParish|upper|else: "_______________"]}
+{[PartyBlockAddress]}
+{[PartyParish|else: "_________"]}
+{[PartyParish|else: "__________"]}
+{[PartyParishCounty|else: "__________"]}
+{[PartyState|else: "__________"]}
+{[SelectNotary.Commission|else: "____________________"]}
+{[SelectNotary.FullName|else: "______________"]}
+{[SelectNotary.NumberText|else: "_____________________"]}
+{[SelectNotary.Parish|else: "_____________________"]}
+{[SignerFullName]}
+{[SignerTitle]}
+{[Spouse.NameCO]}
+{[Spouse.NameCO|else: "_________________"]}
+{[Spouse.PartyBlockAddress]}
+{[SSNorEIN|else: "____________"]}
+{[StateLawSelect.Name]}

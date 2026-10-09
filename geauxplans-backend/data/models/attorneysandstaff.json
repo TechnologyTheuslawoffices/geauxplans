@@ -1,0 +1,688 @@
+{
+  "_id": "65e005460f90d9f0ea617b9d",
+  "summary": "{[Name]}{[if First]}{[endif]}",
+  "name": "attorneysandstaff",
+  "type": "object",
+  "label": "",
+  "kind": "model",
+  "properties": [
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e005751c9bf0999c2aaf2e",
+      "name": "Email",
+      "isList": false,
+      "label": "Email:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2021-12-13T18:27:49.683Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e005761c9bf0999c2aaf30",
+      "name": "First",
+      "isList": false,
+      "label": "First name:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "anOptionListedBelow",
+      "_options": "[\"Rapides\"]",
+      "_id": "65e005761c9bf0999c2aaf34",
+      "name": "EnterParish",
+      "isList": false,
+      "label": "{[ParishCounty|else: \"Parish\"]}; do not include the word \"{[ParishCounty|else: \"Parish\"]}\".",
+      "helpText": "",
+      "forceRelevance": "IsNotaryTF || IsAttorneyTF",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "gender",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "_id": "65e005761c9bf0999c2aaf31",
+      "name": "Gender",
+      "isList": false,
+      "label": "Gender:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e005761c9bf0999c2aaf32",
+      "name": "Last",
+      "isList": false,
+      "label": "Last name:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e005761c9bf0999c2aaf33",
+      "name": "Middle",
+      "isList": false,
+      "label": "Middle name (or initial with period):",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2020-06-12T16:02:00.867Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Parish\"},{\"Name\":\"County\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "65e005761c9bf0999c2aaf35",
+      "name": "ParishCounty",
+      "isList": false,
+      "label": "Use \"Parish\" or \"County\"?",
+      "helpText": "",
+      "forceRelevance": "IsNotaryTF || IsAttorneyTF",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "Phones",
+      "_id": "65e005761c9bf0999c2aaf36",
+      "name": "StaffP",
+      "isList": false,
+      "label": "P:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2021-12-13T18:27:49.683Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "suffixes|map: Name",
+      "_id": "65e005761c9bf0999c2aaf3a",
+      "name": "Suffix",
+      "isList": false,
+      "label": "Suffix, if any:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "_id": "65e007651c9bf0999c2aaf47",
+      "name": "UseFirmAddressTF",
+      "isList": false,
+      "label": "Use one of the addresses entered for firm?",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "true/false"
+    },
+    {
+      "style": "",
+      "options": "firmAddresses",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "65e007971c9bf0999c2aaf48",
+      "name": "SelectAddress",
+      "isList": false,
+      "label": "Select from firm's addresses:",
+      "helpText": "",
+      "forceRelevance": "UseFirmAddressTF",
+      "type": "selection"
+    },
+    {
+      "style": "accordion",
+      "typeDef": "65e0068c0f90d9f0ea61a141",
+      "useImport": false,
+      "typeName": "address",
+      "_id": "65e007e91c9bf0999c2aaf49",
+      "name": "Address",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "!UseFirmAddressTF",
+      "type": "object"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Attorney\"},{\"Name\":\"Notary\"},{\"Name\":\"Staff\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "65e00d357f40c5204137d58f",
+      "name": "Roles",
+      "isList": true,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e00d497f40c5204137d590",
+      "name": "BarNo",
+      "isList": false,
+      "label": "Bar number:",
+      "helpText": "",
+      "forceRelevance": "IsAttorneyTF",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e00d537f40c5204137d591",
+      "name": "NotaryNumber",
+      "isList": false,
+      "label": "Notary number:",
+      "helpText": "",
+      "forceRelevance": "IsNotaryTF",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "Phones",
+      "_id": "65e00e517f40c5204137d598",
+      "name": "StaffF",
+      "isList": false,
+      "label": "F:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e0103c7f40c5204137d5a0",
+      "name": "UseName",
+      "isList": false,
+      "label": "Familiarly used name or identifier, if not {[First|else: \"first name\"]}:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e0b21992f8a5481be3a6a9",
+      "name": "Title",
+      "isList": false,
+      "label": "Title for signing letters, if any:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "InitialsSuggest",
+      "_id": "65e0b22e92f8a5481be3a6aa",
+      "name": "Initials",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text"
+    }
+  ],
+  "formulas": [
+    {
+      "contentType": "",
+      "_id": "65e0064c1c9bf0999c2aaf3d",
+      "name": "FullName",
+      "isList": false,
+      "label": "",
+      "expression": "this.Middle\n  ? this.Suffix\n     ? this.First + \" \" + this.Middle + \" \" + this.Last + \", \" + this.Suffix\n     : this.First + \" \" + this.Middle + \" \" + this.Last\n  : Suffix\n     ? this.First + \" \" + this.Last + \", \" + this.Suffix\n     : this.First + \" \"  + this.Last",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "_id": "65e00d6e7f40c5204137d592",
+      "name": "IsAttorneyTF",
+      "isList": false,
+      "label": "",
+      "expression": "(this.Roles|contains: \"Attorney\")",
+      "ref": "",
+      "type": "true/false"
+    },
+    {
+      "_id": "65e00d7e7f40c5204137d593",
+      "name": "IsNotaryTF",
+      "isList": false,
+      "label": "",
+      "expression": "(this.Roles|contains: \"Notary\")",
+      "ref": "",
+      "type": "true/false"
+    },
+    {
+      "_id": "65e00e707f40c5204137d599",
+      "name": "TrueAddress",
+      "isList": false,
+      "label": "",
+      "expression": "this.UseFirmAddressTF\n   ? this.SelectAddress\n   : this.Address",
+      "ref": "address",
+      "type": "object"
+    },
+    {
+      "contentType": "",
+      "_id": "65e00f287f40c5204137d59d",
+      "name": "Street2",
+      "isList": false,
+      "label": "",
+      "expression": "this.TrueAddress.StreetAddress2\n   ? this.TrueAddress.StreetAddress2\n   : null",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "65e0111b3259e4a1194f145f",
+      "name": "Name",
+      "isList": false,
+      "label": "",
+      "expression": "this.UseName\n  ? this.UseName\n  : this.First",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "65e0149a3259e4a1194f1461",
+      "name": "Phone",
+      "isList": false,
+      "label": "",
+      "expression": "StaffP",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "65e014a23259e4a1194f1462",
+      "name": "Fax",
+      "isList": false,
+      "label": "",
+      "expression": "StaffF",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "65e0b23792f8a5481be3a6ab",
+      "name": "InitialsSuggest",
+      "isList": true,
+      "label": "",
+      "expression": "[\"this.Middle\\r\\n   ? (this.First.first(1)|lower) + (this.Middle.first(1)|lower) + (this.Last.first(1)|lower)\\r\\n   : (this.First.first(1)|lower) + (this.Last.first(1)|lower)\"]",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "_id": "65e0b5401f688a26483dd9a9",
+      "name": "IsStaffTF",
+      "isList": false,
+      "label": "",
+      "expression": "(this.Roles|contains: \"Staff\")",
+      "ref": "",
+      "type": "true/false"
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[if this.IsAttorneyTF]}Bar Roll No. {[this.BarNo]}{[if IsNotaryTF]}/Notary Number {[this.NotaryNumber]}{[endif]}{[else]}Notary Number {[this.NotaryNumber]}{[endif]}",
+      "_id": "65e00d9f7f40c5204137d594",
+      "name": "NumberText",
+      "label": "",
+      "type": "text",
+      "content": "{[if this.IsAttorneyTF]}Bar Roll No. {[this.BarNo]}{[if IsNotaryTF]}/Notary Number {[this.NotaryNumber]}{[endif]}{[else]}Notary Number {[this.NotaryNumber]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.City]}, {[this.EnterParish]} {[this.ParishCounty|else: \"Parish/County\"]}",
+      "_id": "65e00df77f40c5204137d595",
+      "name": "Parish",
+      "label": "",
+      "type": "text",
+      "content": "{[this.City]}, {[this.EnterParish]} {[this.ParishCounty|else: \"Parish/County\"]}"
+    },
+    {
+      "contentType": "",
+      "text": "My Commission is for Life",
+      "_id": "65e00e2c7f40c5204137d596",
+      "name": "Commission",
+      "label": "",
+      "type": "text",
+      "content": "My Commission is for Life"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.EnterParish]}",
+      "_id": "65e00e367f40c5204137d597",
+      "name": "JustParishName",
+      "label": "",
+      "type": "text",
+      "content": "{[this.EnterParish]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.TrueAddress.CityStateZip]}",
+      "_id": "65e00ef17f40c5204137d59a",
+      "name": "CityStateZip",
+      "label": "",
+      "type": "text",
+      "content": "{[this.TrueAddress.CityStateZip]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.TrueAddress.StreetAddress1]}",
+      "_id": "65e00f027f40c5204137d59b",
+      "name": "Street",
+      "label": "",
+      "type": "text",
+      "content": "{[this.TrueAddress.StreetAddress1]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.TrueAddress.City]}",
+      "_id": "65e0975a92f8a5481be3a6a3",
+      "name": "City",
+      "label": "",
+      "type": "text",
+      "content": "{[this.TrueAddress.City]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.FullName]}{[if this.Title]}, {[this.Title]}{[endif]}",
+      "_id": "65e0b1f992f8a5481be3a6a8",
+      "name": "Description",
+      "label": "",
+      "type": "text",
+      "content": "{[this.FullName]}{[if this.Title]}, {[this.Title]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.TrueAddress.State.Name]}",
+      "_id": "65e1eecfc19b01c06fe89428",
+      "name": "State",
+      "label": "",
+      "type": "text",
+      "content": "{[this.TrueAddress.State.Name]}"
+    }
+  ],
+  "layouts": [
+    {
+      "name": "(default)",
+      "label": "",
+      "columnCount": 3,
+      "rows": [
+        [
+          {
+            "id": "1a1c3a30-d6bb-11ee-8eff-03f1d6435f45",
+            "content": "First",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "1b976880-d6bb-11ee-8eff-03f1d6435f45",
+            "content": "Middle",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          },
+          {
+            "id": "18afd8f0-d6bb-11ee-8eff-03f1d6435f45",
+            "content": "Last",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "11a624b0-d6c0-11ee-98a3-698c2383f681",
+            "content": "Suffix",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "8212d040-d6c0-11ee-b6cb-03d9831fcd40",
+            "content": "UseName",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "c3f988e0-d720-11ee-93ae-6f049db4eb58",
+            "content": "Initials",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "c4fd1630-d720-11ee-93ae-6f049db4eb58",
+            "content": "Title",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "14188440-d6c0-11ee-98a3-698c2383f681",
+            "content": "Gender",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "9c5b4250-d6c2-11ee-b6cb-03d9831fcd40",
+            "content": "Email",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "ca1aaf50-d6c2-11ee-b6cb-03d9831fcd40",
+            "content": "StaffP",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          },
+          {
+            "id": "cd150390-d6c2-11ee-b6cb-03d9831fcd40",
+            "content": "StaffF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "099281e0-d6c2-11ee-b6cb-03d9831fcd40",
+            "content": "Roles",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "086859c0-d6c2-11ee-b6cb-03d9831fcd40",
+            "content": "NotaryNumber",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "0a9c29b0-d6c2-11ee-b6cb-03d9831fcd40",
+            "content": "BarNo",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "ParishCounty",
+            "list": [],
+            "_id": "65e008180f90d9f0ea61b29b",
+            "id": "16e440b6-d6bb-11ee-8eff-03f1d6435f45",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "2de56fa0-d6c0-11ee-98a3-698c2383f681",
+            "content": "EnterParish",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "UseFirmAddressTF",
+            "list": [],
+            "_id": "65e008180f90d9f0ea61b29e",
+            "id": "16e440b9-d6bb-11ee-8eff-03f1d6435f45"
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "SelectAddress",
+            "list": [],
+            "_id": "65e008180f90d9f0ea61b29f",
+            "id": "16e440ba-d6bb-11ee-8eff-03f1d6435f45",
+            "offset": 0,
+            "span": 2
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "Address",
+            "list": [],
+            "_id": "65e008180f90d9f0ea61b2a0",
+            "id": "16e440bb-d6bb-11ee-8eff-03f1d6435f45",
+            "offset": 0,
+            "span": 2
+          }
+        ]
+      ],
+      "_id": "65e008151c9bf0999c2aaf4a"
+    }
+  ],
+  "apps": [],
+  "__v": 0
+}

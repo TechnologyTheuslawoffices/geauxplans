@@ -291,7 +291,7 @@
 }
 
 .plan-list a {
-  color: #0000ff;
+  color: #1a1acc;
   font-size: 1.1rem;
   text-decoration: none;
 }
@@ -422,7 +422,7 @@
 .number-card .number {
   font-size: 4rem;
   font-weight: 700;
-  color: #0000ff;
+  color: #1a1acc;
   display: block;
   margin-bottom: 15px;
 }
@@ -489,7 +489,7 @@
   top: 20px;
   width: 80px;
   height: 100%;
-  background: #0000ff;
+  background: #1a1acc;
   z-index: 0;
 }
 
@@ -528,7 +528,7 @@
 .learning-column h4 {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #0000ff;
+  color: #1a1acc;
   margin-bottom: 10px;
 }
 
@@ -552,7 +552,7 @@
   border-bottom: none;
 }
 
-.article-date {
+.article-list .article-date {
   display: block;
   font-size: 0.8rem;
   color: #999;
@@ -566,7 +566,7 @@
 }
 
 .article-list a:hover {
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 /* Contact Section */
@@ -587,6 +587,30 @@
 }
 
 /* Responsive */
+
+/* Tablet: two-column content blocks are too cramped side by side, collapse
+   them here instead of waiting until the phone breakpoint. */
+@media (max-width: 992px) {
+  .ep-landing-grid,
+  .learning-grid,
+  .louisiana-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .louisiana-image {
+    order: -1;
+  }
+
+  .numbers-grid {
+    gap: 24px;
+  }
+
+  .ep-landing-content h2 {
+    font-size: 2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .ep-option-btn {
     padding: 15px 20px;
@@ -629,7 +653,35 @@
     flex-direction: column;
   }
 
+  .louisiana-content h2 {
+    font-size: 1.6rem;
+  }
+
+  /* The decorative offset bar is a desktop split-layout device; on phones it
+     just narrows the stacked image. */
+  .louisiana-image .blue-rectangle {
+    display: none;
+  }
+
+  .louisiana-image img {
+    max-width: 100%;
+  }
+
   .quiz-modal {
     margin: 10px;
+  }
+
+  /* The 30px header/body padding crowded the quiz on phones. Trim it and give
+     the header room to clear the close button. */
+  .quiz-modal-header {
+    padding: 28px 18px 0;
+  }
+
+  .quiz-modal-body {
+    padding: 16px 18px 24px;
+  }
+
+  .quiz-modal .ep-progress {
+    padding: 0 18px;
   }
 }

@@ -47,80 +47,67 @@ const Orders: React.FC = () => {
       </p>
 
       {hasOrders ? (
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid #eaeaea' }}>
-                <th style={{ textAlign: 'left', padding: '15px 10px', color: '#707070', fontSize: '14px', fontWeight: '600' }}>
-                  Order
-                </th>
-                <th style={{ textAlign: 'left', padding: '15px 10px', color: '#707070', fontSize: '14px', fontWeight: '600' }}>
-                  Date
-                </th>
-                <th style={{ textAlign: 'left', padding: '15px 10px', color: '#707070', fontSize: '14px', fontWeight: '600' }}>
-                  Status
-                </th>
-                <th style={{ textAlign: 'left', padding: '15px 10px', color: '#707070', fontSize: '14px', fontWeight: '600' }}>
-                  Total
-                </th>
-                <th style={{ textAlign: 'right', padding: '15px 10px', color: '#707070', fontSize: '14px', fontWeight: '600' }}>
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {mockOrders.map((order) => (
-                <tr key={order.id} style={{ borderBottom: '1px solid #eaeaea' }}>
-                  <td style={{ padding: '20px 10px' }}>
-                    <span style={{ fontWeight: '600', color: '#004d71' }}>#{order.id}</span>
-                  </td>
-                  <td style={{ padding: '20px 10px' }}>
-                    {new Date(order.date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </td>
-                  <td style={{ padding: '20px 10px' }}>
-                    <span
-                      style={{
-                        padding: '5px 15px',
-                        borderRadius: '20px',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        ...getStatusStyle(order.status),
-                      }}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '20px 10px' }}>
-                    <span style={{ fontWeight: '600' }}>
-                      ${order.total.toFixed(2)}
-                    </span>
-                    <span style={{ color: '#707070', fontSize: '14px' }}>
-                      {' '}for {order.items} item{order.items !== 1 ? 's' : ''}
-                    </span>
-                  </td>
-                  <td style={{ padding: '20px 10px', textAlign: 'right' }}>
-                    <button
-                      className="btn btn-sm"
-                      style={{
-                        backgroundColor: '#004d71',
-                        color: '#fff',
-                        border: 'none',
-                        padding: '8px 15px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      View
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {mockOrders.map((order) => (
+            <div
+              key={order.id}
+              style={{
+                border: '1px solid #eaeaea',
+                borderRadius: '8px',
+                padding: '18px 20px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '8px',
+                  marginBottom: '10px',
+                }}
+              >
+                <span style={{ fontWeight: '600', color: '#004d71', fontSize: '18px' }}>#{order.id}</span>
+                <span
+                  style={{
+                    padding: '5px 15px',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    ...getStatusStyle(order.status),
+                  }}
+                >
+                  {order.status}
+                </span>
+              </div>
+              <div style={{ color: '#707070', fontSize: '14px', marginBottom: '6px' }}>
+                {new Date(order.date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </div>
+              <div style={{ marginBottom: '14px' }}>
+                <span style={{ fontWeight: '600' }}>${order.total.toFixed(2)}</span>
+                <span style={{ color: '#707070', fontSize: '14px' }}>
+                  {' '}for {order.items} item{order.items !== 1 ? 's' : ''} — {order.products.join(', ')}
+                </span>
+              </div>
+              <button
+                className="btn btn-sm"
+                style={{
+                  backgroundColor: '#004d71',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '8px 15px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+              >
+                View
+              </button>
+            </div>
+          ))}
         </div>
       ) : (
         <div

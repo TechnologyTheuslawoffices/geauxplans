@@ -100,7 +100,7 @@ const EditProfile: React.FC = () => {
       )}
 
       <form onSubmit={handleSubmit}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+        <div className="form-row-2col">
           <div>
             <label style={labelStyle}>
               First Name <span style={{ color: '#e74c3c' }}>*</span>
@@ -221,6 +221,8 @@ const EditProfile: React.FC = () => {
           style={{
             padding: '15px 40px',
             cursor: 'pointer',
+            width: '100%',
+            maxWidth: '320px',
           }}
         >
           Save Changes

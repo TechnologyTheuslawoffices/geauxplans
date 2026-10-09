@@ -68,7 +68,9 @@ if (USE_SUPABASE) {
   // DO NOT require any SQLite-dependent routes - they will crash Vercel
   const submissionsRoutes = require('./routes/submissions-supabase');
   app.use('/api/submissions', submissionsRoutes);
-  console.log('Loaded Supabase submissions routes');
+  const cartRoutes = require('./routes/cart-supabase');
+  app.use('/api/cart', cartRoutes);
+  console.log('Loaded Supabase submissions + cart routes');
 } else {
   // SQLite mode - use all routes (local development only)
   // This block is ignored by Vercel when SUPABASE env vars are set
@@ -106,8 +108,24 @@ function loadSqliteRoutes() {
 // These routes work in both modes
 const knacklyRoutes = require('./routes/knackly');
 const stripeRoutes = require('./routes/stripe');
+const leadsRoutes = require('./routes/leads');
+const businessPublicRoutes = require('./routes/businessPublic');
+const couponRoutes = require('./routes/coupons');
+const referralRoutes = require('./routes/referrals');
+const aiAttorneyRoutes = require('./routes/aiAttorney');
 app.use('/api/knackly', knacklyRoutes);
 app.use('/api/stripe', stripeRoutes);
+app.use('/api/leads', leadsRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/referrals', referralRoutes);
+app.use('/api/ai-attorney', aiAttorneyRoutes);
+
+// The DB-free half of /api/business. In SQLite mode the full router above is
+// already mounted on this prefix and matches first for the paths it defines;
+// Express falls through to this one for the rest. In Supabase mode this is the
+// only /api/business there is, which is the point — the LLC purchase funnel
+// opens with the SOS name check and it was 404ing in production.
+app.use('/api/business', businessPublicRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

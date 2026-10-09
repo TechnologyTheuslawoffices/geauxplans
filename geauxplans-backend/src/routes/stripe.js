@@ -1,22 +1,116 @@
 /**
  * Stripe Payment Routes
+ * Handles one-time purchases and subscriptions for extended form access
  */
 
 const express = require('express');
 const { db } = require('../config/database');
+const { supabase } = require('../config/supabase');
 const { authenticate, optionalAuth } = require('../middleware/auth');
+const { keapService } = require('../services/keap');
+const { validateCoupon, recordRedemption } = require('../services/coupons');
+const { validateReferral, recordReferral } = require('../services/referrals');
+const { SECOND_PERSON_UPGRADE } = require('../config/constants');
+const upsell = require('../services/upsell');
 
 const router = express.Router();
 
-// Initialize Stripe
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+/**
+ * Stripe, or null when STRIPE_SECRET_KEY is not configured.
+ *
+ * The constructor throws on a missing key. Calling it at module load meant that
+ * an unset key took the whole router down at `require` time — and api/index.js
+ * catches that and merely warns, so every /api/stripe/* route answered 404 with
+ * nothing to say why. Checkout was dead in production for exactly this reason
+ * and it looked like a routing problem, which is the same trap the SOS name
+ * check fell into.
+ *
+ * Constructing lazily lets the router mount and answer honestly instead.
+ */
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? require('stripe')(process.env.STRIPE_SECRET_KEY)
+  : null;
 
-// Product configuration - matches frontend PRODUCTS
+if (!stripe) {
+  console.error('STRIPE_SECRET_KEY is not set — payment routes will return 503');
+}
+
+router.use((req, res, next) => {
+  if (!stripe) {
+    return res.status(503).json({
+      success: false,
+      error: 'Payments are temporarily unavailable. Please try again shortly.',
+      detail: 'STRIPE_SECRET_KEY is not configured on the server',
+    });
+  }
+  next();
+});
+
+/**
+ * Where Stripe sends the customer back to.
+ *
+ * FRONTEND_URL is not set in the Vercel production environment, which would
+ * have produced `undefined/checkout/success` — a URL Stripe rejects, failing
+ * session creation for every order. Defaulting to the live site is correct for
+ * production and harmless in dev, where FRONTEND_URL is set to localhost.
+ */
+const SITE_URL = process.env.FRONTEND_URL || 'https://geauxplans.com';
+
+// Product configuration - matches frontend PRODUCTS (prices in cents)
 const PRODUCTS = {
-  606: { name: 'Minor Child-Centered Estate Plan', price: 59900 }, // in cents
-  614: { name: 'Power of Attorney Supplement', price: 29900 },
-  673: { name: 'Will-Based Estate Plan', price: 39900 },
-  676: { name: 'Trust-Based Estate Plan', price: 89900 },
+  606: { name: 'Minor Child-Centered Estate Plan', price: 19900, price2person: 29900, type: 'one_time' },
+  614: { name: 'Power of Attorney Supplement', price: 9900, price2person: 14900, type: 'one_time' },
+  673: { name: 'Will-Based Estate Plan', price: 19900, price2person: 29900, type: 'one_time' },
+  676: { name: 'Trust-Based Estate Plan', price: 39900, price2person: 59900, type: 'one_time' },
+  // Legal Edge Plan — monthly subscription that grants Forever Revisions and
+  // Advanced Estate Plan upgrade credit. Cancel anytime.
+  1367: { name: 'Legal Edge Plan', price: 999, price2person: 999, type: 'subscription', interval: 'month' },
+};
+
+// Predefined Stripe Price IDs, keyed by internal product id + form type.
+// Checkout references these directly instead of building price_data inline, so
+// no throwaway products are created in Stripe on every session. PRODUCTS above
+// stays the source of truth for names and amounts (used by the webhook, coupon
+// subtotal math, etc.); the amounts here must match the Prices in Stripe.
+// Legal Edge is a single monthly price shared by both form types.
+const STRIPE_PRICES = {
+  606: { solo: 'price_1SpvwaHQjfjZ1dW7FrJg2qyG', '2person': 'price_1UIrqYHQjfjZ1dW7ZhBmuKkj' },
+  614: { solo: 'price_1SpvvgHQjfjZ1dW79YusgiZ0', '2person': 'price_1UIrrQHQjfjZ1dW76jjn3jdO' },
+  673: { solo: 'price_1Spvw4HQjfjZ1dW77WCMvu4X', '2person': 'price_1UIrryHQjfjZ1dW78nLHmdLb' },
+  676: { solo: 'price_1SpvwvHQjfjZ1dW7bH18jVZX', '2person': 'price_1UIrpiHQjfjZ1dW72czaM6eg' },
+  1367: { solo: 'price_1UIrvdHQjfjZ1dW7DOECJHcK', '2person': 'price_1UIrvdHQjfjZ1dW7DOECJHcK' },
+};
+
+// Business / LLC-formation catalog. These SKUs are custom cart items
+// (geauxplans-react StartBusinessLLC.tsx, productId 0) identified by `sku`.
+//
+// This stays the SERVER-SIDE source of truth for what a business SKU costs: the
+// frontend sends only the sku, never a price, so an edited localStorage cart
+// cannot change the charge (same posture as the estate PRODUCTS catalog above).
+// The amounts also drive the webhook order math and coupon subtotal, so they
+// must equal the unit_amount of the matching Stripe Price in BUSINESS_PRICES.
+// LLC amounts fold in the state filing fee the wizard bundles into its price
+// (base + filing: 89+100, 329+100, 349+130). Keys match keap.js
+// BUSINESS_PRODUCT_TAGS so the webhook can hand the sku straight to Keap.
+const BUSINESS_SKUS = {
+  gpx_llc_1: { name: 'Economy LLC Package', amount: 18900 },
+  gpx_llc_2: { name: 'Standard LLC Package', amount: 42900 },
+  gpx_llc_3: { name: 'Express Gold LLC Package', amount: 47900 },
+  gpx_og_1: { name: 'Operating Agreement', amount: 14900 },
+  gpx_og_2: { name: 'Operating Agreement + EIN', amount: 19900 },
+  gpx_og_3: { name: 'Operating Agreement + EIN + Licenses', amount: 29900 },
+  'registered-agent': { name: 'Registered Agent Service', amount: 24900 },
+};
+
+// Predefined Stripe Price IDs for the business SKUs, keyed by sku. Checkout
+// references these directly so each sale lands on a real catalog Product in
+// Stripe reporting instead of an ad-hoc inline price_data product. Populate via
+// `node scripts/create-business-prices.js` (one-time, run with the live key),
+// which creates the Products/Prices and prints this map ready to paste. A sku
+// missing here falls back to inline price_data from BUSINESS_SKUS so checkout
+// never fails on a not-yet-created Price.
+const BUSINESS_PRICES = {
+  // gpx_llc_1: 'price_...',
 };
 
 /**
@@ -30,44 +124,178 @@ function generateOrderNumber() {
 
 /**
  * POST /api/stripe/create-checkout-session
- * Create a Stripe checkout session for a product
+ *
+ * Create a Stripe checkout session for one or more products.
+ *
+ * Request body (new): { items: [{ productId, formType }, ...] }
+ * Request body (legacy, still supported): { productId, formType }
+ *
+ * Mixing one-time + subscription products is supported by putting all Prices
+ * in line_items: in subscription mode the one-time lines bill on the first
+ * invoice and the subscription recurs thereafter.
  */
 router.post('/create-checkout-session', optionalAuth, async (req, res) => {
-  const { productId, formType } = req.body;
-
-  if (!productId || !PRODUCTS[productId]) {
-    return res.status(400).json({ success: false, error: 'Invalid product' });
+  // Accept either { items: [...] } or { productId, formType } (back-compat)
+  let items = Array.isArray(req.body.items) ? req.body.items : null;
+  if (!items) {
+    const { productId, formType } = req.body;
+    if (!productId) {
+      return res.status(400).json({ success: false, error: 'No items in cart' });
+    }
+    items = [{ productId, formType: formType || 'solo' }];
   }
 
-  const product = PRODUCTS[productId];
+  // Validate and resolve each item
+  const resolved = [];
+  for (const it of items) {
+    // Business SKUs are custom cart items (productId 0) identified by `sku`.
+    // They resolve to a predefined Stripe Price (BUSINESS_PRICES) when one
+    // exists, else fall back to an inline price_data amount from BUSINESS_SKUS.
+    if (it.sku && BUSINESS_SKUS[it.sku]) {
+      const b = BUSINESS_SKUS[it.sku];
+      resolved.push({ business: true, sku: it.sku, name: b.name, unitAmount: b.amount, priceId: BUSINESS_PRICES[it.sku] });
+      continue;
+    }
+    const pid = parseInt(it.productId, 10);
+    if (!pid || !PRODUCTS[pid]) {
+      return res.status(400).json({ success: false, error: `Invalid product: ${it.productId}` });
+    }
+    const product = PRODUCTS[pid];
+    const formType = it.formType === '2person' ? '2person' : 'solo';
+    const unitAmount = formType === '2person' ? product.price2person : product.price;
+    const priceId = STRIPE_PRICES[pid]?.[formType];
+    if (!priceId) {
+      return res.status(400).json({ success: false, error: `No price configured for product ${pid} (${formType})` });
+    }
+    resolved.push({ productId: pid, product, formType, unitAmount, priceId });
+  }
+
+  const hasSubscription = resolved.some(r => r.product?.type === 'subscription');
+  const mode = hasSubscription ? 'subscription' : 'payment';
 
   try {
-    // Create checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
+    // Reference predefined Stripe Prices. Checkout accepts one-time and
+    // recurring prices in the same session: in subscription mode the one-time
+    // lines are billed on the first invoice and the recurring line recurs, so a
+    // mixed cart needs nothing special. (The old subscription_data.add_invoice_items
+    // path is gone — the current Stripe API version rejects it.)
+    // Both estate and business items reference a predefined Stripe Price. A
+    // business sku without one yet falls back to inline price_data from its
+    // server-side amount, so a not-yet-created Price never blocks checkout.
+    const lineItems = resolved.map(r => {
+      if (r.business && !r.priceId) {
+        return {
           price_data: {
             currency: 'usd',
-            product_data: {
-              name: product.name,
-              description: `GeauxPlans ${product.name}`,
-            },
-            unit_amount: product.price,
+            product_data: { name: r.name },
+            unit_amount: r.unitAmount,
           },
           quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: `${process.env.FRONTEND_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/checkout/cancelled`,
+        };
+      }
+      return { price: r.priceId, quantity: 1 };
+    });
+
+    // Metadata: stringify the items array, plus first-item legacy fields
+    const metadataItems = JSON.stringify(
+      resolved.map(r => (r.business
+        ? { sku: r.sku }
+        : { productId: r.productId, formType: r.formType }))
+    );
+
+    // Re-validate the discount here rather than trusting anything the cart sent.
+    // The /validate endpoints are only a preview for display; this is the
+    // request that determines the amount charged, so the discount is recomputed
+    // from the database against a subtotal we derive ourselves from PRODUCTS.
+    //
+    // A referral code and a coupon are mutually exclusive; if both arrive the
+    // referral wins (it also earns the referring member a commission). Failing
+    // the checkout on an invalid code — rather than dropping it — avoids
+    // charging more than the page promised.
+    const subtotalCents = resolved.reduce((sum, r) => sum + r.unitAmount, 0);
+    let appliedCoupon = null;
+    let appliedReferral = null;
+
+    if (req.body.referralCode) {
+      const result = await validateReferral(req.body.referralCode, subtotalCents);
+      if (result.valid) {
+        appliedReferral = result;
+      } else {
+        return res.status(400).json({ success: false, error: result.message });
+      }
+    } else if (req.body.couponCode) {
+      const result = await validateCoupon(req.body.couponCode, subtotalCents);
+      if (result.valid) {
+        appliedCoupon = result;
+      } else {
+        return res.status(400).json({ success: false, error: result.message });
+      }
+    }
+
+    const sessionParams = {
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode,
+      success_url: `${SITE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${SITE_URL}/checkout/cancelled`,
       metadata: {
-        productId: productId.toString(),
-        formType: formType || 'solo',
+        items: metadataItems,
+        // Legacy single-item fields for back-compat with success page + webhook.
+        // A business-only cart has no numeric productId, so these fall back to 0;
+        // the webhook reads metadata.items (which carries the sku) regardless.
+        productId: (resolved[0].productId ?? 0).toString(),
+        formType: resolved[0].formType || 'solo',
         userId: req.user?.id?.toString() || '',
+        // Carried so the webhook can record the redemption after payment
+        // succeeds, rather than counting a code the customer never used.
+        couponCode: appliedCoupon?.code || '',
+        couponDiscountCents: appliedCoupon ? String(appliedCoupon.discountCents) : '',
+        // Same idea for a referral: recorded post-payment. commissionPercent is
+        // carried so the webhook can compute the member's credit from the
+        // amount actually paid.
+        referralCode: appliedReferral?.code || '',
+        referralCommissionPercent: appliedReferral ? String(appliedReferral.commissionPercent) : '',
+        referralDiscountCents: appliedReferral ? String(appliedReferral.refereeDiscountCents) : '',
       },
       customer_email: req.user?.email || undefined,
-    });
+    };
+
+    if (mode === 'payment') {
+      // Keep the card on file so the post-purchase Legal Edge Plan offer can be
+      // accepted in one click, the way the WooFunnels upsell worked. Stripe
+      // Checkout tells the customer their details will be saved when
+      // setup_future_usage is set, so this is not done behind their back.
+      //
+      // Subscription mode does both of these implicitly, and rejects
+      // customer_creation outright.
+      sessionParams.customer_creation = 'always';
+      sessionParams.payment_intent_data = { setup_future_usage: 'off_session' };
+    }
+
+    if (appliedCoupon) {
+      // A one-shot Stripe coupon per session. Stripe needs its own coupon
+      // object to show the discount on the payment page and the receipt;
+      // `duration: 'once'` keeps it from recurring on the Legal Edge Plan
+      // subscription, where the discount is meant to apply to this purchase
+      // and not to every future month.
+      const stripeCoupon = await stripe.coupons.create(
+        appliedCoupon.discountType === 'percent'
+          ? { percent_off: appliedCoupon.amount, duration: 'once', name: appliedCoupon.code.toUpperCase() }
+          : { amount_off: appliedCoupon.discountCents, currency: 'usd', duration: 'once', name: appliedCoupon.code.toUpperCase() }
+      );
+      sessionParams.discounts = [{ coupon: stripeCoupon.id }];
+    } else if (appliedReferral && appliedReferral.refereeDiscountCents > 0) {
+      // The client's referral discount, shown on the Stripe page and receipt.
+      // `duration: 'once'` keeps it off any recurring Legal Edge Plan line.
+      const stripeCoupon = await stripe.coupons.create({
+        percent_off: appliedReferral.refereeDiscountPercent,
+        duration: 'once',
+        name: `REF ${appliedReferral.code.toUpperCase()}`,
+      });
+      sessionParams.discounts = [{ coupon: stripeCoupon.id }];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     res.json({
       success: true,
@@ -79,6 +307,93 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
   } catch (error) {
     console.error('Stripe checkout session error:', error);
     res.status(500).json({ success: false, error: 'Failed to create checkout session' });
+  }
+});
+
+/**
+ * POST /api/stripe/create-second-person-session
+ *
+ * The paid, in-interview "add a second person" add-on. The 1-vs-2 choice no
+ * longer exists at checkout — everyone buys the solo plan — so a client who
+ * later wants to include a spouse/second principal pays the exact price delta
+ * here and the interview upgrades to the 2-person variant on return.
+ *
+ * Body: { submissionId, productId }
+ *
+ * Guards: the submission must belong to the caller, still be a solo variant,
+ * and not already be paid. The upgrade mapping (config/constants.js) is keyed
+ * by the stored solo form_type, so it doubles as the whitelist of what can be
+ * upgraded and to what.
+ */
+router.post('/create-second-person-session', authenticateSupabase, async (req, res) => {
+  if (!supabase) {
+    return res.status(500).json({ success: false, error: 'Database not configured' });
+  }
+
+  const submissionId = req.body.submissionId;
+  const productId = parseInt(req.body.productId, 10);
+
+  if (!submissionId) {
+    return res.status(400).json({ success: false, error: 'submissionId is required' });
+  }
+
+  try {
+    // Ownership + current state. Select the fields the guards need only.
+    const { data: existing, error: fetchError } = await supabase
+      .from('poa_submissions')
+      .select('id, form_type, second_person_paid')
+      .eq('id', submissionId)
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (fetchError || !existing) {
+      return res.status(404).json({ success: false, error: 'Submission not found' });
+    }
+
+    if (existing.second_person_paid) {
+      return res.status(400).json({ success: false, error: 'A second person has already been added to this plan.' });
+    }
+
+    const upgrade = SECOND_PERSON_UPGRADE[existing.form_type];
+    if (!upgrade) {
+      // Either already a 2-person variant, or a form type with no second-person
+      // option. Nothing to sell.
+      return res.status(400).json({ success: false, error: 'This plan cannot add a second person.' });
+    }
+
+    // productId is advisory (the client tells us which product it thinks this
+    // is); trust the mapping derived from the stored form_type instead.
+    const pid = upgrade.productId;
+    const product = PRODUCTS[pid];
+    const planLabel = product?.name || 'your plan';
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: [{
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          unit_amount: upgrade.deltaCents,
+          product_data: { name: `Add Second Person – ${planLabel}` },
+        },
+      }],
+      success_url: `${SITE_URL}/poa-form?product=${pid}&type=${upgrade.twoPersonType}&submission=${existing.id}&upgraded=1`,
+      // Back to the same solo interview if they change their mind.
+      cancel_url: `${SITE_URL}/poa-form?product=${pid}&type=${existing.form_type}&submission=${existing.id}`,
+      metadata: {
+        kind: 'second_person',
+        upgradeSubmissionId: String(existing.id),
+        productId: String(pid),
+        userId: req.user.id?.toString() || '',
+      },
+      customer_email: req.user?.email || undefined,
+    });
+
+    res.json({ success: true, data: { sessionId: session.id, url: session.url } });
+  } catch (error) {
+    console.error('Second-person session error:', error);
+    res.status(500).json({ success: false, error: 'Failed to start the add-second-person checkout' });
   }
 });
 
@@ -115,63 +430,383 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 });
 
 /**
- * Handle successful payment - create order
+ * Handle successful payment - create order and/or subscription
+ *
+ * Supports both the legacy single-item path and the new multi-item path
+ * (driven by `metadata.items` JSON array).
  */
 async function handleSuccessfulPayment(session) {
-  const { productId, formType, userId } = session.metadata;
-  const product = PRODUCTS[productId];
+  const { userId } = session.metadata;
 
-  if (!product) {
-    console.error('Invalid product in payment:', productId);
+  // Second-person add-on: a distinct flow from a product purchase. It upgrades
+  // an existing solo submission to its 2-person variant instead of creating a
+  // new set, so it branches out before the multi-item order logic below.
+  if (session.metadata.kind === 'second_person') {
+    await handleSecondPersonUpgrade(session);
     return;
   }
 
+  // Count the coupon only now that money has actually moved. Doing it at
+  // session creation would let anyone burn down a limited-use code by opening
+  // checkout pages and walking away. Idempotent on the session id, since
+  // Stripe redelivers this event until it gets a 2xx.
+  if (session.metadata.couponCode) {
+    await recordRedemption({
+      code: session.metadata.couponCode,
+      stripeSessionId: session.id,
+      userId,
+      email: session.customer_email || session.customer_details?.email,
+      discountCents: parseInt(session.metadata.couponDiscountCents, 10) || 0,
+    });
+  }
+
+  // Attribute the referral now that money has moved. The member's commission is
+  // computed in recordReferral from amount_total (what the client actually
+  // paid) and the carried commission percent. Idempotent on the session id.
+  if (session.metadata.referralCode) {
+    await recordReferral({
+      code: session.metadata.referralCode,
+      stripeSessionId: session.id,
+      refereeUserId: userId,
+      refereeEmail: session.customer_email || session.customer_details?.email,
+      amountPaidCents: session.amount_total ?? 0,
+      refereeDiscountCents: parseInt(session.metadata.referralDiscountCents, 10) || 0,
+      commissionPercent: parseFloat(session.metadata.referralCommissionPercent) || 0,
+    });
+  }
+
+  // Resolve list of items: prefer metadata.items, fall back to legacy fields
+  let items = [];
+  if (session.metadata.items) {
+    try {
+      const parsed = JSON.parse(session.metadata.items);
+      if (Array.isArray(parsed)) items = parsed;
+    } catch (e) {
+      console.error('Failed to parse metadata.items:', e);
+    }
+  }
+  if (items.length === 0 && session.metadata.productId) {
+    items = [{
+      productId: parseInt(session.metadata.productId, 10),
+      formType: session.metadata.formType || 'solo',
+    }];
+  }
+
+  if (items.length === 0) {
+    console.error('No items in successful payment:', session.id);
+    return;
+  }
+
+  // Validate items
+  const resolved = [];
+  for (const it of items) {
+    // Business SKU items carry a `sku`, no numeric product id.
+    if (it.sku && BUSINESS_SKUS[it.sku]) {
+      const b = BUSINESS_SKUS[it.sku];
+      resolved.push({ business: true, sku: it.sku, name: b.name, priceInCents: b.amount });
+      continue;
+    }
+    const pid = parseInt(it.productId, 10);
+    const product = PRODUCTS[pid];
+    if (!product) {
+      console.error('Invalid product in payment:', it.productId);
+      continue;
+    }
+    const formType = it.formType === '2person' ? '2person' : 'solo';
+    const priceInCents = formType === '2person' ? product.price2person : product.price;
+    resolved.push({ productId: pid, product, formType, priceInCents });
+  }
+
+  if (resolved.length === 0) return;
+
   try {
     const orderNumber = generateOrderNumber();
-    const subtotal = product.price / 100; // Convert from cents
-    const tax = 0; // No tax for now, or calculate if needed
+    const subtotal = resolved.reduce((sum, r) => sum + r.priceInCents, 0) / 100;
+    const tax = 0;
     const total = subtotal + tax;
 
-    // Create order
-    const orderResult = db.prepare(`
-      INSERT INTO orders (user_id, order_number, status, subtotal, tax, total, payment_method, stripe_session_id)
-      VALUES (?, ?, 'completed', ?, ?, ?, 'stripe', ?)
-    `).run(
-      userId || null,
-      orderNumber,
-      subtotal,
-      tax,
-      total,
-      session.id
-    );
+    // Create order in SQLite (if db is configured)
+    let orderId = null;
+    if (db) {
+      const orderResult = db.prepare(`
+        INSERT INTO orders (user_id, order_number, status, subtotal, tax, total, payment_method, stripe_session_id)
+        VALUES (?, ?, 'completed', ?, ?, ?, 'stripe', ?)
+      `).run(
+        userId || null,
+        orderNumber,
+        subtotal,
+        tax,
+        total,
+        session.id
+      );
 
-    const orderId = orderResult.lastInsertRowid;
+      orderId = orderResult.lastInsertRowid;
 
-    // Add order item
-    db.prepare(`
-      INSERT INTO order_items (order_id, product_id, name, quantity, price, total)
-      VALUES (?, ?, ?, 1, ?, ?)
-    `).run(orderId, productId, product.name, subtotal, subtotal);
+      // Add one order_item per resolved product. Business SKUs have no numeric
+      // product id, so they record 0 and carry their catalog name.
+      for (const r of resolved) {
+        const lineSubtotal = r.priceInCents / 100;
+        db.prepare(`
+          INSERT INTO order_items (order_id, product_id, name, quantity, price, total)
+          VALUES (?, ?, ?, 1, ?, ?)
+        `).run(orderId, r.business ? 0 : r.productId, r.business ? r.name : r.product.name, lineSubtotal, lineSubtotal);
+      }
+    }
 
-    // Create estate plan entry if user exists
-    if (userId) {
+    // Handle subscription products — create user_subscriptions row(s)
+    if (userId && supabase) {
+      for (const r of resolved) {
+        if (r.business || r.product.type !== 'subscription') continue;
+        try {
+          // Stack onto existing time instead of resetting to now: re-buying the
+          // Legal Edge Plan while a paid month is still active should ADD an
+          // interval on top of the remaining time, not throw it away.
+          const { data: existingSub } = await supabase
+            .from('user_subscriptions')
+            .select('expires_at')
+            .eq('user_id', userId)
+            .eq('product_id', r.productId)
+            .eq('status', 'active')
+            .gte('expires_at', new Date().toISOString())
+            .order('expires_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          const expiresAt = existingSub && existingSub.expires_at
+            ? new Date(existingSub.expires_at)
+            : new Date();
+          if (r.product.interval === 'year') {
+            expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+          } else {
+            expiresAt.setMonth(expiresAt.getMonth() + 1);
+          }
+
+          const { error: subError } = await supabase
+            .from('user_subscriptions')
+            .insert({
+              user_id: userId,
+              product_id: r.productId,
+              stripe_subscription_id: session.subscription || session.id,
+              status: 'active',
+              started_at: new Date().toISOString(),
+              expires_at: expiresAt.toISOString(),
+            });
+
+          if (subError) {
+            console.error('Error creating subscription:', subError);
+          } else {
+            console.log(`Subscription created for user ${userId}, product ${r.productId}, expires ${expiresAt.toISOString()}`);
+          }
+        } catch (subErr) {
+          console.error('Failed to create subscription record:', subErr);
+        }
+      }
+    }
+
+    // Re-purchasing an estate plan creates a NEW, independent "set" — a fresh
+    // blank submission with its own 30-day editing window. Old sets stay locked
+    // and untouched; there is no time-stacking across sets. The window starts
+    // only when the new set is completed (first_submitted_at stays null here),
+    // and accessControl.canEditForm gates each set on its own row. The Legal
+    // Edge Plan is a subscription and is handled above — it never lands here.
+    if (userId && supabase) {
+      const { FORM_TYPE_PRODUCTS } = require('../config/constants');
+      // Reverse resolver: productId + ('solo'|'2person') → concrete form_type.
+      // POA is the only product whose keys don't follow the <base>Solo /
+      // <base>2Person convention, so match on productId + variant suffix.
+      const resolveFormType = (productId, variant) => {
+        const wants2Person = variant === '2person';
+        return Object.keys(FORM_TYPE_PRODUCTS).find((ft) => {
+          if (FORM_TYPE_PRODUCTS[ft].productId !== productId) return false;
+          const is2Person = ft.endsWith('2Person');
+          return wants2Person ? is2Person : !is2Person;
+        }) || null;
+      };
+      for (const r of resolved) {
+        if (r.business || r.product.type === 'subscription') continue;
+        const concreteFormType = resolveFormType(r.productId, r.formType);
+        if (!concreteFormType) continue;
+        try {
+          const { error: insertError } = await supabase
+            .from('poa_submissions')
+            .insert({
+              user_id: userId,
+              form_type: concreteFormType,
+              form_data: {},
+              submission_status: 'inprogress',
+              first_submitted_at: null,
+              second_person_paid: concreteFormType.endsWith('2Person'),
+            });
+          if (insertError) {
+            console.error('Error creating new estate-plan set:', insertError);
+          } else {
+            console.log(`New estate-plan set created for user ${userId}, form type ${concreteFormType}`);
+          }
+        } catch (setErr) {
+          console.error('Failed to create new estate-plan set:', setErr);
+        }
+      }
+    }
+
+    // Create estate_plans entries for one-time estate plan products
+    if (userId && db) {
       const estatePlanTypes = [606, 614, 673, 676];
-      if (estatePlanTypes.includes(parseInt(productId))) {
+      for (const r of resolved) {
+        if (r.business || r.product.type === 'subscription') continue;
+        if (!estatePlanTypes.includes(r.productId)) continue;
         db.prepare(`
           INSERT INTO estate_plans (user_id, order_id, name, type, status)
           VALUES (?, ?, ?, ?, 'pending')
         `).run(
           userId,
           orderId,
-          product.name,
-          formType === '2person' ? 'married' : 'single'
+          r.product.name,
+          r.formType === '2person' ? 'married' : 'single'
         );
       }
     }
 
     console.log(`Order ${orderNumber} created for session ${session.id}`);
+
+    // Sync to Keap CRM — sync first product for back-compat.
+    //
+    // Awaited, not fire-and-forget: the webhook handler is awaited before the
+    // 200 is sent, and on Vercel the lambda can be frozen as soon as that
+    // response is flushed, which would kill a still-running sync.
+    //
+    // Failures are swallowed on purpose. The order and any subscription rows
+    // are already written above; throwing here would only make Stripe retry the
+    // webhook and create a duplicate order.
+    const customerEmail = session.customer_details?.email || session.customer_email;
+    const customerName = session.customer_details?.name || '';
+    const nameParts = customerName.split(' ');
+
+    if (customerEmail) {
+      const customerData = {
+        email: customerEmail,
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' ') || '',
+        phone: session.customer_details?.phone || '',
+      };
+
+      // handlePurchase takes a product identifier and applies that SKU's trigger
+      // tags. Estate plans keep the long-standing "first product only" behaviour;
+      // business items each carry a distinct SKU (an LLC + RA + OA cart must fire
+      // all three), so they are tagged individually by their string sku code.
+      const syncTargets = [];
+      const firstEstate = resolved.find(r => !r.business);
+      if (firstEstate) syncTargets.push(firstEstate.productId);
+      for (const r of resolved) {
+        if (r.business) syncTargets.push(r.sku);
+      }
+
+      for (const target of syncTargets) {
+        try {
+          const keapResult = await keapService.handlePurchase(customerData, target);
+          if (keapResult.success) {
+            console.log(`Keap contact synced for purchase ${orderNumber} (${target}): ${keapResult.contactId}`);
+          } else {
+            console.error(`Keap purchase sync failed for order ${orderNumber} (${target}): ${keapResult.error}`);
+          }
+        } catch (err) {
+          console.error(`Keap purchase sync threw for order ${orderNumber} (${target}):`, err);
+        }
+      }
+    }
   } catch (error) {
     console.error('Error creating order from payment:', error);
+  }
+}
+
+/**
+ * Apply a paid second-person upgrade to an existing submission.
+ *
+ * Flips form_type to the 2-person variant and sets second_person_paid, which is
+ * what the PUT guard in submissions-supabase.js checks before it will accept a
+ * solo->2Person escalation from the interview. Records an order for the delta so
+ * it appears in the customer's history.
+ *
+ * Idempotent on session id: Stripe redelivers checkout.session.completed until
+ * it gets a 2xx, so a redelivery must not double-charge the customer's order
+ * history or re-run against an already-upgraded row.
+ */
+async function handleSecondPersonUpgrade(session) {
+  const upgradeSubmissionId = session.metadata.upgradeSubmissionId;
+  const userId = session.metadata.userId;
+
+  if (!upgradeSubmissionId || !supabase) {
+    console.error('Second-person upgrade missing submission id or supabase:', session.id);
+    return;
+  }
+
+  try {
+    // Load the row so we can map its solo form_type to the 2-person variant and
+    // check we have not already applied this.
+    const { data: existing, error: fetchError } = await supabase
+      .from('poa_submissions')
+      .select('id, form_type, second_person_paid')
+      .eq('id', upgradeSubmissionId)
+      .single();
+
+    if (fetchError || !existing) {
+      console.error('Second-person upgrade: submission not found:', upgradeSubmissionId);
+      return;
+    }
+
+    if (existing.second_person_paid) {
+      console.log(`Second-person upgrade already applied for submission ${upgradeSubmissionId}`);
+      return;
+    }
+
+    const upgrade = SECOND_PERSON_UPGRADE[existing.form_type];
+    if (!upgrade) {
+      console.error(`Second-person upgrade: no mapping for form_type ${existing.form_type}`);
+      return;
+    }
+
+    const { error: updateError } = await supabase
+      .from('poa_submissions')
+      .update({
+        form_type: upgrade.twoPersonType,
+        second_person_paid: true,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', upgradeSubmissionId);
+
+    if (updateError) {
+      console.error('Second-person upgrade update failed:', updateError);
+      return;
+    }
+
+    // Record the delta as an order for the customer's history (best-effort).
+    if (db) {
+      const pid = upgrade.productId;
+      const product = PRODUCTS[pid];
+      const delta = upgrade.deltaCents / 100;
+      try {
+        const orderResult = db.prepare(`
+          INSERT INTO orders (user_id, order_number, status, subtotal, tax, total, payment_method, stripe_session_id)
+          VALUES (?, ?, 'completed', ?, 0, ?, 'stripe', ?)
+        `).run(userId || null, generateOrderNumber(), delta, delta, session.id);
+
+        db.prepare(`
+          INSERT INTO order_items (order_id, product_id, name, quantity, price, total)
+          VALUES (?, ?, ?, 1, ?, ?)
+        `).run(
+          orderResult.lastInsertRowid,
+          pid,
+          `Add Second Person – ${product?.name || 'Plan'}`,
+          delta,
+          delta
+        );
+      } catch (orderErr) {
+        console.error('Second-person upgrade: failed to record order:', orderErr);
+      }
+    }
+
+    console.log(`Second-person upgrade applied: submission ${upgradeSubmissionId} -> ${upgrade.twoPersonType}`);
+  } catch (error) {
+    console.error('Second-person upgrade error:', error);
   }
 }
 
@@ -208,4 +843,306 @@ router.get('/session/:sessionId', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/stripe/upsell/:sessionId
+ *
+ * Should the thank-you page show the Legal Edge Plan offer, and on what terms?
+ *
+ * Answering 200 with `eligible: false` rather than 404, so the success page can
+ * tell "no offer for this order" from "the request failed" and does not flash
+ * an error at a customer who has just paid successfully.
+ */
+router.get('/upsell/:sessionId', async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.retrieve(req.params.sessionId, {
+      expand: ['payment_intent'],
+    });
+
+    const { eligible } = await upsell.isEligible(session);
+
+    if (!eligible) {
+      return res.json({ success: true, data: { eligible: false } });
+    }
+
+    // Already taken up on a page the customer reloaded or navigated back to.
+    if (await findUpsellSubscription(session)) {
+      return res.json({ success: true, data: { eligible: false } });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        eligible: true,
+        productName: upsell.OFFER.name,
+        regularPrice: upsell.OFFER.regularPriceCents / 100,
+        offerPrice: upsell.OFFER.offerPriceCents / 100,
+        interval: upsell.OFFER.interval,
+      },
+    });
+  } catch (error) {
+    console.error('Upsell eligibility error:', error);
+    // Not a 500. Failing to work out whether to advertise something is not a
+    // reason to show an error on a successful order.
+    res.json({ success: true, data: { eligible: false } });
+  }
+});
+
+/**
+ * An existing subscription created by this session's upsell, if any.
+ *
+ * The subscription is tagged with the originating session id so a reloaded or
+ * revisited thank-you page can recognise its own work. Stripe idempotency keys
+ * only last 24 hours, which is not long enough to rely on for a page a customer
+ * might come back to from an emailed receipt.
+ */
+async function findUpsellSubscription(session) {
+  if (!session.customer) return null;
+  const subs = await stripe.subscriptions.list({
+    customer: typeof session.customer === 'string' ? session.customer : session.customer.id,
+    status: 'all',
+    limit: 100,
+  });
+  return subs.data.find(s => s.metadata?.upsellSessionId === session.id) || null;
+}
+
+/**
+ * POST /api/stripe/upsell/:sessionId/accept
+ *
+ * Charge the card already on file for the Legal Edge Plan. This is the whole
+ * point of the feature: the customer clicks once and is not asked to re-enter
+ * anything.
+ *
+ * Eligibility is decided here rather than trusted from the client. The GET
+ * above only decides what to render; this decides what to charge, and a request
+ * can arrive without the GET ever having happened.
+ */
+router.post('/upsell/:sessionId/accept', async (req, res) => {
+  const { sessionId } = req.params;
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['payment_intent'],
+    });
+
+    const { eligible, reason } = await upsell.isEligible(session);
+    if (!eligible) {
+      return res.status(400).json({
+        success: false,
+        error: reason === 'already_subscribed'
+          ? 'You already have the Legal Edge Plan.'
+          : 'This offer is no longer available.',
+      });
+    }
+
+    // Double-submit and back-button protection. Without this a customer who
+    // clicks twice buys two subscriptions and has to ask for one back.
+    const existing = await findUpsellSubscription(session);
+    if (existing) {
+      return res.json({ success: true, data: { subscriptionId: existing.id, alreadyActive: true } });
+    }
+
+    const customerId = typeof session.customer === 'string' ? session.customer : session.customer.id;
+    const paymentMethodId = upsell.savedPaymentMethodId(session);
+
+    // Make the card they just used the default for invoices, otherwise Stripe
+    // has a saved method it will not reach for.
+    await stripe.customers.update(customerId, {
+      invoice_settings: { default_payment_method: paymentMethodId },
+    });
+
+    const subscription = await stripe.subscriptions.create(
+      {
+        customer: customerId,
+        default_payment_method: paymentMethodId,
+        items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: { name: upsell.OFFER.name },
+            unit_amount: upsell.OFFER.offerPriceCents,
+            recurring: { interval: upsell.OFFER.interval },
+          },
+        }],
+        // The customer is on the thank-you page watching, but they are not
+        // completing a card form, so from Stripe's point of view this is an
+        // off-session charge against a stored method.
+        off_session: true,
+        payment_behavior: 'error_if_incomplete',
+        metadata: {
+          upsellSessionId: session.id,
+          productId: String(upsell.LEP_PRODUCT_ID),
+          userId: session.metadata?.userId || '',
+        },
+      },
+      // Belt and braces alongside the lookup above: two clicks landing within
+      // the same second would both pass the check before either subscription
+      // exists to be found.
+      { idempotencyKey: `upsell_${session.id}` }
+    );
+
+    await recordUpsellSubscription(session, subscription);
+
+    res.json({ success: true, data: { subscriptionId: subscription.id, alreadyActive: false } });
+  } catch (error) {
+    // A stored card can be declined, or the issuer can demand authentication
+    // that cannot be given off-session. Say so, instead of reporting a generic
+    // failure on a page where the customer has just been charged for something
+    // else and is entitled to know exactly what did and did not happen.
+    if (error.type === 'StripeCardError') {
+      console.error(`Upsell card declined for session ${sessionId}: ${error.message}`);
+      return res.status(402).json({
+        success: false,
+        error: 'Your card was declined for this add-on. Your original order was not affected.',
+      });
+    }
+    console.error(`Upsell accept failed for session ${sessionId}:`, error);
+    res.status(500).json({
+      success: false,
+      error: 'We could not add the Legal Edge Plan. Your original order was not affected.',
+    });
+  }
+});
+
+/**
+ * Mirror the Stripe subscription into user_subscriptions.
+ *
+ * Best-effort: the money has already moved by the time this runs, so a failure
+ * here must not turn into an error the customer sees. It is logged loudly
+ * because the row is what My Account reads to decide whether the plan is active.
+ */
+async function recordUpsellSubscription(session, subscription) {
+  const userId = session.metadata?.userId;
+  if (!userId || !supabase) return;
+
+  try {
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + 1);
+
+    const { error } = await supabase.from('user_subscriptions').insert({
+      user_id: userId,
+      product_id: upsell.LEP_PRODUCT_ID,
+      stripe_subscription_id: subscription.id,
+      status: 'active',
+      started_at: new Date().toISOString(),
+      expires_at: expiresAt.toISOString(),
+    });
+
+    if (error) {
+      console.error(`Upsell subscription ${subscription.id} charged but not recorded: ${error.message}`);
+    }
+  } catch (err) {
+    console.error(`Upsell subscription ${subscription.id} charged but not recorded:`, err);
+  }
+}
+
+/**
+ * Supabase auth middleware for subscription endpoints
+ */
+async function authenticateSupabase(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      error: 'Access denied. No token provided.',
+    });
+  }
+
+  const token = authHeader.substring(7);
+
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+
+    if (error || !user) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid token.',
+      });
+    }
+
+    req.user = {
+      id: user.id,
+      email: user.email,
+    };
+
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      error: 'Invalid token.',
+    });
+  }
+}
+
+/**
+ * GET /api/stripe/subscription-status
+ * Check user's subscription status for extended form editing
+ */
+router.get('/subscription-status', authenticateSupabase, async (req, res) => {
+  if (!supabase) {
+    return res.status(500).json({ success: false, error: 'Database not configured' });
+  }
+
+  try {
+    const { data: subscription, error } = await supabase
+      .from('user_subscriptions')
+      .select('id, product_id, status, started_at, expires_at')
+      .eq('user_id', req.user.id)
+      .eq('product_id', 1367) // Form editing subscription
+      .eq('status', 'active')
+      .gte('expires_at', new Date().toISOString())
+      .order('expires_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error || !subscription) {
+      return res.json({
+        success: true,
+        data: {
+          hasActiveSubscription: false,
+          subscription: null,
+        },
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        hasActiveSubscription: true,
+        subscription: {
+          id: subscription.id,
+          productId: subscription.product_id,
+          status: subscription.status,
+          startedAt: subscription.started_at,
+          expiresAt: subscription.expires_at,
+        },
+      },
+    });
+  } catch (error) {
+    console.error('Get subscription status error:', error);
+    res.status(500).json({ success: false, error: 'Failed to get subscription status' });
+  }
+});
+
+/**
+ * GET /api/stripe/subscription-product
+ * Get details about the subscription product for purchase
+ */
+router.get('/subscription-product', async (req, res) => {
+  const product = PRODUCTS[1367];
+
+  res.json({
+    success: true,
+    data: {
+      productId: 1367,
+      name: product.name,
+      price: product.price / 100, // Convert to dollars
+      interval: product.interval,
+      description: 'Legal Edge Plan — Forever Revisions and Advanced Estate Plan upgrade credit. Cancel anytime.',
+    },
+  });
+});
+
 module.exports = router;
+// Shared with scripts/create-business-prices.js so the Price-creation script and
+// the checkout route bill from the same amounts.
+module.exports.BUSINESS_SKUS = BUSINESS_SKUS;

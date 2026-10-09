@@ -1,17 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
 import './ViewPlans.css';
 
+// Product configurations for modal
+const PRODUCT_CONFIG: Record<string, {
+  name: string;
+  description: string;
+  productId: number;
+  soloPrice: number;
+  couplePrice: number;
+  avgTime: string;
+}> = {
+  powerOfAttorneyForm: {
+    name: 'Power of Attorney Plan',
+    description: 'Create durable powers of attorney and other important documents for your college student, an aging parent, or any other person you need to assist if something happens.',
+    productId: 614,
+    soloPrice: 99,
+    couplePrice: 149,
+    avgTime: '5 minutes',
+  },
+  trustBasedEstatePlanSolo: {
+    name: 'Trust-Based Estate Plan',
+    description: 'Create a comprehensive trust-based estate plan to avoid probate and ensure your assets are distributed according to your wishes.',
+    productId: 676,
+    soloPrice: 399,
+    couplePrice: 499,
+    avgTime: '15 minutes',
+  },
+  willBasedEstatePlan: {
+    name: 'Will-Based Estate Plan',
+    description: 'Create a will-based estate plan with essential documents to protect your family and control your legacy.',
+    productId: 673,
+    soloPrice: 199,
+    couplePrice: 299,
+    avgTime: '10 minutes',
+  },
+  minorChildEstatePlan: {
+    name: 'Minor Child-Centered Estate Plan',
+    description: 'Protect your children with guardian nominations and children\'s trusts to ensure they are cared for if something happens to you.',
+    productId: 606,
+    soloPrice: 199,
+    couplePrice: 299,
+    avgTime: '10 minutes',
+  },
+};
+
 // Form type configurations
 const FORM_TYPES: Record<string, { name: string; description: string }> = {
-  powerOfAttorneyForm: { name: 'Power of Attorney', description: 'Individual POA documents' },
-  powerOfAttorneyForm2Person: { name: 'Power of Attorney 2 Persons', description: 'Couple POA documents' },
-  trustBasedEstatePlanSolo: { name: 'Trust-Based Estate Plan', description: 'Individual trust documents' },
-  trustBasedEstatePlan2Person: { name: 'Trust-Based Estate Plan for 2 Persons', description: 'Couple trust documents' },
-  willBasedEstatePlan: { name: 'Will-Based Estate Plan', description: 'Will and related documents' },
-  minorChildEstatePlan: { name: 'Minor-Child Centered Estate Plan', description: 'Guardian and trust provisions' },
+  powerOfAttorneyForm: { name: 'Power of Attorney Plan', description: 'Financial and healthcare POA documents' },
+  powerOfAttorneyForm2Person: { name: 'Power of Attorney Plan', description: 'Financial and healthcare POA documents' },
+  trustBasedEstatePlanSolo: { name: 'Trust-Based Estate Plan', description: 'Comprehensive trust-based planning' },
+  trustBasedEstatePlan2Person: { name: 'Trust-Based Estate Plan', description: 'Comprehensive trust-based planning' },
+  willBasedEstatePlan: { name: 'Will-Based Estate Plan', description: 'Essential will and POA documents' },
+  willBasedEstatePlan2Person: { name: 'Will-Based Estate Plan', description: 'Essential will and POA documents' },
+  minorChildEstatePlan: { name: 'Minor Child-Centered Estate Plan', description: 'Guardian nominations and children\'s trusts' },
+  minorChildEstatePlan2Person: { name: 'Minor Child-Centered Estate Plan', description: 'Guardian nominations and children\'s trusts' },
 };
 
 // Status colors matching WordPress
@@ -20,26 +66,46 @@ const STATUS_COLORS: Record<string, string> = {
   'In Progress': '#ff9900',
   'Submitted': '#666',
   'Processing': '#ff9900',
-  'Complete': '#0000ff',
+  'Action Needed': '#c0392b',
+  'Complete': '#1a1acc',
 };
 
 interface KnacklyDocument {
-  id: string;
+  id?: string;
   name: string;
-  url: string;
-  type: string;
+  url?: string;         // Direct URL from Knackly
+  publicUrl?: string;   // Public URL from Knackly
+  type?: string;
+  base64?: string;      // Full base64 data (only when fetching individual docs)
+  storedUrl?: string;   // External storage URL (Supabase)
+  hasData?: boolean;    // Summary flag from list endpoint
+  // Per-document generation state, written incrementally by
+  // generate-documents. 'pending' shows a spinner; 'ready' is downloadable.
+  status?: 'pending' | 'ready';
 }
 
 interface ApiSubmission {
   id: number;
+  submissionNumber?: number;
   formType: string;
   submissionStatus: 'inprogress' | 'completed';
   formData: any;
   knacklyRecordId?: string;
   knacklyStatus?: string;
   knacklyDocuments?: KnacklyDocument[];
+  knacklyZipUrl?: string;
+  // Answers the server still needs before it will draft. Recomputed on every
+  // read from the stored form data, so it always describes the plan as it
+  // currently stands rather than as it stood at the last save.
+  documentBlockers?: string[];
   createdAt: string;
   updatedAt: string;
+  firstSubmittedAt?: string;
+  // Access control fields
+  canEdit?: boolean;
+  daysRemaining?: number;
+  accessMessage?: string;
+  hasSubscription?: boolean;
 }
 
 interface AllProducts {
@@ -51,21 +117,46 @@ interface AllProducts {
   formType: string;
 }
 
+// Available products - users can purchase multiple times
+// Users select 1 or 2 persons on the product page before checkout
 const allProducts: AllProducts[] = [
-  { id: 614, name: 'Power of Attorney Plan', price: 99, shortDescription: 'Financial and healthcare POA documents for individuals', url: '/checkout?product=614&type=solo', formType: 'powerOfAttorneyForm' },
-  { id: 614, name: 'Power of Attorney Plan for 2 Persons', price: 99, shortDescription: 'Financial and healthcare POA documents for couples', url: '/checkout?product=614&type=2person', formType: 'powerOfAttorneyForm2Person' },
-  { id: 676, name: 'Trust-Based Estate Plan', price: 399, shortDescription: 'Comprehensive trust-based planning for individuals', url: '/checkout?product=676&type=solo', formType: 'trustBasedEstatePlanSolo' },
-  { id: 677, name: 'Trust-Based Estate Plan for 2 Persons', price: 399, shortDescription: 'Comprehensive trust-based planning for couples', url: '/checkout?product=676&type=2person', formType: 'trustBasedEstatePlan2Person' },
-  { id: 673, name: 'Will-Based Estate Plan', price: 199, shortDescription: 'Essential will and POA documents', url: '/checkout?product=673&type=solo', formType: 'willBasedEstatePlan' },
-  { id: 606, name: 'Minor Child-Centered Estate Plan', price: 199, shortDescription: 'Guardian nominations and children\'s trusts', url: '/checkout?product=606&type=solo', formType: 'minorChildEstatePlan' },
+  { id: 614, name: 'Power of Attorney Plan', price: 99, shortDescription: 'Financial and healthcare POA documents', url: '/power-of-attorney-plan', formType: 'powerOfAttorneyForm' },
+  { id: 676, name: 'Trust-Based Estate Plan', price: 399, shortDescription: 'Comprehensive trust-based planning', url: '/trust-based-estate-plan', formType: 'trustBasedEstatePlanSolo' },
+  { id: 673, name: 'Will-Based Estate Plan', price: 199, shortDescription: 'Essential will and POA documents', url: '/will-based-estate-plan', formType: 'willBasedEstatePlan' },
+  { id: 606, name: 'Minor Child-Centered Estate Plan', price: 199, shortDescription: 'Guardian nominations and children\'s trusts', url: '/minor-child-centered-estate-plan', formType: 'minorChildEstatePlan' },
 ];
+
+// Form type mapping for matching submissions to products
+const PRODUCT_FORM_TYPES: Record<string, string[]> = {
+  powerOfAttorneyForm: ['powerOfAttorneyForm', 'powerOfAttorneyForm2Person'],
+  trustBasedEstatePlanSolo: ['trustBasedEstatePlanSolo', 'trustBasedEstatePlan2Person'],
+  willBasedEstatePlan: ['willBasedEstatePlan', 'willBasedEstatePlan2Person'],
+  minorChildEstatePlan: ['minorChildEstatePlan', 'minorChildEstatePlan2Person'],
+};
 
 const ViewPlans: React.FC = () => {
   const { session } = useAuth();
+  const { addEstatePlan } = useCart();
+  const navigate = useNavigate();
   const [submissions, setSubmissions] = useState<ApiSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState<number | null>(null);
+  // Keyed by submission id: this page lists every plan the client owns, so an
+  // unkeyed message would appear under all of them at once.
+  const [refreshError, setRefreshError] = useState<{ id: number; message: string } | null>(null);
+  const [downloading, setDownloading] = useState<number | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
+
+  // Purchase modal state
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
+  const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
+  // Once the user already has plans, the "Start a New Plan" chooser is collapsed
+  // by default so the page isn't a long list of every product.
+  const [showNewPlanOptions, setShowNewPlanOptions] = useState(false);
+  // Cache for full document data (fetched on demand)
+  const [documentCache, setDocumentCache] = useState<Record<number, KnacklyDocument[]>>({});
 
   useEffect(() => {
     if (session) {
@@ -74,49 +165,46 @@ const ViewPlans: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
-  // Auto-refresh documents that are still processing
+  // Poll while any completed plan is still drafting. Generation now writes the
+  // document manifest one document at a time, so a short interval lets each card
+  // fill in as the files land. (The old 30s/record-id-gated poll never fired for
+  // the new flow, whose plans start processing with no record id yet.)
   useEffect(() => {
-    const autoRefreshPending = async () => {
-      for (const sub of submissions) {
-        // Skip if not completed submission
-        if (sub.submissionStatus !== 'completed') continue;
+    const hasProcessing = submissions.some(
+      sub => sub.submissionStatus === 'completed' && sub.knacklyStatus === 'processing'
+    );
 
-        // If has knacklyRecordId but not complete, and no documents yet
-        const hasDocuments = sub.knacklyDocuments && sub.knacklyDocuments.length > 0;
-        const needsRefresh = sub.knacklyRecordId && sub.knacklyStatus !== 'completed' && !hasDocuments;
-
-        if (needsRefresh && refreshing !== sub.id) {
-          console.log(`Auto-refreshing documents for submission ${sub.id}...`);
-          await refreshDocuments(sub.id);
-        }
-      }
-    };
-
-    // Run immediately if we have submissions
-    if (submissions.length > 0 && !loading) {
-      autoRefreshPending();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submissions, loading]);
-
-  // Poll every 10 seconds if any submission is still processing
-  useEffect(() => {
-    const hasProcessing = submissions.some(sub => {
-      const hasDocuments = sub.knacklyDocuments && sub.knacklyDocuments.length > 0;
-      return sub.submissionStatus === 'completed' &&
-        sub.knacklyRecordId && sub.knacklyStatus !== 'completed' && !hasDocuments;
-    });
-
-    if (hasProcessing && !refreshing) {
+    if (hasProcessing && !loading) {
       const intervalId = setInterval(() => {
-        console.log('Polling for document updates...');
         fetchSubmissions();
-      }, 10000); // Poll every 10 seconds
+      }, 4000); // Poll every 4 seconds while documents render
 
       return () => clearInterval(intervalId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submissions, refreshing]);
+  }, [submissions, loading]);
+
+  // Kick off generation for any completed plan the server has marked ready but
+  // not yet started. Submit no longer generates inline (it would block the
+  // request past Vercel's limit and freeze on the client), so the dashboard is
+  // what actually starts the slow work — in its own request, once per plan.
+  // The ref guard stops the 4s poll from re-firing a generation already running.
+  const kickedRef = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    submissions.forEach(sub => {
+      const needsKick =
+        sub.submissionStatus === 'completed' &&
+        sub.knacklyStatus === 'processing' &&
+        (sub.knacklyDocuments || []).length === 0 &&
+        (sub.documentBlockers || []).length === 0;
+
+      if (needsKick && !kickedRef.current.has(sub.id)) {
+        kickedRef.current.add(sub.id);
+        kickGeneration(sub.id);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submissions]);
 
   // Get auth headers using the session token from context
   const getAuthHeaders = (): Record<string, string> => {
@@ -146,8 +234,38 @@ const ViewPlans: React.FC = () => {
     }
   };
 
+  // Start generation in its own request and let the poll show progress. This is
+  // deliberately not awaited by its callers: the request runs long (it drafts
+  // and converts every document), and the 4s poll reads the per-document
+  // manifest as it fills. When it finally resolves we fetch once more to settle
+  // on the final state.
+  const kickGeneration = async (submissionId: number) => {
+    try {
+      const response = await api.post(
+        `/submissions/${submissionId}/generate-documents`,
+        {},
+        getAuthHeaders()
+      );
+      if (!response.success) {
+        console.error('Generate documents failed:', response.error);
+        setRefreshError({
+          id: submissionId,
+          message: response.error || 'Documents could not be generated.',
+        });
+        // Allow a manual retry after a failure.
+        kickedRef.current.delete(submissionId);
+      }
+    } catch (error) {
+      console.error('Failed to generate documents:', error);
+      kickedRef.current.delete(submissionId);
+    } finally {
+      await fetchSubmissions();
+    }
+  };
+
   const refreshDocuments = async (submissionId: number) => {
     setRefreshing(submissionId);
+    setRefreshError(null);
     try {
       // Pass token from context directly in headers
       const response = await api.post(`/submissions/${submissionId}/refresh-documents`, {}, getAuthHeaders());
@@ -167,13 +285,113 @@ const ViewPlans: React.FC = () => {
           console.log('Refresh result:', response.message);
         }
       } else {
+        // /refresh-documents answers 200 with success:false and a real
+        // explanation when generation is refused. Logging it to the console was
+        // the only place that explanation went, so pressing Generate Documents
+        // appeared to do nothing at all.
         console.error('Refresh documents failed:', response.error);
-        // Only show alert for manual refresh errors
+        setRefreshError({
+          id: submissionId,
+          message: response.error || 'Documents could not be generated.',
+        });
       }
     } catch (error) {
       console.error('Failed to refresh documents:', error);
+      setRefreshError({
+        id: submissionId,
+        message: 'Could not reach the document service. Please try again.',
+      });
     } finally {
       setRefreshing(null);
+    }
+  };
+
+  // Download all documents as ZIP from our backend
+  const downloadAllDocuments = async (submissionId: number, clientName: string) => {
+    setDownloading(submissionId);
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/submissions/${submissionId}/download-all`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to download documents');
+      }
+
+      // Get the blob and create download link
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${clientName}_EstatePlan_${submissionId}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Failed to download documents:', error);
+      alert('Failed to download documents. Please try again.');
+    } finally {
+      setDownloading(null);
+    }
+  };
+
+  // Fetch full documents with base64 data for a specific submission
+  const fetchDocuments = async (submissionId: number): Promise<KnacklyDocument[]> => {
+    // Check cache first
+    if (documentCache[submissionId]) {
+      return documentCache[submissionId];
+    }
+
+    try {
+      const response = await api.get(`/submissions/${submissionId}/documents`, getAuthHeaders());
+      if (response.success && response.data?.knacklyDocuments) {
+        const docs = response.data.knacklyDocuments;
+        setDocumentCache(prev => ({ ...prev, [submissionId]: docs }));
+        return docs;
+      }
+    } catch (error) {
+      console.error('Failed to fetch documents:', error);
+    }
+    return [];
+  };
+
+  // Download a document (fetches full data if needed)
+  const downloadDocument = async (submissionId: number, docIndex: number, docName: string) => {
+    try {
+      const docs = await fetchDocuments(submissionId);
+      const doc = docs[docIndex];
+
+      if (doc?.base64) {
+        const byteCharacters = atob(doc.base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = docName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        // Try any available URL (storedUrl from Supabase, publicUrl/url from Knackly)
+        const directUrl = doc?.storedUrl || doc?.publicUrl || doc?.url;
+        if (directUrl) {
+          window.open(directUrl, '_blank');
+        } else {
+          alert('Document not available yet. Please try refreshing.');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to download document:', error);
+      alert('Failed to download document. Please try again.');
     }
   };
 
@@ -185,11 +403,15 @@ const ViewPlans: React.FC = () => {
     if (submission.submissionStatus === 'completed') {
       if (submission.knacklyStatus === 'completed') {
         return { text: 'Complete', color: STATUS_COLORS['Complete'] };
-      } else if (submission.knacklyRecordId) {
-        return { text: 'Processing', color: STATUS_COLORS['Processing'] };
-      } else {
-        return { text: 'Complete', color: STATUS_COLORS['Complete'] };
       }
+      // Answers are in, but the server would not draft from them. Reporting this
+      // as 'Complete' — which is what both remaining branches used to do — is how
+      // will-, minor- and trust-based plans came to sit on the dashboard looking
+      // finished with no documents behind them.
+      if ((submission.documentBlockers || []).length > 0 || submission.knacklyStatus === 'blocked') {
+        return { text: 'Action Needed', color: STATUS_COLORS['Action Needed'] };
+      }
+      return { text: 'Processing', color: STATUS_COLORS['Processing'] };
     }
 
     return { text: 'In Progress', color: STATUS_COLORS['In Progress'] };
@@ -226,63 +448,47 @@ const ViewPlans: React.FC = () => {
         return (
           <>
             <p className="mb-0" style={{ lineHeight: '14px' }}>
-              <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
+              <span style={{ color: '#1a1acc' }}><strong>Your documents:</strong></span>
             </p>
             <ol className="gpx_ep_documents_ul" style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
               {documents.map((doc: any, index: number) => {
                 const docName = doc.name || `Document ${index + 1}.docx`;
+                // Check for any available URL (storedUrl from Supabase, publicUrl/url from Knackly)
+                const directUrl = doc.storedUrl || doc.publicUrl || doc.url;
 
-                // Handle base64 documents (from doc-tools)
-                if (doc.base64) {
-                  const handleDownload = () => {
-                    const byteCharacters = atob(doc.base64);
-                    const byteNumbers = new Array(byteCharacters.length);
-                    for (let i = 0; i < byteCharacters.length; i++) {
-                      byteNumbers[i] = byteCharacters.charCodeAt(i);
-                    }
-                    const byteArray = new Uint8Array(byteNumbers);
-                    const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = docName;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                  };
+                // Use direct URL if available - direct link
+                if (directUrl) {
+                  return (
+                    <li key={doc.id || index}>
+                      <a
+                        href={directUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {docName}
+                      </a>
+                    </li>
+                  );
+                }
 
+                // Document has data (base64) - fetch on demand
+                if (doc.hasData || doc.base64) {
                   return (
                     <li key={doc.id || index}>
                       <button
-                        onClick={handleDownload}
+                        onClick={() => downloadDocument(submission.id, index, docName)}
                         style={{
                           cursor: 'pointer',
                           background: 'none',
                           border: 'none',
                           padding: 0,
-                          color: '#0000ff',
+                          color: '#1a1acc',
                           textDecoration: 'underline',
                           font: 'inherit'
                         }}
                       >
                         {docName}
                       </button>
-                    </li>
-                  );
-                }
-
-                // Use storedUrl (public Supabase URL) if available
-                if (doc.storedUrl) {
-                  return (
-                    <li key={doc.id || index}>
-                      <a
-                        href={doc.storedUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {docName}
-                      </a>
                     </li>
                   );
                 }
@@ -295,31 +501,118 @@ const ViewPlans: React.FC = () => {
                 );
               })}
             </ol>
-            <button
-              onClick={() => refreshDocuments(submission.id)}
-              disabled={refreshing === submission.id}
-              className="btn btn-sm btn-outline-warning mt-2"
-              style={{ fontSize: '12px' }}
-            >
-              {refreshing === submission.id ? 'Refreshing...' : '🔄 Refresh Documents'}
-            </button>
+            <div className="mt-2 d-flex gap-2 flex-wrap">
+              {submission.knacklyDocuments && submission.knacklyDocuments.length > 0 && (
+                <button
+                  onClick={() => downloadAllDocuments(
+                    submission.id,
+                    submission.formData?.personal_info?.first_name || 'Documents'
+                  )}
+                  disabled={downloading === submission.id}
+                  className="btn btn-sm btn-primary"
+                  style={{ fontSize: '12px' }}
+                >
+                  {downloading === submission.id ? '⏳ Downloading...' : '📦 Download All'}
+                </button>
+              )}
+              <button
+                onClick={() => refreshDocuments(submission.id)}
+                disabled={refreshing === submission.id}
+                className="btn btn-sm btn-outline-secondary"
+                style={{ fontSize: '12px' }}
+              >
+                {refreshing === submission.id ? 'Refreshing...' : '🔄 Refresh'}
+              </button>
+            </div>
           </>
         );
       } else {
-        // Complete but no documents array yet
+        // Complete but no documents array yet - need to fetch them
+        const isRefreshing = refreshing === submission.id;
         return (
           <>
             <p className="mb-0" style={{ lineHeight: '14px' }}>
-              <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
+              <span style={{ color: '#1a1acc' }}><strong>Your documents:</strong></span>
             </p>
             <p className="mb-0 mt-0">
-              <strong style={{ color: '#28a745' }}>
-                Documents ready - refreshing...
+              <strong style={{ color: '#ff9900' }}>
+                Documents generated - click to download
               </strong>
             </p>
+            <button
+              onClick={() => refreshDocuments(submission.id)}
+              disabled={isRefreshing}
+              className="btn btn-sm btn-primary mt-2"
+              style={{ fontSize: '12px' }}
+            >
+              {isRefreshing ? 'Fetching...' : '📥 Fetch Documents'}
+            </button>
           </>
         );
       }
+    }
+
+    // Drafting in progress. Generation writes the manifest one document at a
+    // time, so show each document with a spinner that flips to a download link
+    // as it lands, plus a running "X of Y ready" count. An empty manifest means
+    // generation has been marked ready but not seeded yet (the auto-kick is
+    // firing), so show a single "preparing" spinner.
+    if (submission.knacklyStatus === 'processing') {
+      const docs = submission.knacklyDocuments || [];
+      const total = docs.length;
+      const ready = docs.filter(d => d.status === 'ready').length;
+
+      return (
+        <>
+          <p className="mb-0" style={{ lineHeight: '14px' }}>
+            <span style={{ color: '#1a1acc' }}><strong>Your documents:</strong></span>
+          </p>
+          {total === 0 ? (
+            <p className="mb-0 mt-1 d-flex align-items-center gap-2" style={{ color: '#ff9900' }}>
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+              <strong>Preparing your documents…</strong>
+            </p>
+          ) : (
+            <>
+              <p className="mb-0 mt-1" style={{ fontSize: '13px', color: '#666' }}>
+                <strong>{ready} of {total} ready</strong>
+              </p>
+              <ol className="gpx_ep_documents_ul" style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
+                {docs.map((doc: any, index: number) => {
+                  const docName = doc.name || `Document ${index + 1}`;
+                  const directUrl = doc.storedUrl || doc.publicUrl || doc.url;
+
+                  if (doc.status === 'ready' && directUrl) {
+                    return (
+                      <li key={doc.id || index}>
+                        <a href={directUrl} target="_blank" rel="noopener noreferrer">{docName}</a>
+                      </li>
+                    );
+                  }
+                  if (doc.status === 'ready' && doc.base64) {
+                    return (
+                      <li key={doc.id || index}>
+                        <button
+                          onClick={() => downloadDocument(submission.id, index, docName)}
+                          style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, color: '#1a1acc', textDecoration: 'underline', font: 'inherit' }}
+                        >
+                          {docName}
+                        </button>
+                      </li>
+                    );
+                  }
+                  return (
+                    <li key={doc.id || index} style={{ color: '#999' }} className="d-flex align-items-center gap-2">
+                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ width: '0.9rem', height: '0.9rem' }} />
+                      <span>{docName} <em>(preparing…)</em></span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </>
+          )}
+        </>
+      );
     }
 
     if (submission.knacklyRecordId) {
@@ -352,17 +645,55 @@ const ViewPlans: React.FC = () => {
       );
     }
 
-    // Completed but pending Knackly processing (not yet sent to Knackly)
+    // Completed interview, no documents. Distinguish "not drafted yet" from
+    // "we will not draft this" — both used to render the green "Interview
+    // Complete - Ready to generate documents", so a plan the server had already
+    // refused invited the client to press Generate and watch nothing happen.
+    const blockers = submission.documentBlockers || [];
+    if (blockers.length > 0) {
+      return (
+        <>
+          <p className="mb-0" style={{ lineHeight: '14px' }}>
+            <span style={{ color: '#1a1acc' }}><strong>Your documents:</strong></span>
+          </p>
+          <p className="mb-0 mt-0">
+            <strong style={{ color: '#c0392b' }}>
+              A few answers are still needed
+            </strong>
+          </p>
+          <ul style={{ fontSize: '13px', color: '#666', margin: '4px 0 0 0', paddingLeft: '20px' }}>
+            {blockers.map((blocker, i) => (
+              <li key={i}>{blocker}</li>
+            ))}
+          </ul>
+          {submission.canEdit !== false && (
+            <Link
+              to={`/poa-form?type=${submission.formType}&submission=${submission.id}`}
+              className="btn btn-sm btn-primary mt-2"
+              style={{ fontSize: '12px' }}
+            >
+              Complete my plan
+            </Link>
+          )}
+        </>
+      );
+    }
+
     return (
       <>
         <p className="mb-0" style={{ lineHeight: '14px' }}>
-          <span style={{ color: '#0000ff' }}><strong>Your documents:</strong></span>
+          <span style={{ color: '#1a1acc' }}><strong>Your documents:</strong></span>
         </p>
         <p className="mb-0 mt-0">
           <strong style={{ color: '#28a745' }}>
             Interview Complete - Ready to generate documents
           </strong>
         </p>
+        {refreshError?.id === submission.id && (
+          <p className="mb-0 mt-1" style={{ fontSize: '13px', color: '#c0392b' }}>
+            {refreshError.message}
+          </p>
+        )}
         <button
           onClick={() => refreshDocuments(submission.id)}
           disabled={refreshing === submission.id}
@@ -383,14 +714,18 @@ const ViewPlans: React.FC = () => {
   );
 
   // Get active plans (submissions that exist)
+  // Match both solo and 2-person form types to the consolidated product
   const activePlans = submissions.map(s => {
-    const product = allProducts.find(p => p.formType === s.formType);
+    // Find product where this submission's form type is in the product's form types
+    const product = allProducts.find(p => {
+      const relatedFormTypes = PRODUCT_FORM_TYPES[p.formType] || [p.formType];
+      return relatedFormTypes.includes(s.formType);
+    });
     return { submission: s, product };
   }).filter(p => p.product);
 
-  // Get not purchased products (no submission exists)
-  const submittedFormTypes = submissions.map(s => s.formType);
-  const notPurchasedProducts = allProducts.filter(p => !submittedFormTypes.includes(p.formType));
+  // Show all available products (users can purchase multiple times)
+  const availableProducts = allProducts;
 
   if (loading) {
     return (
@@ -435,19 +770,86 @@ const ViewPlans: React.FC = () => {
                 {/* Left Column - Plan Info */}
                 <div className="col-12 col-sm-4">
                   <h6 className="mb-0">
-                    <Link to={`/poa-form?type=${submission.formType}`}>
-                      {formConfig?.name || submission.formType}
-                    </Link>
-                    <Link
-                      to={`/poa-form?type=${submission.formType}`}
-                      className="poa-edit-icon"
-                      title="Edit/Start Form"
-                      style={{ color: '#0000ff', textDecoration: 'none', marginLeft: '8px' }}
-                    >
-                      <EditIcon />
-                    </Link>
+                    {submission.canEdit !== false ? (
+                      <>
+                        <Link to={`/poa-form?type=${submission.formType}&submission=${submission.id}`}>
+                          {formConfig?.name || submission.formType}
+                        </Link>
+                        <Link
+                          to={`/poa-form?type=${submission.formType}&submission=${submission.id}`}
+                          className="poa-edit-icon"
+                          title="Edit/Start Form"
+                          style={{ color: '#1a1acc', textDecoration: 'none', marginLeft: '8px' }}
+                        >
+                          <EditIcon />
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ color: '#666' }}>
+                          {formConfig?.name || submission.formType}
+                        </span>
+                        <span
+                          style={{ color: '#999', marginLeft: '8px', cursor: 'not-allowed' }}
+                          title="Edit period expired"
+                        >
+                          <EditIcon />
+                        </span>
+                      </>
+                    )}
                   </h6>
                   <small style={{ color: '#999' }}>{formConfig?.description}</small>
+                  {/* Human-readable set number so users (and support) can tell
+                      repeat purchases of the same plan apart at a glance. */}
+                  {submission.submissionNumber != null && (
+                    <div style={{ fontSize: '12px', color: '#007bff', fontWeight: 600 }}>
+                      Plan #GP-{String(submission.submissionNumber).padStart(6, '0')}
+                    </div>
+                  )}
+                  {/* Per-set label so users can tell repeat purchases of the
+                      same plan apart — each card is an independent set. */}
+                  {submission.createdAt && (
+                    <div style={{ fontSize: '12px', color: '#999' }}>
+                      Started {new Date(submission.createdAt).toLocaleDateString()}
+                    </div>
+                  )}
+                  {/* Re-purchase: the webhook creates a fresh blank set with its
+                      own 30-day window, which appears here as a new card. */}
+                  {product && (
+                    <div className="mt-1" style={{ fontSize: '12px' }}>
+                      <Link
+                        to={`/checkout?product=${product.id}`}
+                        style={{ color: '#007bff' }}
+                      >
+                        Start another
+                      </Link>
+                    </div>
+                  )}
+
+                  {/* Access Warning */}
+                  {submission.submissionStatus === 'completed' && submission.canEdit === false && (
+                    <div className="mt-2" style={{ fontSize: '12px' }}>
+                      <span style={{ color: '#dc3545' }}>
+                        <i className="fas fa-lock me-1"></i>
+                        Edit period expired
+                      </span>
+                      <Link
+                        to="/checkout?product=1367"
+                        className="ms-2"
+                        style={{ color: '#007bff', fontSize: '12px' }}
+                      >
+                        Extend Access
+                      </Link>
+                    </div>
+                  )}
+                  {submission.submissionStatus === 'completed' && submission.canEdit !== false && submission.daysRemaining !== undefined && submission.daysRemaining <= 7 && submission.daysRemaining > 0 && (
+                    <div className="mt-2" style={{ fontSize: '12px' }}>
+                      <span style={{ color: '#ffc107' }}>
+                        <i className="fas fa-clock me-1"></i>
+                        {submission.daysRemaining} day{submission.daysRemaining !== 1 ? 's' : ''} left to edit
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Middle Column - Status */}
@@ -472,29 +874,57 @@ const ViewPlans: React.FC = () => {
         <div className="mb-4 p-4" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
           <p className="text-muted mb-0">You haven't started any estate plans yet.</p>
           <Link to="/estate-planning" className="btn btn-primary mt-3">
-            Browse Estate Plans
+            Start a New Plan
           </Link>
         </div>
       )}
 
-      {/* Not Purchased Yet Section */}
-      {notPurchasedProducts.length > 0 && (
+      {/* Start a New Plan — only once they already have plans (the empty state
+          above offers it otherwise). Collapsed by default so the page isn't a
+          long list of every product; the chooser reveals on click. */}
+      {activePlans.length > 0 && availableProducts.length > 0 && (
         <>
           <hr />
-          <div>
-            <p><span className="gpx_highlight gpx_warning">Not purchased yet:</span></p>
-          </div>
+          <button
+            type="button"
+            className="btn btn-primary"
+            aria-expanded={showNewPlanOptions}
+            onClick={() => setShowNewPlanOptions((o) => !o)}
+          >
+            <i className="fas fa-plus me-2"></i>
+            Start a New Plan
+          </button>
 
-          {notPurchasedProducts.map((product, index) => (
-            <div key={`${product.formType}-${index}`} className="mb-2">
-              <Link className="plan_not_purchased" to={product.url}>
-                {product.name}
-              </Link>
-              <span className="ma_starting_at"> from ${product.price}</span>
-              <br />
-              <em style={{ color: '#666' }}>{product.shortDescription}</em>
+          {showNewPlanOptions && (
+            <div className="mt-3">
+              <p><span className="gpx_highlight">Choose a plan:</span></p>
+              {availableProducts.map((product, index) => (
+                <div key={`${product.formType}-${index}`} className="mb-2">
+                  <button
+                    className="plan_not_purchased"
+                    onClick={() => {
+                      setSelectedProduct(product.formType);
+                      setNumPersons('1');
+                      setSubscribeLEP('1');
+                      setShowPurchaseModal(true);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                  >
+                    {product.name}
+                  </button>
+                  <span className="ma_starting_at"> from ${product.price}</span>
+                  <br />
+                  <em style={{ color: '#666' }}>{product.shortDescription}</em>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </>
       )}
 
@@ -511,6 +941,134 @@ const ViewPlans: React.FC = () => {
           Contact Support <i className="fas fa-arrow-right ms-1"></i>
         </Link>
       </div>
+
+      {/* Purchase Modal */}
+      {showPurchaseModal && selectedProduct && PRODUCT_CONFIG[selectedProduct] && (
+        <div
+          className="modal-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={() => setShowPurchaseModal(false)}
+        >
+          <div
+            className="modal-content purchase-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="modal-close"
+              onClick={() => setShowPurchaseModal(false)}
+              style={{
+                position: 'absolute',
+                top: '15px',
+                right: '15px',
+                background: 'none',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                color: '#666',
+              }}
+            >
+              &times;
+            </button>
+
+            <div className="text-center mb-4">
+              <img
+                src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
+                alt="Plan Builder"
+                style={{ width: '48px', marginBottom: '20px' }}
+              />
+              <h2 style={{ color: '#1a1acc' }}>{PRODUCT_CONFIG[selectedProduct].name}</h2>
+              <p className="text-muted fst-italic">
+                {PRODUCT_CONFIG[selectedProduct].description}
+              </p>
+              <p className="mb-4">
+                Average time to build a plan: <strong style={{ color: '#1a1acc' }}>{PRODUCT_CONFIG[selectedProduct].avgTime}</strong>
+              </p>
+            </div>
+
+            <h4 className="mb-3">Build your plan</h4>
+            <p className="text-muted fst-italic mb-4">
+              After the purchase at your convenience, you will answer a series of questions to prepare your documents.
+            </p>
+
+            <div className="mb-3">
+              <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
+              <select
+                className="form-select"
+                value={numPersons}
+                onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                }}
+              >
+                <option value="1">For one person</option>
+                <option value="2">For two people</option>
+              </select>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                <strong>2.</strong> Would you like to subscribe to the{' '}
+                <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+                  Legal Edge Plan
+                </a>{' '}
+                for $9.99/month to be protected from any mistakes?
+              </label>
+              <select
+                className="form-select"
+                value={subscribeLEP}
+                onChange={(e) => setSubscribeLEP(e.target.value as '1' | '0')}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                }}
+              >
+                <option value="1">Yes, sure!</option>
+                <option value="0">No, thank you</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <strong>Final Price:</strong>{' '}
+              <strong style={{ fontSize: '1.25rem' }}>
+                ${numPersons === '1' ? PRODUCT_CONFIG[selectedProduct].soloPrice : PRODUCT_CONFIG[selectedProduct].couplePrice}
+                {subscribeLEP === '1' ? ' + $9.99/mo' : ''}
+              </strong>
+            </div>
+
+            <button
+              onClick={async () => {
+                const config = PRODUCT_CONFIG[selectedProduct];
+                const formType = numPersons === '1' ? 'solo' : '2person';
+                await addEstatePlan(config.productId, formType, subscribeLEP === '1');
+                setShowPurchaseModal(false);
+                navigate('/checkout');
+              }}
+              className="btn btn-primary btn-lg"
+              style={{ width: '100%' }}
+            >
+              Purchase
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

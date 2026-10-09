@@ -22,7 +22,7 @@ const OperatingAgreementLLC: React.FC = () => {
                 <em>Create a customized Operating Agreement for your Louisiana LLC. Protect your business, define member roles, and establish clear guidelines for operations.</em>
               </p>
               <div className="oa-hero-buttons pill-group">
-                <Link to="/poa-form?product=oa" className="btn btn-pill-left">Start My Agreement</Link>
+                <Link to="/start-business-llc?product=oa" className="btn btn-pill-left">Start My Agreement</Link>
                 <Link to="/start-business-llc" className="btn btn-pill-right">Need to form an LLC first?</Link>
               </div>
             </div>
@@ -61,7 +61,7 @@ const OperatingAgreementLLC: React.FC = () => {
           <div className="oa-build-grid">
             <div className="oa-build-card">
               <h2><strong><em>Build your</em></strong><br /><span className="text-blue"><em><strong>Operating Agreement</strong></em></span></h2>
-              <Link to="/poa-form?product=oa" className="btn btn-solid btn-lg">Get Started</Link>
+              <Link to="/start-business-llc?product=oa" className="btn btn-solid btn-lg">Get Started</Link>
               <p className="guarantee-text"><em><strong>Money-Back Guarantee!</strong> If you are unsatisfied with your completed documents, contact us within 30-days of your purchase to request a refund under our Refund Policy.</em></p>
             </div>
             <div className="oa-documents">

@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import '../styles/estate-plan-page.css';
 
 const TrustBasedEstatePlan: React.FC = () => {
   const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
+  const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
+  const navigate = useNavigate();
+  const { addEstatePlan } = useCart();
 
   const toggleDoc = (id: string) => {
     setExpandedDoc(expandedDoc === id ? null : id);
@@ -12,6 +18,17 @@ const TrustBasedEstatePlan: React.FC = () => {
 
   const toggleFaq = (id: string) => {
     setExpandedFaq(expandedFaq === id ? null : id);
+  };
+
+  const getPrice = () => {
+    return numPersons === '1' ? 399 : 599;
+  };
+
+  const handlePurchase = async () => {
+    // Product 676 = Trust-Based Estate Plan
+    const formType = numPersons === '1' ? 'solo' : '2person';
+    await addEstatePlan(676, formType, subscribeLEP === '1');
+    navigate('/checkout');
   };
 
   return (
@@ -24,10 +41,10 @@ const TrustBasedEstatePlan: React.FC = () => {
               <p className="ep-hero-subtitle"><em>Estate Planning in <strong>Louisiana</strong></em></p>
               <h1><em className="text-blue">Trust-Based</em> <strong>Estate Plan</strong></h1>
               <p className="ep-hero-description">
-                <em>Create a trust-based estate plan to avoid probate and seamlessly transfer assets to your loved ones.</em>
+                <em>Create a trust-based plan to avoid probate and transfer assets to your loved ones.</em>
               </p>
               <div className="ep-hero-buttons pill-group">
-                <Link to="/checkout?product=676" className="btn btn-pill-left">Start My Plan</Link>
+                <button onClick={() => setShowPurchaseModal(true)} className="btn btn-pill-left">Start My Plan</button>
                 <Link to="/estate-planning" className="btn btn-pill-right">Is this plan right for me?</Link>
               </div>
             </div>
@@ -66,7 +83,7 @@ const TrustBasedEstatePlan: React.FC = () => {
           <div className="ep-build-grid">
             <div className="ep-build-card">
               <h2><strong><em>Build your</em></strong><br /><span className="text-blue"><em><strong>Trust-Based Estate Plan</strong></em></span></h2>
-              <Link to="/checkout?product=676" className="btn btn-solid btn-lg">Get Started</Link>
+              <button onClick={() => setShowPurchaseModal(true)} className="btn btn-solid btn-lg">Get Started</button>
               <p className="guarantee-text"><em><strong>Money-Back Guarantee!</strong> If you are unsatisfied with your completed documents, contact us within 30-days of your purchase to request a refund under our Refund Policy.</em></p>
             </div>
             <div className="ep-documents">
@@ -81,43 +98,43 @@ const TrustBasedEstatePlan: React.FC = () => {
                     <span className="toggle-icon">{expandedDoc === 'trust' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>The centerpiece of your estate plan which controls the management of assets during your life and allows your beneficiaries to receive their inheritance outright, without going through the time and expense of court proceedings.</p>
+                    <p>A Revocable Living Trust is an agreement for the management and disposition of your property designed to avoid the expense and administrative burden of probate. Once the agreement is signed by you, your assets are then transferred to the trust. The assets are held in trust for your benefit for the rest of your life and, thereafter, distributed to beneficiaries that you choose.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'pourover' ? 'expanded' : ''}`}>
                   <button onClick={() => toggleDoc('pourover')}>
-                    <span>Pourover Last Will and Testament</span>
+                    <span>Pourover Last Will &amp; Testament</span>
                     <span className="toggle-icon">{expandedDoc === 'pourover' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>Ensures your Revocable Trust remains the center-piece of your estate plan and that all "probate assets" flow through your Revocable Trust.</p>
+                    <p>A Pourover Last Will and Testament is an ancillary document that should be included with any trust-based plan. The purpose of a Pourover Will is to convey assets to trust that were not held by the trust upon the death of a Settlor. Like a decanter, whatever assets remain outside of trust "pourover" into the trust by way of the Pourover Will. A properly funded trust will not need to utilize the Pourover Will, so the inclusion of this document is to ensure the trust remains the centerpiece of a trust-based estate plan.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'financial-poa' ? 'expanded' : ''}`}>
                   <button onClick={() => toggleDoc('financial-poa')}>
-                    <span>Durable Financial Power of Attorney</span>
+                    <span>Financial Power of Attorney</span>
                     <span className="toggle-icon">{expandedDoc === 'financial-poa' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>Appoint someone you know and trust to manage assets and make financial decisions for you if you become incapacitated or are unavailable.</p>
+                    <p>This document authorizes a person (an "agent") to make legal and financial decisions for another person (the "principal") during life.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'medical-poa' ? 'expanded' : ''}`}>
                   <button onClick={() => toggleDoc('medical-poa')}>
-                    <span>Durable Medical Power of Attorney</span>
+                    <span>Medical Power of Attorney</span>
                     <span className="toggle-icon">{expandedDoc === 'medical-poa' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>Appoint someone you know and trust to make medical decisions for you if you become incapacitated or are unavailable.</p>
+                    <p>This document authorizes a person (an "agent") to make medical decisions and access protected health information for another person (the "principal") if the person is unable to do so.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'living-will' ? 'expanded' : ''}`}>
                   <button onClick={() => toggleDoc('living-will')}>
-                    <span>Advance Healthcare Directive (a/k/a Living Will)</span>
+                    <span>Advanced Healthcare Directive (Living Will)</span>
                     <span className="toggle-icon">{expandedDoc === 'living-will' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>State your wishes in advance regarding what types of medical life support measures you prefer if you cannot express your preferences yourself.</p>
+                    <p>This document is a directive to healthcare providers regarding your preference for the withdrawal of artificial life-support in the event you are in a terminal and irreversible condition with no meaningful hope of recovery as certified by two physicians, one of which is your attending physician.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'hipaa' ? 'expanded' : ''}`}>
@@ -126,16 +143,16 @@ const TrustBasedEstatePlan: React.FC = () => {
                     <span className="toggle-icon">{expandedDoc === 'hipaa' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>Authorize someone to access your Protected Health Information for quick assistance or decisions if you become incapacitated.</p>
+                    <p>This is a document that authorizes another person to receive your protected health information, which otherwise would be sealed under HIPAA (Health Insurance Portability and Accountability Act of 1986).</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'donation' ? 'expanded' : ''}`}>
                   <button onClick={() => toggleDoc('donation')}>
-                    <span>Act of Donation of Principal Residence</span>
+                    <span>Act of Donation to Trust of Principal Residence</span>
                     <span className="toggle-icon">{expandedDoc === 'donation' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>Transfers your residence to your Revocable Trust with a reserved lifetime usufruct to ensure you retain any homestead exemption.</p>
+                    <p>An Act of Donation of Principal Residence is a document which conveys a principal residence to trust with a reserved Louisiana usufruct to ensure the Settlor maintains the homestead exemption.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'extract' ? 'expanded' : ''}`}>
@@ -251,6 +268,73 @@ const TrustBasedEstatePlan: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Purchase Modal */}
+      {showPurchaseModal && (
+        <div className="modal-overlay" onClick={() => setShowPurchaseModal(false)}>
+          <div className="modal-content purchase-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowPurchaseModal(false)}>&times;</button>
+
+            <div className="text-center mb-4">
+              <img
+                src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
+                alt="Plan Builder"
+                style={{ width: '48px', marginBottom: '20px' }}
+              />
+              <h2 style={{ color: '#1a1acc' }}>Trust-Based Estate Plan</h2>
+              <p className="text-muted fst-italic">
+                The Trust-Based Estate Plan includes a Revocable Living Trust, a Pourover Last Will and Testament, Financial Power of Attorney, Medical Power of Attorney, as well as an Advanced Healthcare Directive (a/k/a "Living Will") for you (and your spouse if married).
+              </p>
+              <p className="mb-4">Average time to build a plan: <strong style={{ color: '#1a1acc' }}>20 minutes</strong></p>
+            </div>
+
+            <h4 className="mb-3">Build your plan</h4>
+            <p className="text-muted fst-italic mb-4">
+              After the purchase at your convenience, you will answer a series of questions to prepare your documents.
+            </p>
+
+            <div className="mb-3">
+              <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
+              <select
+                className="form-select"
+                value={numPersons}
+                onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
+              >
+                <option value="1">For one person</option>
+                <option value="2">For two people</option>
+              </select>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                <strong>2.</strong> Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
+              </label>
+              <select
+                className="form-select"
+                value={subscribeLEP}
+                onChange={(e) => setSubscribeLEP(e.target.value as '1' | '0')}
+              >
+                <option value="1">Yes, sure!</option>
+                <option value="0">No, thank you</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <strong>Final Price:</strong>{' '}
+              <strong style={{ fontSize: '1.25rem' }}>
+                ${getPrice()}{subscribeLEP === '1' ? ' + $9.99/mo' : ''}
+              </strong>
+            </div>
+
+            <button
+              onClick={handlePurchase}
+              className="btn btn-solid btn-lg w-100"
+            >
+              Purchase
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

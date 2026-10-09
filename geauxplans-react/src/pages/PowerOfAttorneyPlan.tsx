@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import '../styles/estate-plan-page.css';
 
 const PowerOfAttorneyPlan: React.FC = () => {
   const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [numPersons, setNumPersons] = useState<'1' | '2'>('1');
+  const [subscribeLEP, setSubscribeLEP] = useState<'1' | '0'>('1');
+  const navigate = useNavigate();
+  const { addEstatePlan } = useCart();
 
   const toggleDoc = (id: string) => {
     setExpandedDoc(expandedDoc === id ? null : id);
@@ -12,6 +18,17 @@ const PowerOfAttorneyPlan: React.FC = () => {
 
   const toggleFaq = (id: string) => {
     setExpandedFaq(expandedFaq === id ? null : id);
+  };
+
+  const getPrice = () => {
+    return numPersons === '1' ? 99 : 149;
+  };
+
+  const handlePurchase = async () => {
+    // Product 614 = POA Plan
+    const formType = numPersons === '1' ? 'solo' : '2person';
+    await addEstatePlan(614, formType, subscribeLEP === '1');
+    navigate('/checkout');
   };
 
   return (
@@ -27,7 +44,7 @@ const PowerOfAttorneyPlan: React.FC = () => {
                 <em>Create Power of Attorney documents for your college student or aging family members to handle financial and healthcare decisions. This plan provides essential incapacity planning without a full estate plan.</em>
               </p>
               <div className="ep-hero-buttons pill-group">
-                <Link to="/checkout?product=614" className="btn btn-pill-left">Start My Plan</Link>
+                <button onClick={() => setShowPurchaseModal(true)} className="btn btn-pill-left">Start My Plan</button>
                 <Link to="/estate-planning" className="btn btn-pill-right">Is this plan right for me?</Link>
               </div>
             </div>
@@ -66,7 +83,7 @@ const PowerOfAttorneyPlan: React.FC = () => {
           <div className="ep-build-grid">
             <div className="ep-build-card">
               <h2><strong><em>Build your</em></strong><br /><span className="text-blue"><em><strong>Power of Attorney Supplement Plan</strong></em></span></h2>
-              <Link to="/checkout?product=614" className="btn btn-solid btn-lg">Get Started</Link>
+              <button onClick={() => setShowPurchaseModal(true)} className="btn btn-solid btn-lg">Get Started</button>
               <p className="guarantee-text"><em><strong>Money-Back Guarantee!</strong> If you are unsatisfied with your completed documents, contact us within 30-days of your purchase to request a refund under our Refund Policy.</em></p>
             </div>
             <div className="ep-documents">
@@ -77,29 +94,29 @@ const PowerOfAttorneyPlan: React.FC = () => {
               <div className="documents-accordion">
                 <div className={`doc-item ${expandedDoc === 'financial-poa' ? 'expanded' : ''}`}>
                   <button onClick={() => toggleDoc('financial-poa')}>
-                    <span>Durable Financial Power of Attorney</span>
+                    <span>Financial Power of Attorney</span>
                     <span className="toggle-icon">{expandedDoc === 'financial-poa' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>Appoint someone you know and trust to manage assets and make financial decisions for you if you become incapacitated or are unavailable.</p>
+                    <p>This document authorizes a person (an "agent") to make legal and financial decisions for another person (the "principal") during life.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'medical-poa' ? 'expanded' : ''}`}>
                   <button onClick={() => toggleDoc('medical-poa')}>
-                    <span>Durable Medical Power of Attorney</span>
+                    <span>Medical Power of Attorney</span>
                     <span className="toggle-icon">{expandedDoc === 'medical-poa' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>Appoint someone you know and trust to make medical decisions for you if you become incapacitated or are unavailable.</p>
+                    <p>This document authorizes a person (an "agent") to make medical decisions and access protected health information for another person (the "principal") if the person is unable to do so.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'living-will' ? 'expanded' : ''}`}>
                   <button onClick={() => toggleDoc('living-will')}>
-                    <span>Advance Healthcare Directive (a/k/a Living Will)</span>
+                    <span>Advanced Healthcare Directive (Living Will)</span>
                     <span className="toggle-icon">{expandedDoc === 'living-will' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>State your wishes in advance regarding what types of medical life support measures you prefer if you cannot express your preferences yourself.</p>
+                    <p>This document is a directive to healthcare providers regarding your preference for the withdrawal of artificial life-support in the event you are in a terminal and irreversible condition with no meaningful hope of recovery as certified by two physicians, one of which is your attending physician.</p>
                   </div>
                 </div>
                 <div className={`doc-item ${expandedDoc === 'hipaa' ? 'expanded' : ''}`}>
@@ -108,7 +125,7 @@ const PowerOfAttorneyPlan: React.FC = () => {
                     <span className="toggle-icon">{expandedDoc === 'hipaa' ? '−' : '+'}</span>
                   </button>
                   <div className="doc-content">
-                    <p>Authorize someone to access your Protected Health Information for quick assistance or decisions if you become incapacitated.</p>
+                    <p>This is a document that authorizes another person to receive your protected health information, which otherwise would be sealed under HIPAA (Health Insurance Portability and Accountability Act of 1986).</p>
                   </div>
                 </div>
               </div>
@@ -181,6 +198,73 @@ const PowerOfAttorneyPlan: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Purchase Modal */}
+      {showPurchaseModal && (
+        <div className="modal-overlay" onClick={() => setShowPurchaseModal(false)}>
+          <div className="modal-content purchase-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowPurchaseModal(false)}>&times;</button>
+
+            <div className="text-center mb-4">
+              <img
+                src="https://geauxplans.com/wp-content/uploads/2022/01/Plan-Builder-Icon.png"
+                alt="Plan Builder"
+                style={{ width: '48px', marginBottom: '20px' }}
+              />
+              <h2 style={{ color: '#1a1acc' }}>Power of Attorney Plan</h2>
+              <p className="text-muted fst-italic">
+                Create durable powers of attorney and other important documents for your college student, an aging parent, or any other person you need to assist if something happens.
+              </p>
+              <p className="mb-4">Average time to build a plan: <strong style={{ color: '#1a1acc' }}>5 minutes</strong></p>
+            </div>
+
+            <h4 className="mb-3">Build your plan</h4>
+            <p className="text-muted fst-italic mb-4">
+              After the purchase at your convenience, you will answer a series of questions to prepare your documents.
+            </p>
+
+            <div className="mb-3">
+              <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
+              <select
+                className="form-select"
+                value={numPersons}
+                onChange={(e) => setNumPersons(e.target.value as '1' | '2')}
+              >
+                <option value="1">For one person</option>
+                <option value="2">For two people</option>
+              </select>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                <strong>2.</strong> Would you like to subscribe to the <a href="/legal-edge-plan" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Legal Edge Plan</a> for $9.99/month to be protected from any mistakes?
+              </label>
+              <select
+                className="form-select"
+                value={subscribeLEP}
+                onChange={(e) => setSubscribeLEP(e.target.value as '1' | '0')}
+              >
+                <option value="1">Yes, sure!</option>
+                <option value="0">No, thank you</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <strong>Final Price:</strong>{' '}
+              <strong style={{ fontSize: '1.25rem' }}>
+                ${getPrice()}{subscribeLEP === '1' ? ' + $9.99/mo' : ''}
+              </strong>
+            </div>
+
+            <button
+              onClick={handlePurchase}
+              className="btn btn-solid btn-lg w-100"
+            >
+              Purchase
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
