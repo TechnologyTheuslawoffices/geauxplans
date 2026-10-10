@@ -991,11 +991,6 @@ const ViewPlans: React.FC = () => {
               </p>
             </div>
 
-            <h4 className="mb-3">Build your plan</h4>
-            <p className="text-muted fst-italic mb-4">
-              After the purchase at your convenience, you will answer a series of questions to prepare your documents.
-            </p>
-
             <div className="mb-3">
               <label className="form-label"><strong>1.</strong> For how many people do you want to prepare documents?</label>
               <select
@@ -1061,6 +1056,10 @@ const ViewPlans: React.FC = () => {
             >
               Purchase
             </button>
+
+            <p className="text-muted fst-italic mt-3 mb-0" style={{ fontSize: '0.85rem' }}>
+              <strong>Build your plan:</strong> after the purchase, at your convenience, you&rsquo;ll answer a series of questions to prepare your documents.
+            </p>
           </div>
         </div>
       )}
