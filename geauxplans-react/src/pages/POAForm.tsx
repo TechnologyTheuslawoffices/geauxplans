@@ -2911,9 +2911,36 @@ const POAForm: React.FC = () => {
     );
   };
 
+  // De-dup for the agent dropdowns (FPOA/HCPOA, both principals): a person named
+  // in one agent slot is removed from the other dropdowns, mirroring the
+  // executor fix, so the same person can't be initial agent AND co-agent AND a
+  // successor. Stored values are party display names or the synthetic
+  // "spouse"/"client" tokens, so those de-dupe too.
+  const takenAgentSet = (
+    initial: { person_to_serve?: string; second_coagent_person_to_serve?: string } | undefined,
+    successors: Array<{ successor_agent_to_serve?: string; second_successor_coagent_to_serve?: string }> | undefined,
+  ): Set<string> => {
+    const taken = new Set<string>();
+    if (initial?.person_to_serve) taken.add(initial.person_to_serve);
+    if (initial?.second_coagent_person_to_serve) taken.add(initial.second_coagent_person_to_serve);
+    (successors || []).forEach((a) => {
+      if (a.successor_agent_to_serve) taken.add(a.successor_agent_to_serve);
+      if (a.second_successor_coagent_to_serve) taken.add(a.second_successor_coagent_to_serve);
+    });
+    return taken;
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const filterAgentParties = (parties: any[], current: string, taken: Set<string>): any[] =>
+    parties.filter((p) => {
+      const dn = getPartyDisplayName(p);
+      return dn === current || !taken.has(dn);
+    });
+
   const renderFPOAPage = () => {
     // Full pool: all Agents-step parties + all children (see getAgentPartyOptions).
     const agentParties = getAgentPartyOptions();
+    const takenFpoaClient = takenAgentSet(formData.fpoa.fpoa_initial_agents, formData.fpoa.successor_agents);
+    const takenFpoaSpouse = takenAgentSet(formData.spouse_fpoa.fpoa_initial_agents, formData.spouse_fpoa.successor_agents);
     const isTwoPerson = formType.includes('2Person');
     const isPOA = formType.includes('powerOfAttorney');
     const secondPersonLabel = isPOA ? 'Second Principal' : 'Second Person';
@@ -2971,10 +2998,10 @@ const POAForm: React.FC = () => {
                   onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
                 >
                   <option value="">Select Agent...</option>
-                  {isTwoPerson && (
+                  {isTwoPerson && (formData.fpoa.fpoa_initial_agents.person_to_serve === 'spouse' || !takenFpoaClient.has('spouse')) && (
                     <option value="spouse">{getSecondPersonName()}</option>
                   )}
-                  {agentParties.map((party) => (
+                  {filterAgentParties(agentParties, formData.fpoa.fpoa_initial_agents.person_to_serve, takenFpoaClient).map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
@@ -2987,7 +3014,7 @@ const POAForm: React.FC = () => {
                   onChange={(e) => updateNestedFormData('fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                 >
                   <option value="">None</option>
-                  {agentParties.map((party) => (
+                  {filterAgentParties(agentParties, formData.fpoa.fpoa_initial_agents.second_coagent_person_to_serve, takenFpoaClient).map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
@@ -3087,7 +3114,7 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateSuccessorAgent('fpoa', index, 'successor_agent_to_serve', e.target.value)}
                       >
                         <option value="">Select Agent...</option>
-                        {agentParties.map((party) => (
+                        {filterAgentParties(agentParties, agent.successor_agent_to_serve || '', takenFpoaClient).map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
                       </select>
@@ -3100,7 +3127,7 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateSuccessorAgent('fpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                       >
                         <option value="">None</option>
-                        {agentParties.map((party) => (
+                        {filterAgentParties(agentParties, agent.second_successor_coagent_to_serve || '', takenFpoaClient).map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
                       </select>
@@ -3152,8 +3179,10 @@ const POAForm: React.FC = () => {
                       onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.person_to_serve', e.target.value)}
                     >
                       <option value="">Select Agent...</option>
-                      <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'First Person'})</option>
-                      {agentParties.map((party) => (
+                      {(formData.spouse_fpoa.fpoa_initial_agents.person_to_serve === 'client' || !takenFpoaSpouse.has('client')) && (
+                        <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'First Person'})</option>
+                      )}
+                      {filterAgentParties(agentParties, formData.spouse_fpoa.fpoa_initial_agents.person_to_serve, takenFpoaSpouse).map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
@@ -3166,7 +3195,7 @@ const POAForm: React.FC = () => {
                       onChange={(e) => updateNestedFormData('spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                     >
                       <option value="">None</option>
-                      {agentParties.map((party) => (
+                      {filterAgentParties(agentParties, formData.spouse_fpoa.fpoa_initial_agents.second_coagent_person_to_serve, takenFpoaSpouse).map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
@@ -3263,8 +3292,10 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_fpoa', index, 'successor_agent_to_serve', e.target.value)}
                           >
                             <option value="">Select Agent...</option>
-                            <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'First Person'})</option>
-                            {agentParties.map((party) => (
+                            {(agent.successor_agent_to_serve === 'client' || !takenFpoaSpouse.has('client')) && (
+                              <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'First Person'})</option>
+                            )}
+                            {filterAgentParties(agentParties, agent.successor_agent_to_serve || '', takenFpoaSpouse).map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -3277,7 +3308,7 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_fpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                           >
                             <option value="">None</option>
-                            {agentParties.map((party) => (
+                            {filterAgentParties(agentParties, agent.second_successor_coagent_to_serve || '', takenFpoaSpouse).map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -3305,6 +3336,8 @@ const POAForm: React.FC = () => {
   const renderHCPOAPage = () => {
     // Full pool: all Agents-step parties + all children (see getAgentPartyOptions).
     const agentParties = getAgentPartyOptions();
+    const takenHcpoaClient = takenAgentSet(formData.hcpoa.hcpoa_initial_agents, formData.hcpoa.successor_agents);
+    const takenHcpoaSpouse = takenAgentSet(formData.spouse_hcpoa.hcpoa_initial_agents, formData.spouse_hcpoa.successor_agents);
     const isTwoPerson = formType.includes('2Person');
     const isPOA = formType.includes('powerOfAttorney');
     const secondPersonLabel = isPOA ? 'Second Principal' : 'Second Person';
@@ -3410,10 +3443,10 @@ const POAForm: React.FC = () => {
                   onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
                 >
                   <option value="">Select Agent...</option>
-                  {isTwoPerson && (
+                  {isTwoPerson && (formData.hcpoa.hcpoa_initial_agents.person_to_serve === 'spouse' || !takenHcpoaClient.has('spouse')) && (
                     <option value="spouse">{getSecondPersonName()}</option>
                   )}
-                  {agentParties.map((party) => (
+                  {filterAgentParties(agentParties, formData.hcpoa.hcpoa_initial_agents.person_to_serve, takenHcpoaClient).map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
@@ -3426,7 +3459,7 @@ const POAForm: React.FC = () => {
                   onChange={(e) => updateNestedFormData('hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                 >
                   <option value="">None</option>
-                  {agentParties.map((party) => (
+                  {filterAgentParties(agentParties, formData.hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve, takenHcpoaClient).map((party) => (
                     <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                   ))}
                 </select>
@@ -3526,7 +3559,7 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateSuccessorAgent('hcpoa', index, 'successor_agent_to_serve', e.target.value)}
                       >
                         <option value="">Select Agent...</option>
-                        {agentParties.map((party) => (
+                        {filterAgentParties(agentParties, agent.successor_agent_to_serve || '', takenHcpoaClient).map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
                       </select>
@@ -3539,7 +3572,7 @@ const POAForm: React.FC = () => {
                         onChange={(e) => updateSuccessorAgent('hcpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                       >
                         <option value="">None</option>
-                        {agentParties.map((party) => (
+                        {filterAgentParties(agentParties, agent.second_successor_coagent_to_serve || '', takenHcpoaClient).map((party) => (
                           <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                         ))}
                       </select>
@@ -3648,8 +3681,10 @@ const POAForm: React.FC = () => {
                       onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.person_to_serve', e.target.value)}
                     >
                       <option value="">Select Agent...</option>
-                      <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'First Person'})</option>
-                      {agentParties.map((party) => (
+                      {(formData.spouse_hcpoa.hcpoa_initial_agents.person_to_serve === 'client' || !takenHcpoaSpouse.has('client')) && (
+                        <option value="client">{formData.personal_info.first_name || 'First Principal'} ({isPOA ? 'First Principal' : 'First Person'})</option>
+                      )}
+                      {filterAgentParties(agentParties, formData.spouse_hcpoa.hcpoa_initial_agents.person_to_serve, takenHcpoaSpouse).map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
@@ -3662,7 +3697,7 @@ const POAForm: React.FC = () => {
                       onChange={(e) => updateNestedFormData('spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve', e.target.value)}
                     >
                       <option value="">None</option>
-                      {agentParties.map((party) => (
+                      {filterAgentParties(agentParties, formData.spouse_hcpoa.hcpoa_initial_agents.second_coagent_person_to_serve, takenHcpoaSpouse).map((party) => (
                         <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                       ))}
                     </select>
@@ -3759,8 +3794,10 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_hcpoa', index, 'successor_agent_to_serve', e.target.value)}
                           >
                             <option value="">Select Agent...</option>
-                            <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'First Person'})</option>
-                            {agentParties.map((party) => (
+                            {(agent.successor_agent_to_serve === 'client' || !takenHcpoaSpouse.has('client')) && (
+                              <option value="client">{formData.personal_info.first_name || 'Client'} ({isPOA ? 'First Principal' : 'First Person'})</option>
+                            )}
+                            {filterAgentParties(agentParties, agent.successor_agent_to_serve || '', takenHcpoaSpouse).map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -3773,7 +3810,7 @@ const POAForm: React.FC = () => {
                             onChange={(e) => updateSuccessorAgent('spouse_hcpoa', index, 'second_successor_coagent_to_serve', e.target.value)}
                           >
                             <option value="">None</option>
-                            {agentParties.map((party) => (
+                            {filterAgentParties(agentParties, agent.second_successor_coagent_to_serve || '', takenHcpoaSpouse).map((party) => (
                               <option key={party.id} value={getPartyDisplayName(party)}>{getPartyDisplayName(party)}</option>
                             ))}
                           </select>
@@ -4768,6 +4805,9 @@ const POAForm: React.FC = () => {
     const usedTrusteeNames = trustees.flatMap((t) => [t.trustee_to_serve, t.second_trustee_person_to_serve]);
     const bequests = ti.specific_bequests || [];
     const dist = ti.residuary_distribution || [];
+    // A person may hold only one tutor role (Tutor / Under-Tutor / successors),
+    // so each is dropped from the other tutor dropdowns.
+    const usedTutors = [ti.tutor, ti.under_tutor, ...(ti.successor_tutors || []).map((s) => s.successor_tutor_to_serve)];
     const residTotal = dist.reduce((sum, d) => sum + (parseFloat(d.share_percent) || 0), 0);
 
     return (
@@ -4986,7 +5026,7 @@ const POAForm: React.FC = () => {
                         <label className="form-label">Recipient:</label>
                         <select className="form-select" value={b.recipient} onChange={(e) => updateBequest(index, 'recipient', e.target.value)}>
                           <option value="">Select recipient...</option>
-                          {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                          {availableOptions(beneficiaryOptions, [b.second_recipient], b.recipient).map((name) => (<option key={name} value={name}>{name}</option>))}
                         </select>
                       </div>
                       {b.multiple_recipients === 'Yes' && (
@@ -4994,7 +5034,7 @@ const POAForm: React.FC = () => {
                           <label className="form-label">Second recipient:</label>
                           <select className="form-select" value={b.second_recipient} onChange={(e) => updateBequest(index, 'second_recipient', e.target.value)}>
                             <option value="">Select recipient...</option>
-                            {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                            {availableOptions(beneficiaryOptions, [b.recipient], b.second_recipient).map((name) => (<option key={name} value={name}>{name}</option>))}
                           </select>
                         </div>
                       )}
@@ -5074,7 +5114,7 @@ const POAForm: React.FC = () => {
                   <label className="form-label">Beneficiary:</label>
                   <select className="form-select" value={d.recipient} onChange={(e) => updateDistribution(index, 'recipient', e.target.value)}>
                     <option value="">Select beneficiary...</option>
-                    {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                    {availableOptions(beneficiaryOptions, dist.map((x) => x.recipient), d.recipient).map((name) => (<option key={name} value={name}>{name}</option>))}
                   </select>
                 </div>
                 {!ti.distributions_equal && (
@@ -5147,14 +5187,14 @@ const POAForm: React.FC = () => {
                 <label className="form-label">Select the Tutor for your minor children</label>
                 <select className="form-select" value={ti.tutor} onChange={(e) => updateFormData('trust_info', 'tutor', e.target.value)}>
                   <option value="">Select Tutor...</option>
-                  {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                  {availableOptions(beneficiaryOptions, usedTutors, ti.tutor).map((name) => (<option key={name} value={name}>{name}</option>))}
                 </select>
               </div>
               <div className="col-md-6 mb-3">
                 <label className="form-label">Select the Under-Tutor for your minor children</label>
                 <select className="form-select" value={ti.under_tutor} onChange={(e) => updateFormData('trust_info', 'under_tutor', e.target.value)}>
                   <option value="">Select Under-Tutor...</option>
-                  {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                  {availableOptions(beneficiaryOptions, usedTutors, ti.under_tutor).map((name) => (<option key={name} value={name}>{name}</option>))}
                 </select>
               </div>
               {errors['trust_info.tutor'] && <div className="text-danger small">{errors['trust_info.tutor']}</div>}
@@ -5185,7 +5225,7 @@ const POAForm: React.FC = () => {
                       <label className="form-label">Select the person you want to serve:</label>
                       <select className="form-select" value={s.successor_tutor_to_serve} onChange={(e) => updateSuccessorTutor(index, e.target.value)}>
                         <option value="">Select Successor Tutor...</option>
-                        {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                        {availableOptions(beneficiaryOptions, usedTutors, s.successor_tutor_to_serve).map((name) => (<option key={name} value={name}>{name}</option>))}
                       </select>
                     </div>
                   </div>
@@ -5588,7 +5628,7 @@ const POAForm: React.FC = () => {
             onChange={(e) => updateFormData('will_info', 'primary_guardian', e.target.value)}
           >
             <option value="">Select Tutor...</option>
-            {guardianOptions.map((n) => (<option key={n} value={n}>{n}</option>))}
+            {availableOptions(guardianOptions, [formData.will_info?.backup_guardian || ''], formData.will_info?.primary_guardian || '').map((n) => (<option key={n} value={n}>{n}</option>))}
           </select>
           <small className="text-muted">
             This is your first-choice guardian to care for your minor children if you pass away while they are under
@@ -5604,7 +5644,7 @@ const POAForm: React.FC = () => {
             onChange={(e) => updateFormData('will_info', 'backup_guardian', e.target.value)}
           >
             <option value="">Select Under-Tutor...</option>
-            {guardianOptions.map((n) => (<option key={n} value={n}>{n}</option>))}
+            {availableOptions(guardianOptions, [formData.will_info?.primary_guardian || ''], formData.will_info?.backup_guardian || '').map((n) => (<option key={n} value={n}>{n}</option>))}
           </select>
           <small className="text-muted">This person must approve certain actions taken by the Tutor.</small>
         </div>
@@ -5682,7 +5722,7 @@ const POAForm: React.FC = () => {
                         <label className="form-label">Recipient:</label>
                         <select className="form-select" value={b.recipient} onChange={(e) => updateWillBequest(index, 'recipient', e.target.value)}>
                           <option value="">Select recipient...</option>
-                          {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                          {availableOptions(beneficiaryOptions, [b.second_recipient], b.recipient).map((name) => (<option key={name} value={name}>{name}</option>))}
                         </select>
                       </div>
                       {b.multiple_recipients === 'Yes' && (
@@ -5690,7 +5730,7 @@ const POAForm: React.FC = () => {
                           <label className="form-label">Second recipient:</label>
                           <select className="form-select" value={b.second_recipient} onChange={(e) => updateWillBequest(index, 'second_recipient', e.target.value)}>
                             <option value="">Select recipient...</option>
-                            {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                            {availableOptions(beneficiaryOptions, [b.recipient], b.second_recipient).map((name) => (<option key={name} value={name}>{name}</option>))}
                           </select>
                         </div>
                       )}
@@ -5739,7 +5779,7 @@ const POAForm: React.FC = () => {
                   <label className="form-label">Beneficiary:</label>
                   <select className="form-select" value={d.recipient} onChange={(e) => updateWillDistribution(index, 'recipient', e.target.value)}>
                     <option value="">Select beneficiary...</option>
-                    {beneficiaryOptions.map((name) => (<option key={name} value={name}>{name}</option>))}
+                    {availableOptions(beneficiaryOptions, dist.map((x) => x.recipient), d.recipient).map((name) => (<option key={name} value={name}>{name}</option>))}
                   </select>
                 </div>
                 {!wi.distributions_equal && (
