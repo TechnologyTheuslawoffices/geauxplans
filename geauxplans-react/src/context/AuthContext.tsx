@@ -52,9 +52,10 @@ function mapSupabaseUser(supabaseUser: any): User {
     email: supabaseUser.email || '',
     firstName: supabaseUser.user_metadata?.first_name || '',
     lastName: supabaseUser.user_metadata?.last_name || '',
-    displayName: supabaseUser.user_metadata?.first_name
-      ? `${supabaseUser.user_metadata.first_name} ${supabaseUser.user_metadata.last_name || ''}`
-      : supabaseUser.email?.split('@')[0] || '',
+    displayName: supabaseUser.user_metadata?.display_name
+      || (supabaseUser.user_metadata?.first_name
+        ? `${supabaseUser.user_metadata.first_name} ${supabaseUser.user_metadata.last_name || ''}`.trim()
+        : supabaseUser.email?.split('@')[0] || ''),
     role: supabaseUser.user_metadata?.role || 'customer',
     createdAt: supabaseUser.created_at || new Date().toISOString(),
   };

@@ -1,41 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabase';
 
-interface ProfileData {
+interface ProfileForm {
   firstName: string;
   lastName: string;
   displayName: string;
-  email: string;
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
 }
 
 const EditProfile: React.FC = () => {
-  const [formData, setFormData] = useState<ProfileData>({
-    firstName: 'John',
-    lastName: 'Doe',
-    displayName: 'John Doe',
-    email: 'john.doe@example.com',
+  const { user } = useAuth();
+
+  const [formData, setFormData] = useState<ProfileForm>({
+    firstName: '',
+    lastName: '',
+    displayName: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
 
+  // Seed the form from the signed-in user once it resolves (and whenever it
+  // changes, e.g. after a save round-trips through onAuthStateChange).
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        displayName: user.displayName || '',
+      }));
+    }
+  }, [user]);
+
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage(null);
 
-    // Validate passwords if trying to change
-    if (formData.newPassword || formData.confirmPassword) {
+    const changingPassword = !!(formData.newPassword || formData.confirmPassword);
+    if (changingPassword) {
       if (!formData.currentPassword) {
         setMessage({ type: 'error', text: 'Please enter your current password to change it.' });
         return;
@@ -50,16 +64,51 @@ const EditProfile: React.FC = () => {
       }
     }
 
-    // Simulate save
-    setMessage({ type: 'success', text: 'Account details saved successfully!' });
+    if (!user) {
+      setMessage({ type: 'error', text: 'You must be signed in to update your account.' });
+      return;
+    }
 
-    // Clear password fields after save
-    setFormData((prev) => ({
-      ...prev,
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    }));
+    setSaving(true);
+    try {
+      // Verify the current password by re-authenticating before changing it —
+      // Supabase's updateUser lets a logged-in session set a new password
+      // without proving the old one, so we check it ourselves first.
+      if (changingPassword) {
+        const { error: reauthError } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password: formData.currentPassword,
+        });
+        if (reauthError) {
+          setMessage({ type: 'error', text: 'Current password is incorrect.' });
+          setSaving(false);
+          return;
+        }
+      }
+
+      const payload: { data: Record<string, string>; password?: string } = {
+        data: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          display_name: formData.displayName,
+        },
+      };
+      if (changingPassword) payload.password = formData.newPassword;
+
+      const { error } = await supabase.auth.updateUser(payload);
+      if (error) {
+        setMessage({ type: 'error', text: error.message || 'Could not save your changes.' });
+        setSaving(false);
+        return;
+      }
+
+      setMessage({ type: 'success', text: 'Account details saved successfully!' });
+      setFormData((prev) => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }));
+    } catch (err) {
+      setMessage({ type: 'error', text: 'An unexpected error occurred. Please try again.' });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const inputStyle: React.CSSProperties = {
@@ -105,27 +154,13 @@ const EditProfile: React.FC = () => {
             <label style={labelStyle}>
               First Name <span style={{ color: '#e74c3c' }}>*</span>
             </label>
-            <input
-              type="text"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-            />
+            <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} required style={inputStyle} />
           </div>
           <div>
             <label style={labelStyle}>
               Last Name <span style={{ color: '#e74c3c' }}>*</span>
             </label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-            />
+            <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} required style={inputStyle} />
           </div>
         </div>
 
@@ -133,31 +168,24 @@ const EditProfile: React.FC = () => {
           <label style={labelStyle}>
             Display Name <span style={{ color: '#e74c3c' }}>*</span>
           </label>
-          <input
-            type="text"
-            name="displayName"
-            value={formData.displayName}
-            onChange={handleChange}
-            required
-            style={inputStyle}
-          />
+          <input type="text" name="displayName" value={formData.displayName} onChange={handleChange} required style={inputStyle} />
           <p style={{ fontSize: '14px', color: '#707070', marginTop: '5px', fontStyle: 'italic' }}>
             This will be how your name will be displayed in the account section and in reviews
           </p>
         </div>
 
         <div style={{ marginBottom: '30px' }}>
-          <label style={labelStyle}>
-            Email Address <span style={{ color: '#e74c3c' }}>*</span>
-          </label>
+          <label style={labelStyle}>Email Address</label>
           <input
             type="email"
             name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            style={inputStyle}
+            value={user?.email || ''}
+            disabled
+            style={{ ...inputStyle, backgroundColor: '#f1f1f1', color: '#707070', cursor: 'not-allowed' }}
           />
+          <p style={{ fontSize: '14px', color: '#707070', marginTop: '5px', fontStyle: 'italic' }}>
+            Your email can&rsquo;t be changed here. Contact us at +1 (855) 213-6300 if you need to update it.
+          </p>
         </div>
 
         <fieldset
@@ -168,64 +196,39 @@ const EditProfile: React.FC = () => {
             marginBottom: '30px',
           }}
         >
-          <legend
-            style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              padding: '0 10px',
-            }}
-          >
+          <legend style={{ fontSize: '18px', fontWeight: '600', padding: '0 10px' }}>
             Password Change
           </legend>
 
           <div style={{ marginBottom: '20px' }}>
             <label style={labelStyle}>Current Password</label>
-            <input
-              type="password"
-              name="currentPassword"
-              value={formData.currentPassword}
-              onChange={handleChange}
-              placeholder="Leave blank to leave unchanged"
-              style={inputStyle}
-            />
+            <input type="password" name="currentPassword" value={formData.currentPassword} onChange={handleChange} placeholder="Leave blank to leave unchanged" autoComplete="current-password" style={inputStyle} />
           </div>
 
           <div style={{ marginBottom: '20px' }}>
             <label style={labelStyle}>New Password</label>
-            <input
-              type="password"
-              name="newPassword"
-              value={formData.newPassword}
-              onChange={handleChange}
-              placeholder="Leave blank to leave unchanged"
-              style={inputStyle}
-            />
+            <input type="password" name="newPassword" value={formData.newPassword} onChange={handleChange} placeholder="Leave blank to leave unchanged" autoComplete="new-password" style={inputStyle} />
           </div>
 
           <div>
             <label style={labelStyle}>Confirm New Password</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Leave blank to leave unchanged"
-              style={inputStyle}
-            />
+            <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Leave blank to leave unchanged" autoComplete="new-password" style={inputStyle} />
           </div>
         </fieldset>
 
         <button
           type="submit"
           className="btn btn-primary btn-lg"
+          disabled={saving}
           style={{
             padding: '15px 40px',
-            cursor: 'pointer',
+            cursor: saving ? 'not-allowed' : 'pointer',
             width: '100%',
             maxWidth: '320px',
+            opacity: saving ? 0.7 : 1,
           }}
         >
-          Save Changes
+          {saving ? 'Saving…' : 'Save Changes'}
         </button>
       </form>
     </div>
