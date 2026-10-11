@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import GeauxPilot from './components/GeauxPilot';
 import Learn from './pages/Learn';
 import Shop from './pages/Shop';
 import About from './pages/About';
@@ -79,6 +80,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {!isDesignMode && <Header />}
       {children}
       {!isDesignMode && <Footer />}
+      {/* Site-wide AI assistant. Hidden in design mode (/poa-form), which has
+          its own in-interview "Talk to an Attorney (AI)". */}
+      {!isDesignMode && <GeauxPilot />}
     </div>
   );
 };

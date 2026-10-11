@@ -115,6 +115,12 @@ const aiAttorneyRoutes = require('../src/routes/aiAttorney');
 app.use('/api/ai-attorney', aiAttorneyRoutes);
 console.log('Loaded AI attorney routes');
 
+// GeauxPilot site-wide help assistant. Optional Supabase auth + Anthropic only,
+// no SQLite, so it loads in both entry points.
+const aiAssistantRoutes = require('../src/routes/aiAssistant');
+app.use('/api/ai-assistant', aiAssistantRoutes);
+console.log('Loaded AI assistant routes');
+
 // Note: Knackly routes are not loaded on Vercel. Documents are drafted by the
 // engine named in DOC_ENGINE, which defaults to the in-process local drafter.
 console.log(`Vercel mode: document engine = ${process.env.DOC_ENGINE || 'local'}`);
