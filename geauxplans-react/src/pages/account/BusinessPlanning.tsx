@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // Mock data for business entities - in a real app, this would come from an API
@@ -6,6 +6,31 @@ const mockCompanies: any[] = [];
 
 const BusinessPlanning: React.FC = () => {
   const hasCompanies = mockCompanies.length > 0;
+  // Mirrors the estate "Start a New Plan" collapse (ViewPlans): once the user
+  // has companies, the plan options tuck behind a single button.
+  const [showNewPlanOptions, setShowNewPlanOptions] = useState(false);
+
+  const planOptions = (
+    <div className="mt-3">
+      <p><span className="gpx_highlight">Choose a plan:</span></p>
+      <div className="mb-2">
+        <Link to="/start-business-llc" className="plan_not_purchased" style={{ fontWeight: 600 }}>
+          Start an LLC
+        </Link>
+        <span className="ma_starting_at"> from $89</span>
+        <br />
+        <em style={{ color: '#666' }}>Form a brand-new Louisiana LLC.</em>
+      </div>
+      <div>
+        <Link to="/operating-agreement-llc" className="plan_not_purchased" style={{ fontWeight: 600 }}>
+          Operating Agreement for LLC
+        </Link>
+        <span className="ma_starting_at"> from $149</span>
+        <br />
+        <em style={{ color: '#666' }}>Add an operating agreement to a company you already run.</em>
+      </div>
+    </div>
+  );
 
   return (
     <div>
@@ -29,6 +54,20 @@ const BusinessPlanning: React.FC = () => {
               <h3>{company.name}</h3>
             </div>
           ))}
+
+          {/* Not empty: a single "Start a New Plan" button that reveals the
+              options — same pattern as the estate plans list. */}
+          <hr />
+          <button
+            type="button"
+            className="btn btn-primary"
+            aria-expanded={showNewPlanOptions}
+            onClick={() => setShowNewPlanOptions((o) => !o)}
+          >
+            <i className="fas fa-plus me-2"></i>
+            Start a New Plan
+          </button>
+          {showNewPlanOptions && planOptions}
         </div>
       ) : (
         <div
@@ -46,14 +85,16 @@ const BusinessPlanning: React.FC = () => {
             You don't have any companies yet. Form a Louisiana LLC in minutes, or add an
             operating agreement to a company you already run.
           </p>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/start-business-llc" className="btn btn-primary">
-              Start a Business Plan
+          {/* Empty: a single primary "Start a Business Plan" button, matching
+              the estate empty state's single CTA. */}
+          <Link to="/start-business-llc" className="btn btn-primary">
+            Start a Business Plan
+          </Link>
+          <p style={{ marginTop: '15px', marginBottom: 0 }}>
+            <Link to="/operating-agreement-llc" style={{ color: '#004d71', fontWeight: 600, fontSize: '14px' }}>
+              or add an Operating Agreement &rarr;
             </Link>
-            <Link to="/operating-agreement-llc" className="btn btn-outline-primary">
-              Get an Operating Agreement
-            </Link>
-          </div>
+          </p>
         </div>
       )}
 
