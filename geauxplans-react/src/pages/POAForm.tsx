@@ -5329,6 +5329,26 @@ const POAForm: React.FC = () => {
       const shortcut = wi[shortcutField] as string;
       const errorKey = isSpouse ? 'will_info.spouse_initial_executors' : 'will_info.initial_executors';
 
+      // A person may hold only one executor slot. Exclude names already chosen
+      // in any other initial/co/successor slot from the other dropdowns, while
+      // keeping a select's own current value selectable so it still displays.
+      const takenExecutorNames = (): Set<string> => {
+        const taken = new Set<string>();
+        initialExecs.forEach((e) => {
+          if (e.initial_executor) taken.add(e.initial_executor);
+          if (e.co_executor) taken.add(e.co_executor);
+        });
+        successorExecs.forEach((e) => {
+          if (e.successor_agent_to_serve) taken.add(e.successor_agent_to_serve);
+          if (e.second_successor_coagent_to_serve) taken.add(e.second_successor_coagent_to_serve);
+        });
+        return taken;
+      };
+      const execOptions = (current: string): string[] => {
+        const taken = takenExecutorNames();
+        return options.filter((n) => n === current || !taken.has(n));
+      };
+
       const setShortcutYes = () => {
         updateNestedFormData(`will_info.${shortcutField}`, 'Yes');
         setFormData(prev => ({
@@ -5416,14 +5436,14 @@ const POAForm: React.FC = () => {
                           <label className="form-label">Select the person you want to serve as Initial Executor:</label>
                           <select className="form-select" value={ex.initial_executor} onChange={(e) => updateInitialExecutor(index, 'initial_executor', e.target.value, principal)}>
                             <option value="">Select Executor...</option>
-                            {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                            {execOptions(ex.initial_executor).map((n) => (<option key={n} value={n}>{n}</option>))}
                           </select>
                         </div>
                         <div className="col-md-6 mb-3">
                           <label className="form-label">If you want to appoint a second person to serve at the same time as the Initial Agent, select them here:</label>
                           <select className="form-select" value={ex.co_executor} onChange={(e) => updateInitialExecutor(index, 'co_executor', e.target.value, principal)}>
                             <option value="">None</option>
-                            {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                            {execOptions(ex.co_executor).map((n) => (<option key={n} value={n}>{n}</option>))}
                           </select>
                         </div>
                       </div>
@@ -5464,14 +5484,14 @@ const POAForm: React.FC = () => {
                               <label className="form-label">Select the person you want to serve:</label>
                               <select className="form-select" value={ex.successor_agent_to_serve} onChange={(e) => updateSuccessorExecutor(index, 'successor_agent_to_serve', e.target.value, principal)}>
                                 <option value="">Select Executor...</option>
-                                {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                                {execOptions(ex.successor_agent_to_serve).map((n) => (<option key={n} value={n}>{n}</option>))}
                               </select>
                             </div>
                             <div className="col-md-6 mb-3">
                               <label className="form-label">If you want to appoint a second person to serve as Successor Executor, select them here:</label>
                               <select className="form-select" value={ex.second_successor_coagent_to_serve} onChange={(e) => updateSuccessorExecutor(index, 'second_successor_coagent_to_serve', e.target.value, principal)}>
                                 <option value="">None</option>
-                                {options.map((n) => (<option key={n} value={n}>{n}</option>))}
+                                {execOptions(ex.second_successor_coagent_to_serve).map((n) => (<option key={n} value={n}>{n}</option>))}
                               </select>
                             </div>
                           </div>
