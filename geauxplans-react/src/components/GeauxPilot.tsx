@@ -243,7 +243,7 @@ const GeauxPilot: React.FC = () => {
           onClick={() => setIsOpen(true)}
           aria-label="Open GeauxPilot assistant"
         >
-          <img src="/logo512.png" alt="" className="gpilot-fab-icon" />
+          <img src="/img/geauxpilot-favicon.png" alt="" className="gpilot-fab-icon" />
         </button>
       )}
 
@@ -254,13 +254,8 @@ const GeauxPilot: React.FC = () => {
       <aside className={`gpilot-panel ${isOpen ? 'open' : ''}`} role="dialog" aria-label="GeauxPilot assistant">
         <header className="gpilot-header">
           <div className="gpilot-header-brand">
-            <span className="gpilot-header-badge">
-              <img src="/logo512.png" alt="" />
-            </span>
-            <div>
-              <div className="gpilot-header-title">GeauxPilot</div>
-              <div className="gpilot-header-sub">GeauxPlans assistant</div>
-            </div>
+            <img src="/img/geauxpilot-favicon.png" alt="" className="gpilot-header-favicon" />
+            <img src="/img/geauxpilot-logo.png" alt="GeauxPilot" className="gpilot-header-wordmark" />
           </div>
           <button type="button" className="gpilot-close" onClick={closePanel} aria-label="Close assistant">
             <i className="fas fa-times" aria-hidden="true" />
@@ -272,7 +267,7 @@ const GeauxPilot: React.FC = () => {
             <div key={idx} className={`gpilot-row ${m.role}`}>
               {m.role === 'assistant' && (
                 <span className="gpilot-avatar">
-                  <img src="/logo512.png" alt="" />
+                  <img src="/img/geauxpilot-favicon.png" alt="" />
                 </span>
               )}
               <div className={`gpilot-bubble ${m.role}`}>

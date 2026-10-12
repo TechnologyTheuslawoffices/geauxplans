@@ -40,9 +40,7 @@
 .gpilot-fab-icon {
   width: 36px;   /* w-9 h-9, like GeauxPilot */
   height: 36px;
-  background: #fff;
-  border-radius: 8px; /* rounded-lg app-tile */
-  padding: 3px;
+  border-radius: 8px; /* rounded-lg — the favicon is its own tile */
   object-fit: contain;
   transition: transform 0.2s ease;
 }
@@ -89,20 +87,20 @@
   color: #fff;
   border-bottom: 1px solid var(--gpilot-border);
 }
-.gpilot-header-brand { display: flex; align-items: center; gap: 12px; }
-.gpilot-header-badge {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.gpilot-header-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.gpilot-header-favicon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  object-fit: contain;
   flex: 0 0 auto;
 }
-.gpilot-header-badge img { width: 28px; height: 28px; object-fit: contain; }
-.gpilot-header-title { font-weight: 700; font-size: 16px; line-height: 1.1; }
-.gpilot-header-sub { font-size: 12px; opacity: 0.85; }
+/* The GEAUXpilot wordmark rendered white over the navy header. */
+.gpilot-header-wordmark {
+  height: 20px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
 .gpilot-close {
   background: rgba(255, 255, 255, 0.15);
   border: none;
@@ -130,14 +128,12 @@
   flex: 0 0 auto;
   width: 30px;
   height: 30px;
-  border-radius: 9px;
-  background: #fff;
-  border: 1px solid var(--gpilot-border);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.gpilot-avatar img { width: 20px; height: 20px; object-fit: contain; }
+.gpilot-avatar img { width: 30px; height: 30px; border-radius: 8px; object-fit: contain; }
 
 .gpilot-bubble {
   max-width: 82%;
