@@ -109,7 +109,7 @@ const Dashboard: React.FC = () => {
       </p>
 
       {/* Start New Plan Section */}
-      <div style={{ marginBottom: '40px' }}>
+      <div id="start-new-plan" style={{ marginBottom: '40px', scrollMarginTop: '80px' }}>
         <h3 style={{
           fontSize: '20px',
           marginBottom: '20px',

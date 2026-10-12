@@ -48,10 +48,12 @@ interface NavItem {
 }
 
 const MOBILE_NAV: NavItem[] = [
-  { to: '/my-account', icon: 'fa-gauge', label: 'Dashboard', match: (p) => p === '/my-account', auth: true },
-  { to: '/estate-planning#plans', icon: 'fa-shield-halved', label: 'Plans', match: (p) => p.startsWith('/estate-planning') || p.includes('-plan') },
+  // Dashboard → the Estate Plan page with "Start a New Plan" expanded (?new=1).
+  { to: '/my-account/my-estate-planning?new=1', icon: 'fa-gauge', label: 'Dashboard', match: (p) => p.startsWith('/my-account/my-estate-planning'), auth: true },
+  // Plans → the five "Start a New Plan" cards on the account Dashboard.
+  { to: '/my-account#start-new-plan', icon: 'fa-shield-halved', label: 'Plans', match: (p) => p === '/my-account' || p.includes('-estate-plan') || p.includes('power-of-attorney-plan') || p.includes('legal-edge-plan'), auth: true },
   { to: '/cart', icon: 'fa-cart-shopping', label: 'Cart', match: (p) => p.startsWith('/cart') },
-  { to: '/my-account/edit-account', icon: 'fa-user', label: 'Account', match: (p) => p.startsWith('/my-account/'), auth: true },
+  { to: '/my-account/edit-account', icon: 'fa-user', label: 'Account', match: (p) => p.startsWith('/my-account/edit-account'), auth: true },
 ];
 
 const MOBILE_QUERY = '(max-width: 991.98px)';
@@ -197,6 +199,13 @@ const GeauxPilot: React.FC = () => {
         </a>
       );
     },
+    // Wrap tables so a wide one scrolls horizontally inside the narrow panel
+    // instead of cramming its columns.
+    table: ({ children }) => (
+      <div className="gpilot-table-wrap">
+        <table>{children}</table>
+      </div>
+    ),
   }), [handleNavigate]);
 
   const runTurn = useCallback(async (userText: string) => {

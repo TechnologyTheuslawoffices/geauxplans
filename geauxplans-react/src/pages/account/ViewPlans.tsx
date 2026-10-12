@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
@@ -138,6 +138,7 @@ const ViewPlans: React.FC = () => {
   const { session } = useAuth();
   const { addEstatePlan } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
   const [submissions, setSubmissions] = useState<ApiSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState<number | null>(null);
@@ -157,6 +158,22 @@ const ViewPlans: React.FC = () => {
   const [showNewPlanOptions, setShowNewPlanOptions] = useState(false);
   // Cache for full document data (fetched on demand)
   const [documentCache, setDocumentCache] = useState<Record<number, KnacklyDocument[]>>({});
+
+  // Arriving with ?new=1 (e.g. the mobile "Dashboard" tab) expands the
+  // "Start a New Plan" chooser and scrolls to it. Retries briefly because the
+  // chooser only renders after the user's plans have loaded.
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get('new') !== '1') return;
+    setShowNewPlanOptions(true);
+    let tries = 0;
+    const scroll = () => {
+      const el = document.getElementById('start-new-plan');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      else if (tries++ < 25) setTimeout(scroll, 120);
+    };
+    const t = setTimeout(scroll, 120);
+    return () => clearTimeout(t);
+  }, [location.search]);
 
   useEffect(() => {
     if (session) {
@@ -886,8 +903,10 @@ const ViewPlans: React.FC = () => {
         <>
           <hr />
           <button
+            id="start-new-plan"
             type="button"
             className="btn btn-primary"
+            style={{ scrollMarginTop: '80px' }}
             aria-expanded={showNewPlanOptions}
             onClick={() => setShowNewPlanOptions((o) => !o)}
           >

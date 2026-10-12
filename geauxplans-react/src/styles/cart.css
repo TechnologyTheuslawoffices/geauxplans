@@ -19,6 +19,9 @@
   grid-template-columns: 1fr 340px;
   gap: 40px;
   align-items: start;
+  /* Keep the cart from stretching across wide screens; center it on the page. */
+  max-width: 960px;
+  margin: 0 auto;
 }
 
 /* Items */

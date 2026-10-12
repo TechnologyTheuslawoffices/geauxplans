@@ -291,19 +291,39 @@
   color: var(--gpilot-muted);
 }
 .gpilot-prose hr { border: none; border-top: 1px solid var(--gpilot-border); margin: 12px 0; }
-.gpilot-prose table {
-  width: 100%;
-  border-collapse: collapse;
+/* Tables scroll horizontally inside the narrow panel rather than cramming. */
+.gpilot-table-wrap {
   margin: 8px 0 12px;
-  font-size: 13.5px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--gpilot-border);
+  border-radius: 8px;
+}
+.gpilot-prose table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+  line-height: 1.45;
 }
 .gpilot-prose th,
 .gpilot-prose td {
-  border: 1px solid var(--gpilot-border);
-  padding: 6px 9px;
+  border-bottom: 1px solid var(--gpilot-border);
+  border-right: 1px solid var(--gpilot-border);
+  padding: 8px 12px;
   text-align: left;
+  vertical-align: top;
+  white-space: normal; /* let text wrap within a sensibly-sized column */
+  min-width: 96px;     /* but don't let a column collapse to a sliver */
 }
-.gpilot-prose th { background: #f1f3f8; font-weight: 700; }
+.gpilot-prose th:last-child,
+.gpilot-prose td:last-child { border-right: none; }
+.gpilot-prose tr:last-child td { border-bottom: none; }
+.gpilot-prose th {
+  background: #f1f3f8;
+  font-weight: 700;
+  white-space: nowrap; /* keep headers on one line */
+}
+.gpilot-prose tbody tr:nth-child(even) td { background: #fafbfe; }
 
 /* Links inside the (navy) user bubble stay legible. */
 .gpilot-link { color: var(--gpilot-navy); font-weight: 600; text-decoration: underline; }
