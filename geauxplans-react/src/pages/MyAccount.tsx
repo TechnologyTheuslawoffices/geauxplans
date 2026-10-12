@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { scrollToSection } from '../utils/scrollToSection';
 import Dashboard from './account/Dashboard';
 import ViewPlans from './account/ViewPlans';
 import BusinessPlanning from './account/BusinessPlanning';
@@ -18,6 +19,29 @@ interface AccountSection {
   icon: string;
   path: string;
   element: React.ReactNode;
+}
+
+// Stable key→path map for resolving which accordion section a URL opens. Kept at
+// module scope (free of JSX) so the open-on-route effect can depend on it without
+// re-running every render.
+const SECTION_PATHS: { key: string; path: string }[] = [
+  { key: 'dashboard', path: '/my-account' },
+  { key: 'estate', path: '/my-account/my-estate-planning' },
+  { key: 'companies', path: '/my-account/business-planning' },
+  { key: 'meeting', path: '/my-account/interview' },
+  { key: 'orders', path: '/my-account/orders' },
+  { key: 'profile', path: '/my-account/edit-account' },
+];
+
+// The most specific matching section for a path (reverse so /orders beats the
+// /my-account catch-all); defaults to the dashboard.
+function matchSectionKey(pathname: string): string {
+  const match = [...SECTION_PATHS].reverse().find((s) =>
+    s.path === '/my-account'
+      ? pathname === '/my-account' || pathname === '/my-account/'
+      : pathname.startsWith(s.path)
+  );
+  return match ? match.key : 'dashboard';
 }
 
 const MyAccount: React.FC = () => {
@@ -67,10 +91,27 @@ const MyAccount: React.FC = () => {
   // On mobile, open the section matching the current URL (so a deep link opens
   // the right panel); otherwise the dashboard. The array is reversed so a more
   // specific path (e.g. /orders) is matched before the catch-all dashboard.
-  const [openKey, setOpenKey] = useState<string>(() => {
-    const match = [...sections].reverse().find((s) => isActive(s.path));
-    return match ? match.key : 'dashboard';
-  });
+  const [openKey, setOpenKey] = useState<string>(() => matchSectionKey(location.pathname));
+
+  // Keep the open accordion section in sync with the URL. Without this, openKey
+  // was fixed at mount, so tapping an account tab while My Account was already
+  // open did nothing (Dashboard "wouldn't uncollapse Estate Plan"). After
+  // opening, scroll the section into view so it is actually focused — unless the
+  // Estate Plan section will expand its own "Start a New Plan" (?new=1), which
+  // owns the focus so the two scrolls don't fight.
+  useEffect(() => {
+    const key = matchSectionKey(location.pathname);
+    setOpenKey(key);
+    if (!isMobile) return;
+    // A hash (e.g. #start-new-plan) or Estate's ?new=1 points at a deeper element
+    // that owns the focus; the dashboard already sits at the top. Otherwise bring
+    // the opened section into view under the fixed header.
+    const deeperTarget =
+      !!location.hash || (key === 'estate' && new URLSearchParams(location.search).get('new') === '1');
+    if (!deeperTarget && key !== 'dashboard') {
+      scrollToSection(`acc-${key}`);
+    }
+  }, [location.pathname, location.search, location.hash, isMobile]);
 
   const navLinkStyle = (path: string): React.CSSProperties => ({
     display: 'block',
@@ -166,7 +207,7 @@ const MyAccount: React.FC = () => {
               {sections.map((s) => {
                 const open = openKey === s.key;
                 return (
-                  <div key={s.key} className="account-acc-item">
+                  <div key={s.key} id={`acc-${s.key}`} className="account-acc-item" style={{ scrollMarginTop: '80px' }}>
                     <button
                       type="button"
                       className={`account-acc-header ${open ? 'open' : ''}`}
