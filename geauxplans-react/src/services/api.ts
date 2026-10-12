@@ -123,6 +123,13 @@ async function apiRequest<T = any>(
     const responseData = await response.json().catch(() => ({}));
 
     if (!response.ok) {
+      // If session expired, trigger logout and redirect to login
+      if (response.status === 401 && responseData.code === 'SESSION_EXPIRED') {
+        console.log('Session expired - signing out and redirecting to login');
+        await supabase.auth.signOut();
+        window.location.href = '/login?expired=true';
+        return { success: false, error: 'Session expired. Redirecting to login...' };
+      }
       return {
         success: false,
         error: responseData.error || responseData.message || `HTTP Error: ${response.status}`,

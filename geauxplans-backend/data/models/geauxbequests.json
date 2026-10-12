@@ -1,0 +1,462 @@
+{
+  "_id": "621fc1f512baec611d66a320",
+  "summary": "{[GeauxBequestSumTemp]}",
+  "label": "",
+  "type": "object",
+  "name": "geauxbequests",
+  "formulas": [],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[if peek(LiquidateAssets|map: id$|contains: id$) || peek(ClientWillLiquidateAssets|map: id$|contains: id$) || peek(SpouseWillLiquidateAssets|map: id$|contains: id$)]}{[if LiquidationType == \"All real estate\"]}All real estate of the trust{[elseif LiquidationType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif LiquidationType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif LiquidationType == \"Select real estate\"]}Real property {[if SpecificAddress]}located at {[SpecificAddress]}{[elseif SpecificTaxID]}with tax assessor number {[SpecificTaxID]}{[else]}identified herein{[endif]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[elseif peek(ROFRBequests|map: id$|contains: id$)]}{[if ROFRType == \"All real estate\"]}All real estate of the trust{[elseif ROFRType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif ROFRType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif ROFRType == \"Select real estate\"]}Real property {[if SpecificAddress]}located at {[SpecificAddress]}{[elseif SpecificTaxID]}with tax assessor number {[SpecificTaxID]}{[else]}identified herein{[endif]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[else]}{[if GeauxBequestType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif GeauxBequestType == \"Cash\"]}{[SpecificCashAmount|cardinal|titlecaps]} (${[SpecificCashAmount|format: \"0,0.00\"]}) dollars{[elseif GeauxBequestType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif GeauxBequestType == \"Real estate\"]}Real property {[if SpecificAddress]}located at {[SpecificAddress]}{[elseif SpecificTaxID]}with tax assessor number {[SpecificTaxID]}{[else]}identified herein{[endif]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "GeauxBequestSumTemp",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2023-01-05T14:40:26.819Z",
+      "_id": "65319bfdb669f0e056c6481a",
+      "content": "{[if peek(LiquidateAssets|map: id$|contains: id$) || peek(ClientWillLiquidateAssets|map: id$|contains: id$) || peek(SpouseWillLiquidateAssets|map: id$|contains: id$)]}{[if LiquidationType == \"All real estate\"]}All real estate of the trust{[elseif LiquidationType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif LiquidationType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif LiquidationType == \"Select real estate\"]}Real property {[if SpecificAddress]}located at {[SpecificAddress]}{[elseif SpecificTaxID]}with tax assessor number {[SpecificTaxID]}{[else]}identified herein{[endif]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[elseif peek(ROFRBequests|map: id$|contains: id$)]}{[if ROFRType == \"All real estate\"]}All real estate of the trust{[elseif ROFRType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif ROFRType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif ROFRType == \"Select real estate\"]}Real property {[if SpecificAddress]}located at {[SpecificAddress]}{[elseif SpecificTaxID]}with tax assessor number {[SpecificTaxID]}{[else]}identified herein{[endif]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[else]}{[if GeauxBequestType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif GeauxBequestType == \"Cash\"]}{[SpecificCashAmount|cardinal|titlecaps]} (${[SpecificCashAmount|format: \"0,0.00\"]}) dollars{[elseif GeauxBequestType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif GeauxBequestType == \"Real estate\"]}Real property {[if SpecificAddress]}located at {[SpecificAddress]}{[elseif SpecificTaxID]}with tax assessor number {[SpecificTaxID]}{[else]}identified herein{[endif]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if peek(LiquidateAssets|map: id$|contains: id$) || peek(ClientWillLiquidateAssets|map: id$|contains: id$) || peek(SpouseWillLiquidateAssets|map: id$|contains: id$)]}{[if LiquidationType == \"All real estate\"]}All real estate of the trust{[elseif LiquidationType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif LiquidationType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif LiquidationType == \"Select real estate\"]}All right, title, and interest in that certain parcel of real estate bearing municipal address {[SpecificAddress]}, also referred to as Tax Assessor or Parcel ID No: {[SpecificTaxID]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[elseif peek(ROFRBequests|map: id$|contains: id$)]}{[if ROFRType == \"All real estate\"]}All real estate of the trust{[elseif ROFRType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif ROFRType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif ROFRType == \"Select real estate\"]}All right, title, and interest in that certain parcel of real estate bearing municipal address {[SpecificAddress]}, also referred to as Tax Assessor or Parcel ID No: {[SpecificTaxID]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[else]}{[if GeauxBequestType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif GeauxBequestType == \"Cash\"]}{[SpecificCashAmount|cardinal|titlecaps]} (${[SpecificCashAmount|format: \"0,0.00\"]}) dollars{[elseif GeauxBequestType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif GeauxBequestType == \"Real estate\"]}All right, title, and interest in that certain parcel of real estate bearing municipal address {[SpecificAddress]}, also referred to as Tax Assessor or Parcel ID No: {[SpecificTaxID]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "GeauxSpecificText",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-22T16:00:18.888Z",
+      "_id": "65319bfdb669f0e056c6481b",
+      "content": "{[if peek(LiquidateAssets|map: id$|contains: id$) || peek(ClientWillLiquidateAssets|map: id$|contains: id$) || peek(SpouseWillLiquidateAssets|map: id$|contains: id$)]}{[if LiquidationType == \"All real estate\"]}All real estate of the trust{[elseif LiquidationType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif LiquidationType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif LiquidationType == \"Select real estate\"]}All right, title, and interest in that certain parcel of real estate bearing municipal address {[SpecificAddress]}, also referred to as Tax Assessor or Parcel ID No: {[SpecificTaxID]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[elseif peek(ROFRBequests|map: id$|contains: id$)]}{[if ROFRType == \"All real estate\"]}All real estate of the trust{[elseif ROFRType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif ROFRType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif ROFRType == \"Select real estate\"]}All right, title, and interest in that certain parcel of real estate bearing municipal address {[SpecificAddress]}, also referred to as Tax Assessor or Parcel ID No: {[SpecificTaxID]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[else]}{[if GeauxBequestType == \"Vehicle\"]}{[SpecificYear]} {[SpecificMake]} {[SpecificModel]} Vin# {[SpecificVIN|else: \"______________\"]}{[elseif GeauxBequestType == \"Cash\"]}{[SpecificCashAmount|cardinal|titlecaps]} (${[SpecificCashAmount|format: \"0,0.00\"]}) dollars{[elseif GeauxBequestType == \"Personal property\"]}{[list SpecificPersonal|punc: \"1, 2, and 3\"]}{[this]}{[endlist]}{[elseif GeauxBequestType == \"Real estate\"]}All right, title, and interest in that certain parcel of real estate bearing municipal address {[SpecificAddress]}, also referred to as Tax Assessor or Parcel ID No: {[SpecificTaxID]}{[if SpecificIncludeContents]}, as well as the furniture, fixtures, and contents located therein{[endif]}{[else]}________________{[endif]}{[endif]}"
+    }
+  ],
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 3,
+      "rows": [
+        [
+          {
+            "content": "LiquidationType",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "815f43fa-a9ab-11ee-b958-074826be0eae"
+          }
+        ],
+        [
+          {
+            "content": "ROFRType",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "815f43fb-a9ab-11ee-b958-074826be0eae"
+          }
+        ],
+        [
+          {
+            "id": "e2ec6320-f5c1-11ee-a552-61e8f4bbebcb",
+            "content": "SBDistFromEntityTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "3b4a4e10-f5c2-11ee-a552-61e8f4bbebcb",
+            "content": "EntityName",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 2
+          }
+        ],
+        [
+          {
+            "content": "GeauxBequestType",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "815f1ce0-a9ab-11ee-b958-074826be0eae"
+          },
+          {
+            "content": "SpecificCashAmount",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "815f43f0-a9ab-11ee-b958-074826be0eae"
+          }
+        ],
+        [
+          {
+            "content": "SpecificMake",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "815f43f1-a9ab-11ee-b958-074826be0eae"
+          },
+          {
+            "content": "SpecificModel",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "815f43f2-a9ab-11ee-b958-074826be0eae"
+          },
+          {
+            "content": "SpecificYear",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "815f43f3-a9ab-11ee-b958-074826be0eae"
+          }
+        ],
+        [
+          {
+            "content": "SpecificVIN",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "815f43f4-a9ab-11ee-b958-074826be0eae"
+          }
+        ],
+        [
+          {
+            "content": "SpecificPersonal",
+            "list": [],
+            "class": "question",
+            "id": "815f43f5-a9ab-11ee-b958-074826be0eae"
+          }
+        ],
+        [
+          {
+            "content": "SpecificAddress",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "815f43f6-a9ab-11ee-b958-074826be0eae"
+          },
+          {
+            "content": "SpecificTaxID",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "815f43f7-a9ab-11ee-b958-074826be0eae"
+          },
+          {
+            "content": "SpecificIncludeContents",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "815f43f8-a9ab-11ee-b958-074826be0eae"
+          }
+        ],
+        [
+          {
+            "content": "SpecificLegal",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "815f43f9-a9ab-11ee-b958-074826be0eae"
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-22T15:56:14.308Z",
+      "_id": "65319bfdb669f0e056c6481c"
+    },
+    {
+      "name": "(default)",
+      "label": "",
+      "columnCount": 2,
+      "rows": [
+        [
+          {
+            "class": "question",
+            "content": "IncomeBene",
+            "list": [],
+            "_id": "66c665222779fea0b72f1a3d"
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "SuccessorIncomeBene",
+            "list": [],
+            "_id": "66c665222779fea0b72f1a3e"
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "ResiduaryRelationship",
+            "list": [],
+            "_id": "66c665222779fea0b72f1a3f"
+          }
+        ],
+        [
+          {
+            "class": "question",
+            "content": "IncomeBeneShare",
+            "list": [],
+            "_id": "66c665222779fea0b72f1a40"
+          }
+        ]
+      ],
+      "_id": "66c6652039edea72614191f0"
+    }
+  ],
+  "apps": [],
+  "properties": [
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Vehicle make:",
+      "helpText": "",
+      "forceRelevance": "GeauxBequestType == \"Vehicle\" || LiquidationType == \"Vehicle\" || ROFRType == \"Vehicle\"",
+      "type": "text",
+      "name": "SpecificMake",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-02T19:17:31.744Z",
+      "_id": "65319bfdb669f0e056c64810"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Vehicle model:",
+      "helpText": "",
+      "forceRelevance": "GeauxBequestType == \"Vehicle\" || LiquidationType == \"Vehicle\" || ROFRType == \"Vehicle\"",
+      "type": "text",
+      "name": "SpecificModel",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-02T19:17:31.744Z",
+      "_id": "65319bfdb669f0e056c64811"
+    },
+    {
+      "style": "textbox",
+      "pattern": "9999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Vehicle year:",
+      "helpText": "",
+      "forceRelevance": "GeauxBequestType == \"Vehicle\" || LiquidationType == \"Vehicle\" || ROFRType == \"Vehicle\"",
+      "type": "text",
+      "name": "SpecificYear",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-02T19:17:31.744Z",
+      "_id": "65319bfdb669f0e056c64812"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Vehicle VIN:",
+      "helpText": "",
+      "forceRelevance": "GeauxBequestType == \"Vehicle\" || LiquidationType == \"Vehicle\" || ROFRType == \"Vehicle\"",
+      "type": "text",
+      "name": "SpecificVIN",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-02T19:17:31.744Z",
+      "_id": "65319bfdb669f0e056c64813"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 0,
+      "minimum": "",
+      "maximum": "",
+      "isList": false,
+      "label": "Amount:",
+      "helpText": "",
+      "forceRelevance": "GeauxBequestType == \"Cash\"",
+      "type": "number",
+      "name": "SpecificCashAmount",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-02T19:17:31.744Z",
+      "_id": "65319bfdb669f0e056c64814"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": true,
+      "label": "Enter a description of each item of personal property to bequeath, each on its own entry line. \nFormat as \"My grandmother’s vase\", \"My 1973 Firbird\", \"100 shares of Exxon stock\", \"My coin collection\", etc.",
+      "helpText": "",
+      "forceRelevance": "GeauxBequestType == \"Personal property\" || LiquidationType == \"Personal property\" || ROFRType == \"Personal property\"",
+      "type": "text",
+      "name": "SpecificPersonal",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-22T16:02:16.262Z",
+      "_id": "65319bfdb669f0e056c64815"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Municipal address of the property:",
+      "helpText": "",
+      "forceRelevance": "(GeauxBequestType == \"Real estate\" || LiquidationType == \"Select real estate\" || ROFRType == \"Select real estate\")",
+      "type": "text",
+      "name": "SpecificAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-02T19:17:31.744Z",
+      "_id": "65319bfdb669f0e056c64816"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Property's tax assessor parcel id:",
+      "helpText": "",
+      "forceRelevance": "(GeauxBequestType == \"Real estate\" || LiquidationType == \"Select real estate\" || ROFRType == \"Select real estate\")",
+      "type": "text",
+      "name": "SpecificTaxID",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-02T19:17:31.744Z",
+      "_id": "65319bfdb669f0e056c64817"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Include furniture, fixtures, and contents located in the property?",
+      "helpText": "",
+      "forceRelevance": "(GeauxBequestType == \"Real estate\" || LiquidationType == \"Select real estate\" || ROFRType == \"Select real estate\")",
+      "type": "true/false",
+      "name": "SpecificIncludeContents",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-02T19:17:31.744Z",
+      "_id": "65319bfdb669f0e056c64818"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 5,
+      "allowBreaks": true,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Legal description of the property:",
+      "helpText": "",
+      "forceRelevance": "(GeauxBequestType == \"Real estate\" || LiquidationType == \"Select real estate\" || ROFRType == \"Select real estate\")",
+      "type": "text",
+      "name": "SpecificLegal",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-22T15:56:04.109Z",
+      "_id": "65319bfdb669f0e056c64819"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"All real estate\",\"Description\":\"All real estate\"},{\"Name\":\"Select real estate\",\"Description\":\"Select real estate\"},{\"Name\":\"Vehicle\",\"Description\":\"Vehicle\"},{\"Name\":\"Personal property\",\"Description\":\"Personal property\"},{\"Name\":\"Business entity\",\"Description\":\"Business entity (dissolution and liquidation)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "656681dfe9fd0de328f33b3d",
+      "name": "LiquidationType",
+      "isList": false,
+      "label": "Select the property to be liquidated:",
+      "helpText": "",
+      "forceRelevance": "(LiquidateAssets|map: id$|contains: id$) || (ClientWillLiquidateAssets|map: id$|contains: id$) || (SpouseWillLiquidateAssets|map: id$|contains: id$)",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"All real estate\"},{\"Name\":\"Select real estate\"},{\"Name\":\"Vehicle\"},{\"Name\":\"Personal property\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "656a12a8f85adae0c840a2a5",
+      "name": "ROFRType",
+      "isList": false,
+      "label": "Select the asset to be subject to a Right of First Refusal:",
+      "helpText": "",
+      "forceRelevance": "(ROFRBequests|map: id$|contains: id$)",
+      "type": "selection"
+    },
+    {
+      "name": "DissolveEntity",
+      "isList": false,
+      "label": "Enter the full legal name of the business entity to be dissolved and liquidated (E.g., \"Roadrunner, L.L.C.\")",
+      "helpText": "NOTE: Assets owned by the entity will be sold and the net proceeds distributed, unless inside assets are also subject to a ROFR or Specific Bequest. DO NOT select this option if you wish assets to simply be distributed from the entity. Instead, you may create a specific bequest of an asset owned by the entity. ",
+      "forceRelevance": "LiquidationType == \"Business entity\"",
+      "_id": "69248ef8591d91f5ec82364e",
+      "type": "text",
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]"
+    },
+    {
+      "name": "GeauxBequestType",
+      "isList": false,
+      "label": "Select the type of property for this bequest:",
+      "helpText": "",
+      "forceRelevance": "!(LiquidateAssets|map: id$|contains: id$) && !(ROFRBequests|map: id$|contains: id$) && !(ClientWillLiquidateAssets|map: id$|contains: id$) && !(SpouseWillLiquidateAssets|map: id$|contains: id$)",
+      "lastModified": "2022-03-02T19:17:31.744Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "metadata": {
+        "notes": "Note: used for geauxplans, if changing internally do not change here"
+      },
+      "_id": "69248f85591d91f5ec82364f",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Real estate\",\"Description\":\"Real estate\"},{\"Name\":\"Vehicle\",\"Description\":\"Vehicle\"},{\"Name\":\"Cash\",\"Description\":\"Cash\"},{\"Name\":\"Personal property\",\"Description\":\"Personal Property\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    }
+  ],
+  "__v": 16,
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}

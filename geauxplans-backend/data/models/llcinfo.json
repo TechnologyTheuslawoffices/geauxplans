@@ -1,0 +1,2109 @@
+{
+  "_id": "5ee036447e43d8182e6d0a05",
+  "summary": "Information for {[SelectLLC.NameCO|else: \"New LLC\"]}{[if SelectLLC]}{[endif]}",
+  "label": " ",
+  "type": "object",
+  "name": "llcinfo",
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 2,
+      "rows": [
+        [
+          {
+            "id": "27d0d640-8c1e-11ef-80bd-338fd714bf01",
+            "content": "SelectLLC",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "e4046970-6360-11f0-ab21-0f054cc71ecb",
+            "content": "NAICSCode",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1
+          }
+        ],
+        [
+          {
+            "id": "1ec5c3b0-ee8d-11ed-9248-e95b00134462",
+            "content": "EINofLLC",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "id": "efaf3100-067d-11f0-9bc9-35ba8c450aa4",
+            "content": "StateLawSelectBiz",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "WithinCityLimitsTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cbe2-ee8d-11ed-9248-e95b00134462",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "OwnerMC",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cbe5-ee8d-11ed-9248-e95b00134462",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "UseClientNotary",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "1816cbe6-ee8d-11ed-9248-e95b00134462"
+          },
+          {
+            "content": "WhollyOwned",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "1816cbe7-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "id": "86a6d450-7faf-11f0-b497-91ea6ef28abd",
+            "content": "TransfereeSelect",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "TransferTo",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "1816cbe9-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "id": "973d95d0-828d-11ef-b308-a95e42113cdc",
+            "content": "Transferee",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "9868cf60-828d-11ef-b308-a95e42113cdc",
+            "content": "TransfereeTrustees",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "TransferralEntityType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cbeb-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "TransfereeTrustDT",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "1816cbec-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "TransfereeTaxID",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "1816cbed-ee8d-11ed-9248-e95b00134462"
+          },
+          {
+            "content": "TransfereeOrgState",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "1816cbee-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "TransfereeMailingAddress",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "1816cbef-ee8d-11ed-9248-e95b00134462"
+          },
+          {
+            "content": "TransfereeDomicile",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "1816cbf0-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "TransfereeSigner1Title",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "1816cbf1-ee8d-11ed-9248-e95b00134462"
+          },
+          {
+            "content": "TransfereeSigner2Title",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "1816cbf2-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "NonVotingInterestTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "8d7828d0-21ee-11ef-b53b-817c115ff428"
+          }
+        ],
+        [
+          {
+            "content": "OperatingAgreementType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cbf4-ee8d-11ed-9248-e95b00134462",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "e5664690-c6cb-11ee-b10a-d3bb9d5ee413",
+            "content": "IncomeTaxElection",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "LLCType",
+            "list": [],
+            "class": "question",
+            "id": "1816cbf5-ee8d-11ed-9248-e95b00134462",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "4d360d00-c6cc-11ee-b10a-d3bb9d5ee413",
+            "content": "ManagerOptions",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "Members",
+            "list": [],
+            "class": "question",
+            "offset": 0,
+            "span": 1,
+            "id": "1816cbf6-ee8d-11ed-9248-e95b00134462"
+          },
+          {
+            "content": "Managers",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "1816cbf7-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "id": "d8391be0-f697-11ee-9a6e-bfa7f77c9983",
+            "content": "ManagerMemberVote",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "VotingPower",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "c954ad30-c51c-11ee-85e9-4bf9474cae71",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "9db21040-c51d-11ee-85e9-4bf9474cae71",
+            "content": "ManagerVotingPower",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "6c6738b0-f698-11ee-918f-ed05f17dd589",
+            "content": "ExtraordinaryVotingPower",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "ExtraordinaryTransactions",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "c954ad36-c51c-11ee-85e9-4bf9474cae71",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "LiquidationEvent",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "c954ad31-c51c-11ee-85e9-4bf9474cae71"
+          }
+        ],
+        [
+          {
+            "content": "ROFR",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "305f5970-c51e-11ee-85e9-4bf9474cae71",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "65f54e50-c51e-11ee-85e9-4bf9474cae71",
+            "content": "InvolWithdrawalDefaultTR",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "b7cdd590-21fc-11ef-b53b-817c115ff428",
+            "content": "InvoluntaryWithdrawalDistributionTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "TotalCapContributions",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cbfa-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "PermitFamilyTransfersTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "1816cbfb-ee8d-11ed-9248-e95b00134462"
+          },
+          {
+            "content": "FamilialLineMembers",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "1816cbfc-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "id": "8ab985c0-4945-11ef-a731-b588ed35cd91",
+            "content": "FamilialLineMarriedTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "91868ce0-4945-11ef-a731-b588ed35cd91",
+            "content": "PermittedTransferSpouseTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "ResolutionDT",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cbfd-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "ToCLLCDocs",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cbfe-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "ToCLLCTextList",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cbff-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "LLCRegisteredOfficeEnteredTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "1816cc01-ee8d-11ed-9248-e95b00134462"
+          },
+          {
+            "content": "LLCOfficeandAgentSameTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "1816cc02-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "LLCRegisteredOffice",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cc03-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "LLCRegisterName",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cc04-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "LLCOfficeSelect",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cc05-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "LLCAgentInListTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "1816cc06-ee8d-11ed-9248-e95b00134462"
+          },
+          {
+            "content": "LLCRegisteredAgentMC",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "1816cc07-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "LLCRegisteredAgentText",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cc08-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "LLCIncomeTaxElection",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cc0a-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "content": "LLCTaxMattersAgent",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "1816cc0b-ee8d-11ed-9248-e95b00134462"
+          }
+        ],
+        [
+          {
+            "id": "f2d8f660-9ead-11ee-a62a-a73380e44d64",
+            "content": "LLCCity",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "f1ced960-9ead-11ee-a62a-a73380e44d64",
+            "content": "LLCState",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "LLCStreet",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "e4b23884-9ead-11ee-a62a-a73380e44d64",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "ee9f6b60-9ead-11ee-a62a-a73380e44d64",
+            "content": "LLCStreet2",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "LLCZip",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "e4b23886-9ead-11ee-a62a-a73380e44d64",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "id": "fb90dd90-9ead-11ee-a62a-a73380e44d64",
+            "content": "ParishCounty",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "fcf4b350-9ead-11ee-a62a-a73380e44d64",
+            "content": "LLCParish",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "OAEffectiveDT",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "ee36f3f0-4943-11ef-a731-b588ed35cd91",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "b8824f50-fdf4-11ef-a417-253bc75e84bb",
+            "content": "AmendRestateTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "OrgState",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "d7e6e450-8c20-11ef-80bd-338fd714bf01"
+          }
+        ],
+        [
+          {
+            "content": "LLCName",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "f8428360-8c22-11ef-9fb1-a78bb5aa3e7d"
+          }
+        ],
+        [
+          {
+            "content": "EntityType1",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "7cee14a0-a3ae-11f0-8cba-a1165d92c417"
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2023-01-05T22:03:04.881Z",
+      "_id": "63c95fc7fa15145527485e5e"
+    }
+  ],
+  "apps": [],
+  "properties": [
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Single\",\"Description\":\"Single member-managed\"},{\"Name\":\"Multiple\",\"Description\":\"Multiple members and/or managers\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select whether {[SelectLLC.NameCO|else: \"this LLC\"]} is a single member-managed LLC or whether there are multiple managers and/or members.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "LLCType",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.262Z",
+      "_id": "63c95fc7fa15145527485e2d"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Select the initial Manager(s) of {[SelectLLC.NameCO|else: \"this LLC\"]}:",
+      "helpText": "If all Members serve as Managers, then name all the initial Members.",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "Managers",
+      "typeName": "singleselection",
+      "typeDef": "5db8510d5f528a0c1a3a7fed",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.262Z",
+      "_id": "63c95fc7fa15145527485e2e"
+    },
+    {
+      "style": "datepicker",
+      "isList": false,
+      "label": "Signing date for docs, if known:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "date",
+      "name": "ResolutionDT",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-07-14T15:21:42.289Z",
+      "_id": "63c95fc7fa15145527485e2f"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Check to permit family transfers in the Operating Agreement for {[SelectLLC.NameCO|else: \"this LLC\"]}.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "PermitFamilyTransfersTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.262Z",
+      "_id": "63c95fc7fa15145527485e30"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Select anyone who should be referred to in the \"Familial Line\" definition:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "FamilialLineMembers",
+      "typeName": "singleselection",
+      "typeDef": "5db8510d5f528a0c1a3a7fed",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.262Z",
+      "_id": "63c95fc7fa15145527485e31"
+    },
+    {
+      "style": "textbox",
+      "decimalPlaces": 2,
+      "minimum": "0",
+      "maximum": "",
+      "isList": false,
+      "label": "Total additional Capital Contributions which the Managers may require any Interest Holder to contribute:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "number",
+      "name": "TotalCapContributions",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-12-12T17:03:01.753Z",
+      "_id": "63c95fc7fa15145527485e32"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Entity Articles\"},{\"Name\":\"Operating Agreement\"},{\"Name\":\"Membership Interest Ledger Table\"},{\"Name\":\"Act of Transfer & Joinder Agreement\"},{\"Name\":\"Registered Agent Form\"},{\"Name\":\"Tax I.D. Numbers\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": true,
+      "label": "Select the documents to include in the Table of Contents for {[SelectLLC.NameCO|else: \"this LLC\"]}. These are generic documents that will come in exactly as the name is next to the checkbox; if you need to customize any document name, use the text list below.",
+      "helpText": "",
+      "forceRelevance": "BinderAppTF",
+      "type": "selection",
+      "name": "ToCLLCDocs",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-04-13T20:35:03.627Z",
+      "_id": "63c95fc7fa15145527485e33"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Select the current Member(s) of {[SelectLLC.NameCO|else: \"this LLC\"]} **before the Transfer and Joinder**:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "Members",
+      "typeName": "llcmembers",
+      "typeDef": "5fa1ea0b6ef3e45524886b74",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.262Z",
+      "_id": "63c95fc7fa15145527485e34"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"S-Corp\",\"Description\":\"S-Corp\"},{\"Name\":\"Holding Company\",\"Description\":\"Holding Company\"},{\"Name\":\"All Purpose\",\"Description\":\"All-Purpose or General (including Land)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select the type of Operating Agreement:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "OperatingAgreementType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-03-17T16:47:32.370Z",
+      "_id": "63c95fc7fa15145527485e35"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Enter the address (Street, City, State Zip) of the Registered Office for {[SelectLLC.NameCO|else: \"this LLC\"]}:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "LLCRegisteredOffice",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.262Z",
+      "_id": "63c95fc7fa15145527485e36"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is the Registered Agent for {[SelectLLC.NameCO|else: \"this LLC\"]} a person or entity entered in the Cast of Characters or Theus Law?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "LLCAgentInListTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.262Z",
+      "_id": "63c95fc7fa15145527485e37"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Select the Registered Agent:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "LLCRegisteredAgentMC",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.262Z",
+      "_id": "63c95fc7fa15145527485e38"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Enter the Registered Agent's name and entire address (i.e., \"State Registration Office, 123 Broadway Road, Alexandria, Louisiana 38922\").",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "LLCRegisteredAgentText",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.262Z",
+      "_id": "63c95fc7fa15145527485e39"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "anOptionListedBelow",
+      "_options": "[\"a corporation from the inception of the Company\",\"a partnership\"]",
+      "isList": false,
+      "label": "Select or type in the income tax election for {[SelectLLC.NameCO|else: \"this LLC\"]} (i.e., finish the sentence by filling in the brackets: \"For income tax purposes, the Company shall elect to be treated as [...]\")",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "LLCIncomeTaxElection",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.263Z",
+      "_id": "63c95fc7fa15145527485e3a"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Select the Tax Matters Agent for {[SelectLLC.NameCO|else: \"this LLC\"]}:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "LLCTaxMattersAgent",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.263Z",
+      "_id": "63c95fc7fa15145527485e3b"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is the Registered Office of {[SelectLLC.NameCO|else: \"this LLC\"]} the address of a person or entity in the list of parties?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "LLCRegisteredOfficeEnteredTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.263Z",
+      "_id": "63c95fc7fa15145527485e3c"
+    },
+    {
+      "style": "",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Select the addressee for the Registered Office:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "LLCOfficeSelect",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:21:36.263Z",
+      "_id": "63c95fc7fa15145527485e3d"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Are the addressee for the Registered Office and the Registered Agent the same person or entity?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "LLCOfficeandAgentSameTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:11:16.054Z",
+      "_id": "63c95fc7fa15145527485e3e"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Enter the name of the Registered Agent:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "LLCRegisterName",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-11-04T22:15:02.185Z",
+      "_id": "63c95fc7fa15145527485e3f"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Yes\"},{\"Name\":\"No\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Do you need to include blank lines for additional signers for the joinder agreement (other than {[Client.First]}{[if MarriedTF && OwnerMC == \"Both\"]} and {[Spouse.First]}{[endif]})?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "WhollyOwned",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:24:35.152Z",
+      "_id": "63c95fc7fa15145527485e40"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Client\"},{\"Name\":\"Spouse\"},{\"Name\":\"Both\"}]",
+      "optionTemplate": "{[this == \"Client\" ? (Client.NameCO) : this == \"Spouse\" ? (Spouse.NameCO) : this == \"Both\" ? (\"Both \" + (Client.NameCO) + \" and \" + (Spouse.NameCO) + \" jointly\") : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Who owns {[SelectLLC.NameCO|else: \"this entity\"]}?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "OwnerMC",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:15:03.711Z",
+      "_id": "63c95fc7fa15145527485e41"
+    },
+    {
+      "style": "",
+      "options": "entities",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "What kind of entity is {[SelectLLC.NameCO|else: \"this\"]}?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "EntityType1",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:15:03.711Z",
+      "_id": "63c95fc7fa15145527485e42"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "What is {[SelectLLC.NameCO|else: \"this entity\"]}'s state of organization?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "OrgState",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:23:12.221Z",
+      "_id": "63c95fc7fa15145527485e43"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"A trust\"},{\"Name\":\"Another entity\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Transfer {[SelectLLC.NameCO|else: \"this entity\"]} to:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "TransferTo",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:22:37.964Z",
+      "_id": "63c95fc7fa15145527485e44"
+    },
+    {
+      "style": "",
+      "options": "entities",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "What kind of entity is {[Transferee|else: \"Transferee\"]}?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "TransferralEntityType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:22:37.964Z",
+      "_id": "63c95fc7fa15145527485e45"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Transferee ({[if TransferTo == \"A trust\"]}trust name{[elseif TransferTo == \"Another entity\"]}entity name{[else]}trust or entity name{[endif]}):",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "Transferee",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:22:37.964Z",
+      "_id": "63c95fc7fa15145527485e46"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "entityroles|map: Name",
+      "isList": false,
+      "label": "{[Client.NameCO]}'s title in {[Transferee|else: \"transferee\"]}; type or select from dropdown.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "TransfereeSigner1Title",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:22:37.964Z",
+      "_id": "63c95fc7fa15145527485e47"
+    },
+    {
+      "style": "textbox",
+      "pattern": "99-9999999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Tax identification number of {[Transferee|else: \"transfer entity\"]}. Use 0s for the first five numbers if unknown.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "TransfereeTaxID",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:22:37.964Z",
+      "_id": "63c95fc7fa15145527485e48"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "{[Transferee|else: \"Transferee\"]}'s state of organization:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "TransfereeOrgState",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:22:37.964Z",
+      "_id": "63c95fc7fa15145527485e49"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "TransfereeAddressSuggestions",
+      "isList": false,
+      "label": "{[Transferee|else: \"Transferee\"]} street mailing address; select from dropdown or type in.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "TransfereeMailingAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:22:37.964Z",
+      "_id": "63c95fc7fa15145527485e4a"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "TransfereeDomicileSuggestions",
+      "isList": false,
+      "label": "{[Transferee|else: \"Transferee\"]} city, county/parish, and state; select from dropdown or type in.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "TransfereeDomicile",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:22:37.964Z",
+      "_id": "63c95fc7fa15145527485e4b"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Alexandria\",\"SigningLine\":\"Alexandria, Rapides Parish, Louisiana\"},{\"Name\":\"Baton Rouge\",\"SigningLine\":\"Baton Rouge, __________ Parish, Louisiana\"},{\"Name\":\"Lafayette\",\"SigningLine\":\"Lafayette, Lafayette Parish, Louisiana\"},{\"Name\":\"Lake Charles\",\"SigningLine\":\"Lake Charles, Calcasieu Parish, Louisiana\"},{\"Name\":\"Monroe\",\"SigningLine\":\"Monroe, Ouachita Parish, Louisiana\"},{\"Name\":\"New Orleans\",\"SigningLine\":\"New Orleans, __________ Parish, Louisiana\"},{\"Name\":\"Shreveport\",\"SigningLine\":\"Shreveport, Caddo Parish, Louisiana\"},{\"Name\":\"Blank signing location\",\"SigningLine\":\"_______________(city), _______________________(parish/county), _________________(state)\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select the Signing Location",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "UseClientNotary",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:24:35.152Z",
+      "_id": "63c95fc7fa15145527485e4c"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "entityroles|map: Name",
+      "isList": false,
+      "label": "{[Spouse.NameCO]}'s title in {[Transferee|else: \"transferee\"]}; type or select from dropdown.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "TransfereeSigner2Title",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:22:37.965Z",
+      "_id": "63c95fc7fa15145527485e4d"
+    },
+    {
+      "style": "datepicker",
+      "isList": false,
+      "label": "{[Transferee|else: \"Trust\"]} date:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "date",
+      "name": "TransfereeTrustDT",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:22:37.965Z",
+      "_id": "63c95fc7fa15145527485e4e"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "anOptionListedBelow",
+      "_options": "[\"Entity Articles\",\"Operating Agreement\",\"Act of Transfer to LLC\",\"Act of Transfer & Joinder Agreement\",\"Registered Agent Form\",\"Tax I.D. Numbers\",\"Resolution\"]",
+      "isList": true,
+      "label": "If you need to customize any document name for the Table of Contents, enter it here. You can select from the dropdown list or type in; if there are multiple acts of transfer or joinder agreements, include the parish or transferring entity in parentheses.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "ToCLLCTextList",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-05-03T21:53:40.734Z",
+      "_id": "63c95fc7fa15145527485e4f"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is the address of the business within city limits?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "WithinCityLimitsTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-07T21:06:48.396Z",
+      "_id": "63c95fc7fa15145527485e50"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "645a7fa683022ae1bc117970",
+      "name": "EINofLLC",
+      "isList": false,
+      "label": "EIN; **must** be entered as \"99-9999999\" with the dash, or the W9 will not come out correctly.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Parish\"},{\"Name\":\"County\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "6581fd34a63052e9a6e13807",
+      "name": "ParishCounty",
+      "isList": false,
+      "label": "Use \"Parish\" or \"County\" for this party?",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "6581fe1da63052e9a6e1380a",
+      "name": "LLCParish",
+      "isList": false,
+      "label": "LLC {[ParishCounty|else: \"Parish\"]}:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:18:39.691Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "6581fe1da63052e9a6e1380b",
+      "name": "LLCCity",
+      "isList": false,
+      "label": "LLC City:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:11:53.379Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "_id": "6581fe1da63052e9a6e1380c",
+      "name": "LLCState",
+      "isList": false,
+      "label": "LLC State:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:11:53.379Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "6581fe1da63052e9a6e1380d",
+      "name": "LLCStreet",
+      "isList": false,
+      "label": "LLC Street address:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:11:53.379Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "6581fe1da63052e9a6e1380e",
+      "name": "LLCStreet2",
+      "isList": false,
+      "label": "LLC Street second line, if any (Apt, Suite, etc):",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:11:53.379Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "99999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "6581fe1da63052e9a6e1380f",
+      "name": "LLCZip",
+      "isList": false,
+      "label": "LLC Zip:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-06-06T02:11:08.640Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Majority\",\"Description\":\"Majority (51%)\"},{\"Name\":\"Super-Majority\",\"Description\":\"Super-Majority (2/3)\"},{\"Name\":\"Unanimous\",\"Description\":\"Unanimous (100%)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "65c25a0bcb2d6f2366fb2a4a",
+      "name": "VotingPower",
+      "isList": false,
+      "label": "Select the voting threshold required for Member decisions",
+      "helpText": "Members generally make organizational decisions like amending organizational documents, mergers and liquidation events, while Managers make day to day business decisions.",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "checkboxes",
+      "options": "[{\"Name\":\"Member Vote\",\"Description\":\"Member Vote\"},{\"Name\":\"Judicial Dissolution\",\"Description\":\"Entry of Decree of Judicial Dissolution\"},{\"Name\":\"Sale of All Assets\",\"Description\":\"Sale or disposition of substantially all assets\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "65c26051cb2d6f2366fb2a4b",
+      "name": "LiquidationEvent",
+      "isList": true,
+      "label": "Select the events that should trigger liquidation:",
+      "helpText": "Generally, always select Member Vote and Judicial Dissolution. Other selections are optional.",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Majority\",\"Description\":\"Majority (51%)\"},{\"Name\":\"Super-Majority\",\"Description\":\"Super-Majority (2/3)\"},{\"Name\":\"Unanimous\",\"Description\":\"Unanimous (100%)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "65c26565cb2d6f2366fb2a4c",
+      "name": "ManagerVotingPower",
+      "isList": false,
+      "label": "Select the Manager voting threshold for decision making.",
+      "helpText": "Managers generally make day to day business decisions, while Members make organizational decisions like amendments to organizational documents and other matters reserved for Member approval such as mergers and dissolution.",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Majority\",\"Description\":\"Majority (51%)\"},{\"Name\":\"Super-Majority\",\"Description\":\"Super-Majority (2/3)\"},{\"Name\":\"Unanimous\",\"Description\":\"Unanimous\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "65c26b71cb2d6f2366fb2a4d",
+      "name": "ExtraordinaryVotingPower",
+      "isList": false,
+      "label": "Select the Member voting threshold required to approve extra-ordinary transactions:",
+      "helpText": "Extra-ordinary transactions include dissolution, merger, consolidation, sale of substantially all assets, etc. ",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "switch",
+      "isDefault": "none",
+      "_id": "65c272f2cb2d6f2366fb2a4e",
+      "name": "InvolWithdrawalDefaultTR",
+      "isList": false,
+      "label": "Select for an Involntary Withdrawal event to include a knowing or willing default of a Member or Manager agreed responsibility to the Company",
+      "helpText": "This provision may be useful for business entities that require performance of an employed Member or Manager. Consider coupling this with a Right of First Refusal to purchase Membership interest upon Involuntary Withdrawal.",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "_id": "65c274a6cb2d6f2366fb2a4f",
+      "name": "ROFR",
+      "isList": false,
+      "label": "Include Right of First Refusal in the event of sale or involuntary withdrawal?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Dissolution\",\"Description\":\"Dissolution\"},{\"Name\":\"Sale of All Assets\",\"Description\":\"Sale of substantially all assets\"},{\"Name\":\"Sale of Real Estate\",\"Description\":\"Sale or disposition of real estate\"},{\"Name\":\"Merger\",\"Description\":\"Merger or consolidation\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "65c27799cb2d6f2366fb2a50",
+      "name": "ExtraordinaryTransactions",
+      "isList": true,
+      "label": "Select the extra-ordinary transactions that should require approval of the Members:",
+      "helpText": "It is very common to require Member approval for Dissolution, Sale of All Assets, and Merger. Also select \"Sale or disposition of real estate\" to require member approval for the sale of immovable property.",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"C-Corporation\",\"Description\":\"C-Corporation\"},{\"Name\":\"S-Corporation\",\"Description\":\"S-Corporation\"},{\"Name\":\"Partnership\",\"Description\":\"Partnership\"},{\"Name\":\"Disregarded Entity\",\"Description\":\"Disregarded Entity\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "65c3f0b95247780a5fdba295",
+      "name": "IncomeTaxElection",
+      "isList": false,
+      "label": "Select or type in the income tax election for {[SelectLLC.NameCO|else: \"this LLC\"]}",
+      "helpText": "Finish the sentence: \"For income tax purposes, the Company shall elect to be treated as a [...]\")",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Manager must be a Member\",\"Description\":\"Elected Managers must be Members\"},{\"Name\":\"Managers not Members\",\"Description\":\"Elected Managers need not be Members\"},{\"Name\":\"All Members are Managers\",\"Description\":\"All Members serve as Managers\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "65c503a063d8dfae7cd109ce",
+      "name": "ManagerOptions",
+      "isList": false,
+      "label": "Select an option for Manager appointments:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Pro Rata\",\"Description\":\"Pro rata in accordance with ownership\"},{\"Name\":\"By Head\",\"Description\":\"By head (one vote per manager)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "_id": "661573f1414cfc2ace9a9860",
+      "name": "ManagerMemberVote",
+      "isList": false,
+      "label": "Select the Voting Interest when all Members serve as Managers.",
+      "helpText": "This is a \"Manager Managed\" Operating Agreement, but electing for all Members to serve as Managers is equivalent to a \"Member Managed\" entity, in which Managers can either vote \"by head\" or pro rata in accordance with their ownership interest. If the entity becomes fragmented based on family descent, electing \"pro rata\" will ensure the Manager Vote is essentially by root.  ",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "switch",
+      "_id": "665e172edc40ac5befff7adb",
+      "name": "NonVotingInterestTF",
+      "isList": false,
+      "label": "Select to create two classes of membership for voting and non-voting",
+      "helpText": "If selected, Class A (Voting) and Class B (Non-voting) interest will be created. Creating separate classes may be useful to transfer value without transferring control. ",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "switch",
+      "_id": "665e336edc40ac5befff7adc",
+      "name": "PermittedTransferSpouseTF",
+      "isList": false,
+      "label": "Select to allow transfers to the Spouse of a member of a Familial Line",
+      "helpText": "This will allow a Member to transfer an interest in the LLC to their Spouse. Thereafter, further Permitted Transfers must be to a member of the Familial Line.",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "switch",
+      "_id": "665e4319dc40ac5befff7add",
+      "name": "InvoluntaryWithdrawalDistributionTF",
+      "isList": false,
+      "label": "Select for an Involntary Withdrawal event to include distribution from a Member that is a trust, estate, or entity.",
+      "helpText": "Note Permitted Transfers to members of a Familial Line will be excepted if allowed. ",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "datepicker",
+      "_id": "668f1407060e551a715bc699",
+      "name": "OAEffectiveDT",
+      "isList": false,
+      "label": "Effective date for the Operating Agreement, if known:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-11-03T19:10:49.635Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "type": "date"
+    },
+    {
+      "style": "switch",
+      "_id": "66a02e8eb3a2045b064e16a0",
+      "name": "FamilialLineMarriedTF",
+      "isList": false,
+      "label": "Select if the initial Members are unmarried in order to define the Familial Line as decendents of any members. ",
+      "helpText": "If this members are marrried, the Familial Line would include descendants of the Members born to the Members as husband and wife.  If the Members are not married, the Familial Line includes descendants of any Member.",
+      "forceRelevance": "",
+      "type": "true/false"
+    },
+    {
+      "style": "dropdown",
+      "options": "NewAgents",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "67004cf74cece2d324784c47",
+      "name": "TransfereeTrustees",
+      "isList": true,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "",
+      "options": "PotentialEntities",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "_id": "6710563895d126341e893b20",
+      "name": "SelectLLC",
+      "isList": false,
+      "label": "{[if !SelectLLC]}<accent red>**WARNING: Required.**</accent>   {[endif]}Select the LLC; LLC *must* be entered in the 'other parties' list to appear.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "671059d828a44958de349d24",
+      "name": "LLCName",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text"
+    },
+    {
+      "name": "StateLawSelectBiz",
+      "isList": false,
+      "label": "Select the State of Organization of the Business Entity:",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "6762eb0d3e5375edd65068e2",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Louisiana\",\"LLCActTitle\":\"Louisiana Limited Liability Company Law\",\"LLCActStatute\":\"La. R.S. 12:1301, et. seq.\",\"DepartmentReference\":\"Secretary of State\"},{\"Name\":\"Alaska\",\"LLCActTitle\":\"Alaska Revised Limited Liability Act\",\"LLCActStatute\":\"Chapter 50 of Title 10 of the Alaska Code, AS 10.50.010, et seq.\",\"DepartmentReference\":\"Department of Commerce and Economic Development \"},{\"Name\":\"Texas\",\"LLCActTitle\":\"Texas Business Organizations Code\",\"LLCActStatute\":\"Tex. Bus. Org. Code 101.001, et seq.\",\"DepartmentReference\":\"Secretary of State\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "AmendRestateTF",
+      "isList": false,
+      "label": "Select if the Operating Agreement is being amended and restated.",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "67cf550e6dbd2c3a5e411082",
+      "type": "true/false",
+      "style": "switch"
+    },
+    {
+      "name": "NAICSCode",
+      "isList": false,
+      "label": "Select the appropriate NAICS Code for this entity.",
+      "helpText": "A NAICS (pronounced NAKES) code is a six-digit number used by federal statistical agencies in the United States, Canada, and Mexico to classify businesses according to their primary economic activity.\n\nThe primary purpose of NAICS is to collect, analyze, and publish statistical data related to the U.S. business economy, providing a standardized way to categorize industries. It replaced the older Standard Industrial Classification (SIC) system in 1997.",
+      "forceRelevance": "true",
+      "_id": "68797e5b6c71d57d67186504",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Holding Company\",\"Description\":\"Holding Company\",\"Code\":\"551112\"},{\"Name\":\"Residential RE Rental\",\"Description\":\"Real Estate Rental (Residential)\",\"Code\":\"531110\"},{\"Name\":\"Commercial RE Rental\",\"Description\":\"Real Estate Rental (Commercial)\",\"Code\":\"531120\"},{\"Name\":\"Equipment Rental (Construction, Mining, Forestry)\",\"Description\":\"Equipment Rental (Construction, Mining, Forestry)\",\"Code\":\"53412\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "TransfereeSelect",
+      "isList": false,
+      "label": "Select the transferee:",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68a8ee87575cfa1abba3bdf9",
+      "type": "selection",
+      "style": "",
+      "options": "PotentialTrustsOnly",
+      "optionTemplate": "",
+      "typeOfVariable": "userData"
+    }
+  ],
+  "formulas": [
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF\n ? ((OwnerMC == \"Client\") || (OwnerMC == \"Both\"))\n   ? Client\n   : Spouse\n : Client",
+      "ref": "individual",
+      "name": "LLCOwner",
+      "type": "object",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-12-12T15:19:06.683Z",
+      "_id": "63c95fc7fa15145527485e52"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF\n ? (OwnerMC == \"Client\")\n   ? Spouse\n   : Client\n : Client",
+      "ref": "individual",
+      "name": "LLCOwnerSpouse",
+      "type": "object",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-12-12T15:23:30.657Z",
+      "_id": "63c95fc7fa15145527485e53"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF && OwnerMC == \"Both\"\n  ? true\n  : false",
+      "ref": "",
+      "type": "true/false",
+      "name": "MultiTranferorTF",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-12-12T15:30:32.876Z",
+      "_id": "63c95fc7fa15145527485e54"
+    },
+    {
+      "contentType": "",
+      "isList": true,
+      "label": "",
+      "expression": "[\"ToCLLCDocs\",\"ToCLLCTextList\"]",
+      "ref": "",
+      "type": "text",
+      "name": "ToCListAll",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-04-13T20:20:28.556Z",
+      "_id": "63c95fc7fa15145527485e55"
+    },
+    {
+      "contentType": "",
+      "isList": true,
+      "label": "",
+      "expression": "[\"MarriedTF\\n  ? OwnerMC == \\\"Client\\\" || OwnerMC == \\\"Both\\\"\\n   ? Client.LineAddress\\n   : Spouse.LineAddress\\n  : Client.LineAddress\"]",
+      "ref": "",
+      "type": "text",
+      "name": "TransfereeAddressSuggestions",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-06-15T18:56:19.921Z",
+      "_id": "63c95fc7fa15145527485e56"
+    },
+    {
+      "contentType": "",
+      "isList": true,
+      "label": "",
+      "expression": "[\"MarriedTF\\n  ? OwnerMC == \\\"Client\\\" || OwnerMC == \\\"Both\\\"\\n   ? ((Client.City ? Client.City : \\\"__________________\\\") + \\\", \\\" + (Client.Parish ? Client.Parish : \\\"______________\\\") + \\\" \\\" + (Client.ParishCounty ? Client.ParishCounty : \\\"Parish\\\") + \\\", \\\" + (Client.State ? Client.State : \\\"_______________\\\"))\\n   : ((Spouse.City ? Spouse.City : \\\"__________________\\\") + \\\", \\\" + (Spouse.Parish ? Spouse.Parish : \\\"______________\\\") + \\\" \\\" + (Spouse.ParishCounty ? Spouse.ParishCounty : \\\"Parish\\\") + \\\", \\\" + (Spouse.State ? Spouse.State : \\\"_______________\\\"))\\n  : ((Client.City ? Client.City : \\\"__________________\\\") + \\\", \\\" + (Client.Parish ? Client.Parish : \\\"______________\\\") + \\\" \\\" + (Client.ParishCounty ? Client.ParishCounty : \\\"Parish\\\") + \\\", \\\" + (Client.State ? Client.State : \\\"_______________\\\"))\"]",
+      "ref": "",
+      "type": "text",
+      "name": "TransfereeDomicileSuggestions",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "lastModified": "2020-12-12T16:39:34.988Z",
+      "_id": "63c95fc7fa15145527485e57"
+    },
+    {
+      "_id": "65ba9eebbcfa13ebd1486fde",
+      "name": "ManagerParties",
+      "isList": true,
+      "label": "",
+      "expression": "[\"Managers|map: this.Selection\"]",
+      "ref": "individual",
+      "type": "object"
+    },
+    {
+      "contentType": "",
+      "_id": "66d785b8ad1e0941e6d90c1d",
+      "name": "EntityTypeMatch",
+      "isList": false,
+      "label": "",
+      "expression": "EntityType.Match|else: \"limited liability company\"",
+      "ref": "",
+      "type": "text"
+    },
+    {
+      "contentType": "",
+      "_id": "671058f095d126341e893b21",
+      "name": "LLCName1xA",
+      "isList": false,
+      "label": "",
+      "expression": "this.SelectLLC.NameCO",
+      "ref": "",
+      "type": "text"
+    }
+  ],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[if this.LLCOfficeandAgentSameTF]}{[if this.LLCRegisteredOfficeEnteredTF]}{[this.LLCOfficeSelect.NameCO|else: \"____________________\"]}, {[this.LLCOfficeSelect.PartyLineAddressFullState]}{[else]}{[this.LLCRegisterName|else: \"____________________\"]}, {[this.LLCRegisteredOffice|else: \"___________________________\"]}{[endif]}{[else]}{[if this.LLCAgentInListTF]}{[this.LLCRegisteredAgentMC.NameCO|else: \"____________________\"]}, {[this.LLCRegisteredAgentMC.PartyLineAddressFullState]}{[else]}{[this.LLCRegisteredAgentText|else: \"___________________________\"]}{[endif]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "LLCRealAgent",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-28T20:35:12.991Z",
+      "_id": "63c95fc7fa15145527485e59",
+      "content": "{[if this.LLCOfficeandAgentSameTF]}{[if this.LLCRegisteredOfficeEnteredTF]}{[this.LLCOfficeSelect.NameCO|else: \"____________________\"]}, {[this.LLCOfficeSelect.PartyLineAddressFullState]}{[else]}{[this.LLCRegisterName|else: \"____________________\"]}, {[this.LLCRegisteredOffice|else: \"___________________________\"]}{[endif]}{[else]}{[if this.LLCAgentInListTF]}{[this.LLCRegisteredAgentMC.NameCO|else: \"____________________\"]}, {[this.LLCRegisteredAgentMC.PartyLineAddressFullState]}{[else]}{[this.LLCRegisteredAgentText|else: \"___________________________\"]}{[endif]}{[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[if this.LLCRegisteredOfficeEnteredTF]}{[this.LLCOfficeSelect.PartyLineAddressFullState]}{[else]}{[this.LLCRegisteredOffice|else: \"___________________________\"]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "LLCRealOfficeAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-28T20:37:05.596Z",
+      "_id": "63c95fc7fa15145527485e5a",
+      "content": "{[if this.LLCRegisteredOfficeEnteredTF]}{[this.LLCOfficeSelect.PartyLineAddressFullState]}{[else]}{[this.LLCRegisteredOffice|else: \"___________________________\"]}{[endif]}"
+    },
+    {
+      "filename": "OperatingAgreementTemplate.docx",
+      "filesize": 99394,
+      "filepath": "templates/5ee036447e43d8182e6d0a05/4498c9c0-1fb9-11f0-a13e-99face223adc.docx",
+      "date": 1745354109717,
+      "output": "Operating Agreement for {[SelectLLC.NameCO]}",
+      "label": "",
+      "type": "docx",
+      "name": "OperatingAgreementTemplate",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2023-01-05T22:09:30.249Z",
+      "user": "66cf83c43c74fb2094e33277",
+      "_id": "63c95fc7fa15145527485e5b",
+      "isTemplates": true
+    },
+    {
+      "filename": "LLC Resolution.docx",
+      "filesize": 25411,
+      "filepath": "templates/5ee036447e43d8182e6d0a05/63c95fc7fa15145527485e5c/9560d240-8c1f-11ef-80a7-4f822bf948a1/template.docx",
+      "date": 1729125278174,
+      "output": "Resolution for {[SelectLLC.NameCO]}",
+      "label": "",
+      "type": "docx",
+      "name": "Resolution",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-01-26T16:46:17.067Z",
+      "user": "63d46c67ad98ce943197d39a",
+      "_id": "63c95fc7fa15145527485e5c"
+    },
+    {
+      "filename": "TransferandJoinder.docx",
+      "filesize": 42504,
+      "filepath": "templates/5ee036447e43d8182e6d0a05/63c95fc7fa15145527485e5d/16d29a40-925d-11f0-bc02-4767fae8134b/template.docx",
+      "date": 1757958902272,
+      "output": "Transfer and Joinder Agreement for {[SelectLLC.NameCO|else: \"New Entity\"]}",
+      "label": "",
+      "type": "docx",
+      "name": "TransferAndJoinder",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-16T21:50:36.459Z",
+      "user": "63d46c67ad98ce943197d39a",
+      "_id": "63c95fc7fa15145527485e5d"
+    },
+    {
+      "filename": "TheusW9.pdf",
+      "filesize": 45802,
+      "filepath": "templates/5ee036447e43d8182e6d0a05/0c5f3940-ee8d-11ed-9f2c-115125e14ed7.pdf",
+      "date": 1683652509019,
+      "output": "W9 for {[SelectLLC.NameCO]}",
+      "fillable": true,
+      "_id": "645a7f9483022ae1bc11796f",
+      "name": "LetterW9",
+      "label": "",
+      "type": "pdff",
+      "fieldMap": {
+        "topmostSubform": [
+          {
+            "Page1": [
+              {
+                "FederalClassification": [
+                  {
+                    "c1_1": [
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      {
+                        "__props": {
+                          "FieldType": "Button",
+                          "FieldName": "topmostSubform[0].Page1[0].FederalClassification[0].c1_1[6]",
+                          "FieldFlags": 0,
+                          "FieldJustification": "Left",
+                          "FieldStateOption": [
+                            "Off",
+                            "Yes"
+                          ]
+                        }
+                      }
+                    ],
+                    "f1_4": [
+                      {
+                        "__props": {
+                          "FieldType": "Text",
+                          "FieldName": "topmostSubform[0].Page1[0].FederalClassification[0].f1_4[0]",
+                          "FieldFlags": 8388608,
+                          "FieldValue": "",
+                          "FieldJustification": "Center"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "Exemptions": [
+                  {
+                    "f1_5": [
+                      {
+                        "__props": {
+                          "FieldType": "Text",
+                          "FieldName": "topmostSubform[0].Page1[0].Exemptions[0].f1_5[0]",
+                          "FieldFlags": 8388608,
+                          "FieldValue": "",
+                          "FieldJustification": "Center"
+                        }
+                      }
+                    ],
+                    "f1_6": [
+                      {
+                        "__props": {
+                          "FieldType": "Text",
+                          "FieldName": "topmostSubform[0].Page1[0].Exemptions[0].f1_6[0]",
+                          "FieldFlags": 8388608,
+                          "FieldValue": "",
+                          "FieldJustification": "Center"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "f1_10": [
+                  {
+                    "__props": {
+                      "FieldType": "Text",
+                      "FieldName": "topmostSubform[0].Page1[0].f1_10[0]",
+                      "FieldFlags": 8388608,
+                      "FieldValue": "",
+                      "FieldJustification": "Center"
+                    }
+                  }
+                ]
+              }
+            ],
+            "__props": {
+              "FieldType": "",
+              "FieldName": "topmostSubform[0]",
+              "FieldFlags": 0,
+              "FieldJustification": "Left"
+            }
+          }
+        ],
+        "Full Name": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Full Name",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "Client.NameCO"
+          }
+        },
+        "Business Name if Different": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Business Name if Different",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "SelectLLC.NameCO"
+          }
+        },
+        "Entity Tax Classification": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Entity Tax Classification",
+            "FieldFlags": 0,
+            "FieldValue": "",
+            "FieldJustification": "Center",
+            "FieldMaxLength": 1
+          }
+        },
+        "Address 1 and 2": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Address 1 and 2",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "SelectLLC.Address1and2"
+          }
+        },
+        "City State Zip": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "City State Zip",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "SelectLLC.CityStateZipBlank"
+          }
+        },
+        "Requester Name and Address": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Requester Name and Address",
+            "FieldFlags": 8392704,
+            "FieldValue": "",
+            "FieldJustification": "Left"
+          }
+        },
+        "SSN First 3": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "SSN First 3",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 3
+          }
+        },
+        "SSN Middle Two": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "SSN Middle Two",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 2
+          }
+        },
+        "SSN Last Four": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "SSN Last Four",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 4
+          }
+        },
+        "TIN First Two": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "TIN First Two",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 2,
+            "Expression": "SliceEINFirstTwo"
+          }
+        },
+        "TIN Last Seven": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "TIN Last Seven",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 7,
+            "Expression": "SliceEinLastSeven"
+          }
+        },
+        "C Corp Value 2": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "C Corp Value 2",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ]
+          }
+        },
+        "S Corp Value 3": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "S Corp Value 3",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ]
+          }
+        },
+        "Partnership Value 4": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "Partnership Value 4",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ]
+          }
+        },
+        "LLC Value 6": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "LLC Value 6",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ]
+          }
+        },
+        "IsTrustTF": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "IsTrustTF",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ]
+          }
+        },
+        "IsIndividualLLC": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "IsIndividualLLC",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ],
+            "Expression": "\"Yes\""
+          }
+        }
+      },
+      "user": "63d46c67ad98ce943197d39a"
+    },
+    {
+      "contentType": "",
+      "text": "{[EINofLLC.slice(0,2)]}",
+      "_id": "645a7fca83022ae1bc117971",
+      "name": "SliceEINFirstTwo",
+      "label": "",
+      "type": "text",
+      "content": "{[EINofLLC.slice(0,2)]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[EINofLLC.slice(3,10)]}",
+      "_id": "645a7fd483022ae1bc117972",
+      "name": "SliceEinLastSeven",
+      "label": "",
+      "type": "text",
+      "content": "{[EINofLLC.slice(3,10)]}"
+    }
+  ],
+  "__v": 233,
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}

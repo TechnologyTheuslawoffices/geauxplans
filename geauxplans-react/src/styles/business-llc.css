@@ -69,7 +69,7 @@
   border-radius: 0 50px 50px 0 !important;
   padding: 14px 35px !important;
   font-weight: 600 !important;
-  background: #0000ff !important;
+  background: #1a1acc !important;
   color: #fff !important;
   border: none !important;
   cursor: pointer;
@@ -80,7 +80,7 @@
 
 .llc-search-form .btn-check:hover,
 .llc-search-form button.btn-check:hover {
-  background: #0000cc !important;
+  background: #141499 !important;
 }
 
 /* Availability Results */
@@ -277,8 +277,8 @@
 }
 
 .process-step.active {
-  box-shadow: 0 4px 20px rgba(0, 0, 255, 0.1);
-  border: 2px solid #0000ff;
+  box-shadow: 0 4px 20px rgba(26, 26, 204, 0.1);
+  border: 2px solid #1a1acc;
 }
 
 .step-icon {
@@ -319,7 +319,7 @@
 }
 
 .agent-price {
-  color: #0000ff;
+  color: #1a1acc;
   font-size: 1.2rem;
   margin-bottom: 30px;
 }
@@ -353,7 +353,7 @@
 }
 
 .benefits-list li i {
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 /* Testimonials Section */
@@ -400,7 +400,7 @@
 
 .cta-card {
   text-align: center;
-  background: linear-gradient(135deg, #0000ff 0%, #0000cc 100%);
+  background: linear-gradient(135deg, #1a1acc 0%, #141499 100%);
   color: #fff;
   padding: 60px 40px;
   border-radius: 8px;
@@ -413,12 +413,11 @@
 
 .cta-card p {
   margin-bottom: 30px;
-  opacity: 0.9;
 }
 
 .cta-card .btn {
   background: #fff !important;
-  color: #0000ff !important;
+  color: #1a1acc !important;
   border: 2px solid #fff !important;
   padding: 12px 30px;
   border-radius: 4px;
@@ -427,7 +426,7 @@
 
 .cta-card .btn:hover {
   background: #f0f0f0 !important;
-  color: #0000ff !important;
+  color: #1a1acc !important;
 }
 
 /* Operating Agreement Page Styles */
@@ -493,6 +492,21 @@
   margin-bottom: 15px;
 }
 
+/* #1/#2/#3 markers: white number on a blue pill so they don't read as black
+   navy text. Matches the estate plan pages (estate-plan-page.css). */
+.process-grid .process-step h3 .text-blue {
+  display: inline-block;
+  background-color: #1a1acc;
+  background-image: linear-gradient(135deg, #1a1acc 0%, #4a4ae8 100%);
+  color: #fff !important;
+  font-style: normal;
+  font-weight: 800;
+  padding: 2px 12px;
+  border-radius: 20px;
+  margin-right: 6px;
+  box-shadow: 0 3px 10px rgba(26, 26, 204, 0.25);
+}
+
 .process-grid .process-step p {
   font-size: 0.95rem;
 }
@@ -512,7 +526,7 @@
 
 .oa-build-card {
   background: #fff;
-  border: 3px solid #0000ff;
+  border: 3px solid #1a1acc;
   padding: 40px;
   text-align: center;
 }
@@ -573,7 +587,7 @@
 }
 
 .toggle-icon {
-  color: #0000ff;
+  color: #1a1acc;
   font-size: 1.5rem;
   font-weight: 300;
 }
@@ -727,6 +741,30 @@
   .oa-hero-buttons .btn {
     border-radius: 25px;
   }
+
+  /* These headings kept their full desktop size on phones (~40px). */
+  .oa-hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .llc-info-content h2,
+  .agent-content h2 {
+    font-size: 1.8rem;
+  }
+}
+
+/* Tablet: three-column card rows are cramped at full width but leave dead
+   space as a single column — show two across in this range instead. Placed
+   after the max-width:992px block so it wins for 769px–992px. */
+@media (min-width: 769px) and (max-width: 992px) {
+  .llc-features-grid,
+  .process-steps,
+  .testimonials-grid,
+  .process-grid,
+  .process-cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
 }
 
 /* ========================================
@@ -739,6 +777,27 @@
   padding: 60px 0;
 }
 
+/* Embedded in the dashboard modal: strip the full-bleed page framing so the
+   flow fits inside the modal shell and scrolls as one unit. */
+.business-llc-page--embedded .llc-hero-section,
+.business-llc-page--embedded .llc-features-section {
+  padding: 15px 0;
+}
+
+.business-llc-page--embedded .llc-wizard-modal {
+  min-height: 0;
+  background: transparent;
+  padding: 10px 0;
+}
+
+.business-llc-page--embedded .wizard-container {
+  padding: 0;
+}
+
+.business-llc-page--embedded .wizard-step {
+  padding: 24px;
+}
+
 .wizard-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -749,7 +808,7 @@
   background: #fff;
   border-radius: 12px;
   padding: 50px 40px;
-  box-shadow: 0 4px 30px rgba(0, 0, 255, 0.08);
+  box-shadow: 0 4px 30px rgba(26, 26, 204, 0.08);
   border: 2px solid #e0e0ff;
 }
 
@@ -786,7 +845,7 @@
 }
 
 .process-card {
-  border: 2px solid #0000ff;
+  border: 2px solid #1a1acc;
   border-radius: 8px;
   padding: 30px 25px;
   background: #fff;
@@ -828,7 +887,7 @@
 }
 
 .question-number {
-  color: #0000ff;
+  color: #1a1acc;
   font-weight: bold;
 }
 
@@ -847,7 +906,7 @@
 .question-group select:focus,
 .question-group textarea:focus {
   outline: none;
-  border-color: #0000ff;
+  border-color: #1a1acc;
 }
 
 .question-group textarea {
@@ -878,7 +937,7 @@
 }
 
 .agent-selection-card {
-  border: 2px solid #0000ff;
+  border: 2px solid #1a1acc;
   border-radius: 8px;
   padding: 30px;
   background: #fff;
@@ -914,7 +973,7 @@
 
 .benefits-section .benefits-list li::before {
   content: "•";
-  color: #0000ff;
+  color: #1a1acc;
   position: absolute;
   left: 0;
 }
@@ -922,7 +981,7 @@
 /* Price Tag */
 .price-tag {
   padding: 12px 16px;
-  background: rgba(0, 0, 255, 0.1);
+  background: rgba(26, 26, 204, 0.1);
   border-radius: 6px;
   font-size: 0.95rem;
   display: inline-block;
@@ -955,7 +1014,7 @@
 
 .package-selection select:focus {
   outline: none;
-  border-color: #0000ff;
+  border-color: #1a1acc;
 }
 
 .package-features h6 {
@@ -997,7 +1056,7 @@
 
 .styled-list li.active::before {
   content: "●";
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 /* Wizard Actions */
@@ -1007,7 +1066,7 @@
 
 .wizard-actions .btn-primary {
   display: inline-block;
-  background: #0000ff !important;
+  background: #1a1acc !important;
   color: #fff !important;
   border: none !important;
   padding: 15px 40px;
@@ -1020,7 +1079,7 @@
 }
 
 .wizard-actions .btn-primary:hover {
-  background: #0000cc !important;
+  background: #141499 !important;
   color: #fff !important;
 }
 
@@ -1047,7 +1106,7 @@
 }
 
 .wizard-actions .btn-link:hover {
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 /* Step Back Navigation */
@@ -1059,7 +1118,7 @@
 .btn-back {
   background: transparent;
   border: none;
-  color: #0000ff;
+  color: #1a1acc;
   font-size: 1rem;
   cursor: pointer;
   padding: 10px 20px;
@@ -1068,13 +1127,13 @@
 }
 
 .btn-back:hover {
-  color: #0000cc;
+  color: #141499;
   text-decoration: underline;
 }
 
 /* LLC Name highlight */
 .llc-name {
-  color: #0000ff;
+  color: #1a1acc;
   font-weight: 500;
 }
 
@@ -1088,7 +1147,7 @@ button .llc-name,
 
 /* Utility Classes */
 .text-blue {
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 .text-center {

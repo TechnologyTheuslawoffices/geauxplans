@@ -52,9 +52,10 @@ function mapSupabaseUser(supabaseUser: any): User {
     email: supabaseUser.email || '',
     firstName: supabaseUser.user_metadata?.first_name || '',
     lastName: supabaseUser.user_metadata?.last_name || '',
-    displayName: supabaseUser.user_metadata?.first_name
-      ? `${supabaseUser.user_metadata.first_name} ${supabaseUser.user_metadata.last_name || ''}`
-      : supabaseUser.email?.split('@')[0] || '',
+    displayName: supabaseUser.user_metadata?.display_name
+      || (supabaseUser.user_metadata?.first_name
+        ? `${supabaseUser.user_metadata.first_name} ${supabaseUser.user_metadata.last_name || ''}`.trim()
+        : supabaseUser.email?.split('@')[0] || ''),
     role: supabaseUser.user_metadata?.role || 'customer',
     createdAt: supabaseUser.created_at || new Date().toISOString(),
   };
@@ -86,27 +87,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Check for existing session on mount and listen for auth changes
   useEffect(() => {
-    // Get initial session
-    const initializeAuth = async () => {
-      try {
-        const { data: { session: initialSession } } = await supabase.auth.getSession();
+    let active = true;
 
-        if (initialSession?.user) {
-          setSession(initialSession);
-          setUser(mapSupabaseUser(initialSession.user));
-        }
-      } catch (err) {
-        console.error('Error initializing auth:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initializeAuth();
-
-    // Listen for auth state changes
+    // onAuthStateChange is the single source of truth. In supabase-js v2 it
+    // always emits INITIAL_SESSION exactly once, AFTER the client has recovered
+    // the persisted session from storage — so its session argument is the
+    // definitive answer to "are we logged in?". We only flip isLoading to false
+    // here, once that definitive state has arrived. This is the fix for
+    // logged-in users being bounced to /login: the previous code let a
+    // getSession() call resolve null (before storage recovery finished) and
+    // flip isLoading to false while user was still null, so route guards saw
+    // "loaded + unauthenticated" for a moment and redirected.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
+      (_event, currentSession) => {
+        if (!active) return;
         if (currentSession?.user) {
           setSession(currentSession);
           setUser(mapSupabaseUser(currentSession.user));
@@ -118,7 +112,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     );
 
+    // Best-effort fast path so the UI can render the logged-in state a tick
+    // sooner than INITIAL_SESSION. Deliberately ADDITIVE ONLY: it never clears
+    // auth and never touches isLoading, so a transient null here can't cause a
+    // false "unauthenticated" redirect. The listener above owns finalization.
+    supabase.auth
+      .getSession()
+      .then(({ data: { session: initialSession } }) => {
+        if (!active || !initialSession?.user) return;
+        setSession(initialSession);
+        setUser(mapSupabaseUser(initialSession.user));
+      })
+      .catch((err) => console.error('Error reading initial session:', err));
+
     return () => {
+      active = false;
       subscription.unsubscribe();
     };
   }, []);

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { checkLLCAvailability } from '../services/businessService';
+import type { SimilarEntity } from '../types';
 import '../styles/business-llc.css';
 
 interface AvailabilityResult {
   available: boolean | null;
   message: string;
-  similar?: Array<{ name: string; type: string; status: string }>;
+  similar?: SimilarEntity[];
 }
 
 interface BusinessFormData {
@@ -21,12 +23,37 @@ interface BusinessFormData {
   llcPackage: string;
 }
 
-const StartBusinessLLC: React.FC = () => {
+interface StartBusinessLLCProps {
+  // When true the flow is rendered inside the dashboard modal, so the
+  // marketing sections are dropped and the full-bleed wizard styling is
+  // reined in to fit the modal (see .business-llc-page--embedded).
+  embedded?: boolean;
+}
+
+const StartBusinessLLC: React.FC<StartBusinessLLCProps> = ({ embedded = false }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const [searchParams] = useSearchParams();
+
+  /**
+   * `?product=oa` means the customer arrived from the Operating Agreement page
+   * and already has an LLC. They get the same wizard minus the parts that only
+   * make sense while forming a company: no Secretary of State name check (their
+   * name is registered, so the check would come back "taken" and stop them), no
+   * registered agent, and no LLC formation package.
+   */
+  const oaOnly = searchParams.get('product') === 'oa';
+
   const [businessName, setBusinessName] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [result, setResult] = useState<AvailabilityResult | null>(null);
+
+  /**
+   * True when we let the customer proceed without a confirmed answer from the
+   * Secretary of State. Drives the warning banner in the wizard so "we could not
+   * check" is never displayed as "this name is available".
+   */
+  const [unverifiedName, setUnverifiedName] = useState(false);
 
   // Multi-step wizard state
   const [currentStep, setCurrentStep] = useState(1);
@@ -53,43 +80,48 @@ const StartBusinessLLC: React.FC = () => {
       return;
     }
 
+    const name = businessName.trim();
+
+    // An existing LLC is supposed to already be on the SOS register, so there is
+    // nothing to check — jump straight to the package.
+    if (oaOnly) {
+      setFormData(prev => ({ ...prev, llcName: name, registeredAgent: 'No' }));
+      setShowWizard(true);
+      setCurrentStep(5);
+      return;
+    }
+
     setIsChecking(true);
     setResult(null);
 
     try {
-      const response = await fetch('/api/business/check-availability', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: businessName.trim(), state: 'LA' })
-      });
+      const response = await checkLLCAvailability(name);
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          if (data.data.available) {
-            // Name is available - show wizard
-            setFormData(prev => ({ ...prev, llcName: businessName.trim() }));
-            setShowWizard(true);
-            setCurrentStep(2);
-          } else {
-            setResult({
-              available: false,
-              message: data.data.message || 'LLC with this name already exists!',
-              similar: data.data.similar
-            });
-          }
-        } else {
-          throw new Error(data.error);
-        }
-      } else {
-        // Backend not available - assume available for demo
-        setFormData(prev => ({ ...prev, llcName: businessName.trim() }));
+      // An unreachable or failing lookup must not read as "this name is free".
+      // We still let the customer through — an SOS outage should not block a
+      // sale — but they are told the name was not verified, so an unavailable
+      // name is a known risk rather than a silent one.
+      if (!response.success || !response.data) {
+        setFormData(prev => ({ ...prev, llcName: name }));
+        setUnverifiedName(true);
         setShowWizard(true);
         setCurrentStep(2);
+        return;
       }
-    } catch (error) {
-      // Fallback - assume available for demo
-      setFormData(prev => ({ ...prev, llcName: businessName.trim() }));
+
+      const { available, message, similar } = response.data;
+
+      if (available === false) {
+        setResult({
+          available: false,
+          message: message || 'An LLC with this name already exists.',
+          similar,
+        });
+        return;
+      }
+
+      setFormData(prev => ({ ...prev, llcName: name }));
+      setUnverifiedName(available === null);
       setShowWizard(true);
       setCurrentStep(2);
     } finally {
@@ -104,7 +136,10 @@ const StartBusinessLLC: React.FC = () => {
   };
 
   const goBack = () => {
-    if (currentStep === 2) {
+    if (oaOnly) {
+      setShowWizard(false);
+      setCurrentStep(1);
+    } else if (currentStep === 2) {
       setShowWizard(false);
       setCurrentStep(1);
     } else if (currentStep > 2) {
@@ -140,8 +175,26 @@ const StartBusinessLLC: React.FC = () => {
         'gpx_og_3': { price: 299, name: 'Operating Agreement + EIN + Licenses' }
       };
 
-      const selectedLLC = llcPrices[formData.llcPackage];
       const selectedOperating = formData.operatingPackage !== 'none' ? operatingPrices[formData.operatingPackage] : null;
+
+      // Operating-agreement-only customers buy the one item and go straight to
+      // checkout — no formation package, no registered agent.
+      if (oaOnly) {
+        if (selectedOperating) {
+          addToCart({
+            id: `op-${formData.operatingPackage}-${Date.now()}`,
+            name: `${selectedOperating.name} - ${formData.llcName}, LLC`,
+            price: selectedOperating.price,
+            quantity: 1,
+            type: 'operating-package',
+            metadata: { llcName: formData.llcName, packageType: formData.operatingPackage }
+          });
+        }
+        navigate('/checkout');
+        return;
+      }
+
+      const selectedLLC = llcPrices[formData.llcPackage];
       const registeredAgentPrice = formData.registeredAgent === 'Yes' ? 249 : 0;
 
       // Add LLC package to cart
@@ -225,15 +278,27 @@ const StartBusinessLLC: React.FC = () => {
     <>
       <section className="llc-hero-section">
         <div className="container">
-          <h1><strong>Start </strong><em className="text-blue">your business</em><strong> in Louisiana</strong></h1>
-          <p className="hero-tagline"><em>We've got you covered. Let's Geaux!</em></p>
-          <p className="hero-description">
-            Find out if an LLC is right for you – enter your preferred business name to get started. <strong>Starts at $89</strong> + filing fees.
-          </p>
+          {oaOnly ? (
+            <>
+              <h1><strong>Build your </strong><em className="text-blue">Operating Agreement</em></h1>
+              <p className="hero-tagline"><em>We've got you covered. Let's Geaux!</em></p>
+              <p className="hero-description">
+                Enter the name of your LLC to get started. <strong>Starts at $149.</strong>
+              </p>
+            </>
+          ) : (
+            <>
+              <h1><strong>Start </strong><em className="text-blue">your business</em><strong> in Louisiana</strong></h1>
+              <p className="hero-tagline"><em>We've got you covered. Let's Geaux!</em></p>
+              <p className="hero-description">
+                Find out if an LLC is right for you – enter your preferred business name to get started. <strong>Starts at $89</strong> + filing fees.
+              </p>
+            </>
+          )}
           <div className="llc-search-form">
             <input
               type="text"
-              placeholder="What do you want to call LLC?"
+              placeholder={oaOnly ? 'What is your LLC called?' : 'What do you want to call LLC?'}
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -246,7 +311,7 @@ const StartBusinessLLC: React.FC = () => {
               disabled={isChecking}
               style={{
                 display: 'block',
-                background: isChecking ? '#6666ff' : '#0000ff',
+                background: isChecking ? '#6666ff' : '#1a1acc',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '0 50px 50px 0',
@@ -257,7 +322,7 @@ const StartBusinessLLC: React.FC = () => {
                 whiteSpace: 'nowrap'
               }}
             >
-              {isChecking ? 'Checking...' : 'Check'}
+              {oaOnly ? 'Continue' : (isChecking ? 'Checking...' : 'Check')}
             </button>
           </div>
 
@@ -274,7 +339,9 @@ const StartBusinessLLC: React.FC = () => {
                     <p><strong>Similar registered names:</strong></p>
                     <ul>
                       {result.similar.map((item, index) => (
-                        <li key={index}>{item.name} ({item.type})</li>
+                        <li key={index}>
+                          {item.name}{item.type ? ` (${item.type})` : ''}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -326,11 +393,27 @@ const StartBusinessLLC: React.FC = () => {
       <div className="container">
         <div className="wizard-content">
           <div className="text-center mb-4">
-            <h2 className="wizard-title">
-              <strong>Great News!</strong>{' '}
-              <em className="text-blue">{formData.llcName}</em>{' '}
-              <strong>is available for<br />registration in Louisiana as LLC</strong>
-            </h2>
+            {unverifiedName ? (
+              <h2 className="wizard-title">
+                <strong>Let's get started with</strong>{' '}
+                <em className="text-blue">{formData.llcName}</em>
+              </h2>
+            ) : (
+              <h2 className="wizard-title">
+                <strong>Great News!</strong>{' '}
+                <em className="text-blue">{formData.llcName}</em>{' '}
+                <strong>is available for<br />registration in Louisiana as LLC</strong>
+              </h2>
+            )}
+            {unverifiedName && (
+              <div className="alert alert-warning" role="status">
+                <strong>We could not verify this name right now.</strong> The
+                Louisiana Secretary of State search is unavailable, so we have not
+                confirmed that <em>{formData.llcName}</em> is free. You can carry
+                on — we will check the name again during formation and contact you
+                if it is already taken.
+              </div>
+            )}
             <p className="wizard-disclaimer">
               <small>This is based on a preliminary search. A more thorough search will be performed during the LLC formation process<br />
               and we will then confirm the availability of your preferred business name.</small>
@@ -505,8 +588,20 @@ const StartBusinessLLC: React.FC = () => {
         <div className="container">
           <div className="wizard-content">
             <div className="text-center mb-5">
-              <h2 className="wizard-title"><strong>Save time and money on essential documents</strong></h2>
-              <p><em>From operating to hiring, we'll help you get the right documents, requirements, licenses, and permits to stay compliant.<br />These costs are tax-deductible.</em></p>
+              {oaOnly ? (
+                <>
+                  <h2 className="wizard-title">
+                    <strong>Build the Operating Agreement for</strong>{' '}
+                    <em className="text-blue">{formData.llcName}</em>
+                  </h2>
+                  <p><em>Choose what you need alongside your agreement. These costs are tax-deductible.</em></p>
+                </>
+              ) : (
+                <>
+                  <h2 className="wizard-title"><strong>Save time and money on essential documents</strong></h2>
+                  <p><em>From operating to hiring, we'll help you get the right documents, requirements, licenses, and permits to stay compliant.<br />These costs are tax-deductible.</em></p>
+                </>
+              )}
             </div>
 
             <div className="operating-package-grid">
@@ -526,15 +621,26 @@ const StartBusinessLLC: React.FC = () => {
                 </div>
 
                 <div className="wizard-actions mt-4">
-                  <button onClick={goNext} className="btn btn-primary btn-lg">
-                    Continue with this package
-                  </button>
                   <button
-                    onClick={() => { setFormData(prev => ({ ...prev, operatingPackage: 'none' })); goNext(); }}
-                    className="btn-link"
+                    onClick={oaOnly ? handlePurchase : goNext}
+                    className="btn btn-primary btn-lg"
+                    disabled={oaOnly && isSubmitting}
                   >
-                    No, thanks. I'll take care of this on my own
+                    {oaOnly
+                      ? (isSubmitting ? 'Processing...' : 'Proceed to Checkout')
+                      : 'Continue with this package'}
                   </button>
+                  {/* Declining is only an option when the agreement is an
+                      add-on. If it is the thing they came to buy, there is
+                      nothing left to continue to. */}
+                  {!oaOnly && (
+                    <button
+                      onClick={() => { setFormData(prev => ({ ...prev, operatingPackage: 'none' })); goNext(); }}
+                      className="btn-link"
+                    >
+                      No, thanks. I'll take care of this on my own
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -668,11 +774,13 @@ const StartBusinessLLC: React.FC = () => {
   );
 
   return (
-    <main className="business-llc-page">
+    <main className={`business-llc-page${embedded ? ' business-llc-page--embedded' : ''}`}>
       {!showWizard ? (
         <>
           {renderStep1()}
 
+          {!embedded && (
+          <>
           {/* Ready Set Geaux Section */}
           <section className="llc-info-section">
             <div className="container">
@@ -790,6 +898,8 @@ const StartBusinessLLC: React.FC = () => {
               </div>
             </div>
           </section>
+          </>
+          )}
         </>
       ) : (
         renderWizard()

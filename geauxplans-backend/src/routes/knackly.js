@@ -1,22 +1,14 @@
 /**
  * Knackly Integration Routes
- * API endpoints for document generation via Knackly or GeauxDrafter
+ * API endpoints for document generation via Knackly
  */
 
 const express = require('express');
 const { db, saveDatabase } = require('../config/database');
 const { authenticate } = require('../middleware/auth');
 const knackly = require('../services/knackly');
-const doctools = require('../services/doctools');
 
 const router = express.Router();
-
-// Switch: use Doc Tools instead of Knackly
-const USE_DOCTOOLS = process.env.USE_DOCTOOLS === 'true';
-const docService = USE_DOCTOOLS ? doctools : knackly;
-
-console.log(`Document service: ${USE_DOCTOOLS ? 'Doc Tools' : 'Knackly'}`);
-
 
 /**
  * GET /api/knackly/test-connection
@@ -99,8 +91,8 @@ router.post('/generate/:submissionId', authenticate, async (req, res) => {
       return res.status(400).json({ success: false, error: 'Submission must be completed before generating documents' });
     }
 
-    // Process through document service (Knackly or Doc Tools)
-    const result = await docService.processSubmission(submission, catalogId, appId);
+    // Process through Knackly
+    const result = await knackly.processSubmission(submission, catalogId, appId);
 
     if (result.success) {
       // Update submission with Knackly record ID

@@ -1,0 +1,177 @@
+{
+  "_id": "65e0068c0f90d9f0ea61a141",
+  "summary": "{[if StreetAddress1]}{[endif]}{[Inline]}",
+  "name": "address",
+  "type": "object",
+  "label": "",
+  "kind": "model",
+  "properties": [
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e006a01c9bf0999c2aaf3f",
+      "name": "City",
+      "isList": false,
+      "label": "City:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e006a01c9bf0999c2aaf42",
+      "name": "StreetAddress1",
+      "isList": false,
+      "label": "Street address:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "_id": "65e006a01c9bf0999c2aaf41",
+      "name": "State",
+      "isList": false,
+      "label": "State:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "selection"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e006a01c9bf0999c2aaf43",
+      "name": "StreetAddress2",
+      "isList": false,
+      "label": "Second line of street address, if any (Apt or Suite number, etc):",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    },
+    {
+      "style": "textbox",
+      "pattern": "99999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "_id": "65e006a01c9bf0999c2aaf44",
+      "name": "Zip",
+      "isList": false,
+      "label": "Zip:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "lastModified": "2022-09-29T17:27:31.022Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "type": "text"
+    }
+  ],
+  "formulas": [],
+  "templates": [
+    {
+      "contentType": "",
+      "text": "{[if this.StreetAddress1 && this.City && this.State && this.Zip]}{[this.StreetAddress1]}{[if this.StreetAddress2]}, {[this.StreetAddress2]}{[endif]}, {[this.CityStateZip]}{[else]}(enter address information){[endif]}",
+      "_id": "65e0087e1c9bf0999c2aaf4b",
+      "name": "Inline",
+      "label": "",
+      "type": "text",
+      "content": "{[if this.StreetAddress1 && this.City && this.State && this.Zip]}{[this.StreetAddress1]}{[if this.StreetAddress2]}, {[this.StreetAddress2]}{[endif]}, {[this.CityStateZip]}{[else]}(enter address information){[endif]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[this.City]}, {[this.State]} {[this.Zip]}",
+      "_id": "65e00f3e7f40c5204137d59e",
+      "name": "CityStateZip",
+      "label": "",
+      "type": "text",
+      "content": "{[this.City]}, {[this.State]} {[this.Zip]}"
+    }
+  ],
+  "layouts": [
+    {
+      "name": "(default)",
+      "label": "",
+      "columnCount": 3,
+      "rows": [
+        [
+          {
+            "id": "6a7f2550-d6bb-11ee-8eff-03f1d6435f45",
+            "content": "StreetAddress1",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "id": "4880dd50-d6ba-11ee-8eff-03f1d6435f45",
+            "content": "StreetAddress2",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "id": "421afc70-d6ba-11ee-8eff-03f1d6435f45",
+            "content": "City",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "id": "43e6e2d0-d6ba-11ee-8eff-03f1d6435f45",
+            "content": "State",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          },
+          {
+            "id": "475e7d60-d6ba-11ee-8eff-03f1d6435f45",
+            "content": "Zip",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1
+          }
+        ]
+      ],
+      "_id": "65e006a81c9bf0999c2aaf45"
+    }
+  ],
+  "apps": [],
+  "__v": 0
+}

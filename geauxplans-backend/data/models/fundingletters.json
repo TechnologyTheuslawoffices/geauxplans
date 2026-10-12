@@ -1,0 +1,1482 @@
+{
+  "_id": "60c100709c6497102bdbeed2",
+  "summary": "{[LetterType|else: \"New\"]} Letter{[if LetterType && ((LetterType == \"Entity (Partnership, LLC, or Corporation)\" && EntitySelect) || LetterType != \"Entity (Partnership, LLC, or Corporation)\" && RecipientTo)]} to {[RecipientTo]}{[endif]}",
+  "label": "",
+  "type": "object",
+  "name": "fundingletters",
+  "formulas": [
+    {
+      "contentType": "",
+      "isList": false,
+      "label": "",
+      "expression": "this.LetterType == \"Bank Account, CD, or Money Market Account\"\n    ? this.BankSelect\n      ? this.BankSelect.AssetLetterRef\n      : null\n    : this.LetterType == \"Brokerage or Mutual Fund Account\"\n       ? this.BrokerageSelect\n         ? this.BrokerageSelect.AssetLetterRef\n         : null\n       : this.LetterType == \"Life Insurance\"\n          ? this.LifeInsureSelect\n             ? this.LifeInsureSelect.AssetLetterRef\n             : null\n          : this.LetterType == \"Non-Qualified Annuities\"\n             ? this.AnnuitySelec\n                ? this.AnnuitySelec.AssetLetterRef\n                : null\n             : this.LetterType == \"Entity (Partnership, LLC, or Corporation)\"\n                ? this.EntitySelect\n                  ? this.EntitySelect.AssetLetterRef\n                  : null\n                : (LetterType == \"Stocks\" || LetterType == \"Bonds\")\n                   ? StockBondSelect\n                     ? StockBondSelect.AssetLetterRef\n                     : null\n                   : null\n   ",
+      "ref": "",
+      "type": "text",
+      "name": "AssetRefName",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-06-16T19:00:37.550Z",
+      "_id": "645a77d375e3bc45ef94cb79"
+    },
+    {
+      "isList": true,
+      "label": "",
+      "expression": "[\"peek(ExistingLLCs)\\n  ? ExistingLLCs\\n  : []\",\"peek(LLCs)\\n  ? LLCs\\n  : []\",\"CombinedCorpAssets.length > 0\\r\\n   ? (CombinedCorpAssets|map: AsLLC)\\r\\n   : []\"]",
+      "ref": "llcinfo",
+      "type": "object",
+      "name": "EntitySuggestions",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-06-16T19:11:21.994Z",
+      "_id": "645a77d375e3bc45ef94cb7a"
+    },
+    {
+      "contentType": "",
+      "isList": true,
+      "label": "",
+      "expression": "[\"Client.PartyLineAddress\",\"MarriedTF && !Spouse.SameAddressTF\\r\\n  ? Spouse.LineAddress\\r\\n  : null\",\"(FundAssets|any: AcctType == \\\"Real\\\")\\n   ? (RealEstateAssets|map: RealStreetAddress)\\n   : []\"]",
+      "ref": "",
+      "type": "text",
+      "name": "FundPropertySuggestions",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-16T21:50:19.068Z",
+      "_id": "645a77d375e3bc45ef94cb7b"
+    },
+    {
+      "contentType": "",
+      "isList": true,
+      "label": "",
+      "expression": "[\"((EntitySuggestions|group: this)|map: _key)\"]",
+      "ref": "",
+      "type": "text",
+      "name": "GroupEntitySuggestions",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-06-15T19:05:58.777Z",
+      "_id": "645a77d375e3bc45ef94cb7c"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "peek(TransferTo == \"Entity\")",
+      "ref": "",
+      "type": "true/false",
+      "name": "IsLLC",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T18:57:54.583Z",
+      "_id": "645a77d375e3bc45ef94cb7d"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF\n  ? EmployeePlanSelect == \"Client\"\n    ? Client\n    : EmployeePlanSelect == \"Spouse\"\n      ? Spouse\n      : null\n  : Client",
+      "ref": "individual",
+      "name": "PlanTrueOwner",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-09-20T15:42:14.898Z",
+      "_id": "645a77d375e3bc45ef94cb7e"
+    },
+    {
+      "contentType": "",
+      "isList": true,
+      "label": "",
+      "expression": "[\"LetterType == \\\"Brokerage or Mutual Fund Account\\\" && (FundAssets|any: AcctType == \\\"Broker\\\")\\n   ? (BrokerAssets|map: AcctBank)\\n   : []\",\"LetterType == \\\"Life Insurance\\\" && (FundAssets|any: AcctType == \\\"LifeInsure\\\")\\n   ? (LifeInsureAssets|map: AcctBank)\\n   : []\",\"LetterType == \\\"Entity (Partnership, LLC, or Corporation)\\\"\\n   ? (EntitySelect.AcctType == \\\"LLC\\\" ? \\\"Manager\\\" : (EntitySelect.AcctType == \\\"Corporate\\\" || EntitySelect.AcctType == \\\"SoleProp\\\") ? \\\"Director(s)\\\" : (EntitySelect.AcctType == \\\"Partnership\\\") ? \\\"Managing Partner\\\" : \\\"Manager, Director(s), or Managing Partner\\\") + \\\" of \\\" + (EntitySelect.AcctBank|else: \\\"\\\")\\n   : []\",\"LetterType == \\\"Bank Account, CD, or Money Market Account\\\" && (FundAssets|any: AcctType == \\\"Cash\\\")\\n   ? (CashAssets|map: AcctBank)\\n   : []\",\"LetterType == \\\"Non-Qualified Annuities\\\" && (FundAssets|any: AcctType == \\\"Annuity\\\")\\n   ? (AnnuityAssets|map: AcctBank)\\n   : []\",\"LetterType == \\\"Retirement Account\\\" && (FundAssets|any: AcctType == \\\"Retirement\\\")\\n   ? (RetirementAssets|map: AcctBank)\\n   : []\",\"(LetterType == \\\"Stocks\\\") && StockAssets.length > 0\\n   ? (StockAssets|map: AcctBank)\\n   : []\",\"(LetterType == \\\"Bonds\\\") && BondAssets.length > 0\\n   ? (BondAssets|map: AcctBank)\\n   : []\"]",
+      "ref": "",
+      "type": "text",
+      "name": "RecipientSuggestions",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T20:39:51.062Z",
+      "_id": "645a77d375e3bc45ef94cb7f"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF\n  ? LifeInsureSelect == \"Client\"\n    ? Client\n    : LifeInsureSelect == \"Spouse\"\n      ? Spouse\n      : null\n  : Client",
+      "ref": "individual",
+      "type": "object",
+      "name": "TrueInsured",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T19:17:10.000Z",
+      "_id": "645a77d375e3bc45ef94cb80"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "MarriedTF\n  ? RetirementAccts == \"Client\"\n    ? Client\n    : RetirementAccts == \"Spouse\"\n      ? Spouse\n      : null\n  : Client",
+      "ref": "individual",
+      "name": "TrueRetiree",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T19:24:05.273Z",
+      "_id": "645a77d375e3bc45ef94cb81"
+    }
+  ],
+  "templates": [
+    {
+      "filename": "FundingTransferLetters.docx",
+      "filesize": 108794,
+      "filepath": "templates/60c100709c6497102bdbeed2/645a77d375e3bc45ef94cb82/c25e9ea0-a3be-11f0-86f9-33b126715916/template.docx",
+      "date": 1759870023173,
+      "output": "{[LetterType|else: \"New\"]} Letter{[if LetterType && ((LetterType == \"Entity (Partnership, LLC, or Corporation)\" && EntitySelect) || LetterType != \"Entity (Partnership, LLC, or Corporation)\" && RecipientTo)]} to {[RecipientTo]}{[endif]}",
+      "label": "",
+      "type": "docx",
+      "name": "FundLetterTemplate",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-11-30T18:28:13.094Z",
+      "user": "63d46c67ad98ce943197d39a",
+      "_id": "645a77d375e3bc45ef94cb82"
+    },
+    {
+      "filename": "TheusW9.pdf",
+      "filesize": 45802,
+      "filepath": "templates/60c100709c6497102bdbeed2/645a77d375e3bc45ef94cb83/46006d50-a311-11f0-86f9-33b126715916/template.pdf",
+      "date": "2021-11-29T18:44:58.187Z",
+      "output": "W9 for {[LetterLLCName]}",
+      "fillable": true,
+      "label": "",
+      "type": "pdff",
+      "name": "LetterW9",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T18:48:34.427Z",
+      "user": "5fe0c5547241dc6f81146408",
+      "fieldMap": {
+        "topmostSubform": [
+          {
+            "Page1": [
+              {
+                "FederalClassification": [
+                  {
+                    "c1_1": [
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      {
+                        "__props": {
+                          "FieldType": "Button",
+                          "FieldName": "topmostSubform[0].Page1[0].FederalClassification[0].c1_1[6]",
+                          "FieldFlags": 0,
+                          "FieldJustification": "Left",
+                          "FieldStateOption": [
+                            "Off",
+                            "Yes"
+                          ]
+                        }
+                      }
+                    ],
+                    "f1_4": [
+                      {
+                        "__props": {
+                          "FieldType": "Text",
+                          "FieldName": "topmostSubform[0].Page1[0].FederalClassification[0].f1_4[0]",
+                          "FieldFlags": 8388608,
+                          "FieldValue": "",
+                          "FieldJustification": "Center"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "Exemptions": [
+                  {
+                    "f1_5": [
+                      {
+                        "__props": {
+                          "FieldType": "Text",
+                          "FieldName": "topmostSubform[0].Page1[0].Exemptions[0].f1_5[0]",
+                          "FieldFlags": 8388608,
+                          "FieldValue": "",
+                          "FieldJustification": "Center"
+                        }
+                      }
+                    ],
+                    "f1_6": [
+                      {
+                        "__props": {
+                          "FieldType": "Text",
+                          "FieldName": "topmostSubform[0].Page1[0].Exemptions[0].f1_6[0]",
+                          "FieldFlags": 8388608,
+                          "FieldValue": "",
+                          "FieldJustification": "Center"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "f1_10": [
+                  {
+                    "__props": {
+                      "FieldType": "Text",
+                      "FieldName": "topmostSubform[0].Page1[0].f1_10[0]",
+                      "FieldFlags": 8388608,
+                      "FieldValue": "",
+                      "FieldJustification": "Center"
+                    }
+                  }
+                ]
+              }
+            ],
+            "__props": {
+              "FieldType": "",
+              "FieldName": "topmostSubform[0]",
+              "FieldFlags": 0,
+              "FieldJustification": "Left"
+            }
+          }
+        ],
+        "Full Name": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Full Name",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "TrueSingleSettlor.NameCO"
+          }
+        },
+        "Business Name if Different": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Business Name if Different",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "LetterLLCName"
+          }
+        },
+        "Entity Tax Classification": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Entity Tax Classification",
+            "FieldFlags": 0,
+            "FieldValue": "",
+            "FieldJustification": "Center",
+            "FieldMaxLength": 1
+          }
+        },
+        "Address 1 and 2": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Address 1 and 2",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "TrueSingleSettlor.PartyAddress1and2"
+          }
+        },
+        "City State Zip": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "City State Zip",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "TrueSingleSettlor.PartyCityStateZipBlank"
+          }
+        },
+        "Requester Name and Address": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Requester Name and Address",
+            "FieldFlags": 8392704,
+            "FieldValue": "",
+            "FieldJustification": "Left"
+          }
+        },
+        "SSN First 3": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "SSN First 3",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 3
+          }
+        },
+        "SSN Middle Two": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "SSN Middle Two",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 2
+          }
+        },
+        "SSN Last Four": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "SSN Last Four",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 4
+          }
+        },
+        "TIN First Two": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "TIN First Two",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 2,
+            "Expression": "SliceEINFirstTwo"
+          }
+        },
+        "TIN Last Seven": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "TIN Last Seven",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 7,
+            "Expression": "SliceEinLastSeven"
+          }
+        },
+        "C Corp Value 2": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "C Corp Value 2",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ]
+          }
+        },
+        "S Corp Value 3": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "S Corp Value 3",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ]
+          }
+        },
+        "Partnership Value 4": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "Partnership Value 4",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ]
+          }
+        },
+        "LLC Value 6": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "LLC Value 6",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ]
+          }
+        },
+        "IsTrustTF": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "IsTrustTF",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ]
+          }
+        },
+        "IsIndividualLLC": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "IsIndividualLLC",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Off",
+              "Yes"
+            ],
+            "Expression": "\"Yes\""
+          }
+        }
+      },
+      "_id": "645a77d375e3bc45ef94cb83"
+    },
+    {
+      "contentType": "",
+      "text": "{[EINofLLC.slice(0,2)]}",
+      "label": "",
+      "type": "text",
+      "name": "SliceEINFirstTwo",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T18:41:33.658Z",
+      "_id": "645a77d375e3bc45ef94cb84",
+      "content": "{[EINofLLC.slice(0,2)]}"
+    },
+    {
+      "contentType": "",
+      "text": "{[EINofLLC.slice(3,10)]}",
+      "label": "",
+      "type": "text",
+      "name": "SliceEinLastSeven",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T18:43:35.676Z",
+      "_id": "645a77d375e3bc45ef94cb85",
+      "content": "{[EINofLLC.slice(3,10)]}"
+    }
+  ],
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 2,
+      "rows": [
+        [
+          {
+            "content": "LetterType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "EntitySelect",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "LifeInsureType",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "RecipientTo",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "LifeInsuranceChangeType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "AcctType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "AttorneyAddress",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "FundLetterPropertyAddress",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "MineralInterest",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "TransferTo",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "LetterLLCName",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "EINofLLC",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "LLCLetterType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "LLCLetterAccounts",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "NotGrantorTrustTF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "RetirementAccts",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "BankSelect",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "BrokerageSelect",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "StockBondSelect",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "LifeInsureSelect",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "AnnuitySelec",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "PolicyNumbers",
+            "list": [],
+            "class": "question"
+          }
+        ],
+        [
+          {
+            "content": "AccountNumbers",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "CertificateNumbers",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "IsBeneTrust",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "LifeBenes",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "StockorBondName",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "Shares",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "PrimaryBeneHow",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "MaritalPrimaryBeneficiary",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "MaritalSecondBeneficiary",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "PrimaryBeneficiaries",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "SecondaryBeneficiaries",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "TertiaryBeneficiaries",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "ContingentBenes",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "ContingentLifeBenes",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "PrimaryIsSORTTF",
+            "list": [],
+            "class": "question",
+            "expr": ""
+          }
+        ],
+        [
+          {
+            "content": "EmployeeBenePlanType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "EmployeePlanSelect",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "POD",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "PoDOther",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-22T22:40:53.638Z",
+      "_id": "645a77d375e3bc45ef94cb86"
+    }
+  ],
+  "apps": [],
+  "properties": [
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Home, Fire, or Liability Insurance\"},{\"Name\":\"Bank Account, CD, or Money Market Account\"},{\"Name\":\"POD Account\"},{\"Name\":\"Safe Deposit Box\"},{\"Name\":\"Brokerage or Mutual Fund Account\"},{\"Name\":\"Dividend Reinvestment Account\"},{\"Name\":\"Stocks\"},{\"Name\":\"Bonds\"},{\"Name\":\"Life Insurance\"},{\"Name\":\"Non-Qualified Annuities\"},{\"Name\":\"Retirement Account\"},{\"Name\":\"Out of State Real Property\"},{\"Name\":\"Out of State Mineral Interest\"},{\"Name\":\"Entity (Partnership, LLC, or Corporation)\"},{\"Name\":\"Employee Benefits Plan\"},{\"Name\":\"Timeshare Property\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Type of funding asset:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "selection",
+      "name": "LetterType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:50:03.511Z",
+      "_id": "645a77d375e3bc45ef94cb4f"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "RecipientSuggestions",
+      "isList": false,
+      "label": "{[if LetterType == \"Employee Benefits Plan\"]}Name of employer:{[elseif LetterType == \"Out of State Real Property\"]}Out of state attorney name:{[else]}Who is the letter addressed to{[if LetterType != \"Entity (Partnership, LLC, or Corporation)\"]} (usually name of financial institution){[endif]}? Select from below, enter custom, or leave blank.{[endif]}",
+      "helpText": "",
+      "forceRelevance": "LetterType && ((LetterType == \"Entity (Partnership, LLC, or Corporation)\" && EntitySelect) || LetterType != \"Entity (Partnership, LLC, or Corporation)\")",
+      "type": "text",
+      "name": "RecipientTo",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-09-20T16:38:28.725Z",
+      "_id": "645a77d375e3bc45ef94cb50"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": true,
+      "label": "Enter the policy number(s): ",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "PolicyNumbers",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T18:55:06.177Z",
+      "_id": "645a77d375e3bc45ef94cb51"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Enter the account {[if LetterType == \"Timeshare Property\"]}or contract {[endif]}number(s):",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "AccountNumbers",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T17:50:03.511Z",
+      "_id": "645a77d375e3bc45ef94cb52"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Enter the certificate number(s):",
+      "helpText": "",
+      "forceRelevance": "LetterType == \"Stocks\" || LetterType == \"Bonds\"",
+      "type": "text",
+      "name": "CertificateNumbers",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-06-16T18:58:19.357Z",
+      "_id": "645a77d375e3bc45ef94cb53"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "FundPropertySuggestions",
+      "isList": false,
+      "label": "Property address:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "FundLetterPropertyAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-06-15T19:32:37.791Z",
+      "_id": "645a77d375e3bc45ef94cb54"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Client\"},{\"Name\":\"Spouse\"}]",
+      "optionTemplate": "{[this == \"Client\" ? Client.NameCO : this == \"Spouse\" ? Spouse.NameCO : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select the retirement account owner:",
+      "helpText": "",
+      "forceRelevance": "MarriedTF && LetterType == \"Retirement Account\"",
+      "type": "selection",
+      "name": "RetirementAccts",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-09-20T19:50:33.687Z",
+      "_id": "645a77d375e3bc45ef94cb55"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Enter the primary benefiary(ies):",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "PrimaryBeneficiaries",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:51:24.673Z",
+      "typeName": "singlebenespercent",
+      "typeDef": "60c8fe5f068e370c7ccdcc3f",
+      "_id": "645a77d375e3bc45ef94cb56"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Enter secondary beneficiaries:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "SecondaryBeneficiaries",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-01T20:14:36.907Z",
+      "typeName": "singlebenespercent",
+      "typeDef": "60c8fe5f068e370c7ccdcc3f",
+      "_id": "645a77d375e3bc45ef94cb57"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Enter tertiary beneficiaries, if any:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "TertiaryBeneficiaries",
+      "typeName": "singlebenespercent",
+      "typeDef": "60c8fe5f068e370c7ccdcc3f",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-01T20:13:58.803Z",
+      "_id": "645a77d375e3bc45ef94cb58"
+    },
+    {
+      "style": "",
+      "options": "CashAssets",
+      "optionTemplate": "{[AssetLetterRef]}",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "BankSelect",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T18:32:57.231Z",
+      "_id": "645a77d375e3bc45ef94cb59"
+    },
+    {
+      "style": "",
+      "options": "BrokerAssets",
+      "optionTemplate": "{[AssetLetterRef]}",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "BrokerageSelect",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T18:32:57.231Z",
+      "_id": "645a77d375e3bc45ef94cb5a"
+    },
+    {
+      "style": "dropdown",
+      "options": "StockBondCombinedAssets",
+      "optionTemplate": "{[AssetLetterRef]}",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "StockBondSelect",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T18:32:57.231Z",
+      "_id": "645a77d375e3bc45ef94cb5b"
+    },
+    {
+      "style": "dropdown",
+      "options": "[{\"Name\":\"Client\"},{\"Name\":\"Spouse\"}]",
+      "optionTemplate": "{[this == \"Client\" ? Client.NameCO : this == \"Spouse\" ? Spouse.NameCO : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select the insured:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "LifeInsureSelect",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T19:15:57.360Z",
+      "_id": "645a77d375e3bc45ef94cb5c"
+    },
+    {
+      "style": "",
+      "options": "AnnuityAssets",
+      "optionTemplate": "{[AssetLetterRef]}",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Annuity select",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "AnnuitySelec",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T19:26:43.159Z",
+      "_id": "645a77d375e3bc45ef94cb5d"
+    },
+    {
+      "style": "",
+      "options": "CombinedCorpAssets",
+      "optionTemplate": "{[AssetLetterRef]}",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Select the entity being transferred:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "EntitySelect",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-03T15:12:49.653Z",
+      "_id": "645a77d375e3bc45ef94cb5e"
+    },
+    {
+      "style": "radiobuttons",
+      "options": "yesno",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "Is the SORT the primary beneficiary?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "PrimaryIsSORTTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:54:33.306Z",
+      "_id": "645a77d375e3bc45ef94cb5f"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"SORTTrust\",\"Description\":\"the SORT trust\"},{\"Name\":\"MaritalTrust\",\"Description\":\"the Marital trust\"},{\"Name\":\"SeparateTrust\",\"Description\":\"the revocable trust\"},{\"Name\":\"SpouseOutright\",\"Description\":\"to Spouse outright\"},{\"Name\":\"Others\",\"Description\":\"to selected beneficiaries (i.e. children, other beneficiaries, etc.)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "What should be the primary beneficiary?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "MaritalPrimaryBeneficiary",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T20:00:22.202Z",
+      "_id": "645a77d375e3bc45ef94cb60"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Separate share trust\"},{\"Name\":\"Outright\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Should {[PrimaryBeneficiaries.NameCO|else: \"the primary beneficiary\"]}'s designation be to {[PrimaryBeneficiaries.Gender.HisHer|else: \"his or her\"]} separate share trust or outright?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "PrimaryBeneHow",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-01T20:07:33.491Z",
+      "_id": "645a77d375e3bc45ef94cb61"
+    },
+    {
+      "style": "radiobuttons",
+      "options": "yesno",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "Should {[TrueRetiree.SpouseMirror.NameCO|else: \"Spouse\"]} be listed as the secondary beneficiary outright?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "MaritalSecondBeneficiary",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T19:40:36.124Z",
+      "_id": "645a77d375e3bc45ef94cb62"
+    },
+    {
+      "style": "checkbox",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Check here if this is NOT a grantor trust.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "NotGrantorTrustTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-01T20:28:00.829Z",
+      "_id": "645a77d375e3bc45ef94cb63"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Out of state attorney address:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "AttorneyAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-07-09T19:05:19.747Z",
+      "_id": "645a77d375e3bc45ef94cb64"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Trust\",\"Description\":\"the trust\"},{\"Name\":\"Entity\",\"Description\":\"an LLC\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Should the asset be transferred to the Trust or to an LLC?",
+      "helpText": "",
+      "forceRelevance": "LetterType == \"Bank Account, CD, or Money Market Account\" || LetterType == \"Brokerage or Mutual Fund Account\" || LetterType == \"Dividend Reinvestment Account\" || LetterType == \"Safe Deposit Box\" || LetterType == \"Stocks\" || LetterType == \"Bonds\" || LetterType == \"Out of State Real Property\" || LetterType == \"Out of State Mineral Interest\" || LetterType == \"Timeshare Property\" || LetterType == \"Entity (Partnership, LLC, or Corporation)\"",
+      "type": "selection",
+      "name": "TransferTo",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T19:03:09.601Z",
+      "_id": "645a77d375e3bc45ef94cb65"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "userData",
+      "_options": "AllLLCs|map: SelectLLC.NameCO",
+      "isList": false,
+      "label": "Select the or type in the name of the LLC the asset will be transferred to (holding company):",
+      "helpText": "",
+      "forceRelevance": "TransferTo == \"Entity\"",
+      "type": "text",
+      "name": "LetterLLCName",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T18:36:59.231Z",
+      "_id": "645a77d375e3bc45ef94cb66"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "EIN of LLC; **must** be entered as \"99-9999999\" with the dash, or the W9 will not come out correctly; for previously entered EIN's not in this format, change to match format.",
+      "helpText": "",
+      "forceRelevance": "TransferTo == \"Entity\"",
+      "type": "text",
+      "name": "EINofLLC",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-11-29T18:39:10.144Z",
+      "_id": "645a77d375e3bc45ef94cb67"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"disregarded entity\"},{\"Name\":\"partnership\"},{\"Name\":\"corporation\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "The LLC is a...",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "LLCLetterType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-03T14:25:19.589Z",
+      "_id": "645a77d375e3bc45ef94cb68"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Accounts transferring to {[LetterLLCName|else: \"LLC\"]}:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "LLCLetterAccounts",
+      "typeName": "accountsandnumbers",
+      "typeDef": "6109522868de9165fbad48b1",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-03T14:31:20.775Z",
+      "_id": "645a77d375e3bc45ef94cb69"
+    },
+    {
+      "style": "radiobuttons",
+      "options": "yesno",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "Is the Trust the new life insurance beneficiary?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "IsBeneTrust",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T18:59:34.777Z",
+      "_id": "645a77d375e3bc45ef94cb6a"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Enter the beneficiaries:",
+      "helpText": "",
+      "forceRelevance": "LetterType == \"Life Insurance\" && (LifeInsuranceChangeType == \"Beneficiaries\" || LifeInsuranceChangeType == \"Both\") && IsBeneTrust == \"No\"",
+      "type": "object",
+      "name": "LifeBenes",
+      "typeName": "singlebenespercent",
+      "typeDef": "60c8fe5f068e370c7ccdcc3f",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-09-20T16:08:58.562Z",
+      "_id": "645a77d375e3bc45ef94cb6b"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "Shares",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T19:08:20.817Z",
+      "_id": "645a77d375e3bc45ef94cb6c"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Name of {[if LetterType == \"Dividend Reinvestment Account\"]}dividend reinvestment account{[elseif LetterType == \"Stocks\"]}stock{[elseif LetterType == \"Bonds\"]}bond{[endif]}:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "StockorBondName",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-08-17T19:10:32.768Z",
+      "_id": "645a77d375e3bc45ef94cb6d"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "anOptionListedBelow",
+      "_options": "[\"Checking\",\"Savings\",\"Money Market\",\"Certificate of Deposit\"]",
+      "isList": false,
+      "label": "Type of account:",
+      "helpText": "",
+      "forceRelevance": "LetterType == \"Bank Account, CD, or Money Market Account\" || LetterType == \"POD Account\"",
+      "type": "text",
+      "name": "AcctType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-09-17T20:36:31.672Z",
+      "_id": "645a77d375e3bc45ef94cb6e"
+    },
+    {
+      "style": "radiobuttons",
+      "options": "yesno",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "Include contingent beneficiary designations for the {[RecipientTo|else: \"life insurance\"]} plan?",
+      "helpText": "",
+      "forceRelevance": "LetterType == \"Life Insurance\" && (LifeInsuranceChangeType == \"Beneficiaries\" || LifeInsuranceChangeType == \"Both\")",
+      "type": "selection",
+      "name": "ContingentBenes",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-09-20T15:31:30.646Z",
+      "_id": "645a77d375e3bc45ef94cb6f"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Enter the contingent beneficiaries:",
+      "helpText": "",
+      "forceRelevance": "LetterType == \"Life Insurance\" && (LifeInsuranceChangeType == \"Beneficiaries\" || LifeInsuranceChangeType == \"Both\") &&  ContingentBenes == \"Yes\"",
+      "type": "object",
+      "name": "ContingentLifeBenes",
+      "typeName": "singlebenespercent",
+      "typeDef": "60c8fe5f068e370c7ccdcc3f",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-09-20T15:31:30.646Z",
+      "_id": "645a77d375e3bc45ef94cb70"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Owner\"},{\"Name\":\"Beneficiaries\"},{\"Name\":\"Both\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Are you changing the owner of the life insurance policy, the beneficiaries, or both?",
+      "helpText": "",
+      "forceRelevance": "LetterType == \"Life Insurance\"",
+      "type": "selection",
+      "name": "LifeInsuranceChangeType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-09-20T15:30:20.715Z",
+      "_id": "645a77d375e3bc45ef94cb71"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Client\"},{\"Name\":\"Spouse\"}]",
+      "optionTemplate": "{[this == \"Client\" ? Client.NameCO : this == \"Spouse\" ? Spouse.NameCO : null]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select the owner of the Employee Benefits Plan:",
+      "helpText": "",
+      "forceRelevance": "MarriedTF && LetterType == \"Employee Benefits Plan\"",
+      "type": "selection",
+      "name": "EmployeePlanSelect",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-09-20T15:49:26.507Z",
+      "_id": "645a77d375e3bc45ef94cb72"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Term Life\"},{\"Name\":\"Whole Life\"},{\"Name\":\"Split Dollar\"},{\"Name\":\"Group Term Life\"},{\"Name\":\"Universal Life\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Type of plan:",
+      "helpText": "",
+      "forceRelevance": "LetterType == \"Life Insurance\"",
+      "type": "selection",
+      "name": "LifeInsureType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-09-20T17:03:55.375Z",
+      "_id": "645a77d375e3bc45ef94cb73"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Type of employee benefit plan:",
+      "helpText": "",
+      "forceRelevance": "LetterType == \"Employee Benefits Plan\"",
+      "type": "text",
+      "name": "EmployeeBenePlanType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-09-20T15:50:12.641Z",
+      "_id": "645a77d375e3bc45ef94cb74"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Describe the mineral interest:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "MineralInterest",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-10-28T15:39:21.333Z",
+      "_id": "645a77d375e3bc45ef94cb75"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Trust\"},{\"Name\":\"Other\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Is the beneficiary the trust or other beneficiary/ies?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "POD",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-23T18:13:27.470Z",
+      "_id": "645a77d375e3bc45ef94cb76"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Type in the other beneficiary/ies; finish the sentence \"100% to...\"",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "PoDOther",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-23T18:13:27.476Z",
+      "_id": "645a77d375e3bc45ef94cb77"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Create this beneficiary letter without mention of the Trust?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "DoNotMentionTrustTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-09-12T17:49:16.173Z",
+      "_id": "645a77d375e3bc45ef94cb78"
+    }
+  ],
+  "__v": 272,
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}

@@ -56,7 +56,7 @@ const Login: React.FC = () => {
             style={{
               maxWidth: '400px',
               margin: '0 auto',
-              padding: '40px',
+              padding: 'clamp(20px, 5vw, 40px)',
               border: '1px solid #eaeaea',
               borderRadius: '8px',
             }}

@@ -1,43 +1,76 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 // Product configuration - must match backend
-const PRODUCTS: Record<string, { name: string; price: number; description: string }> = {
-  '606': { name: 'Minor Child-Centered Estate Plan', price: 199, description: 'Create a will-based plan to appoint a Tutor for minor children.' },
-  '614': { name: 'Power of Attorney Supplement', price: 99, description: 'Financial and Healthcare Power of Attorney documents.' },
-  '673': { name: 'Will-Based Estate Plan', price: 199, description: 'Control your legacy with a comprehensive will-based estate plan.' },
-  '676': { name: 'Trust-Based Estate Plan', price: 399, description: 'Avoid probate and transfer assets smoothly with a trust.' },
+const PRODUCTS: Record<string, { name: string; price: number; price2person: number; description: string; type?: string }> = {
+  '606': { name: 'Minor Child-Centered Estate Plan', price: 199, price2person: 299, description: 'Create a will-based plan to appoint a Tutor for minor children.' },
+  '614': { name: 'Power of Attorney Supplement', price: 99, price2person: 149, description: 'Financial and Healthcare Power of Attorney documents.' },
+  '673': { name: 'Will-Based Estate Plan', price: 199, price2person: 299, description: 'Control your legacy with a comprehensive will-based estate plan.' },
+  '676': { name: 'Trust-Based Estate Plan', price: 399, price2person: 599, description: 'Avoid probate and transfer assets smoothly with a trust.' },
+  '1367': {
+    name: 'Legal Edge Plan',
+    price: 9.99,
+    price2person: 9.99,
+    description: 'Forever revisions and Advanced Estate Plan upgrade credit. Cancel anytime.',
+    type: 'subscription',
+  },
 };
 
 // Easter egg: Type "geaux" to enable test mode
 const EASTER_EGG_CODE = 'geaux';
 
 // Maintenance mode - set to true to block new enrollments during upgrades
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 
 const Checkout: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { cart, addEstatePlan, applyReferral, removeReferral } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [testMode, setTestMode] = useState(false);
   const [keySequence, setKeySequence] = useState('');
+  const [refInput, setRefInput] = useState('');
+  const addAttempted = useRef(false);
+  const refApplied = useRef(false);
 
-  const productId = searchParams.get('product') || '';
-  const formType = searchParams.get('type') || 'solo';
-  const product = PRODUCTS[productId];
+  const returnUrl = '/checkout';
+  const hasItems = cart.items.length > 0;
+  const firstItem = cart.items[0];
 
-  // Build return URL for after login/register
-  const returnUrl = `/checkout?product=${productId}&type=${formType}`;
+  const productParam = searchParams.get('product');
+  const hasValidProduct = !!productParam && !!PRODUCTS[productParam];
 
+  // When the cart is empty, either seed it from a valid ?product= (so the quiz
+  // recommendation and direct links land on a populated checkout) or, if there
+  // is no product to fall back on, bounce to the shop.
   useEffect(() => {
-    if (!product) {
-      navigate('/');
+    if (hasItems || addAttempted.current) return;
+
+    if (hasValidProduct) {
+      addAttempted.current = true;
+      // Everyone buys the solo plan at checkout now — a second person is a paid
+      // add-on inside the interview. The ?type= param is ignored for pricing so
+      // an old ?type=2person link can no longer put a couple's plan in the cart.
+      addEstatePlan(Number(productParam), 'solo', false);
+    } else {
+      navigate('/shop');
     }
-  }, [product, navigate]);
+  }, [hasItems, hasValidProduct, productParam, addEstatePlan, navigate]);
+
+  // Auto-apply a referral code from the URL (?ref=CODE) — the link an attorney
+  // shares with a client. Waits until the cart has items, runs once.
+  useEffect(() => {
+    if (refApplied.current) return;
+    const ref = searchParams.get('ref');
+    if (!ref || cart.items.length === 0) return;
+    refApplied.current = true;
+    applyReferral(ref);
+  }, [searchParams, cart.items.length, applyReferral]);
 
   // Easter egg: Listen for key sequence "geaux" to enable test mode
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
@@ -63,20 +96,53 @@ const Checkout: React.FC = () => {
     }
   }, [searchParams]);
 
-  // Map form type for POA form URL
-  const getFormUrl = () => {
-    // Map checkout types to form types
-    const formTypeMap: Record<string, string> = {
-      'solo': 'powerOfAttorneyForm',
-      '2person': 'powerOfAttorneyForm2Person',
+  // Resolve the first cart item's product ID + variant to the concrete form_type
+  // the interview and backend use (test bypass).
+  const getFormTarget = () => {
+    const productId = String(firstItem.productId);
+    const formType = firstItem.variationId === 2 ? '2person' : 'solo';
+    const formTypeMap: Record<string, Record<string, string>> = {
+      '614': { solo: 'powerOfAttorneyForm', '2person': 'powerOfAttorneyForm2Person' },
+      '676': { solo: 'trustBasedEstatePlanSolo', '2person': 'trustBasedEstatePlan2Person' },
+      '673': { solo: 'willBasedEstatePlan', '2person': 'willBasedEstatePlan2Person' },
+      '606': { solo: 'minorChildEstatePlan', '2person': 'minorChildEstatePlan2Person' },
     };
-    const mappedType = formTypeMap[formType] || formType;
-    return `/poa-form?product=${productId}&type=${mappedType}`;
+    const productMap = formTypeMap[productId] || formTypeMap['614'];
+    const mappedType = productMap[formType] || productMap.solo || 'powerOfAttorneyForm';
+    return { productId, mappedType };
   };
 
-  // Bypass checkout and go directly to form (test mode)
-  const handleTestBypass = () => {
-    navigate(getFormUrl());
+  // Bypass checkout and go directly to form (test mode).
+  //
+  // To mirror a real purchase, pre-create the blank "set" the Stripe webhook
+  // would have created (same shape POAForm saves), so it lands on the dashboard
+  // with its GP-###### number and the form opens that specific set. This needs a
+  // signed-in user to own the row; signed out (or if the create fails) we fall
+  // back to opening a fresh form with no pre-made set.
+  const handleTestBypass = async () => {
+    if (!firstItem) {
+      navigate('/');
+      return;
+    }
+    const { productId, mappedType } = getFormTarget();
+
+    if (isAuthenticated) {
+      try {
+        const response = await api.post<{ id: number }>('/submissions', {
+          form_data: {},
+          form_type: mappedType,
+          submission_status: 'inprogress',
+        });
+        if (response.success && response.data?.id) {
+          navigate(`/poa-form?product=${productId}&type=${mappedType}&submission=${response.data.id}`);
+          return;
+        }
+      } catch {
+        // fall through to the plain bypass below
+      }
+    }
+
+    navigate(`/poa-form?product=${productId}&type=${mappedType}`);
   };
 
   const handleCheckout = async () => {
@@ -84,10 +150,30 @@ const Checkout: React.FC = () => {
     setError('');
 
     try {
-      const response = await api.post<{ sessionId: string; url: string }>('/stripe/create-checkout-session', {
-        productId: parseInt(productId),
-        formType,
+      const items = cart.items.map(i => {
+        // Business items are custom cart entries (productId 0). The backend
+        // bills and tags them by their SKU code: LLC / operating-agreement
+        // items carry it in metadata.packageType; the registered-agent item
+        // has no package code, so its cart `type` is the sku.
+        if (i.productId === 0) {
+          const sku = i.type === 'registered-agent'
+            ? 'registered-agent'
+            : (i.metadata?.packageType as string | undefined);
+          return { productId: 0, sku };
+        }
+        return {
+          productId: i.productId,
+          formType: i.variationId === 2 ? '2person' : 'solo',
+        };
       });
+
+      // The code is sent, not the discount. The backend re-validates it against
+      // its own coupon table and computes the reduction itself, so an edited
+      // localStorage cart cannot buy anything cheaply.
+      const response = await api.post<{ sessionId: string; url: string }>(
+        '/stripe/create-checkout-session',
+        { items, couponCode: cart.coupon?.code, referralCode: cart.referral?.code }
+      );
 
       if (response.success && response.data?.url) {
         // Redirect to Stripe Checkout
@@ -102,7 +188,20 @@ const Checkout: React.FC = () => {
     }
   };
 
-  if (!product) {
+  if (!hasItems) {
+    // While seeding the cart from a valid ?product= param, show a brief holding
+    // state instead of returning null so there is no flash of the /shop bounce.
+    if (hasValidProduct) {
+      return (
+        <main>
+          <section className="plans-section">
+            <div className="container" style={{ textAlign: 'center', padding: '80px 20px' }}>
+              <p style={{ color: '#707070', fontSize: '18px' }}>Preparing your order...</p>
+            </div>
+          </section>
+        </main>
+      );
+    }
     return null;
   }
 
@@ -114,7 +213,7 @@ const Checkout: React.FC = () => {
             style={{
               maxWidth: '600px',
               margin: '0 auto',
-              padding: '40px',
+              padding: 'clamp(20px, 5vw, 40px)',
             }}
           >
             <h1 style={{ textAlign: 'center', marginBottom: '10px' }}>Checkout</h1>
@@ -208,39 +307,73 @@ const Checkout: React.FC = () => {
             >
               <h2 style={{ marginBottom: '20px', fontSize: '20px' }}>Order Summary</h2>
 
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  paddingBottom: '20px',
-                  borderBottom: '1px solid #eaeaea',
-                  marginBottom: '20px',
-                }}
-              >
-                <div>
-                  <h3 style={{ fontSize: '18px', marginBottom: '5px' }}>{product.name}</h3>
-                  <p style={{ color: '#707070', fontSize: '14px', margin: 0 }}>{product.description}</p>
-                  {formType === '2person' && (
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        marginTop: '10px',
-                        padding: '4px 10px',
-                        backgroundColor: '#e3f2fd',
-                        color: '#1976d2',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                      }}
-                    >
-                      Married Couple Plan
+              {cart.items.map((item) => {
+                const productMeta = PRODUCTS[String(item.productId)];
+                const isSub = item.type === 'subscription' || productMeta?.type === 'subscription';
+                const isMarried = item.variationId === 2;
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      gap: '12px',
+                      paddingBottom: '20px',
+                      borderBottom: '1px solid #eaeaea',
+                      marginBottom: '20px',
+                    }}
+                  >
+                    <div style={{ minWidth: 0 }}>
+                      <h3 style={{ fontSize: '18px', marginBottom: '5px' }}>{item.name}</h3>
+                      {productMeta?.description && (
+                        <p style={{ color: '#707070', fontSize: '14px', margin: 0 }}>
+                          {productMeta.description}
+                        </p>
+                      )}
+                      {isMarried && (
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            marginTop: '10px',
+                            padding: '4px 10px',
+                            backgroundColor: '#e3f2fd',
+                            color: '#1976d2',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                          }}
+                        >
+                          Married Couple Plan
+                        </span>
+                      )}
+                    </div>
+                    <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#004d71', whiteSpace: 'nowrap' }}>
+                      ${item.price.toFixed(2)}{isSub ? '/mo' : ''}
                     </span>
-                  )}
+                  </div>
+                );
+              })}
+
+              {/* Shown so the total does not silently differ from the sum of
+                  the lines above it. */}
+              {cart.discount && (cart.coupon || cart.referral) ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '15px',
+                    color: '#1f7a3f',
+                    marginBottom: '12px',
+                  }}
+                >
+                  <span>
+                    {cart.referral
+                      ? `Referral (${cart.referral.code.toUpperCase()})`
+                      : `Discount (${cart.coupon!.code.toUpperCase()})`}
+                  </span>
+                  <span>&minus;${cart.discount.toFixed(2)}</span>
                 </div>
-                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#004d71' }}>
-                  ${product.price}
-                </span>
-              </div>
+              ) : null}
 
               <div
                 style={{
@@ -251,27 +384,54 @@ const Checkout: React.FC = () => {
                 }}
               >
                 <span>Total</span>
-                <span style={{ color: '#004d71' }}>${product.price}</span>
+                <span style={{ color: '#004d71' }}>${cart.total.toFixed(2)}</span>
               </div>
             </div>
 
-            {/* What's Included */}
-            <div
-              style={{
-                backgroundColor: '#f8f9fa',
-                borderRadius: '8px',
-                padding: '20px',
-                marginBottom: '30px',
-              }}
-            >
-              <h3 style={{ fontSize: '16px', marginBottom: '15px' }}>What's Included:</h3>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: '#555' }}>
-                <li style={{ marginBottom: '8px' }}>Professionally drafted legal documents</li>
-                <li style={{ marginBottom: '8px' }}>Easy online questionnaire</li>
-                <li style={{ marginBottom: '8px' }}>Documents ready within 3 business days</li>
-                <li style={{ marginBottom: '8px' }}>Download from your account dashboard</li>
-                <li style={{ marginBottom: '0' }}>30-day money-back guarantee</li>
-              </ul>
+            {/* Referral code — a GeauxCounsel member's code gives the client a
+                discount and credits the member. Auto-filled from a ?ref= link. */}
+            <div style={{ marginBottom: '20px' }}>
+              {cart.referral ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '12px',
+                    fontSize: '14px',
+                    color: '#1f7a3f',
+                  }}
+                >
+                  <span>
+                    Referral <strong>{cart.referral.code.toUpperCase()}</strong> applied — {cart.referral.refereeDiscountPercent}% off
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeReferral()}
+                    style={{ background: 'none', border: 'none', color: '#004d71', textDecoration: 'underline', cursor: 'pointer', fontSize: '13px' }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={refInput}
+                    onChange={(e) => setRefInput(e.target.value)}
+                    placeholder="Referral code (optional)"
+                    style={{ flex: 1, minWidth: 0, padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => { if (refInput.trim()) applyReferral(refInput.trim()); }}
+                    className="btn btn-outline-primary"
+                    style={{ padding: '10px 16px', whiteSpace: 'nowrap' }}
+                  >
+                    Apply
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Checkout Button or Login Prompt */}

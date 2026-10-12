@@ -49,26 +49,6 @@ const ThankYouResources: React.FC = () => {
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="stats-section">
-          <div className="stats-grid">
-            <div className="stat-card">
-              <h2 className="stat-number text-blue"><em>140</em></h2>
-              <p><em>Years total experience of our specialists in the field of law</em></p>
-            </div>
-            <div className="stat-card featured">
-              <h2 className="stat-number">
-                <span className="text-gray">#</span><span className="text-blue">1</span>
-              </h2>
-              <p><em>Online Estate and Business planning company in Louisiana</em></p>
-            </div>
-            <div className="stat-card">
-              <h2 className="stat-number text-blue"><em>5k</em></h2>
-              <p><em>Happy clients across the United States</em></p>
-            </div>
-          </div>
-        </section>
-
         {/* Process Section */}
         <section className="process-section">
           <h2>The <em className="text-blue">simplest</em> process</h2>

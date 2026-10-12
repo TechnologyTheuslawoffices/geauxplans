@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
+import { submitLead } from '../services/leads';
+
+const EMPTY_FORM = {
+  name: '',
+  email: '',
+  phone: '',
+  subject: '',
+  message: '',
+  website: '', // honeypot
+};
 
 const Contact: React.FC = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -17,16 +24,29 @@ const Contact: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Thank you for your message! We will get back to you soon.');
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: '',
+    setIsSubmitting(true);
+    setError(null);
+
+    const response = await submitLead({
+      source: 'contact',
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      details: { subject: formData.subject, message: formData.message },
+      website: formData.website,
     });
+
+    setIsSubmitting(false);
+
+    if (response.success) {
+      setIsSubmitted(true);
+      setFormData(EMPTY_FORM);
+    } else {
+      // Keep the user's input so they can retry without retyping.
+      setError(response.error || 'Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -42,7 +62,58 @@ const Contact: React.FC = () => {
             {/* Contact Form */}
             <div>
               <h2 style={{ marginBottom: '30px' }}>Send Us a Message</h2>
+
+              {isSubmitted && (
+                <div
+                  role="status"
+                  style={{
+                    backgroundColor: '#e8f5e9',
+                    border: '1px solid #2e7d32',
+                    color: '#1b5e20',
+                    padding: '20px',
+                    borderRadius: '4px',
+                    marginBottom: '25px',
+                  }}
+                >
+                  <strong>Thank you for your message!</strong>
+                  <p style={{ margin: '8px 0 0' }}>We'll get back to you soon.</p>
+                </div>
+              )}
+
+              {error && (
+                <div
+                  role="alert"
+                  style={{
+                    backgroundColor: '#fdecea',
+                    border: '1px solid #c62828',
+                    color: '#b71c1c',
+                    padding: '15px',
+                    borderRadius: '4px',
+                    marginBottom: '25px',
+                  }}
+                >
+                  {error}
+                </div>
+              )}
+
               <form onSubmit={handleSubmit}>
+                {/* Honeypot: hidden from users, tempting to bots. */}
+                <input
+                  type="text"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleChange}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    left: '-9999px',
+                    width: '1px',
+                    height: '1px',
+                    opacity: 0,
+                  }}
+                />
                 <div style={{ marginBottom: '20px' }}>
                   <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Name *</label>
                   <input
@@ -139,8 +210,13 @@ const Contact: React.FC = () => {
                   />
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%' }}>
-                  Send Message
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg"
+                  style={{ width: '100%' }}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             </div>

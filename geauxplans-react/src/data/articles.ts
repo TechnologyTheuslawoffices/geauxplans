@@ -3,6 +3,11 @@ export interface Article {
   category: 'estate-planning-articles' | 'business-planning-articles';
   title: string;
   excerpt: string;
+  /**
+   * Publication date, ISO yyyy-mm-dd, carried over from the WordPress post_date
+   * so the listings can sort newest-first and show a date that is actually true.
+   */
+  date: string;
   content: string;
 }
 
@@ -13,6 +18,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: 'What is Estate Planning?',
     excerpt: "Estate planning is the process of arranging for the management and disposal of a person's estate during their life and after death.",
+    date: '2022-10-19',
     content: `
       <p>Remember the joke about the man who asked to be buried with all his money, so his wife deposited all his money in her own bank account and then buried him with a check? This guy needed a better estate plan. So what is estate planning? It's planning for the control and distribution of the assets of a deceased person - because you can't take it with you when you die!</p>
 
@@ -77,6 +83,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: 'What Is A Will?',
     excerpt: "A Last Will and Testament is an essential part of any estate plan, yet so many people never get around to creating one.",
+    date: '2022-01-08',
     content: `
       <p>What is a Will? It's a very common question. A Last Will and Testament is an essential part of any estate plan, yet so many people never get around to creating a Will for themselves and their family, which is where the trouble starts. Avoidance is natural. Most of us don't really want to reckon with our own mortality. But procrastination is the silent killer of estate plans.</p>
 
@@ -128,6 +135,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: 'What Is A Trust?',
     excerpt: "Many building an estate plan wonder what a trust is and whether a trust is right for them.",
+    date: '2022-01-08',
     content: `
       <p>What is a trust? Many building an estate plan wonder the same thing and whether a trust is right for them. You can create your own trust online with GeauxPlans, but you need to understand the basics about trusts in order to make informed decisions.</p>
 
@@ -174,6 +182,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: 'How Much Does a Will Cost?',
     excerpt: "If you are thinking of making a Will, you are probably wondering how much it costs. The fact is that the price varies widely.",
+    date: '2022-01-18',
     content: `
       <h2>How much does a Will cost?</h2>
       <p>If you are thinking of making a Will, you are probably wondering how much does a Will cost. The fact is that the price of a Will varies widely. But making a Will doesn't have to be expensive, and there are affordable options available to many people.</p>
@@ -222,6 +231,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: 'How Much Does a Trust Cost?',
     excerpt: "Understanding the costs involved in creating a revocable living trust in Louisiana.",
+    date: '2022-01-28',
     content: `
       <h2>How Much Does a Trust Cost?</h2>
       <p>If you're considering a trust as part of your estate plan, you're probably wondering about the cost. Like Wills, trust costs vary widely depending on how you create them and the complexity of your estate.</p>
@@ -267,6 +277,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: 'Power of Attorney in Louisiana',
     excerpt: "Understanding power of attorney documents and their importance in Louisiana estate planning.",
+    date: '2022-12-21',
     content: `
       <h2>What is a Power of Attorney?</h2>
       <p>A Power of Attorney is a legal document that allows you to appoint someone (called an "agent" or "mandatary" in Louisiana) to act on your behalf in financial or medical matters. In Louisiana, powers of attorney are governed by the Louisiana Uniform Power of Attorney Act.</p>
@@ -316,6 +327,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: 'Durable Power of Attorney',
     excerpt: "What makes a power of attorney 'durable' and why it matters for your planning.",
+    date: '2023-01-23',
     content: `
       <h2>What is a Durable Power of Attorney?</h2>
       <p>A Durable Power of Attorney is a legal document that remains in effect even if you become mentally incapacitated. The word "durable" means the document survives your incapacity, unlike a regular power of attorney which terminates when you can no longer make decisions for yourself.</p>
@@ -361,6 +373,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: 'Limited Power of Attorney',
     excerpt: "When and why you might use a limited power of attorney in Louisiana.",
+    date: '2023-01-26',
     content: `
       <h2>What is a Limited Power of Attorney?</h2>
       <p>A Limited Power of Attorney (also called a Special Power of Attorney) grants your agent authority to act on your behalf only for specific purposes or for a limited time period. Unlike a general power of attorney, which grants broad authority, a limited POA restricts your agent's powers to only what you specify.</p>
@@ -422,6 +435,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: '10 Estate Planning Mistakes and How to Avoid Them',
     excerpt: "Common errors that can derail your estate plan and how to avoid them.",
+    date: '2022-07-09',
     content: `
       <h2>10 Estate Planning Mistakes to Avoid</h2>
       <p>Estate planning mistakes can be costly for your family. Here are the most common mistakes and how to avoid them:</p>
@@ -462,6 +476,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: 'Make a Will Online',
     excerpt: "How to create a valid Louisiana will online with GeauxPlans.",
+    date: '2023-02-08',
     content: `
       <h2>Can You Make a Will Online?</h2>
       <p>Yes, you can create a legally valid Will online. Online Will services have made estate planning accessible and affordable for everyone. However, not all online services are created equal, especially for Louisiana residents.</p>
@@ -518,6 +533,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: 'The Best Solution for Online Estate Planning in Louisiana',
     excerpt: "GeauxPlans is a 100% safe source for online estate planning forms in Louisiana, backed by licensed Louisiana attorneys.",
+    date: '2021-12-24',
     content: `
       <h2>Online Estate Planning in Louisiana</h2>
       <p>Online estate planning has revolutionized how people create Wills, Trusts, and other important documents. But for Louisiana residents, finding an online service that actually works can be challenging.</p>
@@ -568,6 +584,7 @@ export const articles: Article[] = [
     category: 'estate-planning-articles',
     title: 'Essential Estate Planning Documents',
     excerpt: "Learn about the key documents every Louisiana resident should have in their estate plan.",
+    date: '2022-02-15',
     content: `
       <h2>Essential Estate Planning Documents</h2>
       <p>A complete estate plan includes several key documents that work together to protect you during life and ensure your wishes are carried out after death.</p>
@@ -623,6 +640,97 @@ export const articles: Article[] = [
       <p>GeauxPlans estate plans include all the essential documents you need, customized for Louisiana law. Start your plan today!</p>
     `
   },
+  {
+    slug: 'make-a-will-without-an-attorney',
+    category: 'estate-planning-articles',
+    title: 'How to Make a Will Without an Attorney (or Attorney Fees!)',
+    excerpt: "Preparing a Will doesn't have to be stressful or expensive. Here's how to make one yourself, and what to watch out for.",
+    date: '2022-01-09',
+    content: `
+      <p>Preparing a Will doesn't have to be stressful and overwhelming - and you can make a Will all by yourself in the comfort of your own home without an attorney with GeauxPlans. A Last Will and Testament, known plainly as a Will, is one of the core parts of an estate plan. Each state has its own requirements for how a Will must be written and signed. While having a lawyer is helpful for advanced-level estate planning, you can really make a Will without a lawyer.</p>
+
+      <h2>Decide Between an Online Will or Handwritten Will</h2>
+      <p>When you are creating a Will, you can choose from multiple formats that have their own set of state requirements. You can prepare a handwritten will without an attorney. A Handwritten Will must be entirely in the testator's writing, dated, and signed at the end, but does not need to be notarized. Handwritten wills are more prone to dispute, so use these with discretion and generally only in a crisis situation, such as a medical emergency with no ability to execute any other type of Will.</p>
+
+      <h2>Follow Instructions Carefully for Online Wills</h2>
+      <p>You can prepare an Online Will without a lawyer quite simply and easily. There are many websites that will allow you to create an Online Will form, so you have to be careful. Selecting a bad Online Will form will render your Will <a href="/estate-planning-articles/online-estate-planning-in-louisiana">legally invalid</a>.</p>
+
+      <p>If you choose to create a will online without an attorney, make sure to follow all the requirements set by state law. A Will obtained from an otherwise reputable source but not signed at the bottom of each separate page is legally invalid in the applicable jurisdiction.</p>
+
+      <p>Unlike other estate planning websites, GeauxPlans is supported and maintained by an estate planning law firm with attorney support available at all times to minimize the chances of any operator error.</p>
+
+      <h2>Identify Your Assets</h2>
+      <p>Make a list of your assets. This includes cash, property, vehicles, life insurance accounts, and personal possessions. You do not need to specify any assets in your Will unless you wish to make a specific bequest, but having a complete list of assets will make the probate process much easier.</p>
+
+      <h2>Other Legal Documents You Can Prepare Without A Lawyer</h2>
+      <p>Getting your affairs in order requires two things: (1) a device such as a Will or a Trust; and (2) a set of fiduciary documents authorizing someone you trust to make legal decisions if you are unable to do so. We call these "fiduciary documents" because the person you appoint to make decisions for you will owe you "fiduciary duties," which means they must act prudently and in your best interest at all times. These documents include a Financial Power of Attorney, Healthcare (Medical) Power of Attorney, HIPAA Release, and Living Will (a/k/a Advance Healthcare Directive). You can prepare all of these fiduciary documents without an attorney with GeauxPlans.</p>
+
+      <h2>Review Will Laws</h2>
+      <p>Wills are governed according to each state, so the requirements for a valid will are not all the same. Both online and printed wills are acceptable if in proper form. To learn more about the state law requirements for creating a will, you may contact an experienced estate planning lawyer. However, you can create a Will without an attorney through GeauxPlans.</p>
+
+      <h2>Writing A Will Without An Attorney</h2>
+      <p>Writing your own Will without an attorney <em>and</em> without the benefit of a reliable online will form is not recommended. However, if you choose to do so, it is crucial that you write your will with clear and concise language. Include full legal names of every person mentioned in your Will. You may also mention that you are in a sound state of mind at the moment you are writing a Will. Thoroughly review the language in your will so that it effectively communicates your values and goals. If your Will is ambiguous at all, it may invite a dispute.</p>
+
+      <h2>We've Got Your Back</h2>
+      <p>Unlike other estate planning websites, GeauxPlans is maintained and supported by an actual estate planning law firm. If you have any questions about how to write a Will without an attorney, please reach out to us. Our world-class Support Team stands ready to help you at every step of the way.</p>
+    `
+  },
+  {
+    slug: 'need-a-lawyer-for-estate-planning',
+    category: 'estate-planning-articles',
+    title: 'Do I Need a Lawyer For Estate Planning?',
+    excerpt: "You do not need a lawyer to prepare a will or other estate planning documents unless you have advanced estate planning needs.",
+    date: '2022-01-18',
+    content: `
+      <p>You do not need a lawyer to prepare a will or other estate planning documents unless you have advanced estate planning needs. However, taking care of your estate is a task that should be done sooner than later. Establishing how you want to manage your estate and pass it down to your loved ones is crucial, and prevents your assets from being handled in a way that you don't agree with.</p>
+
+      <p>GeauxPlans is designed to make estate planning easy and affordable without the need to hire an attorney. GeauxPlans can handle essential estate planning needs.</p>
+
+      <p>If you have advanced estate planning needs, you may need an attorney to help prepare your estate planning documents. Determining if you need a seasoned estate planning lawyer can be difficult, so consider if the following scenarios apply to you.</p>
+
+      <h2>You may need an estate planning lawyer if you have a large estate</h2>
+      <p>Having a large estate may mean that your estate plan should contain additional documents to address various parts of your estate. A larger estate can result in higher overall costs or higher estate taxes. An attorney can help suggest which estate planning tools may be most effective so you can minimize estate taxes and protect more of your estate.</p>
+
+      <h2>You may need an estate planning attorney if you need lifetime asset protection</h2>
+      <p>Neither a will nor a revocable trust provides asset protection for the creator. Asset protection often requires the use of irrevocable trust planning. Asset protection concerns may include concerns about lawsuits and other unforeseeable claims, divorce, or nursing home poverty.</p>
+
+      <h2>You may need a lawyer if you have a special needs beneficiary</h2>
+      <p>A special needs beneficiary would include a person who is receiving need-based governmental benefits, such as Medicaid. A direct gift to such an individual may jeopardize their benefits. A special needs trust is a common tool designed to protect the benefits of a special needs beneficiary. You would likely need an estate planning attorney to prepare such a specially designed trust.</p>
+
+      <h2>You may need an attorney if you wish to impose restrictions upon remarriage of a surviving spouse</h2>
+      <p>No one assumes that a surviving spouse may meet someone in the future and decide to marry again. There are two schools of thought on this issue: (1) my surviving spouse will keep our interest at heart and safeguard a legacy; or (2) I prefer to restrict either control or access to assets of a deceased spouse to protect a legacy from the undue influence of a future spouse. Imposing restrictions upon remarriage would likely require the special drafting skills of an estate planning attorney.</p>
+
+      <h2>You may need a lawyer for estate planning if you have high-value assets</h2>
+      <p>Assets that have a higher value, such as fine art, may require extra security precautions. You might have specific stipulations for how you want them to be handled while you are alive and after your death. An attorney can help you figure out a plan to add layers of protection to keep your valuable assets secure.</p>
+
+      <h2>You do not need an attorney for essential estate planning</h2>
+      <p>There are many scenarios that may prompt you to obtain the help of an estate planning lawyer. For basic estate planning needs and essential estate planning documents, GeauxPlans is an easy and affordable solution.</p>
+
+      <p>GeauxPlans is backed by a triple guaranty, so you can test drive your GeauxPlan for an entire year. GeauxPlans is owned and maintained by an estate planning law firm, so GeauxPlans' estate planning forms are attorney-grade and used in the actual practice of law. If it turns out that you have more advanced estate planning needs within one year of purchase, then you will receive a 100% credit of your GeauxPlans fee towards an advanced estate plan prepared by an affiliated estate planning law firm. You can also add lifetime protection to your GeauxPlan with the <a href="/legal-edge-plan">Legal Edge Plan</a>.</p>
+
+      <p>If you have questions, just reach out. Our support team stands ready to assist you.</p>
+    `
+  },
+  {
+    slug: 'wealth-inheritance-and-the-40-trillion-tsunami',
+    category: 'estate-planning-articles',
+    title: 'Wealth, Inheritance, and the $40 Trillion Tsunami',
+    excerpt: "A short talk on the largest transfer of wealth between generations in history, and what it means for your family.",
+    date: '2022-06-01',
+    content: `
+      <p>The largest transfer of wealth between generations in history is already underway. In this short talk we look at what the so-called "$40 trillion tsunami" means for ordinary families, and why having a plan in place matters more now than it ever has.</p>
+
+      <div class="article-video">
+        <iframe
+          src="https://www.youtube.com/embed/v_qN4JcVCQ4"
+          title="Wealth, Inheritance, and the $40 Trillion Tsunami"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+    `
+  },
 
   // BUSINESS PLANNING ARTICLES
   {
@@ -630,6 +738,7 @@ export const articles: Article[] = [
     category: 'business-planning-articles',
     title: 'Do I Need an LLC?',
     excerpt: "Learn whether forming an LLC is right for your business situation and understand the key benefits and requirements.",
+    date: '2023-01-27',
     content: `
       <h2>Do I Need an LLC?</h2>
       <p>If you're starting a business or already running one as a sole proprietor, you may be wondering if you need to form an LLC (Limited Liability Company). The answer depends on several factors.</p>
@@ -687,6 +796,7 @@ export const articles: Article[] = [
     category: 'business-planning-articles',
     title: 'Guide to Starting a Business in Louisiana',
     excerpt: "A comprehensive guide covering everything you need to know about starting a business in the Bayou State.",
+    date: '2023-03-29',
     content: `
       <h2>Starting a Business in Louisiana</h2>
       <p>Louisiana is a great place to start a business, with its diverse economy, strategic location, and business-friendly environment. Here's your comprehensive guide to getting started.</p>
@@ -755,6 +865,7 @@ export const articles: Article[] = [
     category: 'business-planning-articles',
     title: 'Does an LLC Provide Asset Protection?',
     excerpt: "Understanding how an LLC can protect your personal assets from business liabilities and creditors.",
+    date: '2022-09-16',
     content: `
       <h2>LLC Asset Protection</h2>
       <p>One of the primary reasons business owners form LLCs is for asset protection. But how does this protection actually work?</p>
@@ -814,6 +925,7 @@ export const articles: Article[] = [
     category: 'business-planning-articles',
     title: 'The Top 3 Reasons You Need an Operating Agreement for Your Louisiana LLC',
     excerpt: "Without an operating agreement, Louisiana's default LLC rules apply, which have significant limitations.",
+    date: '2021-12-18',
     content: `
       <h2>Why You Need an Operating Agreement</h2>
       <p>While Louisiana doesn't legally require LLCs to have an Operating Agreement, having one is crucial for protecting your business and personal assets.</p>
@@ -870,6 +982,7 @@ export const articles: Article[] = [
     category: 'business-planning-articles',
     title: 'Start an LLC in Louisiana',
     excerpt: "Step-by-step instructions for forming your Louisiana Limited Liability Company.",
+    date: '2022-01-19',
     content: `
       <h2>How to Start an LLC in Louisiana</h2>
       <p>Starting an LLC in Louisiana is straightforward. Here's a step-by-step guide to get your business up and running.</p>
@@ -947,5 +1060,21 @@ export const getArticleBySlug = (category: string, slug: string): Article | unde
 };
 
 export const getArticlesByCategory = (category: string): Article[] => {
-  return articles.filter(a => a.category === category);
+  return articles
+    .filter(a => a.category === category)
+    .sort((a, b) => b.date.localeCompare(a.date));
+};
+
+/**
+ * Render an ISO yyyy-mm-dd date for display.
+ *
+ * Built from the string parts rather than `new Date(iso)`, which parses a
+ * date-only string as UTC midnight and so renders as the previous day for
+ * anyone west of Greenwich — including every reader in Louisiana.
+ */
+export const formatArticleDate = (date: string): string => {
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+  const [year, month, day] = date.split('-');
+  return `${MONTHS[Number(month) - 1]} ${Number(day)}, ${year}`;
 };

@@ -1,0 +1,397 @@
+/*
+ * GeauxPilot — floating AI assistant (launcher + slide-out chat panel).
+ * Mirrors GeauxCounsel's GeauxPilot, themed to GeauxPlans (#1a1acc).
+ */
+
+:root {
+  /* Matches GeauxCounsel's GeauxPilot: royal-blue FAB, navy header. */
+  --gpilot-fab-a: #0000ff;
+  --gpilot-fab-b: #00008b;
+  --gpilot-navy: #1a3a6b;
+  --gpilot-navy-dark: #0d2b5e;
+  --gpilot-ink: #212529;
+  --gpilot-muted: #707070;
+  --gpilot-border: #e5e7eb;
+}
+
+/* ---- Floating launcher (FAB) ---- */
+.gpilot-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1080;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 16px; /* rounded-2xl */
+  background: linear-gradient(135deg, var(--gpilot-fab-a) 0%, var(--gpilot-fab-b) 100%);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.gpilot-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.12);
+}
+.gpilot-fab:active { transform: scale(0.95); }
+.gpilot-fab-icon {
+  width: 36px;   /* w-9 h-9, like GeauxPilot */
+  height: 36px;
+  border-radius: 8px; /* rounded-lg — the favicon is its own tile */
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+.gpilot-fab:hover .gpilot-fab-icon { transform: scale(1.1); }
+
+/* ---- Mobile bottom dashboard (4 tabs + raised center launcher) ---- */
+.gpilot-mobilebar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1080;
+  height: 60px;
+  display: flex;
+  align-items: stretch;
+  background: #fff;
+  border-top: 1px solid var(--gpilot-border);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.07);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.gpilot-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--gpilot-muted);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 0;
+}
+.gpilot-tab i { font-size: 18px; line-height: 1; }
+.gpilot-tab span { line-height: 1; }
+.gpilot-tab.active { color: var(--gpilot-navy); }
+.gpilot-tab.active i { transform: translateY(-1px); }
+
+/* The raised launcher sits in a reserved center slot so the four tabs split
+   two-and-two around it, and the icon lifts above the bar's center. */
+.gpilot-tab-fab {
+  flex: 0 0 76px;
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  color: var(--gpilot-navy);
+  font-size: 11px;
+  font-weight: 700;
+}
+.gpilot-tab-fab img {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  margin-top: -26px; /* lift above the bar */
+  border: 3px solid #fff;
+  box-shadow: 0 8px 18px rgba(0, 0, 32, 0.28);
+  object-fit: contain;
+  transition: transform 0.18s ease;
+}
+.gpilot-tab-fab:active img { transform: scale(0.94); }
+.gpilot-tab-fab span { margin-top: 2px; }
+
+/* ---- Mobile backdrop ---- */
+.gpilot-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1085;
+  animation: gpilot-fade 0.2s ease;
+}
+@keyframes gpilot-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---- Slide-out panel ---- */
+.gpilot-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1090;
+  height: 100vh;
+  height: 100dvh;
+  width: 420px;
+  max-width: 100vw;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.18);
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+.gpilot-panel.open { transform: translateX(0); }
+
+/* ---- Header ---- */
+.gpilot-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, var(--gpilot-navy) 0%, var(--gpilot-navy-dark) 100%);
+  color: #fff;
+  border-bottom: 1px solid var(--gpilot-border);
+}
+.gpilot-header-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.gpilot-header-favicon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+/* The GEAUXpilot wordmark rendered white over the navy header. */
+.gpilot-header-wordmark {
+  height: 20px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+.gpilot-close {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.15s ease;
+}
+.gpilot-close:hover { background: rgba(255, 255, 255, 0.28); }
+
+/* ---- Message list ---- */
+.gpilot-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 18px 16px;
+  background: #f6f7fb;
+}
+.gpilot-row { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 14px; }
+.gpilot-row.user { justify-content: flex-end; }
+.gpilot-row.assistant { justify-content: flex-start; }
+.gpilot-avatar {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gpilot-avatar img { width: 30px; height: 30px; border-radius: 8px; object-fit: contain; }
+
+.gpilot-bubble {
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+.gpilot-bubble.assistant {
+  background: #fff;
+  color: var(--gpilot-ink);
+  border: 1px solid var(--gpilot-border);
+  border-bottom-left-radius: 4px;
+}
+.gpilot-bubble.user {
+  background: var(--gpilot-navy);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.gpilot-user-text { white-space: pre-wrap; word-break: break-word; }
+
+/* ---- Rendered Markdown (assistant) — a compact "prose" for the chat ---- */
+.gpilot-prose { font-size: 14.5px; line-height: 1.55; }
+.gpilot-prose > :first-child { margin-top: 0; }
+.gpilot-prose > :last-child { margin-bottom: 0; }
+.gpilot-prose p { margin: 0 0 10px; }
+.gpilot-prose h1,
+.gpilot-prose h2,
+.gpilot-prose h3,
+.gpilot-prose h4 {
+  margin: 14px 0 6px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--gpilot-ink);
+}
+.gpilot-prose h1 { font-size: 18px; }
+.gpilot-prose h2 { font-size: 16.5px; }
+.gpilot-prose h3 { font-size: 15.5px; }
+.gpilot-prose h4 { font-size: 14.5px; }
+.gpilot-prose ul,
+.gpilot-prose ol { margin: 6px 0 10px; padding-left: 22px; }
+.gpilot-prose li { margin-bottom: 5px; }
+.gpilot-prose li > p { margin: 0; }
+.gpilot-prose li::marker { color: var(--gpilot-navy); }
+.gpilot-prose strong { font-weight: 700; }
+.gpilot-prose em { font-style: italic; }
+.gpilot-prose a { color: var(--gpilot-navy); font-weight: 600; text-decoration: underline; }
+.gpilot-prose code {
+  background: #eef0f5;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.gpilot-prose pre {
+  background: #0d2b5e;
+  color: #e8edf7;
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+  margin: 8px 0 12px;
+}
+.gpilot-prose pre code { background: none; padding: 0; color: inherit; }
+.gpilot-prose blockquote {
+  margin: 8px 0;
+  padding: 2px 12px;
+  border-left: 3px solid var(--gpilot-border);
+  color: var(--gpilot-muted);
+}
+.gpilot-prose hr { border: none; border-top: 1px solid var(--gpilot-border); margin: 12px 0; }
+.gpilot-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 12px;
+  font-size: 13.5px;
+}
+.gpilot-prose th,
+.gpilot-prose td {
+  border: 1px solid var(--gpilot-border);
+  padding: 6px 9px;
+  text-align: left;
+}
+.gpilot-prose th { background: #f1f3f8; font-weight: 700; }
+
+/* Links inside the (navy) user bubble stay legible. */
+.gpilot-link { color: var(--gpilot-navy); font-weight: 600; text-decoration: underline; }
+.gpilot-bubble.user .gpilot-link,
+.gpilot-bubble.user .gpilot-user-text a { color: #fff; }
+
+/* ---- Typing indicator ---- */
+.gpilot-typing { display: inline-flex; gap: 4px; padding: 2px 0; }
+.gpilot-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #b7bcce;
+  animation: gpilot-bounce 1.2s infinite ease-in-out;
+}
+.gpilot-typing span:nth-child(2) { animation-delay: 0.15s; }
+.gpilot-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes gpilot-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* ---- Starter prompts ---- */
+.gpilot-starters { display: flex; flex-direction: column; gap: 8px; margin: 6px 0 4px 38px; }
+.gpilot-starter {
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--gpilot-border);
+  border-radius: 12px;
+  padding: 9px 13px;
+  font-size: 13.5px;
+  color: var(--gpilot-navy);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.gpilot-starter:hover { background: #eef0fb; border-color: var(--gpilot-navy); }
+
+.gpilot-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  margin-top: 4px;
+}
+
+/* ---- Input area ---- */
+.gpilot-input-area {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px 14px 6px;
+  border-top: 1px solid var(--gpilot-border);
+  background: #fff;
+}
+.gpilot-textarea {
+  flex: 1 1 auto;
+  resize: none;
+  max-height: 120px;
+  border: 1px solid var(--gpilot-border);
+  border-radius: 14px;
+  padding: 11px 14px;
+  font-size: 16px; /* 16px avoids iOS zoom-on-focus */
+  line-height: 1.4;
+  outline: none;
+  font-family: inherit;
+}
+.gpilot-textarea:focus { border-color: var(--gpilot-navy); }
+.gpilot-send {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: var(--gpilot-navy);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.gpilot-send:hover:not(:disabled) { background: var(--gpilot-navy-dark); }
+.gpilot-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.gpilot-disclaimer {
+  flex: 0 0 auto;
+  padding: 2px 16px 10px;
+  font-size: 11px;
+  color: var(--gpilot-muted);
+  text-align: center;
+  background: #fff;
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 575.98px) {
+  .gpilot-panel { width: 100vw; }
+}
+
+/* Reserve space for the fixed bottom dashboard so it never hides page content.
+   Scoped to when the bar is mounted (not on the /poa-form design route). */
+body.gpilot-mobilebar-on {
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Prevent body scroll bleed behind the open panel on touch devices. */
+body.gpilot-open { overflow: hidden; }
+@media (min-width: 992px) {
+  /* On desktop the panel is an overlay drawer; don't lock scroll. */
+  body.gpilot-open { overflow: auto; }
+}

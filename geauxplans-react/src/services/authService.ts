@@ -6,6 +6,7 @@
  */
 
 import api, { setAuthToken, removeAuthToken, wpAjaxRequest } from './api';
+import { supabase } from '../lib/supabase';
 import type { User, AuthCredentials, RegisterData, AuthResponse, ApiResponse } from '../types';
 
 /**
@@ -56,20 +57,42 @@ export async function getCurrentUser(): Promise<ApiResponse<User>> {
 }
 
 /**
- * Request password reset
+ * Request password reset via Supabase
  */
 export async function requestPasswordReset(email: string): Promise<ApiResponse<{ message: string }>> {
-  return api.post('/auth/forgot-password', { email });
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return {
+    success: true,
+    data: { message: 'If an account with that email exists, a password reset link has been sent.' },
+  };
 }
 
 /**
- * Reset password with token
+ * Reset password using the active recovery session created by Supabase
+ * when the user clicks the email link (detectSessionInUrl handles the token).
+ * The `token` parameter is unused for Supabase but kept for backwards compatibility.
  */
 export async function resetPassword(
-  token: string,
+  _token: string,
   password: string
 ): Promise<ApiResponse<{ message: string }>> {
-  return api.post('/auth/reset-password', { token, password });
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return {
+    success: true,
+    data: { message: 'Password has been reset successfully.' },
+  };
 }
 
 /**
@@ -123,7 +146,7 @@ export const wpAuth = {
   },
 };
 
-export default {
+const authService = {
   login,
   register,
   logout,
@@ -135,3 +158,5 @@ export default {
   isAuthenticated,
   wpAuth,
 };
+
+export default authService;

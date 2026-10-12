@@ -1,0 +1,287 @@
+/* Shopping cart page */
+
+.cart-hero {
+  padding: 60px 0 30px;
+  text-align: center;
+}
+
+.cart-hero h1 {
+  font-size: 42px;
+  margin: 0;
+}
+
+.cart-section {
+  padding: 20px 0 80px;
+}
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 40px;
+  align-items: start;
+}
+
+/* Items */
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 1fr auto 120px auto;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.cart-item-main h2 {
+  font-size: 18px;
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.cart-item-badge {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: #f0f4f8;
+  color: #4a5568;
+  font-size: 12px;
+}
+
+.cart-item-qty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-item-qty button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #d4d4d4;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.cart-item-qty button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cart-qty-fixed {
+  display: inline-block;
+  min-width: 30px;
+  text-align: center;
+  color: #666;
+}
+
+.cart-item-price {
+  text-align: right;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cart-item-period {
+  font-weight: 400;
+  color: #666;
+  font-size: 13px;
+}
+
+.cart-item-remove,
+.cart-clear {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #888;
+  cursor: pointer;
+  font-size: 13px;
+  text-decoration: underline;
+}
+
+.cart-item-remove:hover,
+.cart-clear:hover {
+  color: #c0392b;
+}
+
+.cart-clear {
+  margin-top: 20px;
+}
+
+/* Summary */
+
+.cart-summary {
+  background: #f7f7f7;
+  border-radius: 6px;
+  padding: 28px;
+}
+
+.cart-summary h2 {
+  font-size: 20px;
+  margin: 0 0 20px;
+}
+
+.cart-summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+/* Coupon */
+
+.cart-coupon-form {
+  padding: 12px 0 4px;
+  border-top: 1px solid #e2e2e2;
+  margin-top: 8px;
+}
+
+.cart-coupon-form label {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.cart-coupon-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cart-coupon-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid #d4d4d4;
+  border-radius: 4px;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.cart-coupon-row .btn {
+  padding: 9px 18px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.cart-summary-discount {
+  color: #1f7a3f;
+  border-top: 1px solid #e2e2e2;
+  margin-top: 8px;
+  padding-top: 12px;
+}
+
+.cart-coupon-code {
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: #e6f3ea;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.cart-coupon-remove {
+  margin-left: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #888;
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+.cart-coupon-remove:hover {
+  color: #c0392b;
+}
+
+.cart-coupon-error {
+  margin: 8px 0 0;
+  color: #c0392b;
+  font-size: 13px;
+}
+
+.cart-summary-total {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.cart-summary-note {
+  margin: 4px 0 20px;
+  color: #666;
+  font-size: 13px;
+}
+
+.cart-checkout {
+  width: 100%;
+}
+
+.cart-continue {
+  display: block;
+  margin-top: 14px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Empty state */
+
+.cart-empty {
+  padding: 60px 0;
+  text-align: center;
+}
+
+.cart-empty-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Collapse each line into name+badges on one row, then controls beneath, so
+     the price and quantity stepper stay tappable instead of being squeezed. */
+  .cart-item {
+    grid-template-columns: 1fr auto;
+    row-gap: 12px;
+  }
+
+  .cart-item-main {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .cart-hero {
+    padding: 40px 0 20px;
+  }
+
+  .cart-hero h1 {
+    font-size: 30px;
+  }
+
+  /* Full stack on small phones: name, then price row, then qty, then remove */
+  .cart-item {
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+  }
+
+  .cart-item-main,
+  .cart-item-qty,
+  .cart-item-price,
+  .cart-item-remove {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .cart-summary {
+    padding: 20px;
+  }
+}

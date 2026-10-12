@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
+  const { cart } = useCart();
 
   const [headerHeight, setHeaderHeight] = useState(0);
 
+  // Re-measure so the sticky spacer stays correct after the header changes
+  // height — login/logout swaps the nav, the cart badge appears, or the device
+  // rotates. Measuring once on mount left a stale gap/jump.
   useEffect(() => {
-    const header = document.getElementById('site-header');
-    if (header) {
-      setHeaderHeight(header.offsetHeight);
-    }
-  }, []);
+    const measure = () => {
+      const header = document.getElementById('site-header');
+      if (header) setHeaderHeight(header.offsetHeight);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [isAuthenticated, cart.itemCount]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,6 +61,10 @@ const Header: React.FC = () => {
               <div id="place_for_menu">
                 <nav id="header_navigation" className="header_navigation">
                   <ul className="primary-menu list-reset d-none d-lg-block">
+                    {/* Marketing nav is hidden once signed in so the account
+                        experience stays focused on the customer's own plans. */}
+                    {!isAuthenticated && (
+                    <>
                     {/* Estate Planning Mega Menu */}
                     <li className="menu-item menu-item-has-children gp_mega_menu">
                       <Link to="/estate-planning">Estate Planning</Link>
@@ -116,11 +129,24 @@ const Header: React.FC = () => {
                         <li><Link to="/register-for-webinar">Free Webinar</Link></li>
                       </ul>
                     </li>
+                    </>
+                    )}
                   </ul>
                 </nav>
               </div>
             </div>
             <div className="d-flex align-items-center">
+              {/*
+                Only rendered when there is something in the cart. An always-on
+                empty cart icon is noise on a site where most visitors are
+                reading articles, but a customer who has added a plan needs a
+                way back to it from any page.
+              */}
+              {cart.itemCount > 0 && (
+                <Link to="/cart" className="header-cart-link" aria-label={`Cart, ${cart.itemCount} item${cart.itemCount === 1 ? '' : 's'}`}>
+                  Cart <span className="header-cart-count">{cart.itemCount}</span>
+                </Link>
+              )}
               {!isAuthenticated ? (
                 <div id="place_for_my_account" className="d-flex align-items-center">
                   <p className="mb-0">
@@ -131,14 +157,27 @@ const Header: React.FC = () => {
                 </div>
               ) : (
                 <ul id="gpx_loggedin_menu">
-                  <li>
-                    <div className="d-flex align-items-center">
-                      <img src="/img/account.svg" alt="Account" />
-                      <Link to="#"><span className="d-none d-sm-inline">{user?.firstName || user?.email}</span></Link>
-                    </div>
-                    <ul>
-                      <li><Link to="/my-account/my-estate-planning">My Estate Plans</Link></li>
-                      <li><Link to="/my-account/my-business-planning">My Companies</Link></li>
+                  <li className={accountMenuOpen ? 'open' : ''}>
+                    {/* Click-toggle (not :hover) so it opens on touch; the old
+                        `<Link to="#">` did nothing on a phone and left a # in
+                        the URL. */}
+                    <button
+                      type="button"
+                      className="gpx_account_trigger d-flex align-items-center"
+                      aria-expanded={accountMenuOpen}
+                      aria-label="Account menu"
+                      onClick={() => setAccountMenuOpen((o) => !o)}
+                    >
+                      <img src="/img/account.svg" alt="" />
+                      <span className="d-none d-sm-inline">{user?.firstName || user?.email}</span>
+                    </button>
+                    <ul
+                      onClick={(e) => {
+                        if ((e.target as HTMLElement).closest('a, button')) setAccountMenuOpen(false);
+                      }}
+                    >
+                      <li><Link to="/my-account">Dashboard</Link></li>
+                      <li><Link to="/my-account/my-estate-planning">Estate Plan</Link></li>
                       <li><Link to="/my-account/edit-account">Edit Profile</Link></li>
                       <li><Link to="/my-account/orders">View Orders</Link></li>
                       <li>
@@ -174,6 +213,8 @@ const Header: React.FC = () => {
           </div>
           <div id="place_for_mobile_menu" className="py-2 px-3">
             <ul className="primary-menu-mobile list-reset">
+              {!isAuthenticated && (
+              <>
               <li className="menu-item menu-item-has-children">
                 <Link to="/estate-planning" onClick={closeMobileMenu}>Estate Planning</Link>
                 <ul className="sub-menu">
@@ -199,7 +240,28 @@ const Header: React.FC = () => {
                   <li><Link to="/register-for-webinar" onClick={closeMobileMenu}>Free Webinar</Link></li>
                 </ul>
               </li>
-              <li><Link to="/my-account" onClick={closeMobileMenu}>My Account</Link></li>
+              </>
+              )}
+              {isAuthenticated ? (
+                <>
+                  <li><Link to="/my-account" onClick={closeMobileMenu}>Dashboard</Link></li>
+                  <li><Link to="/my-account/my-estate-planning" onClick={closeMobileMenu}>Estate Plan</Link></li>
+                  <li><Link to="/my-account/business-planning" onClick={closeMobileMenu}>My Companies</Link></li>
+                  <li><Link to="/my-account/orders" onClick={closeMobileMenu}>View Orders</Link></li>
+                  <li><Link to="/my-account/edit-account" onClick={closeMobileMenu}>Edit Profile</Link></li>
+                  <li>
+                    <button
+                      onClick={() => { logout(); closeMobileMenu(); }}
+                      className="btn btn_geaux"
+                      style={{ width: '100%', marginTop: '10px' }}
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <li><Link to="/my-account" onClick={closeMobileMenu}>My Account</Link></li>
+              )}
             </ul>
           </div>
         </div>
