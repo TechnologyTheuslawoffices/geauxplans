@@ -39,11 +39,19 @@ const greeting = (firstName?: string): string =>
  * The four destinations in the mobile bottom dashboard. Two sit on each side of
  * the raised GeauxPilot launcher. `match` decides the active highlight.
  */
-const MOBILE_NAV = [
-  { to: '/', icon: 'fa-house', label: 'Home', match: (p: string) => p === '/' },
-  { to: '/estate-planning', icon: 'fa-shield-halved', label: 'Plans', match: (p: string) => p.startsWith('/estate-planning') || p.includes('-plan') },
-  { to: '/learn', icon: 'fa-book-open', label: 'Learn', match: (p: string) => p.startsWith('/learn') || p.startsWith('/category') },
-  { to: '/my-account', icon: 'fa-user', label: 'Account', match: (p: string) => p.startsWith('/my-account') },
+interface NavItem {
+  to: string;
+  icon: string;
+  label: string;
+  match: (p: string) => boolean;
+  auth?: boolean; // tab points at a signed-in-only page
+}
+
+const MOBILE_NAV: NavItem[] = [
+  { to: '/my-account', icon: 'fa-gauge', label: 'Dashboard', match: (p) => p === '/my-account', auth: true },
+  { to: '/estate-planning#plans', icon: 'fa-shield-halved', label: 'Plans', match: (p) => p.startsWith('/estate-planning') || p.includes('-plan') },
+  { to: '/cart', icon: 'fa-cart-shopping', label: 'Cart', match: (p) => p.startsWith('/cart') },
+  { to: '/my-account/edit-account', icon: 'fa-user', label: 'Account', match: (p) => p.startsWith('/my-account/'), auth: true },
 ];
 
 const MOBILE_QUERY = '(max-width: 991.98px)';
@@ -63,6 +71,7 @@ const GeauxPilot: React.FC = () => {
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [authNotice, setAuthNotice] = useState(false);
 
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -127,6 +136,43 @@ const GeauxPilot: React.FC = () => {
     setIsOpen(false);
     navigate(path);
   }, [navigate]);
+
+  // Navigate for a bottom-dashboard tab. A "#anchor" target navigates to the
+  // page, then scrolls to that element once it has mounted (retrying briefly
+  // because the destination page may still be rendering). A plain target just
+  // navigates and scrolls to the top.
+  const goToTab = useCallback((to: string) => {
+    const [path, hash] = to.split('#');
+    navigate(path || '/');
+    if (hash) {
+      let tries = 0;
+      const tryScroll = () => {
+        const el = document.getElementById(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else if (tries++ < 25) {
+          setTimeout(tryScroll, 100);
+        }
+      };
+      setTimeout(tryScroll, 100);
+    } else {
+      window.scrollTo({ top: 0 });
+    }
+  }, [navigate]);
+
+  // A signed-in-only tab tapped by a guest: show a brief notice and send them to
+  // log in first (remembering where they were headed), rather than bouncing them
+  // through a protected page.
+  const handleTab = useCallback((item: NavItem) => {
+    if (item.auth && !isAuthenticated) {
+      setAuthNotice(true);
+      window.setTimeout(() => setAuthNotice(false), 2800);
+      navigate(`/login?redirect=${encodeURIComponent(item.to)}`);
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    goToTab(item.to);
+  }, [isAuthenticated, navigate, goToTab]);
 
   // react-markdown component overrides. Same contract as GeauxCounsel's
   // markdownComponents: internal links (href starting "/") navigate in-app and
@@ -232,6 +278,13 @@ const GeauxPilot: React.FC = () => {
         </button>
       )}
 
+      {/* "Please log in" notice shown when a guest taps a signed-in-only tab. */}
+      {authNotice && (
+        <div className="gpilot-toast" role="status">
+          <i className="fas fa-lock" aria-hidden="true" /> Please log in to view your account.
+        </div>
+      )}
+
       {/* Mobile: a bottom dashboard — 4 nav buttons with the GeauxPilot
           launcher raised above the center. Hidden while the panel is open. */}
       {isMobile && !isOpen && (
@@ -241,7 +294,7 @@ const GeauxPilot: React.FC = () => {
               key={item.to}
               type="button"
               className={`gpilot-tab ${item.match(currentPath) ? 'active' : ''}`}
-              onClick={() => navigate(item.to)}
+              onClick={() => handleTab(item)}
             >
               <i className={`fas ${item.icon}`} aria-hidden="true" />
               <span>{item.label}</span>
@@ -264,7 +317,7 @@ const GeauxPilot: React.FC = () => {
               key={item.to}
               type="button"
               className={`gpilot-tab ${item.match(currentPath) ? 'active' : ''}`}
-              onClick={() => navigate(item.to)}
+              onClick={() => handleTab(item)}
             >
               <i className={`fas ${item.icon}`} aria-hidden="true" />
               <span>{item.label}</span>

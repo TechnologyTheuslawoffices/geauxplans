@@ -611,7 +611,7 @@ const EstatePlanningPage: React.FC = () => {
       </section>
 
       {/* Plans Section */}
-      <section className="epp-plans" ref={plansRef}>
+      <section id="plans" className="epp-plans" ref={plansRef}>
         <div className="container">
           <h2 className="section-title">Simply, pick the plan that is right for you</h2>
           <p className="section-subtitle"><em>Practical, affordable, and complete solutions for every occasion</em></p>

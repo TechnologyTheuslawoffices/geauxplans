@@ -112,6 +112,26 @@
 .gpilot-tab-fab:active img { transform: scale(0.94); }
 .gpilot-tab-fab span { margin-top: 2px; }
 
+/* "Please log in" notice for guests tapping an account tab. */
+.gpilot-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 1095;
+  max-width: calc(100vw - 32px);
+  background: var(--gpilot-navy-dark);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+  animation: gpilot-fade 0.2s ease;
+}
+.gpilot-toast i { margin-right: 6px; }
+
 /* ---- Mobile backdrop ---- */
 .gpilot-backdrop {
   position: fixed;
