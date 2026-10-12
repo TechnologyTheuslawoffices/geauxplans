@@ -200,7 +200,7 @@ const MyAccount: React.FC = () => {
   if (isMobile) {
     return (
       <main>
-        <section className="plans-section">
+        <section className="plans-section account-mobile-section">
           <div className="container">
             {header}
             <div className="account-accordion">

@@ -1109,6 +1109,28 @@ button:hover {
   color: var(--primary-color);
 }
 
+/* Privacy Policy + Terms of Use live in one <li> and must never split across
+   lines, so if the row is tight they wrap down together as a pair. */
+.footer-legal {
+  white-space: nowrap;
+}
+
+.footer-legal a:first-child {
+  margin-right: 25px;
+}
+
+/* Support text and social icons grouped into one cell. */
+.footer-contact {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-social {
+  display: flex;
+  align-items: center;
+}
+
 .icon-facebook {
   font-family: Arial, sans-serif;
   font-weight: bold;
@@ -1116,6 +1138,8 @@ button:hover {
   font-size: 18px;
 }
 
+/* Tablet / small-desktop: stack the brand and links, but keep support + social
+   together on one line as two side-by-side columns instead of stacking each. */
 @media (max-width: 991px) {
   .bottom_line_holder {
     flex-direction: column;
@@ -1124,6 +1148,10 @@ button:hover {
 
   .bottom_line_holder > div:not(:last-child) {
     margin-bottom: 15px;
+  }
+
+  .footer-contact {
+    justify-content: center;
   }
 }
 
@@ -1863,6 +1891,14 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* On phones the shared .plans-section's 80px top padding leaves a big empty
+   gap above the My Account header; tighten it so the page starts near the top. */
+@media (max-width: 768px) {
+  .account-mobile-section {
+    padding-top: 20px;
+  }
 }
 
 .account-acc-header {
