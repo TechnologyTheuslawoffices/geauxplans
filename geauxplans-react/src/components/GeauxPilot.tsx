@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { Components } from 'react-markdown';
@@ -35,11 +35,28 @@ const greeting = (firstName?: string): string =>
   `assistant. I can help you choose the right estate or business plan, explain ` +
   `how things work, and point you to the right place. What can I help you with?`;
 
+/**
+ * The four destinations in the mobile bottom dashboard. Two sit on each side of
+ * the raised GeauxPilot launcher. `match` decides the active highlight.
+ */
+const MOBILE_NAV = [
+  { to: '/', icon: 'fa-house', label: 'Home', match: (p: string) => p === '/' },
+  { to: '/estate-planning', icon: 'fa-shield-halved', label: 'Plans', match: (p: string) => p.startsWith('/estate-planning') || p.includes('-plan') },
+  { to: '/learn', icon: 'fa-book-open', label: 'Learn', match: (p: string) => p.startsWith('/learn') || p.startsWith('/category') },
+  { to: '/my-account', icon: 'fa-user', label: 'Account', match: (p: string) => p.startsWith('/my-account') },
+];
+
+const MOBILE_QUERY = '(max-width: 991.98px)';
+
 const GeauxPilot: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const firstName = isAuthenticated ? user?.firstName : undefined;
 
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches
+  );
   const [isOpen, setIsOpen] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
@@ -81,6 +98,30 @@ const GeauxPilot: React.FC = () => {
       return () => document.body.classList.remove('gpilot-open');
     }
   }, [isOpen]);
+
+  // Track viewport size so the launcher becomes a bottom dashboard on phones.
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_QUERY);
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    setIsMobile(mq.matches);
+    // addEventListener is the modern API; older Safari needs addListener.
+    if (mq.addEventListener) mq.addEventListener('change', onChange);
+    else mq.addListener(onChange);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener('change', onChange);
+      else mq.removeListener(onChange);
+    };
+  }, []);
+
+  // Reserve space at the bottom of the page for the fixed dashboard bar so it
+  // never hides the last bit of content. Scoped by a body class (GeauxPilot is
+  // not mounted in design mode, so this won't pad the /poa-form route).
+  useEffect(() => {
+    if (isMobile) {
+      document.body.classList.add('gpilot-mobilebar-on');
+      return () => document.body.classList.remove('gpilot-mobilebar-on');
+    }
+  }, [isMobile]);
 
   const handleNavigate = useCallback((path: string) => {
     setIsOpen(false);
@@ -175,10 +216,12 @@ const GeauxPilot: React.FC = () => {
 
   const showStarters = messages.length <= 1 && !isStreaming;
 
+  const currentPath = location.pathname;
+
   return (
     <>
-      {/* Floating launcher */}
-      {!isOpen && (
+      {/* Desktop: floating launcher, bottom-right. */}
+      {!isMobile && !isOpen && (
         <button
           type="button"
           className="gpilot-fab"
@@ -187,6 +230,47 @@ const GeauxPilot: React.FC = () => {
         >
           <img src="/img/geauxpilot-favicon.png" alt="" className="gpilot-fab-icon" />
         </button>
+      )}
+
+      {/* Mobile: a bottom dashboard — 4 nav buttons with the GeauxPilot
+          launcher raised above the center. Hidden while the panel is open. */}
+      {isMobile && !isOpen && (
+        <nav className="gpilot-mobilebar" aria-label="Quick navigation">
+          {MOBILE_NAV.slice(0, 2).map((item) => (
+            <button
+              key={item.to}
+              type="button"
+              className={`gpilot-tab ${item.match(currentPath) ? 'active' : ''}`}
+              onClick={() => navigate(item.to)}
+            >
+              <i className={`fas ${item.icon}`} aria-hidden="true" />
+              <span>{item.label}</span>
+            </button>
+          ))}
+
+          {/* Center raised launcher */}
+          <button
+            type="button"
+            className="gpilot-tab-fab"
+            onClick={() => setIsOpen(true)}
+            aria-label="Open GeauxPilot assistant"
+          >
+            <img src="/img/geauxpilot-favicon.png" alt="" />
+            <span>GeauxPilot</span>
+          </button>
+
+          {MOBILE_NAV.slice(2, 4).map((item) => (
+            <button
+              key={item.to}
+              type="button"
+              className={`gpilot-tab ${item.match(currentPath) ? 'active' : ''}`}
+              onClick={() => navigate(item.to)}
+            >
+              <i className={`fas ${item.icon}`} aria-hidden="true" />
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
       )}
 
       {/* Mobile backdrop */}

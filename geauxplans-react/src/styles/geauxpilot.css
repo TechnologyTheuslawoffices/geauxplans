@@ -46,6 +46,72 @@
 }
 .gpilot-fab:hover .gpilot-fab-icon { transform: scale(1.1); }
 
+/* ---- Mobile bottom dashboard (4 tabs + raised center launcher) ---- */
+.gpilot-mobilebar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1080;
+  height: 60px;
+  display: flex;
+  align-items: stretch;
+  background: #fff;
+  border-top: 1px solid var(--gpilot-border);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.07);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.gpilot-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--gpilot-muted);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 0;
+}
+.gpilot-tab i { font-size: 18px; line-height: 1; }
+.gpilot-tab span { line-height: 1; }
+.gpilot-tab.active { color: var(--gpilot-navy); }
+.gpilot-tab.active i { transform: translateY(-1px); }
+
+/* The raised launcher sits in a reserved center slot so the four tabs split
+   two-and-two around it, and the icon lifts above the bar's center. */
+.gpilot-tab-fab {
+  flex: 0 0 76px;
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  color: var(--gpilot-navy);
+  font-size: 11px;
+  font-weight: 700;
+}
+.gpilot-tab-fab img {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  margin-top: -26px; /* lift above the bar */
+  border: 3px solid #fff;
+  box-shadow: 0 8px 18px rgba(0, 0, 32, 0.28);
+  object-fit: contain;
+  transition: transform 0.18s ease;
+}
+.gpilot-tab-fab:active img { transform: scale(0.94); }
+.gpilot-tab-fab span { margin-top: 2px; }
+
 /* ---- Mobile backdrop ---- */
 .gpilot-backdrop {
   position: fixed;
@@ -314,9 +380,13 @@
 
 /* ---- Mobile ---- */
 @media (max-width: 575.98px) {
-  .gpilot-fab { bottom: 18px; right: 18px; width: 54px; height: 54px; }
   .gpilot-panel { width: 100vw; }
-  .gpilot-header-badge { width: 36px; height: 36px; }
+}
+
+/* Reserve space for the fixed bottom dashboard so it never hides page content.
+   Scoped to when the bar is mounted (not on the /poa-form design route). */
+body.gpilot-mobilebar-on {
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Prevent body scroll bleed behind the open panel on touch devices. */
