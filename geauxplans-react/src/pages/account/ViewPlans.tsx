@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
+import { scrollToSection } from '../../utils/scrollToSection';
 import './ViewPlans.css';
 
 // Product configurations for modal
@@ -165,14 +166,7 @@ const ViewPlans: React.FC = () => {
   useEffect(() => {
     if (new URLSearchParams(location.search).get('new') !== '1') return;
     setShowNewPlanOptions(true);
-    let tries = 0;
-    const scroll = () => {
-      const el = document.getElementById('start-new-plan');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      else if (tries++ < 25) setTimeout(scroll, 120);
-    };
-    const t = setTimeout(scroll, 120);
-    return () => clearTimeout(t);
+    scrollToSection('start-new-plan');
   }, [location.search]);
 
   useEffect(() => {

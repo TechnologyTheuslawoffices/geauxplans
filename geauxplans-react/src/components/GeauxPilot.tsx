@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import type { Components } from 'react-markdown';
 import { sendAssistantMessage, AssistantMessage } from '../services/aiAssistant';
 import { useAuth } from '../context/AuthContext';
+import { scrollToSection } from '../utils/scrollToSection';
 import '../styles/geauxpilot.css';
 
 /**
@@ -147,16 +148,7 @@ const GeauxPilot: React.FC = () => {
     const [path, hash] = to.split('#');
     navigate(path || '/');
     if (hash) {
-      let tries = 0;
-      const tryScroll = () => {
-        const el = document.getElementById(hash);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else if (tries++ < 25) {
-          setTimeout(tryScroll, 100);
-        }
-      };
-      setTimeout(tryScroll, 100);
+      scrollToSection(hash);
     } else {
       window.scrollTo({ top: 0 });
     }

@@ -245,8 +245,10 @@
 }
 
 @media (max-width: 900px) {
+  /* Single column, narrowed and centered on the page. */
   .cart-layout {
     grid-template-columns: 1fr;
+    max-width: 460px;
   }
 
   /* Collapse each line into name+badges on one row, then controls beneath, so
@@ -270,10 +272,12 @@
     font-size: 30px;
   }
 
-  /* Full stack on small phones: name, then price row, then qty, then remove */
+  /* Full stack on small phones, with everything centered. */
   .cart-item {
     grid-template-columns: 1fr;
     row-gap: 10px;
+    justify-items: center;
+    text-align: center;
   }
 
   .cart-item-main,
@@ -281,7 +285,15 @@
   .cart-item-price,
   .cart-item-remove {
     grid-column: 1 / -1;
-    text-align: left;
+    text-align: center;
+  }
+
+  .cart-item-qty {
+    justify-content: center;
+  }
+
+  .cart-item-price {
+    text-align: center;
   }
 
   .cart-summary {
