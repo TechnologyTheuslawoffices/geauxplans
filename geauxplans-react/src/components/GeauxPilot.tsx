@@ -244,7 +244,6 @@ const GeauxPilot: React.FC = () => {
           aria-label="Open GeauxPilot assistant"
         >
           <img src="/logo512.png" alt="" className="gpilot-fab-icon" />
-          <span className="gpilot-fab-spark"><i className="fas fa-wand-magic-sparkles" aria-hidden="true" /></span>
         </button>
       )}
 
