@@ -1,5 +1,8 @@
-import React, { useEffect, useRef, useState, useCallback, Fragment } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import type { Components } from 'react-markdown';
 import { sendAssistantMessage, AssistantMessage } from '../services/aiAssistant';
 import { useAuth } from '../context/AuthContext';
 import '../styles/geauxpilot.css';
@@ -13,9 +16,11 @@ import '../styles/geauxpilot.css';
  * and product questions, helps pick a plan, and guides navigation; a signed-in
  * customer can also ask about their own plans.
  *
- * Dependency-free: local state (no store) and a tiny built-in Markdown renderer
- * so bold text, links, and bullet lists display without adding react-markdown.
- * Internal links (starting with "/") navigate in-app and close the panel.
+ * Assistant messages render through react-markdown + remark-gfm inside a
+ * `.gpilot-prose` container — the same rendering contract as GeauxCounsel's
+ * GeauxPilot, so headings, ordered/unordered lists, tables, and emphasis all
+ * display properly. Internal links (href starting "/") navigate in-app and
+ * close the panel; user messages render as plain pre-wrapped text.
  */
 
 const STARTER_PROMPTS = [
@@ -29,94 +34,6 @@ const greeting = (firstName?: string): string =>
   `Hi${firstName ? ` ${firstName}` : ''}! I'm **GeauxPilot**, your GeauxPlans ` +
   `assistant. I can help you choose the right estate or business plan, explain ` +
   `how things work, and point you to the right place. What can I help you with?`;
-
-// ---------------------------------------------------------------------------
-// Tiny Markdown renderer (bold, links, bullet lists, paragraphs).
-// ---------------------------------------------------------------------------
-
-/** Render inline Markdown: **bold** and [text](url). */
-function renderInline(text: string, onNavigate: (path: string) => void, keyBase: string): React.ReactNode[] {
-  const nodes: React.ReactNode[] = [];
-  // Tokenize on **bold** and [text](url), left to right.
-  const regex = /(\*\*([^*]+)\*\*)|(\[([^\]]+)\]\(([^)]+)\))/g;
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-  let i = 0;
-  while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      nodes.push(<Fragment key={`${keyBase}-t${i}`}>{text.slice(lastIndex, match.index)}</Fragment>);
-      i++;
-    }
-    if (match[2] !== undefined) {
-      // bold
-      nodes.push(<strong key={`${keyBase}-b${i}`}>{match[2]}</strong>);
-      i++;
-    } else if (match[4] !== undefined && match[5] !== undefined) {
-      const label = match[4];
-      const href = match[5];
-      const isInternal = href.startsWith('/');
-      if (isInternal) {
-        nodes.push(
-          <a
-            key={`${keyBase}-l${i}`}
-            href={href}
-            className="gpilot-link"
-            onClick={(e) => {
-              e.preventDefault();
-              onNavigate(href);
-            }}
-          >
-            {label}
-          </a>
-        );
-      } else {
-        nodes.push(
-          <a key={`${keyBase}-l${i}`} href={href} className="gpilot-link" target="_blank" rel="noopener noreferrer">
-            {label}
-          </a>
-        );
-      }
-      i++;
-    }
-    lastIndex = regex.lastIndex;
-  }
-  if (lastIndex < text.length) {
-    nodes.push(<Fragment key={`${keyBase}-t${i}`}>{text.slice(lastIndex)}</Fragment>);
-  }
-  return nodes;
-}
-
-/** Render a full Markdown message (blocks separated by blank lines). */
-function renderMarkdown(content: string, onNavigate: (path: string) => void): React.ReactNode {
-  const blocks = content.split(/\n{2,}/);
-  return blocks.map((block, bi) => {
-    const lines = block.split('\n');
-    const isList = lines.length > 0 && lines.every((l) => /^\s*[-*]\s+/.test(l) || l.trim() === '');
-    if (isList) {
-      const items = lines.filter((l) => /^\s*[-*]\s+/.test(l));
-      return (
-        <ul key={`blk${bi}`} className="gpilot-ul">
-          {items.map((item, li) => (
-            <li key={`blk${bi}-li${li}`}>{renderInline(item.replace(/^\s*[-*]\s+/, ''), onNavigate, `blk${bi}-li${li}`)}</li>
-          ))}
-        </ul>
-      );
-    }
-    // Paragraph: single newlines become <br/>.
-    return (
-      <p key={`blk${bi}`} className="gpilot-p">
-        {lines.map((line, li) => (
-          <Fragment key={`blk${bi}-ln${li}`}>
-            {li > 0 && <br />}
-            {renderInline(line, onNavigate, `blk${bi}-ln${li}`)}
-          </Fragment>
-        ))}
-      </p>
-    );
-  });
-}
-
-// ---------------------------------------------------------------------------
 
 const GeauxPilot: React.FC = () => {
   const navigate = useNavigate();
@@ -169,6 +86,31 @@ const GeauxPilot: React.FC = () => {
     setIsOpen(false);
     navigate(path);
   }, [navigate]);
+
+  // react-markdown component overrides. Same contract as GeauxCounsel's
+  // markdownComponents: internal links (href starting "/") navigate in-app and
+  // close the panel; everything else opens in a new tab.
+  const markdownComponents: Components = useMemo(() => ({
+    a: ({ href, children }) => {
+      const url = typeof href === 'string' ? href : '';
+      if (url.startsWith('/')) {
+        return (
+          <a
+            href={url}
+            className="gpilot-link"
+            onClick={(e) => { e.preventDefault(); handleNavigate(url); }}
+          >
+            {children}
+          </a>
+        );
+      }
+      return (
+        <a href={url} className="gpilot-link" target="_blank" rel="noopener noreferrer">
+          {children}
+        </a>
+      );
+    },
+  }), [handleNavigate]);
 
   const runTurn = useCallback(async (userText: string) => {
     const trimmed = userText.trim();
@@ -271,13 +213,19 @@ const GeauxPilot: React.FC = () => {
                 </span>
               )}
               <div className={`gpilot-bubble ${m.role}`}>
-                {m.content
-                  ? renderMarkdown(m.content, handleNavigate)
-                  : (
-                    <span className="gpilot-typing" aria-label="GeauxPilot is typing">
-                      <span /><span /><span />
-                    </span>
-                  )}
+                {m.role === 'user' ? (
+                  <div className="gpilot-user-text">{m.content}</div>
+                ) : m.content ? (
+                  <div className="gpilot-prose">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                      {m.content}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  <span className="gpilot-typing" aria-label="GeauxPilot is typing">
+                    <span /><span /><span />
+                  </span>
+                )}
               </div>
             </div>
           ))}
