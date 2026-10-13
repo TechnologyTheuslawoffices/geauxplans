@@ -423,6 +423,18 @@
   .gpilot-panel { width: 100vw; }
 }
 
+/* Wider drawer on larger screens so the chat (and tables) aren't cramped into a
+   thin column. Steps up with the viewport. */
+@media (min-width: 992px) {
+  .gpilot-panel { width: 480px; }
+}
+@media (min-width: 1200px) {
+  .gpilot-panel { width: 540px; }
+}
+@media (min-width: 1600px) {
+  .gpilot-panel { width: 600px; }
+}
+
 /* Reserve space for the fixed bottom dashboard so it never hides page content.
    Scoped to when the bar is mounted (not on the /poa-form design route). */
 body.gpilot-mobilebar-on {
