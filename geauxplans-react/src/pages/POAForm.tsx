@@ -6574,6 +6574,23 @@ const POAForm: React.FC = () => {
 
   const progress = ((currentPage + 1) / pages.length) * 100;
 
+  // Compact, single-row pagination model: first page, a small window around the
+  // current page, and the last page, with any gaps collapsed to an ellipsis.
+  // Replaces the old block of 12 labeled buttons that wrapped onto three rows.
+  const stepWindow: (number | 'gap')[] = (() => {
+    const total = pages.length;
+    const show = new Set<number>([0, total - 1, currentPage - 1, currentPage, currentPage + 1]);
+    const items: (number | 'gap')[] = [];
+    let prev = -1;
+    for (let i = 0; i < total; i++) {
+      if (!show.has(i) || i < 0 || i >= total) continue;
+      if (prev >= 0 && i - prev > 1) items.push('gap');
+      items.push(i);
+      prev = i;
+    }
+    return items;
+  })();
+
   // Hold the form back until the edit-access check resolves, so an expired user
   // never even sees the editable form.
   if (isAuthenticated && !accessChecked) {
@@ -6675,22 +6692,44 @@ const POAForm: React.FC = () => {
             {/* Progress Bar (guided form only) */}
             {mode === 'form' && (
             <div className="poa-progress mb-4">
-              <div className="poa-progress-mobile-label">
+              <div className="poa-pagination-label">
                 Step {currentPage + 1} of {pages.length} — {getPageDisplayName(pages[currentPage])}
               </div>
-              <div className="d-flex justify-content-between mb-2 flex-wrap poa-progress-steps">
-                {pages.map((page, index) => (
-                  <button
-                    key={page}
-                    className={`poa-progress-step ${index === currentPage ? 'active' : ''} ${index < currentPage ? 'completed' : ''}`}
-                    onClick={() => setCurrentPage(index)}
-                    type="button"
-                    title={getPageDisplayName(page)}
-                  >
-                    <span className="step-number">{index + 1}</span>
-                    <span className="step-name">{getPageDisplayName(page)}</span>
-                  </button>
-                ))}
+              <div className="poa-pagination">
+                <button
+                  type="button"
+                  className="poa-page-arrow"
+                  onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
+                  disabled={currentPage === 0}
+                  aria-label="Previous step"
+                >
+                  <i className="fas fa-chevron-left"></i>
+                </button>
+                {stepWindow.map((item, i) =>
+                  item === 'gap' ? (
+                    <span key={`gap-${i}`} className="poa-page-gap">…</span>
+                  ) : (
+                    <button
+                      key={item}
+                      type="button"
+                      className={`poa-page ${item === currentPage ? 'active' : ''} ${item < currentPage ? 'completed' : ''}`}
+                      onClick={() => setCurrentPage(item)}
+                      title={getPageDisplayName(pages[item])}
+                      aria-current={item === currentPage ? 'step' : undefined}
+                    >
+                      {item + 1}
+                    </button>
+                  )
+                )}
+                <button
+                  type="button"
+                  className="poa-page-arrow"
+                  onClick={() => setCurrentPage(Math.min(pages.length - 1, currentPage + 1))}
+                  disabled={currentPage === pages.length - 1}
+                  aria-label="Next step"
+                >
+                  <i className="fas fa-chevron-right"></i>
+                </button>
               </div>
               <div className="progress" style={{ height: '4px' }}>
                 <div className="progress-bar bg-success" style={{ width: `${progress}%` }}></div>

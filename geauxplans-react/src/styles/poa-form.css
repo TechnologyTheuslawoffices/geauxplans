@@ -41,6 +41,85 @@
   padding: 0 20px;
 }
 
+/* ===== Compact pagination step indicator ===== */
+/* Replaces the 12 labeled step buttons that wrapped onto three rows. One row:
+   the current step named above, then prev / windowed page numbers / next. */
+.poa-pagination-label {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1a1acc;
+  margin-bottom: 10px;
+}
+
+.poa-pagination {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.poa-pagination .poa-page,
+.poa-pagination .poa-page-arrow {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  color: #666;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.poa-pagination .poa-page:hover:not(.active),
+.poa-pagination .poa-page-arrow:hover:not(:disabled) {
+  background: #f0f0ff;
+  border-color: #1a1acc;
+  color: #1a1acc;
+}
+
+.poa-pagination .poa-page.completed {
+  background: #28a745;
+  border-color: #28a745;
+  color: #fff;
+}
+
+.poa-pagination .poa-page.active {
+  background: #1a1acc;
+  border-color: #1a1acc;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(26, 26, 204, 0.3);
+}
+
+.poa-pagination .poa-page-arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.poa-page-gap {
+  flex: 0 0 auto;
+  color: #999;
+  padding: 0 2px;
+  user-select: none;
+}
+
+@media (max-width: 576px) {
+  .poa-pagination .poa-page,
+  .poa-pagination .poa-page-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+}
+
 .poa-progress-step {
   display: flex;
   flex-direction: column;
