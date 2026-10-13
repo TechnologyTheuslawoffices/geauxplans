@@ -3,7 +3,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
-import { scrollToSection } from '../../utils/scrollToSection';
 import './ViewPlans.css';
 
 // Product configurations for modal
@@ -161,12 +160,11 @@ const ViewPlans: React.FC = () => {
   const [documentCache, setDocumentCache] = useState<Record<number, KnacklyDocument[]>>({});
 
   // Arriving with ?new=1 (e.g. the mobile "Dashboard" tab) expands the
-  // "Start a New Plan" chooser and scrolls to it. Retries briefly because the
-  // chooser only renders after the user's plans have loaded.
+  // "Start a New Plan" chooser but leaves the page at the top — we don't scroll
+  // down to the section, so the Dashboard tab lands you at the top of the page.
   useEffect(() => {
     if (new URLSearchParams(location.search).get('new') !== '1') return;
     setShowNewPlanOptions(true);
-    scrollToSection('start-new-plan');
   }, [location.search]);
 
   useEffect(() => {
