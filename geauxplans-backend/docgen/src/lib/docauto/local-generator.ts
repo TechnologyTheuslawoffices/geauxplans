@@ -380,6 +380,26 @@ function resolveModelProperties(
           }
         }
 
+        // Object-literal model formulas (e.g. actoftransfer `ActofHome` =
+        // `(EstateAppTF || BinderAppTF) ? this : {id$: …, Owner1: peek(Owner1), …}`)
+        // must go through the list-formula evaluator. The legacy
+        // evaluateExpression below cannot construct `{…}`, so ActofHome came
+        // back empty and every `{[ActofHome.Owner1.*]}` / `{[ActofHome.LandParish]}`
+        // in the Geaux Act of Donation rendered blank. Quoted strings are
+        // stripped first so a literal "{" in a string cannot trigger this.
+        if (/\{/.test(trimmedExpr.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, ''))) {
+          const propMeta = new Map(catalogPropMeta);
+          for (const p of ((model.properties || []) as Array<{ name: string; typeOfVariable?: string; options?: string }>)) {
+            propMeta.set(p.name, { typeOfVariable: p.typeOfVariable, options: p.options });
+          }
+          const val = evaluateListFormulaExpr(expr, { data: { ...data, ...obj }, propMeta }, obj);
+          if (val !== undefined && val !== null) {
+            obj[f.name] = val;
+            resolutionChanged = true;
+          }
+          continue;
+        }
+
         const tmplCtx: EvalContext = {
           data: { ...data, ...obj },
           models: new Map(), formulas: new Map(), templates: new Map(), staticTables: new Map(),

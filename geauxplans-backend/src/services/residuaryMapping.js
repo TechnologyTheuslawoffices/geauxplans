@@ -272,6 +272,43 @@ function toBequestRow(record, entry) {
 }
 
 /**
+ * One trust specific bequest, in the `residuary`-model shape the Geaux trust
+ * templates read. Verified against GeauxSingleTrust.docx / GeauxJointTrust.docx:
+ *
+ *   Specific Bequest to {[if SingleRecipientTF]}…{[Benef.NameCO]}…
+ *                       {[else]}{[ResiduaryBenef.NameCO]}{[endif]}
+ *   {[list GeauxSpecificBequests|sort: GeauxBequestType]}
+ *     {[elseif GeauxBequestType == "Personal property"]}…{[list SpecificPersonal]}{[this]}…
+ *
+ * `SingleRecipientTF` is (despite its name) the catalog's "is this bequest to
+ * multiple recipients?" question. The form describes the property in free
+ * text and does not ask its type, so it is written as one "Personal property"
+ * item whose text is the client's own description.
+ *
+ * `SpecificUponDeath` only matters on a joint trust, which lists bequests by
+ * whose death triggers them. The form does not ask, so "Settlors" — after the
+ * last settlor dies, alongside the residue — is used; it is the only choice
+ * that never hands property away while the surviving spouse still needs it.
+ */
+function toTrustBequestRow(record, entry) {
+  const first = resolveRecipientId(record, entry.recipient);
+  const second = entry.multiple_recipients === 'Yes'
+    ? findPartyId(record, entry.second_recipient)
+    : null;
+
+  const row = second
+    ? { SingleRecipientTF: true, Equal: true, MultipleBenes: [{ Benef: first }, { Benef: second }] }
+    : { SingleRecipientTF: false, ResiduaryBenef: first };
+
+  row.SpecificUponDeath = 'Settlors';
+  row.GeauxSpecificBequests = [{
+    GeauxBequestType: 'Personal property',
+    SpecificPersonal: [String(entry.description || '').trim()],
+  }];
+  return row;
+}
+
+/**
  * Write the residuary and specific-bequest lists onto a Knackly record.
  *
  * @param {object} record   Knackly record being assembled (mutated).
@@ -299,7 +336,18 @@ function applyResiduary(record, formData, family) {
   if (target.potFlag) record[target.potFlag] = 'Separate';
 
   const bequests = Array.isArray(section.specific_bequests) ? section.specific_bequests : [];
-  if (bequests.length > 0) {
+  if (family === 'trust') {
+    // The trust's whole "Specific Bequests" section is gated on
+    // `SpecificFirstDeathTF`. A solo trust lists `SingleSpecifics`; a joint
+    // trust lists `SpecificBequests` filtered by `SpecificUponDeath`. Writing
+    // the will-style `BequestRecipient`/`SpecificBequestDescribe` rows (which
+    // neither template reads) is why trust bequests rendered as nothing.
+    const rows = section.has_specific_bequests === false
+      ? []
+      : bequests.map((e) => toTrustBequestRow(record, e));
+    record.SpecificFirstDeathTF = rows.length > 0;
+    record[record.Spouse ? 'SpecificBequests' : 'SingleSpecifics'] = rows;
+  } else if (bequests.length > 0) {
     record[target.bequests] = bequests.map((e) => toBequestRow(record, e));
   }
 

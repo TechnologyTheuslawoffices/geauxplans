@@ -120,6 +120,11 @@ function mapIndividual(source, id) {
     Birthdate: isoDate(source.date_of_birth),
     Phone: text(source.phone || source.phone_number),
     GeauxSSN: text(source.last_4_ssn_digits),
+    // The Act of Donation (GeauxHome.docx) reads `SSN.slice(-4)`, not
+    // `GeauxSSN`. The form only ever collects the last four digits, so the same
+    // value is the raw answer for both; nothing in the Geaux bundle prints `SSN`
+    // without slicing it.
+    SSN: text(source.last_4_ssn_digits),
     ...addressOf(source),
   });
 }
@@ -447,6 +452,12 @@ function applyDonationOfResidence(record, formData) {
 
   const home = { GeauxHaveLegalDescriptionTF: hasLegal };
   if (parish) home.LandParish = parish;
+  // Who owns the home. The catalog's `Owner1` formula falls to the SPOUSE
+  // alone when this is unset on a married plan, so a joint Act of Donation
+  // named only the spouse, donating "separate and paraphernal property". The
+  // form does not ask, so a joint plan donates jointly — the catalog's own
+  // answer for a home acquired during the marriage.
+  if (record.Spouse) home.AoDOwner = 'Both';
   if (hasLegal && text(dor.full_legal_description)) {
     home.ExhibitALegalDesc = text(dor.full_legal_description);
   }

@@ -42,9 +42,19 @@ interface VScope {
   thisRow?: Record<string, unknown> | undefined;
 }
 
-/** Public entry point: evaluate one value-expression to a value. */
-export function evaluateListFormulaExpr(expr: string, env: ListFormulaEnv): unknown {
-  return evalValue(expr, env, {});
+/**
+ * Public entry point: evaluate one value-expression to a value.
+ *
+ * `thisObj` binds `this` (and the object's own fields) for a MODEL formula
+ * evaluated against one object, e.g. actoftransfer `ActofHome`, whose object
+ * literal reads `this.id$` and sibling formulas such as `Owner1`.
+ */
+export function evaluateListFormulaExpr(
+  expr: string,
+  env: ListFormulaEnv,
+  thisObj?: Record<string, unknown>
+): unknown {
+  return evalValue(expr, env, thisObj ? { this: thisObj, thisRow: thisObj } : {});
 }
 
 // ─── Core ─────────────────────────────────────────────────────────────────────
