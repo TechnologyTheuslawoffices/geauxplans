@@ -135,6 +135,58 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/business-plans/test-bypass — the checkout page's "geaux" test mode.
+ * Body: { skus: string[], llcName }.
+ *
+ * Opens the same business set the Stripe webhook opens for a paid cart, without
+ * a payment, so the business flow can be tested end to end. It is the business
+ * counterpart of the estate bypass (which creates its set through POST
+ * /api/submissions) and has the same reach: any signed-in user who enables test
+ * mode. Rows are marked `_purchase.testBypass` so they can be told apart from
+ * paid ones.
+ */
+router.post('/test-bypass', authenticate, async (req, res) => {
+  const { skus, llcName } = req.body || {};
+  const { resolveBusinessApp } = require('../config/constants');
+  const app = resolveBusinessApp(Array.isArray(skus) ? skus.map(String) : []);
+  if (!app) {
+    return res.status(400).json({
+      success: false,
+      error: 'This cart has no LLC or operating package, so there is no company to open.',
+    });
+  }
+
+  const name = typeof llcName === 'string' ? llcName.trim().slice(0, 200) : '';
+  try {
+    const { data, error } = await supabase
+      .from('poa_submissions')
+      .insert({
+        user_id: req.user.id,
+        form_type: app.formType,
+        form_data: {
+          _purchase: {
+            llcName: name,
+            llcPackage: app.llcPackage,
+            operatingPackage: app.operatingPackage,
+            includes: app.includes,
+            testBypass: true,
+          },
+          company: { llc_name: name },
+        },
+        submission_status: 'inprogress',
+        first_submitted_at: null,
+      })
+      .select('id')
+      .single();
+    if (error) throw error;
+    res.json({ success: true, data: { id: data.id, formType: app.formType } });
+  } catch (error) {
+    console.error('Business test bypass error:', error);
+    res.status(500).json({ success: false, error: 'Could not open the test company' });
+  }
+});
+
 /** GET /api/business-plans/:id */
 router.get('/:id', authenticate, async (req, res) => {
   try {

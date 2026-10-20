@@ -112,16 +112,55 @@ const Checkout: React.FC = () => {
     return { productId, mappedType };
   };
 
+  // Business items are custom cart entries (productId 0), billed by SKU code:
+  // LLC / operating-agreement items carry it in metadata.packageType; the
+  // registered-agent item has no package code, so its cart `type` is the sku.
+  const businessSku = (i: typeof cart.items[number]) => (
+    i.type === 'registered-agent'
+      ? 'registered-agent'
+      : (i.metadata?.packageType as string | undefined)
+  );
+  const businessItems = cart.items.filter((i) => i.productId === 0);
+
+  // Test-mode bypass for a business cart: open the company the Stripe webhook
+  // would open for this cart (same tier, same LLC name) and go straight to its
+  // interview. A business set always has an owner, so this needs a login.
+  const handleBusinessBypass = async () => {
+    if (!isAuthenticated) {
+      navigate(`/login?redirect=${encodeURIComponent('/checkout?test=geaux')}`);
+      return;
+    }
+    setError('');
+    try {
+      const response = await api.post<{ id: number }>('/business-plans/test-bypass', {
+        skus: businessItems.map(businessSku).filter(Boolean),
+        llcName: (businessItems.find((i) => i.metadata?.llcName)?.metadata?.llcName as string | undefined) || '',
+      });
+      if (response.success && response.data?.id) {
+        navigate(`/business-plan/${response.data.id}`);
+        return;
+      }
+      setError(response.error || 'Could not open the test company.');
+    } catch {
+      setError('Could not open the test company.');
+    }
+  };
+
   // Bypass checkout and go directly to form (test mode).
   //
   // To mirror a real purchase, pre-create the blank "set" the Stripe webhook
   // would have created (same shape POAForm saves), so it lands on the dashboard
   // with its GP-###### number and the form opens that specific set. This needs a
   // signed-in user to own the row; signed out (or if the create fails) we fall
-  // back to opening a fresh form with no pre-made set.
+  // back to opening a fresh form with no pre-made set. A business cart goes to
+  // the company interview instead; it has no estate form to open.
   const handleTestBypass = async () => {
     if (!firstItem) {
       navigate('/');
+      return;
+    }
+    if (businessItems.length > 0) {
+      await handleBusinessBypass();
       return;
     }
     const { productId, mappedType } = getFormTarget();
@@ -151,17 +190,10 @@ const Checkout: React.FC = () => {
 
     try {
       const items = cart.items.map(i => {
-        // Business items are custom cart entries (productId 0). The backend
-        // bills and tags them by their SKU code: LLC / operating-agreement
-        // items carry it in metadata.packageType; the registered-agent item
-        // has no package code, so its cart `type` is the sku.
+        // The backend bills and tags business items by SKU; llcName titles the
+        // business set the webhook opens for this company in My Companies.
         if (i.productId === 0) {
-          const sku = i.type === 'registered-agent'
-            ? 'registered-agent'
-            : (i.metadata?.packageType as string | undefined);
-          // llcName titles the business set the webhook opens for this
-          // company in My Companies.
-          return { productId: 0, sku, llcName: (i.metadata?.llcName as string | undefined) || '' };
+          return { productId: 0, sku: businessSku(i), llcName: (i.metadata?.llcName as string | undefined) || '' };
         }
         return {
           productId: i.productId,
@@ -262,7 +294,9 @@ const Checkout: React.FC = () => {
               >
                 <div style={{ fontSize: '20px', marginBottom: '10px' }}>🧪 TEST MODE ENABLED 🧪</div>
                 <p style={{ margin: '0 0 15px 0', fontSize: '14px' }}>
-                  Bypass payment and go directly to the form for testing.
+                  {businessItems.length > 0
+                    ? 'Bypass payment and open this company in My Companies for testing.'
+                    : 'Bypass payment and go directly to the form for testing.'}
                 </p>
                 <button
                   onClick={handleTestBypass}
