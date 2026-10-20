@@ -134,7 +134,7 @@ function generateOrderNumber() {
  * in line_items: in subscription mode the one-time lines bill on the first
  * invoice and the subscription recurs thereafter.
  */
-router.post('/create-checkout-session', optionalAuth, async (req, res) => {
+router.post('/create-checkout-session', optionalBuyer, async (req, res) => {
   // Accept either { items: [...] } or { productId, formType } (back-compat)
   let items = Array.isArray(req.body.items) ? req.body.items : null;
   if (!items) {
@@ -1081,6 +1081,33 @@ async function recordUpsellSubscription(session, subscription) {
   } catch (err) {
     console.error(`Upsell subscription ${subscription.id} charged but not recorded:`, err);
   }
+}
+
+/**
+ * Identify the buyer for checkout, without requiring one.
+ *
+ * The frontend authenticates with Supabase, so its Bearer token is a Supabase
+ * access token. `optionalAuth` only understands the local-dev JWT and looks the
+ * user up in SQLite, which production does not have; in production it never
+ * matched, so `metadata.userId` went out blank and the webhook could not open
+ * the buyer's estate or business set, record a Legal Edge subscription, or
+ * credit a referral. Supabase is tried first; the local JWT remains the
+ * fallback for SQLite development.
+ */
+async function optionalBuyer(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (supabase && authHeader && authHeader.startsWith('Bearer ')) {
+    try {
+      const { data: { user } } = await supabase.auth.getUser(authHeader.substring(7));
+      if (user) {
+        req.user = { id: user.id, email: user.email };
+        return next();
+      }
+    } catch (err) {
+      // Not a Supabase token — fall through to the local JWT check.
+    }
+  }
+  return optionalAuth(req, res, next);
 }
 
 /**
