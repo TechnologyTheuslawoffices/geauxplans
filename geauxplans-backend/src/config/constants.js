@@ -95,9 +95,81 @@ const SECOND_PERSON_UPGRADE = {
   },
 };
 
+// Business plan access tiers. Each is an app in the BusinessPlanning catalog,
+// and the app name is stored as poa_submissions.form_type for a business set,
+// the same way an estate set stores its estate form_type. The catalog defines
+// all four identically (one template, no screens), so the tier is decided here
+// by what was bought, not by the catalog.
+//
+// `includes` is what the set unlocks:
+//   registration        GeauxPlans files the Articles of Organization
+//   operatingAgreement  the Operating Agreement is drafted (OperatingAgreementFormer)
+//   ein                 GeauxPlans obtains the EIN (staff service, no document)
+//   licenses            GeauxPlans handles licensing (staff service, no document)
+const BUSINESS_APPS = {
+  LLCRegistration: {
+    label: 'Registration Only',
+    includes: { operatingAgreement: false, ein: false, licenses: false },
+  },
+  RegistrationOperating: {
+    label: 'Registration and Operating Agreement',
+    includes: { operatingAgreement: true, ein: false, licenses: false },
+  },
+  RegistrationOperatingEIN: {
+    label: 'Registration, Operating Agreement, and EIN',
+    includes: { operatingAgreement: true, ein: true, licenses: false },
+  },
+  RegistrationOperatingEINLicense: {
+    label: 'Registration, Operating Agreement, EIN, and Licensing',
+    includes: { operatingAgreement: true, ein: true, licenses: true },
+  },
+};
+
+const BUSINESS_FORM_TYPES = Object.keys(BUSINESS_APPS);
+
+/**
+ * The business app a cart's SKUs buy, or null when they buy no app (a
+ * registered agent on its own).
+ *
+ * The operating package sets the tier; the LLC package alone is Registration
+ * Only. A customer who already has an LLC buys an operating package without an
+ * LLC package: they get the same tier, with `registration` false so the
+ * interview skips the filing questions and nobody files a second LLC.
+ *
+ * @param {string[]} skus BUSINESS_SKUS codes from one paid cart.
+ * @returns {{formType: string, includes: object}|null}
+ */
+function resolveBusinessApp(skus) {
+  const has = (sku) => skus.includes(sku);
+  const llcPackage = ['gpx_llc_3', 'gpx_llc_2', 'gpx_llc_1'].find(has) || null;
+  const operatingPackage = ['gpx_og_3', 'gpx_og_2', 'gpx_og_1'].find(has) || null;
+
+  const formType =
+    operatingPackage === 'gpx_og_3' ? 'RegistrationOperatingEINLicense' :
+    operatingPackage === 'gpx_og_2' ? 'RegistrationOperatingEIN' :
+    operatingPackage === 'gpx_og_1' ? 'RegistrationOperating' :
+    llcPackage ? 'LLCRegistration' :
+    null;
+  if (!formType) return null;
+
+  return {
+    formType,
+    llcPackage,
+    operatingPackage,
+    includes: {
+      ...BUSINESS_APPS[formType].includes,
+      registration: Boolean(llcPackage),
+      registeredAgent: has('registered-agent'),
+    },
+  };
+}
+
 module.exports = {
   EDIT_GRACE_PERIOD_DAYS,
   PRODUCTS,
   FORM_TYPE_PRODUCTS,
   SECOND_PERSON_UPGRADE,
+  BUSINESS_APPS,
+  BUSINESS_FORM_TYPES,
+  resolveBusinessApp,
 };

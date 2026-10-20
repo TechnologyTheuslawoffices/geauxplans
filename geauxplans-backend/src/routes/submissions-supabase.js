@@ -11,6 +11,7 @@ const { canEditForm, getFormAccessStatus, getDaysRemaining } = require('../helpe
 const { keapService, submissionTags, configuredTagIds } = require('../services/keap');
 const { checkGenerationPreconditions } = require('../services/docPreconditions');
 const { convertDocxToPdf, pdfName } = require('../services/pdfConvert');
+const { BUSINESS_FORM_TYPES } = require('../config/constants');
 
 /**
  * Which engine assembles documents.
@@ -652,10 +653,14 @@ router.get('/', authenticate, async (req, res) => {
   }
 
   try {
+    // Business sets share this table (form_type is a BusinessPlanning app name)
+    // but belong to My Companies, served by routes/businessPlans.js. Left in,
+    // they would show up under My Plans as estate plans.
     const { data: submissions, error } = await supabase
       .from('poa_submissions')
       .select('*')
       .eq('user_id', req.user.id)
+      .not('form_type', 'in', `(${BUSINESS_FORM_TYPES.join(',')})`)
       .order('updated_at', { ascending: false });
 
     if (error) {
@@ -1140,6 +1145,12 @@ router.post('/', authenticate, async (req, res) => {
     return res.status(400).json({ success: false, error: 'form_data is required' });
   }
 
+  // A business set is created only by the Stripe webhook, which records what
+  // was paid for. Creating one here would grant a business tier for free.
+  if (BUSINESS_FORM_TYPES.includes(form_type)) {
+    return res.status(400).json({ success: false, error: 'Business plans are saved through /api/business-plans' });
+  }
+
   try {
     // Find the newest existing set of this form type. Multiple sets can exist
     // (each estate-plan re-purchase creates a new independent set), so take the
@@ -1273,6 +1284,12 @@ router.put('/:id', authenticate, async (req, res) => {
   const { id } = req.params;
   const { form_data, form_type, submission_status = 'inprogress' } = req.body;
 
+  // See POST /: business sets are written only by the webhook and
+  // routes/businessPlans.js, never through the estate save path.
+  if (BUSINESS_FORM_TYPES.includes(form_type)) {
+    return res.status(400).json({ success: false, error: 'Business plans are saved through /api/business-plans' });
+  }
+
   if (!form_data) {
     return res.status(400).json({ success: false, error: 'form_data is required' });
   }
@@ -1285,6 +1302,10 @@ router.put('/:id', authenticate, async (req, res) => {
       .eq('id', id)
       .eq('user_id', req.user.id)
       .single();
+
+    if (existing && BUSINESS_FORM_TYPES.includes(existing.form_type)) {
+      return res.status(400).json({ success: false, error: 'Business plans are saved through /api/business-plans' });
+    }
 
     if (fetchError || !existing) {
       // The client is bound to a submission id that no longer resolves for this
@@ -1533,3 +1554,7 @@ router.get('/:id/download-all', authenticate, async (req, res) => {
 });
 
 module.exports = router;
+// Shared with routes/businessPlans.js, which stores business sets in the same
+// table and must authenticate and store documents exactly the same way.
+module.exports.authenticate = authenticate;
+module.exports.uploadDocumentsToStorage = uploadDocumentsToStorage;

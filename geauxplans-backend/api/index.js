@@ -77,6 +77,11 @@ const cartRoutes = require('../src/routes/cart-supabase');
 app.use('/api/cart', cartRoutes);
 console.log('Loaded cart routes');
 
+// Business sets (My Companies) — Supabase-only; mounted in src/server.js too.
+const businessPlanRoutes = require('../src/routes/businessPlans');
+app.use('/api/business-plans', businessPlanRoutes);
+console.log('Loaded business-plan routes');
+
 // Public lead capture — Supabase + Keap only, no SQLite.
 const leadsRoutes = require('../src/routes/leads');
 app.use('/api/leads', leadsRoutes);

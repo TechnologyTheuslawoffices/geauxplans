@@ -153,7 +153,10 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
     // exists, else fall back to an inline price_data amount from BUSINESS_SKUS.
     if (it.sku && BUSINESS_SKUS[it.sku]) {
       const b = BUSINESS_SKUS[it.sku];
-      resolved.push({ business: true, sku: it.sku, name: b.name, unitAmount: b.amount, priceId: BUSINESS_PRICES[it.sku] });
+      resolved.push({
+        business: true, sku: it.sku, name: b.name, unitAmount: b.amount, priceId: BUSINESS_PRICES[it.sku],
+        llcName: typeof it.llcName === 'string' ? it.llcName.trim() : '',
+      });
       continue;
     }
     const pid = parseInt(it.productId, 10);
@@ -256,6 +259,10 @@ router.post('/create-checkout-session', optionalAuth, async (req, res) => {
         referralCode: appliedReferral?.code || '',
         referralCommissionPercent: appliedReferral ? String(appliedReferral.commissionPercent) : '',
         referralDiscountCents: appliedReferral ? String(appliedReferral.refereeDiscountCents) : '',
+        // The company a business cart is for, so the webhook can title the
+        // business set it creates. Kept out of `items` because Stripe caps each
+        // metadata value at 500 characters and every business line repeats it.
+        llcName: (resolved.find(r => r.business && r.llcName)?.llcName || '').slice(0, 200),
       },
       customer_email: req.user?.email || undefined,
     };
@@ -644,6 +651,48 @@ async function handleSuccessfulPayment(session) {
           }
         } catch (setErr) {
           console.error('Failed to create new estate-plan set:', setErr);
+        }
+      }
+    }
+
+    // A paid business cart opens a business "set" — the business counterpart of
+    // the estate set above. Its form_type is the BusinessPlanning app the SKUs
+    // buy (constants.resolveBusinessApp), and what that tier unlocks is stored
+    // under form_data._purchase, which the business interview reads and the
+    // business-plans route never lets the client overwrite. One set per cart:
+    // the wizard sells one company at a time.
+    if (userId && supabase) {
+      const { resolveBusinessApp } = require('../config/constants');
+      const businessSkus = resolved.filter(r => r.business).map(r => r.sku);
+      const app = resolveBusinessApp(businessSkus);
+      if (app) {
+        const llcName = session.metadata.llcName || '';
+        try {
+          const { error: insertError } = await supabase
+            .from('poa_submissions')
+            .insert({
+              user_id: userId,
+              form_type: app.formType,
+              form_data: {
+                _purchase: {
+                  llcName,
+                  llcPackage: app.llcPackage,
+                  operatingPackage: app.operatingPackage,
+                  includes: app.includes,
+                  orderNumber,
+                },
+                company: { llc_name: llcName },
+              },
+              submission_status: 'inprogress',
+              first_submitted_at: null,
+            });
+          if (insertError) {
+            console.error('Error creating business set:', insertError);
+          } else {
+            console.log(`Business set created for user ${userId}: ${app.formType} (${llcName})`);
+          }
+        } catch (setErr) {
+          console.error('Failed to create business set:', setErr);
         }
       }
     }

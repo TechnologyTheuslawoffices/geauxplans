@@ -610,6 +610,7 @@ const StartBusinessLLC: React.FC<StartBusinessLLCProps> = ({ embedded = false })
                 <select name="operatingPackage" value={formData.operatingPackage} onChange={handleInputChange}>
                   <option value="gpx_og_1">Operating agreement</option>
                   <option value="gpx_og_2">Operating agreement plus EIN</option>
+                  <option value="gpx_og_3">Operating agreement plus EIN and licenses</option>
                 </select>
 
                 <p className="mt-4"><strong>Description:</strong><br />

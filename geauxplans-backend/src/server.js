@@ -70,7 +70,10 @@ if (USE_SUPABASE) {
   app.use('/api/submissions', submissionsRoutes);
   const cartRoutes = require('./routes/cart-supabase');
   app.use('/api/cart', cartRoutes);
-  console.log('Loaded Supabase submissions + cart routes');
+  // Business sets live in poa_submissions too, so this is Supabase-only.
+  const businessPlanRoutes = require('./routes/businessPlans');
+  app.use('/api/business-plans', businessPlanRoutes);
+  console.log('Loaded Supabase submissions + cart + business-plan routes');
 } else {
   // SQLite mode - use all routes (local development only)
   // This block is ignored by Vercel when SUPABASE env vars are set

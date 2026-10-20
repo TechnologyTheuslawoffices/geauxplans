@@ -159,7 +159,9 @@ const Checkout: React.FC = () => {
           const sku = i.type === 'registered-agent'
             ? 'registered-agent'
             : (i.metadata?.packageType as string | undefined);
-          return { productId: 0, sku };
+          // llcName titles the business set the webhook opens for this
+          // company in My Companies.
+          return { productId: 0, sku, llcName: (i.metadata?.llcName as string | undefined) || '' };
         }
         return {
           productId: i.productId,

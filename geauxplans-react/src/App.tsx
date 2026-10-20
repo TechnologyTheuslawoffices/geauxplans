@@ -29,6 +29,7 @@ import OperatingAgreementLLC from './pages/OperatingAgreementLLC';
 import EstatePlanningArticles from './pages/EstatePlanningArticles';
 import BusinessPlanningArticles from './pages/BusinessPlanningArticles';
 import POAForm from './pages/POAForm';
+import BusinessInterview from './pages/BusinessInterview';
 import VerifyEmail from './pages/VerifyEmail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
@@ -120,6 +121,7 @@ function App() {
               <Route path="/checkout/success" element={<CheckoutSuccess />} />
               <Route path="/checkout/cancelled" element={<CheckoutCancelled />} />
               <Route path="/start-business-llc" element={<StartBusinessLLC />} />
+              <Route path="/business-plan/:id" element={<BusinessInterview />} />
               <Route path="/operating-agreement-llc" element={<OperatingAgreementLLC />} />
               <Route path="/category/estate-planning-articles" element={<EstatePlanningArticles />} />
               <Route path="/category/business-planning-articles" element={<BusinessPlanningArticles />} />
