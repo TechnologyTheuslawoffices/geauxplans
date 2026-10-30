@@ -954,11 +954,14 @@
 }
 
 /* --- #1 / #2 / #3 accents --- */
-/* Inline quiz step numbers were faint; make them a bold pill badge. */
+/* Inline quiz step numbers were faint; make them a bold pill badge.
+   The global `.text-blue { color: #1a1acc !important }` in
+   confirmation-pages.css would otherwise paint the number blue on the
+   blue pill, so the white has to be forced. */
 .estate-planning-page-main .epp-quiz-step h6 .text-blue {
   display: inline-block;
   background: linear-gradient(135deg, #1a1acc 0%, #4a4ae8 100%);
-  color: #fff;
+  color: #fff !important;
   font-weight: 800;
   padding: 2px 12px;
   border-radius: 20px;
