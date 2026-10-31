@@ -4,9 +4,10 @@
  * Provides shopping cart state and methods throughout the app.
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import cartService from '../services/cartService';
-import type { Cart, CartItem } from '../types';
+import { useAuth } from './AuthContext';
+import type { Cart } from '../types';
 
 interface CustomCartItem {
   id: string;
@@ -23,11 +24,14 @@ interface CartContextType {
   error: string | null;
   addItem: (productId: number, quantity?: number, variationId?: number) => Promise<boolean>;
   addToCart: (item: CustomCartItem) => void;
+  addEstatePlan: (productId: number, formType: 'solo' | '2person', withLEP: boolean) => Promise<boolean>;
   updateItem: (itemId: string, quantity: number) => Promise<boolean>;
   removeItem: (itemId: string) => Promise<boolean>;
   clearCart: () => Promise<boolean>;
   applyCoupon: (code: string) => Promise<boolean>;
-  removeCoupon: (code: string) => Promise<boolean>;
+  removeCoupon: () => Promise<boolean>;
+  applyReferral: (code: string) => Promise<boolean>;
+  removeReferral: () => Promise<boolean>;
   refreshCart: () => Promise<void>;
   clearError: () => void;
 }
@@ -50,6 +54,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [cart, setCart] = useState<Cart>(emptyCart);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  // Remembers the previous auth state so the effect below can tell a login
+  // (false -> true) from a logout (true -> false) from a mere re-render.
+  const prevAuthRef = useRef<boolean | null>(null);
 
   // Load cart on mount
   useEffect(() => {
@@ -70,6 +78,40 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       setIsLoading(false);
     }
   }, []);
+
+  // React to login/logout: bind the cart to the account while signed in, and
+  // cut it loose on sign-out. Gated on authLoading so we act only on a settled
+  // auth state, never on the transient null during the initial session probe.
+  useEffect(() => {
+    if (authLoading) return;
+
+    const prev = prevAuthRef.current;
+    prevAuthRef.current = isAuthenticated;
+    if (prev === isAuthenticated) return;
+
+    let cancelled = false;
+
+    (async () => {
+      if (isAuthenticated) {
+        // Logged in: fold the guest cart into the account cart, adopt the
+        // merged result, then keep mirroring future changes upward.
+        cartService.setServerSyncEnabled(false);
+        const merged = await cartService.mergeServerCart();
+        cartService.setServerSyncEnabled(true);
+        if (!cancelled) setCart(merged);
+      } else {
+        // Logged out: stop syncing and clear this browser's cart so the next
+        // user does not inherit the previous account's items.
+        cartService.setServerSyncEnabled(false);
+        const empty = cartService.resetLocalCart();
+        if (!cancelled) setCart(empty);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, authLoading]);
 
   const addItem = useCallback(async (
     productId: number,
@@ -190,12 +232,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   }, []);
 
-  const removeCoupon = useCallback(async (code: string): Promise<boolean> => {
+  const removeCoupon = useCallback(async (): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await cartService.removeCoupon(code);
+      const response = await cartService.removeCoupon();
 
       if (response.success && response.data) {
         setCart(response.data);
@@ -213,55 +255,87 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // Add custom item to cart (for LLC wizard and custom products)
-  const addToCart = useCallback((item: CustomCartItem): void => {
-    setCart(prevCart => {
-      // Check if item already exists
-      const existingIndex = prevCart.items.findIndex(i => i.id === item.id);
+  const applyReferral = useCallback(async (code: string): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
 
-      let newItems: CartItem[];
-      if (existingIndex >= 0) {
-        // Update existing item quantity
-        newItems = prevCart.items.map((i, index) =>
-          index === existingIndex
-            ? { ...i, quantity: i.quantity + item.quantity }
-            : i
-        );
+    try {
+      const response = await cartService.applyReferral(code);
+
+      if (response.success && response.data) {
+        setCart(response.data);
+        setIsLoading(false);
+        return true;
       } else {
-        // Add new item
-        const newItem: CartItem = {
-          id: item.id,
-          productId: 0, // Custom item, no product ID
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: '',
-          type: item.type,
-          metadata: item.metadata,
-        };
-        newItems = [...prevCart.items, newItem];
+        setError(response.error || 'Invalid referral code');
+        setIsLoading(false);
+        return false;
       }
+    } catch (err) {
+      setError('An unexpected error occurred');
+      setIsLoading(false);
+      return false;
+    }
+  }, []);
 
-      // Recalculate totals
-      const subtotal = newItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-      const tax = 0; // Tax calculated at checkout
-      const total = subtotal + tax;
-      const itemCount = newItems.reduce((sum, i) => sum + i.quantity, 0);
+  const removeReferral = useCallback(async (): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
 
-      return {
-        ...prevCart,
-        items: newItems,
-        subtotal,
-        tax,
-        total,
-        itemCount,
-      };
-    });
+    try {
+      const response = await cartService.removeReferral();
+
+      if (response.success && response.data) {
+        setCart(response.data);
+        setIsLoading(false);
+        return true;
+      } else {
+        setError(response.error || 'Failed to remove referral code');
+        setIsLoading(false);
+        return false;
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
+      setIsLoading(false);
+      return false;
+    }
+  }, []);
+
+  // Add custom item to cart (for LLC wizard and custom products).
+  // Delegates to the service so the item is written to localStorage like every
+  // other line; keeping it in React state alone meant it did not survive a
+  // reload of the checkout page.
+  const addToCart = useCallback((item: CustomCartItem): void => {
+    setCart(cartService.addCustomItem(item));
   }, []);
 
   const clearError = useCallback(() => {
     setError(null);
   }, []);
+
+  // Convenience: clear cart, add estate plan, optionally add Legal Edge Plan
+  const addEstatePlan = useCallback(async (
+    productId: number,
+    formType: 'solo' | '2person',
+    withLEP: boolean
+  ): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await cartService.clearCart();
+      await cartService.addToCart(productId, 1, formType === '2person' ? 2 : 1);
+      if (withLEP) {
+        await cartService.addToCart(1367, 1, 1);
+      }
+      await refreshCart();
+      setIsLoading(false);
+      return true;
+    } catch (err) {
+      setError('Failed to add plan to cart');
+      setIsLoading(false);
+      return false;
+    }
+  }, [refreshCart]);
 
   const value: CartContextType = {
     cart,
@@ -269,11 +343,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     error,
     addItem,
     addToCart,
+    addEstatePlan,
     updateItem,
     removeItem,
     clearCart: clearCartItems,
     applyCoupon,
     removeCoupon,
+    applyReferral,
+    removeReferral,
     refreshCart,
     clearError,
   };

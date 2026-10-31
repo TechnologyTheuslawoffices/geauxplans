@@ -38,7 +38,7 @@
   justify-content: space-between;
   margin-bottom: 40px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #0000ff;
+  border-bottom: 2px solid #1a1acc;
 }
 
 .category-header h2 {
@@ -87,7 +87,7 @@
 }
 
 .article-item h3 a:hover {
-  color: #0000ff;
+  color: #1a1acc;
 }
 
 .article-item p {
@@ -97,7 +97,7 @@
 }
 
 .read-more {
-  color: #0000ff;
+  color: #1a1acc;
   text-decoration: none;
   font-weight: 500;
   font-size: 0.95rem;
@@ -105,7 +105,7 @@
 }
 
 .read-more:hover {
-  color: #0000cc;
+  color: #141499;
 }
 
 /* Category CTA */
@@ -116,8 +116,8 @@
 
 .btn-outline {
   background: transparent;
-  color: #0000ff;
-  border: 2px solid #0000ff;
+  color: #1a1acc;
+  border: 2px solid #1a1acc;
   padding: 12px 30px;
   border-radius: 4px;
   text-decoration: none;
@@ -127,7 +127,7 @@
 }
 
 .btn-outline:hover {
-  background: #0000ff;
+  background: #1a1acc;
   color: #fff;
 }
 
@@ -176,7 +176,7 @@
 /* CTA Section */
 .learn-cta-section {
   padding: 80px 0;
-  background: linear-gradient(135deg, #0000ff 0%, #0000cc 100%);
+  background: linear-gradient(135deg, #1a1acc 0%, #141499 100%);
 }
 
 .learn-cta-section .cta-content {
@@ -190,8 +190,12 @@
   margin-bottom: 15px;
 }
 
-.learn-cta-section p {
-  opacity: 0.9;
+/* Keep the subtitle fully legible on the deep-blue panel — em must not pick
+   up a darker global color, and no dimming opacity. */
+.learn-cta-section p,
+.learn-cta-section p em {
+  color: #fff !important;
+  opacity: 1;
   margin-bottom: 30px;
   font-size: 1.1rem;
 }
@@ -203,35 +207,42 @@
   flex-wrap: wrap;
 }
 
-.btn-outline-white {
+/* Shared sizing + a smooth lift on hover for both CTA buttons. */
+.learn-cta-section .cta-buttons .btn {
+  padding: 13px 32px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+/* Primary action: bright yellow to echo the webinar button and pop on blue. */
+.learn-cta-section .cta-buttons .btn-solid {
+  background: #ffd200 !important;
+  color: #141499 !important;
+  border: 2px solid #ffd200 !important;
+}
+
+.learn-cta-section .cta-buttons .btn-solid:hover {
+  background: #ffde4d !important;
+  color: #141499 !important;
+  border-color: #ffde4d !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+}
+
+/* Secondary action: solid white outline so it's clearly visible (the global
+   .btn transparent border otherwise hides it), inverts to white fill on hover. */
+.learn-cta-section .cta-buttons .btn-outline-white {
   background: transparent;
-  color: #fff;
-  border: 2px solid #fff;
-  padding: 12px 30px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  color: #fff !important;
+  border: 2px solid #fff !important;
 }
 
-.btn-outline-white:hover {
+.learn-cta-section .cta-buttons .btn-outline-white:hover {
   background: #fff;
-  color: #0000ff;
-}
-
-.learn-cta-section .btn-solid {
-  background: #fff !important;
-  color: #0000ff !important;
-  border: 2px solid #fff;
-  padding: 12px 30px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.learn-cta-section .btn-solid:hover {
-  background: #f0f0f0 !important;
-  color: #0000ff !important;
+  color: #1a1acc !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
 }
 
 /* Responsive */

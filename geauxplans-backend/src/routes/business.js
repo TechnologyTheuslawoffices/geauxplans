@@ -9,74 +9,10 @@ const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
 
-/**
- * Check LLC name availability via Louisiana SOS API
- */
-async function checkLLCAvailability(name) {
-  const apiUrl = process.env.LA_SOS_API_URL;
-  const token = process.env.LA_SOS_TOKEN;
-  const email = process.env.LA_SOS_EMAIL;
-
-  if (!apiUrl || !token) {
-    // Fallback for development without API access
-    console.log('LA SOS API not configured, using mock response');
-    return {
-      available: true,
-      message: 'Name appears to be available (mock)',
-      similar: [],
-    };
-  }
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        searchTerm: name,
-        email: email,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`SOS API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    // Parse SOS response to determine availability
-    const hasExactMatch = data.results?.some(
-      (r) => r.entityName?.toLowerCase() === name.toLowerCase() && r.status === 'Active'
-    );
-
-    const similarNames = data.results
-      ?.filter((r) => r.status === 'Active')
-      .slice(0, 5)
-      .map((r) => ({
-        name: r.entityName,
-        type: r.entityType,
-        status: r.status,
-        charterNumber: r.charterNumber,
-      })) || [];
-
-    return {
-      available: !hasExactMatch,
-      message: hasExactMatch
-        ? 'This name is already registered in Louisiana'
-        : 'Name appears to be available',
-      similar: similarNames,
-    };
-  } catch (error) {
-    console.error('LA SOS API error:', error);
-    return {
-      available: null,
-      message: 'Unable to verify name availability at this time',
-      error: true,
-    };
-  }
-}
+// The SOS name check and its route now live in routes/businessPublic.js, backed
+// by services/laSos.js. They were moved out because this file requires
+// ../config/database, which confines it to SQLite mode — so in production the
+// check was unreachable and the funnel silently treated every name as available.
 
 /**
  * GET /api/business/entities
@@ -282,40 +218,9 @@ router.post('/entities/:id/documents', authenticate, (req, res) => {
 });
 
 /**
- * POST /api/business/check-availability
- * Check LLC name availability via Louisiana SOS
+ * POST /api/business/check-availability is served by routes/businessPublic.js,
+ * which is mounted on this same prefix in both database modes.
  */
-router.post('/check-availability', async (req, res) => {
-  const { name, state = 'LA' } = req.body;
-
-  if (!name) {
-    return res.status(400).json({ success: false, error: 'Business name is required' });
-  }
-
-  // Currently only supports Louisiana
-  if (state !== 'LA') {
-    return res.status(400).json({
-      success: false,
-      error: 'Name availability check only available for Louisiana at this time',
-    });
-  }
-
-  try {
-    const result = await checkLLCAvailability(name);
-
-    res.json({
-      success: true,
-      data: {
-        name,
-        state,
-        ...result,
-      },
-    });
-  } catch (error) {
-    console.error('Check availability error:', error);
-    res.status(500).json({ success: false, error: 'Failed to check name availability' });
-  }
-});
 
 /**
  * GET /api/business/entity-types

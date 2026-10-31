@@ -1,7 +1,7 @@
 import { supabaseAdmin } from '../../../lib/supabase.js';
 import { requireAuth, handleCors } from '../../../lib/auth.js';
 
-const CONVERTAPI_SECRET = process.env.CONVERTAPI_SECRET || 'K8fKJ4TsD5q39R31xw3Ja9ktOiKW28M1';
+const CONVERTAPI_SECRET = process.env.CONVERTAPI_SECRET;
 
 async function convertDocxToPdf(docxUrl) {
   console.log('ConvertAPI: Converting from URL:', docxUrl);

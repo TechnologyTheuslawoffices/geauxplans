@@ -162,7 +162,7 @@ const Register: React.FC = () => {
             style={{
               maxWidth: '450px',
               margin: '0 auto',
-              padding: '40px',
+              padding: 'clamp(20px, 5vw, 40px)',
               border: '1px solid #eaeaea',
               borderRadius: '8px',
             }}
@@ -176,7 +176,7 @@ const Register: React.FC = () => {
             )}
 
             <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+              <div className="form-row-2col">
                 <div>
                   <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
                     First Name *
@@ -441,7 +441,9 @@ const Register: React.FC = () => {
         </div>
       )}
 
-      {/* Debug Panel */}
+      {/* Debug Panel — development only. It was a fixed bar pinned to the bottom
+          of every production phone, overlapping the Create Account button. */}
+      {process.env.NODE_ENV === 'development' && (
       <div
         style={{
           position: 'fixed',
@@ -591,6 +593,7 @@ const Register: React.FC = () => {
           </div>
         )}
       </div>
+      )}
     </main>
   );
 };

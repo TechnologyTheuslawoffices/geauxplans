@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { submitLead } from '../services/leads';
 import '../styles/register-for-webinar.css';
 
 const RegisterForWebinar: React.FC = () => {
@@ -8,9 +9,11 @@ const RegisterForWebinar: React.FC = () => {
     name: '',
     email: '',
     phone: '',
+    website: '', // honeypot
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -22,8 +25,10 @@ const RegisterForWebinar: React.FC = () => {
     countryCode: '+1',
     phone: '',
     zipCode: '',
+    website: '', // honeypot
   });
   const [isModalSubmitting, setIsModalSubmitting] = useState(false);
+  const [modalError, setModalError] = useState<string | null>(null);
 
   // Available event dates and times
   const eventDates = [
@@ -59,12 +64,23 @@ const RegisterForWebinar: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    const response = await submitLead({
+      source: 'webinar_rsvp',
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      website: formData.website,
+    });
 
     setIsSubmitting(false);
-    setIsSubmitted(true);
+
+    if (response.success) {
+      setIsSubmitted(true);
+    } else {
+      setError(response.error || 'Something went wrong. Please try again.');
+    }
   };
 
   const handleModalChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -78,13 +94,30 @@ const RegisterForWebinar: React.FC = () => {
   const handleModalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsModalSubmitting(true);
+    setModalError(null);
 
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    const response = await submitLead({
+      source: 'webinar_registration',
+      name: modalFormData.fullName,
+      email: modalFormData.email,
+      phone: modalFormData.phone ? `${modalFormData.countryCode} ${modalFormData.phone}` : '',
+      details: {
+        eventDate: modalFormData.eventDate,
+        eventTime: modalFormData.eventTime,
+        zipCode: modalFormData.zipCode,
+      },
+      website: modalFormData.website,
+    });
 
     setIsModalSubmitting(false);
-    setShowModal(false);
-    navigate('/thank-you-for-your-reservation');
+
+    if (response.success) {
+      setShowModal(false);
+      navigate('/thank-you-for-your-reservation');
+    } else {
+      // Stay on the modal so the reservation details aren't lost.
+      setModalError(response.error || 'Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -141,7 +174,18 @@ const RegisterForWebinar: React.FC = () => {
               <div className="stars">
                 <img src="/wp-content/uploads/2021/12/email-header-5-star-review-600-x-200.png" alt="5 stars" />
               </div>
+              {error && <div className="form-error" role="alert">{error}</div>}
               <form onSubmit={handleSubmit} className="rsvp-form">
+                <input
+                  type="text"
+                  name="website"
+                  className="honeypot"
+                  value={formData.website}
+                  onChange={handleChange}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                />
                 <div className="form-group">
                   <input
                     type="text"
@@ -330,7 +374,18 @@ const RegisterForWebinar: React.FC = () => {
               <p>Get a GeauxPlan!</p>
               <h2>Register for our free estate planning webinar</h2>
             </div>
+            {modalError && <div className="form-error" role="alert">{modalError}</div>}
             <form onSubmit={handleModalSubmit} className="modal-form">
+              <input
+                type="text"
+                name="website"
+                className="honeypot"
+                value={modalFormData.website}
+                onChange={handleModalChange}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
               <div className="form-section">
                 <h3>Event Schedule</h3>
                 <div className="form-group">

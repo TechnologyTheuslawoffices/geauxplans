@@ -1,4 +1,56 @@
 {
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/geauxplans-downloads", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/geauxplans-downloads", "destination": "/my-account/my-estate-planning", "permanent": true },
+
+    { "source": "/my-trust-based-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/my-trust-based-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+
+    { "source": "/my-power-of-attorney-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/my-power-of-attorney-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+
+    { "source": "/my-minor-child-centered-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/my-minor-child-centered-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+
+    { "source": "/my-will-based-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/my-will-based-estate-plan", "destination": "/my-account/my-estate-planning", "permanent": true },
+
+    { "source": "/my-business-planning", "destination": "/my-account/business-planning", "permanent": true },
+    { "source": "/my-account/my-business-planning", "destination": "/my-account/business-planning", "permanent": true },
+
+    { "source": "/my-company", "destination": "/my-account/business-planning", "permanent": true },
+    { "source": "/my-account/my-company", "destination": "/my-account/business-planning", "permanent": true },
+
+    { "source": "/my-estate-planning", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/interview", "destination": "/my-account/interview", "permanent": true },
+
+    { "source": "/my-account/dashboard", "destination": "/my-account", "permanent": true },
+    { "source": "/my-account/downloads", "destination": "/my-account/my-estate-planning", "permanent": true },
+    { "source": "/my-account/payment-methods", "destination": "/my-account", "permanent": true },
+    { "source": "/my-account/edit-address", "destination": "/my-account/edit-account", "permanent": true },
+    { "source": "/my-account/subscriptions", "destination": "/my-account/orders", "permanent": true },
+
+    { "source": "/estate-planning-articles", "destination": "/category/estate-planning-articles", "permanent": true },
+    { "source": "/business-planning-articles", "destination": "/category/business-planning-articles", "permanent": true },
+
+    { "source": "/about-contact-us", "destination": "/about", "permanent": true },
+    { "source": "/terms-of-use", "destination": "/terms", "permanent": true },
+    { "source": "/home-page", "destination": "/", "permanent": true },
+
+    { "source": "/product/minor-child-centered-estate-plan", "destination": "/minor-child-centered-estate-plan", "permanent": true },
+    { "source": "/product/power-of-attorney-plan", "destination": "/power-of-attorney-plan", "permanent": true },
+    { "source": "/product/will-based-estate-plan", "destination": "/will-based-estate-plan", "permanent": true },
+    { "source": "/product/trust-based-estate-plan", "destination": "/trust-based-estate-plan", "permanent": true },
+    { "source": "/product/legal-edge-plan", "destination": "/legal-edge-plan", "permanent": true },
+    { "source": "/product/operating-agreement", "destination": "/operating-agreement-llc", "permanent": true },
+    { "source": "/product/llc-registration", "destination": "/start-business-llc", "permanent": true },
+    { "source": "/product/appoint-geauxplans-as-registered-agent", "destination": "/start-business-llc", "permanent": true },
+
+    { "source": "/product-category/estate-plan", "destination": "/shop", "permanent": true },
+    { "source": "/product-category/business-plan", "destination": "/start-business-llc", "permanent": true },
+    { "source": "/product-category/legal-edge-plan", "destination": "/legal-edge-plan", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]

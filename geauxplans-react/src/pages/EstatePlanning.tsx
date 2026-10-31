@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import '../styles/estate-planning.css';
 
 interface FormData {
@@ -66,14 +67,21 @@ const US_STATES = [
 ];
 
 const PRODUCTS = {
-  MINOR_CHILD: { id: 606, name: 'Minor Child-Centered Estate Plan', price: 199 },
-  POA_SUPPLEMENT: { id: 614, name: 'Power of Attorney Supplement', price: 99 },
-  WILL_BASED: { id: 673, name: 'Will-Based Estate Plan', price: 199 },
-  TRUST_BASED: { id: 676, name: 'Trust-Based Estate Plan', price: 399 },
+  MINOR_CHILD: { id: 606, name: 'Minor Child-Centered Estate Plan', price: 199, price2person: 299 },
+  POA_SUPPLEMENT: { id: 614, name: 'Power of Attorney Supplement', price: 99, price2person: 149 },
+  WILL_BASED: { id: 673, name: 'Will-Based Estate Plan', price: 199, price2person: 299 },
+  TRUST_BASED: { id: 676, name: 'Trust-Based Estate Plan', price: 399, price2person: 599 },
 };
+
+// The quiz reaches its result from several different question steps, so the
+// result is a sentinel rather than a fixed number. Its displayed step number is
+// derived from the branch length (see totalSteps), which keeps the progress bar
+// from jumping and removes the old phantom "step 6".
+const RESULT_STEP = 99;
 
 const EstatePlanning: React.FC = () => {
   const navigate = useNavigate();
+  const { addEstatePlan } = useCart();
   const [showModal, setShowModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [expandedPlan, setExpandedPlan] = useState<string | null>('minor-child');
@@ -136,10 +144,14 @@ const EstatePlanning: React.FC = () => {
     }
   };
 
-  const handleGetStarted = (product: typeof PRODUCTS.MINOR_CHILD) => {
+  const handleGetStarted = async (product: typeof PRODUCTS.MINOR_CHILD) => {
+    // Seed the cart with the chosen variant the same way the plan pages do, so a
+    // couple's plan reaches checkout at its two-person price. (Checkout ignores a
+    // ?product=/?type= link and would otherwise seed everyone as a solo plan.)
     const formType = formData.isMarried ? '2person' : 'solo';
     closeModal();
-    navigate(`/checkout?product=${product.id}&type=${formType}`);
+    await addEstatePlan(product.id, formType, false);
+    navigate('/checkout');
   };
 
   const renderStep = () => {
@@ -300,7 +312,7 @@ const EstatePlanning: React.FC = () => {
                   onClick={() => {
                     handleYesNo('wantsIncapacityPlanning', true);
                     setRecommendedProduct(PRODUCTS.POA_SUPPLEMENT);
-                    setCurrentStep(7);
+                    setCurrentStep(RESULT_STEP);
                   }}
                 >
                   <i className="fas fa-user-shield me-2"></i>
@@ -308,7 +320,11 @@ const EstatePlanning: React.FC = () => {
                 </button>
                 <button
                   className={`ep-option-btn ${formData.wantsIncapacityPlanning === false ? 'selected' : ''}`}
-                  onClick={() => handleYesNo('wantsIncapacityPlanning', false)}
+                  onClick={() => {
+                    handleYesNo('wantsIncapacityPlanning', false);
+                    setRecommendedProduct(null);
+                    setCurrentStep(RESULT_STEP);
+                  }}
                 >
                   <i className="fas fa-times me-2"></i>
                   No, not at this time
@@ -338,7 +354,7 @@ const EstatePlanning: React.FC = () => {
                   onClick={() => {
                     handleYesNo('assetsOver125k', true);
                     setRecommendedProduct(PRODUCTS.TRUST_BASED);
-                    setCurrentStep(7);
+                    setCurrentStep(RESULT_STEP);
                   }}
                 >
                   <i className="fas fa-dollar-sign me-2"></i>
@@ -349,7 +365,7 @@ const EstatePlanning: React.FC = () => {
                   onClick={() => {
                     handleYesNo('assetsOver125k', false);
                     setRecommendedProduct(PRODUCTS.WILL_BASED);
-                    setCurrentStep(7);
+                    setCurrentStep(RESULT_STEP);
                   }}
                 >
                   <i className="fas fa-coins me-2"></i>
@@ -374,7 +390,7 @@ const EstatePlanning: React.FC = () => {
                   onClick={() => {
                     handleYesNo('hasMinorChildren', true);
                     setRecommendedProduct(PRODUCTS.MINOR_CHILD);
-                    setCurrentStep(7);
+                    setCurrentStep(RESULT_STEP);
                   }}
                 >
                   <i className="fas fa-child me-2"></i>
@@ -385,7 +401,7 @@ const EstatePlanning: React.FC = () => {
                   onClick={() => {
                     handleYesNo('hasMinorChildren', false);
                     setRecommendedProduct(PRODUCTS.WILL_BASED);
-                    setCurrentStep(7);
+                    setCurrentStep(RESULT_STEP);
                   }}
                 >
                   <i className="fas fa-user-check me-2"></i>
@@ -401,7 +417,7 @@ const EstatePlanning: React.FC = () => {
           );
         }
 
-      case 7:
+      case RESULT_STEP:
         const product = recommendedProduct || determineProduct();
         if (!product) {
           return (
@@ -423,8 +439,8 @@ const EstatePlanning: React.FC = () => {
           <div className="ep-step ep-result">
             <h2>Your Recommended Plan</h2>
             <div className="ep-product-card">
-              <h3>{product.name}</h3>
-              <p className="ep-product-price">${product.price}</p>
+              <h3>{product.name}{formData.isMarried ? ' (For Couple)' : ''}</h3>
+              <p className="ep-product-price">${formData.isMarried ? product.price2person : product.price}</p>
               <button
                 className="btn btn-success btn-lg w-100"
                 onClick={() => handleGetStarted(product)}
@@ -446,8 +462,12 @@ const EstatePlanning: React.FC = () => {
     }
   };
 
-  const totalSteps = 7;
-  const progressPercent = (currentStep / totalSteps) * 100;
+  // Branch length differs: skipping end-of-life planning is a 4-question path,
+  // planning for it is a 5-question path; the result screen is the final step in
+  // each. On the result the user is done, so the counter reads the last step.
+  const totalSteps = formData.planForDeath === false ? 5 : 6;
+  const displayStep = currentStep === RESULT_STEP ? totalSteps : currentStep;
+  const progressPercent = (displayStep / totalSteps) * 100;
 
   return (
     <main>
@@ -576,28 +596,6 @@ const EstatePlanning: React.FC = () => {
         </div>
       </section>
 
-      {/* GeauxPlans in Numbers Section */}
-      <section className="numbers-section">
-        <div className="container">
-          <h3>GeauxPlans in numbers</h3>
-          <p className="numbers-subtitle">In the course of our work</p>
-          <div className="numbers-grid">
-            <div className="number-card">
-              <span className="number">140</span>
-              <p>Years total experience of our specialists in the field of law</p>
-            </div>
-            <div className="number-card">
-              <span className="number">#1</span>
-              <p>Online Estate and Business planning company in Louisiana</p>
-            </div>
-            <div className="number-card">
-              <span className="number">5k</span>
-              <p>Happy clients across the United States</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Louisiana Business Section */}
       <section className="louisiana-business-section">
         <div className="container">
@@ -695,7 +693,7 @@ const EstatePlanning: React.FC = () => {
                 ></div>
               </div>
               <small className="text-muted">
-                Step {currentStep} of {totalSteps}
+                Step {displayStep} of {totalSteps}
               </small>
             </div>
             <div className="quiz-modal-body">

@@ -1,0 +1,3149 @@
+{
+  "_id": "61be0aa239532946d6d00a90",
+  "summary": "{[BusinessNameTX]}",
+  "label": " ",
+  "type": "collection",
+  "formulas": [
+    {
+      "contentType": "",
+      "isList": true,
+      "label": "",
+      "expression": "[\"(OtherAllowedManagers|contains: \\\"Members\\\")\\r\\n    ? \\\"Members\\\"\\r\\n    : null\",\"(OtherAllowedManagers|contains: \\\"Family Members\\\")\\r\\n    ? \\\"persons within the Familial Line of a Member\\\"\\r\\n    : null\",\"(OtherAllowedManagers|contains: \\\"Entities wholly owned by a Member\\\")\\r\\n    ? (OtherAllowedManagers|contains: \\\"Entity wholly owned by a Family Member\\\")\\r\\n      ? \\\"an entity owned in whole by Members or persons within the Familial Line of a Member\\\"\\r\\n      : \\\"an entity owned in whole by Members\\\"\\r\\n    : null\",\"(OtherAllowedManagers|contains: \\\"Entity wholly owned by a Family Member\\\")\\r\\n    ? (OtherAllowedManagers|contains: \\\"Entities wholly owned by a Member\\\")\\r\\n       ? null\\r\\n       : \\\"an entity owned in whole by persons within the Familial Line of a Member\\\"\\r\\n    : null\"]",
+      "ref": "",
+      "type": "text",
+      "name": "ListOtherManagers",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T18:35:24.067Z",
+      "_id": "63c01902241c0b33192b0ca9"
+    },
+    {
+      "isList": true,
+      "label": "",
+      "expression": "[\"OnlyMemberManagers == \\\"Yes\\\"\\r\\n   ? ManagersOnlyMembers\\r\\n   : []\",\"OnlyMemberManagers == \\\"No\\\"\\r\\n   ? (LLCManagers|map: AsManager)\\r\\n   : []\"]",
+      "ref": "party",
+      "name": "RealManagers",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T21:40:16.424Z",
+      "_id": "63c01902241c0b33192b0caa"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "IsRegAgentMemberTF\n    ? SelectedAgent\n    : RegisteredAgent",
+      "ref": "party",
+      "name": "RealRegAgent",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T22:11:00.461Z",
+      "_id": "63c01902241c0b33192b0cab"
+    },
+    {
+      "isList": true,
+      "label": "",
+      "expression": "[\"(LLCMembers|filter: Street)|map: {id$: \\\"Swoer253\\\" + this.id$,\\n TextVar: Inline\\n}\"]",
+      "ref": "textforlists",
+      "type": "object",
+      "name": "MemberAddresses",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T22:03:22.904Z",
+      "_id": "63c01902241c0b33192b0cac"
+    },
+    {
+      "isList": false,
+      "label": "",
+      "expression": "{PartyType:\"Entity\",EntityName:\"GeauxPlans RA\",EntityStateLLC:\"Louisiana\",Street:\"1902 Jackson Street\",City:\"Alexandria\",State:\"Louisiana\",Zip:\"71301\",id$:\"GeauxAgent234\"}",
+      "ref": "party",
+      "name": "GeauxAgent",
+      "type": "object",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-27T18:59:12.486Z",
+      "_id": "63c01902241c0b33192b0cad"
+    },
+    {
+      "name": "isInternalAppTF",
+      "isList": false,
+      "label": "",
+      "expression": "_app.Name == \"BusinessAEXApp\" || _app.Name == \"BusinessLFTApp\" || _app.Name == \"BusinessSHVApp\" || _app.Name == \"BusinessMonroeApp\" || _app.Name == \"InternalBusinessNoSelect\"",
+      "ref": "",
+      "_id": "68d42877b7c82e856f15b74f",
+      "type": "true/false"
+    },
+    {
+      "name": "AgentNameAddress",
+      "isList": false,
+      "label": "",
+      "expression": "(this.RealRegAgent.FullName|else: \"____________________\") + \", \" + RealRegAgent.LineAddressFullState",
+      "ref": "",
+      "_id": "68d42e60cba2e2e1851c5d0a",
+      "type": "text",
+      "contentType": ""
+    },
+    {
+      "name": "PotentialAgentsWithTrust",
+      "isList": true,
+      "label": "",
+      "expression": "[\"BusinessParties\"]",
+      "ref": "party",
+      "_id": "68d4328d9e20ddc0e58eed00",
+      "type": "object"
+    },
+    {
+      "name": "isTheusTF",
+      "isList": false,
+      "label": "",
+      "expression": "_app.Name == \"BusinessAEXApp\" || _app.Name == \"BusinessLFTApp\" || _app.Name == \"BusinessSHVApp\" || _app.Name == \"BusinessMonroeApp\" || _app.Name == \"InternalBusinessNoSelect\"",
+      "ref": "",
+      "_id": "68d43cbf7570a5da1ddebacc",
+      "type": "true/false"
+    }
+  ],
+  "templates": [
+    {
+      "filename": "OperatingAgreementTemplate (former) 2026.02.20.docx",
+      "filesize": 92261,
+      "filepath": "templates/61be0aa239532946d6d00a90/63c01902241c0b33192b0cae/6998a33f122ca12f88fc7bd5/template.docx",
+      "date": 1771610947076,
+      "output": "Operating Agreement for {[BusinessNameTX|else: \"New entity\"]}",
+      "label": "",
+      "type": "docx",
+      "name": "OperatingAgreementFormer",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-22T17:14:30.102Z",
+      "user": "66cf83c43c74fb2094e33277",
+      "_id": "63c01902241c0b33192b0cae"
+    },
+    {
+      "contentType": "",
+      "text": "{[if IsRegAddressSameTF]}{[RegAgentForAddress.LineAddressFullState]}{[else]}{[RegStreet]}, {[if RegStreet2]}{[RegStreet2]}, {[endif]}{[RegCity]}, {[RegState]} {[RegZip]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "LLCRealOfficeAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T21:59:09.430Z",
+      "_id": "63c01902241c0b33192b0caf"
+    },
+    {
+      "contentType": "",
+      "text": "{[list LLCNameList|filter: _index == 1]}{[this]}{[endlist]}",
+      "label": "",
+      "type": "text",
+      "name": "LLCNameTXx",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:58:39.753Z",
+      "_id": "63c01902241c0b33192b0cb0"
+    },
+    {
+      "contentType": "",
+      "text": "{[if MarriedTF]}{[if Spouse.Last == Client.Last]}{[Client.Gender.MrMrs|else: \"Mr.\"]} and {[Spouse.Gender.MrMrs|else: \"Mrs.\"]} {[Client.Last]}{[else]}{[Client.Gender.MrMrs|else: \"Mr.\"]} {[Client.Last]} and {[Spouse.Gender.MrMrs|else: \"Mr.\"]} {[Spouse.Last]}{[endif]}{[else]}{[Client.Gender.MrMrs|else: \"Mr.\"]} {[Client.Last]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "LetterDear",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-04-20T19:06:26.123Z",
+      "_id": "63c01902241c0b33192b0cb1"
+    },
+    {
+      "contentType": "",
+      "text": "{[if MarriedTF]}{[if Spouse.Last == Client.Last]}{[Client.First]} and {[Spouse.First]} {[Client.Last]}{[else]}{[Client.NameCO]} and {[Spouse.NameCO]}{[endif]}{[else]}{[Client.NameCO]}{[endif]}",
+      "label": "",
+      "type": "text",
+      "name": "LetterAddressee",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-04-20T19:07:51.478Z",
+      "_id": "63c01902241c0b33192b0cb2"
+    },
+    {
+      "name": "OperatingAgmt",
+      "label": "",
+      "_id": "68d423e07570a5da1ddebac9",
+      "type": "docx",
+      "filename": "OperatingAgmt.docx",
+      "filesize": 124126,
+      "filepath": "templates/61be0aa239532946d6d00a90/68d423e07570a5da1ddebac9/5d861010-a85c-11f0-8e2c-c3b4f7bbb80d/template.docx",
+      "date": 1760377519149,
+      "output": "Operating Agreement for {[BusinessNameTX|else: \"New entity\"]}",
+      "user": "63d46c67ad98ce943197d39a"
+    },
+    {
+      "name": "FirmFooter",
+      "label": "",
+      "_id": "68d4386a5671975f6c38bdd5",
+      "type": "text",
+      "contentType": "",
+      "text": "{[firmInfo.FirmName]}\nP: {[firmInfo.FirmPhone]}{[if firmInfo.FirmFax]} • F: {[firmInfo.FirmFax]}{[endif]}\n{[firmInfo.FirmEmail]} • {[firmInfo.FirmWebsite]}"
+    },
+    {
+      "name": "LLCResolution",
+      "label": "",
+      "_id": "68d43a7a5671975f6c38bdd9",
+      "type": "docx",
+      "filename": "LLCResolution.docx",
+      "filesize": 29353,
+      "filepath": "templates/61be0aa239532946d6d00a90/68d43a7a5671975f6c38bdd9/66205d20-a85c-11f0-8e2c-c3b4f7bbb80d/template.docx",
+      "date": 1760377527525,
+      "output": "Resolution for {[BusinessNameTX]}",
+      "user": "63d46c67ad98ce943197d39a"
+    },
+    {
+      "name": "W9Form",
+      "label": "",
+      "_id": "68d43a9f5671975f6c38bdda",
+      "type": "pdff",
+      "filename": "TheusW9.pdf",
+      "filesize": 45802,
+      "filepath": "templates/61be0aa239532946d6d00a90/68d43a9f5671975f6c38bdda/62af9040-997d-11f0-9de9-b9ce489df1b6/template.pdf",
+      "date": 1758739124420,
+      "output": "W9 for {[BusinessNameTX]}",
+      "fillable": true,
+      "fieldMap": {
+        "topmostSubform": [
+          {
+            "Page1": [
+              {
+                "FederalClassification": [
+                  {
+                    "c1_1": [
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      {
+                        "__props": {
+                          "FieldType": "Button",
+                          "FieldName": "topmostSubform[0].Page1[0].FederalClassification[0].c1_1[6]",
+                          "FieldFlags": 0,
+                          "FieldJustification": "Left",
+                          "FieldStateOption": [
+                            "Yes",
+                            "Off"
+                          ]
+                        }
+                      }
+                    ],
+                    "f1_4": [
+                      {
+                        "__props": {
+                          "FieldType": "Text",
+                          "FieldName": "topmostSubform[0].Page1[0].FederalClassification[0].f1_4[0]",
+                          "FieldFlags": 8388608,
+                          "FieldValue": "",
+                          "FieldJustification": "Center"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "Exemptions": [
+                  {
+                    "f1_5": [
+                      {
+                        "__props": {
+                          "FieldType": "Text",
+                          "FieldName": "topmostSubform[0].Page1[0].Exemptions[0].f1_5[0]",
+                          "FieldFlags": 8388608,
+                          "FieldValue": "",
+                          "FieldJustification": "Center"
+                        }
+                      }
+                    ],
+                    "f1_6": [
+                      {
+                        "__props": {
+                          "FieldType": "Text",
+                          "FieldName": "topmostSubform[0].Page1[0].Exemptions[0].f1_6[0]",
+                          "FieldFlags": 8388608,
+                          "FieldValue": "",
+                          "FieldJustification": "Center"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "f1_10": [
+                  {
+                    "__props": {
+                      "FieldType": "Text",
+                      "FieldName": "topmostSubform[0].Page1[0].f1_10[0]",
+                      "FieldFlags": 8388608,
+                      "FieldValue": "",
+                      "FieldJustification": "Center"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "Full Name": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Full Name",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "W9Select.FullName"
+          }
+        },
+        "Business Name if Different": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Business Name if Different",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "BusinessNameTX"
+          }
+        },
+        "Entity Tax Classification": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Entity Tax Classification",
+            "FieldFlags": 0,
+            "FieldValue": "",
+            "FieldJustification": "Center",
+            "FieldMaxLength": 1
+          }
+        },
+        "Address 1 and 2": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Address 1 and 2",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "RegAgentForAddress.Address1and2"
+          }
+        },
+        "City State Zip": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "City State Zip",
+            "FieldFlags": 8388608,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "Expression": "RegAgentForAddress.CityStateZipBlank"
+          }
+        },
+        "Requester Name and Address": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "Requester Name and Address",
+            "FieldFlags": 8392704,
+            "FieldValue": "",
+            "FieldJustification": "Left"
+          }
+        },
+        "SSN First 3": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "SSN First 3",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 3
+          }
+        },
+        "SSN Middle Two": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "SSN Middle Two",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 2
+          }
+        },
+        "SSN Last Four": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "SSN Last Four",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 4
+          }
+        },
+        "TIN First Two": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "TIN First Two",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 2,
+            "Expression": "SliceEINFirstTwo"
+          }
+        },
+        "TIN Last Seven": {
+          "__props": {
+            "FieldType": "Text",
+            "FieldName": "TIN Last Seven",
+            "FieldFlags": 25165824,
+            "FieldValue": "",
+            "FieldJustification": "Left",
+            "FieldMaxLength": 7,
+            "Expression": "SliceEinLastSeven"
+          }
+        },
+        "C Corp Value 2": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "C Corp Value 2",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Yes",
+              "Off"
+            ]
+          }
+        },
+        "S Corp Value 3": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "S Corp Value 3",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Yes",
+              "Off"
+            ]
+          }
+        },
+        "Partnership Value 4": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "Partnership Value 4",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Yes",
+              "Off"
+            ]
+          }
+        },
+        "LLC Value 6": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "LLC Value 6",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Yes",
+              "Off"
+            ]
+          }
+        },
+        "IsTrustTF": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "IsTrustTF",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Yes",
+              "Off"
+            ]
+          }
+        },
+        "IsIndividualLLC": {
+          "__props": {
+            "FieldType": "Button",
+            "FieldName": "IsIndividualLLC",
+            "FieldFlags": 0,
+            "FieldJustification": "Left",
+            "FieldStateOption": [
+              "Yes",
+              "Off"
+            ],
+            "Expression": "\"Yes\""
+          }
+        }
+      },
+      "user": "63d46c67ad98ce943197d39a"
+    },
+    {
+      "name": "SliceEinLastSeven",
+      "label": "",
+      "_id": "68d43b197570a5da1ddebacb",
+      "type": "text",
+      "contentType": "",
+      "text": "{[SSNforEIN.slice(3,10)]}"
+    },
+    {
+      "name": "SliceEINFirstTwo",
+      "label": "",
+      "_id": "68d43b167570a5da1ddebaca",
+      "type": "text",
+      "contentType": "",
+      "text": "{[SSNforEIN.slice(0,2)]}"
+    }
+  ],
+  "layouts": [
+    {
+      "label": "",
+      "columnCount": 4,
+      "rows": [
+        [
+          {
+            "content": "",
+            "list": [],
+            "class": "static",
+            "expr": "",
+            "id": "27915b10-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "##<center>**Documents**</center>",
+            "expr": "",
+            "id": "cd1320f0-997d-11f0-8001-797da298c1d2",
+            "list": [],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "DocsToCreate",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a13505d0-9977-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 0
+          },
+          {
+            "content": "BusinessSignDate",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a13505d1-9977-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "##<center>**Business Name**</center>",
+            "list": [],
+            "class": "static",
+            "expr": "",
+            "id": "27915b11-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "BusinessNameTX",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "94d2aab0-996b-11f0-a74c-79be3feae89c",
+            "span": 2,
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "LLCNameTX",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "01d1d6f0-d219-11f0-8c89-21359113a8c7",
+            "offset": 0,
+            "span": 2
+          }
+        ],
+        [
+          {
+            "content": "StateLawSelect",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654e2-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 0
+          },
+          {
+            "content": "DBA",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "id": "27915b14-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "LLCNameList",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "id": "27915b12-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "*The Secretary of State has discretion to decline names that are too similar to existing business names. In that event, it is best to list alternatives. GeauxPlans will secure first available name in the order of your highest preference.  We recommend selecting at least 3 names*",
+            "list": [],
+            "class": "static",
+            "expr": "false",
+            "id": "27915b13-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}",
+            "expr": "",
+            "id": "044c9e90-997c-11f0-8001-797da298c1d2",
+            "list": [],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "##<center>**People or Entities**</center>",
+            "expr": "",
+            "id": "47e955f0-996b-11f0-a74c-79be3feae89c",
+            "list": [],
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "BusinessParties",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "27915b58-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}",
+            "id": "075068b0-997c-11f0-8001-797da298c1d2",
+            "list": [
+              "IsRegAddressSameTF"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "##<center>**Business Address Information**</center>",
+            "list": [
+              "IsRegAddressSameTF"
+            ],
+            "class": "static",
+            "id": "27915b2b-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "IsLLCInCityLimitsTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b2c-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center>**Registered Physical Address**</center>",
+            "list": [
+              "IsRegAddressSameTF"
+            ],
+            "class": "static",
+            "id": "27915b2d-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "IsRegAddressSameTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b2e-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "RegAgentForAddress",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654e9-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "content": "MemberforAddress",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "id": "27915b2f-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "RegStreet",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b30-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "RegStreet2",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b31-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "RegCity",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b32-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "RegZip",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "27915b33-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "RegState",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "27915b34-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "RegCounty",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b35-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "RegPhone",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b36-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "RegEmail",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "27915b37-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "###<center>**Mailing Address**</center>",
+            "list": [
+              "MailingDifferent"
+            ],
+            "class": "static",
+            "id": "27915b38-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MailingDifferent",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b39-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MailStreet",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b3a-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MailStreet2",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b3b-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MailCity",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b3c-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "MailState",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "27915b3d-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "MailZip",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "27915b3e-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}",
+            "id": "290dd720-997d-11f0-8001-797da298c1d2",
+            "list": [
+              "W9Select"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "##<center>**W9**</center>",
+            "id": "285116d0-997d-11f0-8001-797da298c1d2",
+            "list": [
+              "W9Select"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "W9Select",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a13505d2-9977-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 0,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}",
+            "id": "177392d0-997c-11f0-8001-797da298c1d2",
+            "list": [
+              "OperatingAgreementType"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "##<center>**Operating Agreement**</center>",
+            "id": "ca1a5020-9979-11f0-8001-797da298c1d2",
+            "list": [
+              "OperatingAgreementType"
+            ],
+            "offset": 0,
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "OperatingAgreementType",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654e3-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "span": 1,
+            "offset": 0
+          },
+          {
+            "content": "OAEffectiveDT",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654e1-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 1
+          },
+          {
+            "content": "AmendRestateTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654e0-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 2
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}",
+            "id": "1fed5f90-997c-11f0-8001-797da298c1d2",
+            "list": [
+              "MembersList",
+              "ManagersList"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "##<center>**Members**</center>",
+            "list": [
+              "MembersList"
+            ],
+            "class": "static",
+            "id": "27915b16-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MembersList",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654eb-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "span": 3,
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "LLCMembers",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b17-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "OnlyMemberManagers",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 2,
+            "id": "27915b18-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}",
+            "id": "b2d8a6b0-997d-11f0-8001-797da298c1d2",
+            "list": [
+              "ManagersList"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "##<center>**Managers**</center>",
+            "id": "a7405be0-997d-11f0-8001-797da298c1d2",
+            "list": [
+              "ManagersList"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "ManagersList",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654ec-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 0,
+            "span": 2
+          }
+        ],
+        [
+          {
+            "content": "ManagersOnlyMembers",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b19-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "OtherAllowedManagers",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b1a-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "LLCManagers",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "27915b1b-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "ManagerOptions",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654ee-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "span": 1,
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "TotalCapContributions",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654ef-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "span": 1,
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}",
+            "id": "27227750-997c-11f0-8001-797da298c1d2",
+            "list": [
+              "PermittedFamilyTransfersTF"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "##<center>**Permitted Transfers**</center>",
+            "list": [
+              "PermittedFamilyTransfersTF"
+            ],
+            "class": "static",
+            "id": "27915b1d-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "PermittedFamilyTransfersTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b1f-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "SpouseofMemberTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "27915b20-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "SpouseDescendantMemberTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "27915b21-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "FamilyLineMembers",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654e6-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "FamilialLineMarriedTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654e5-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 1
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "##<center>**Voting Information**</center>",
+            "expr": "",
+            "id": "f1eeff80-0e84-11f1-a97a-b93302f063e3",
+            "list": [],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "####<center>**Manager Voting**</center>",
+            "expr": "",
+            "id": "13514b10-0e85-11f1-a97a-b93302f063e3",
+            "list": [],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "ManagerVotingPower",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654f3-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "ManagerMemberVote",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654ed-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 1,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "####<center>**Member Voting**</center>",
+            "expr": "",
+            "id": "3273dfd0-0e85-11f1-a97a-b93302f063e3",
+            "list": [],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "VotingType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b22-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "NonVotingInterestTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654e4-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "InvoluntaryWithdrawalDistributionTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654e7-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "VotingPower",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654f0-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "ExtraordinaryVotingPower",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654f1-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "ExtraordinaryTransactions",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654f2-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "##<center>**Liquidation and Dissolution**</center>",
+            "expr": "",
+            "id": "654a3f80-0e85-11f1-a97a-b93302f063e3",
+            "list": [],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "LiquidationEvent",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654f5-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "InvolWithdrawalDefaultTR",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654e8-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 1,
+            "span": 1
+          },
+          {
+            "content": "ROFR",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654f4-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "offset": 2,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}",
+            "id": "39320820-997c-11f0-8001-797da298c1d2",
+            "list": [
+              "SSNforEIN"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "##<center>**Tax Information**</center>",
+            "list": [
+              "SSNforEIN"
+            ],
+            "class": "static",
+            "id": "27915b24-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false,
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "IncomeTaxElection",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b28-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false,
+            "offset": 0,
+            "span": 1
+          },
+          {
+            "content": "TaxMattersAgents",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "id": "27915b27-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false,
+            "span": 1
+          },
+          {
+            "content": "SSNforEIN",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "id": "27915b25-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false,
+            "span": 1
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}",
+            "id": "48fd0020-997c-11f0-8001-797da298c1d2",
+            "list": [
+              "IsRegAgentMemberTF"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "##<center>**Registered Agent Information**</center>",
+            "list": [
+              "SelectedAgent",
+              "IsRegAgentMemberTF"
+            ],
+            "class": "static",
+            "id": "27915b40-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "*Designate a Registered Agent for the business to receive legal service of process and other important communications, including annual compliance filings to protect the legal status of the business.*",
+            "list": [
+              "IsRegAgentMemberTF"
+            ],
+            "class": "static",
+            "id": "27915b41-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "RegAgentType",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b42-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "RegAgentMember",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "27915b43-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "IsRegAgentMemberTF",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b44-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SelectedAgent",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "a6a654ea-9974-11f0-81db-ad80fbec5b8c",
+            "isSelected": false,
+            "span": 1,
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "RegisteredAgent",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b45-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}",
+            "id": "580c2230-997c-11f0-8001-797da298c1d2",
+            "list": [
+              "WhyEIN"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "##<center>**Federal Tax Identification Number (EIN) Information**</center>",
+            "list": [
+              "StartDateMonth",
+              "WhyEIN"
+            ],
+            "class": "static",
+            "id": "27915b46-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "DomesticForeign",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b47-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "StateFiled",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "27915b48-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "*When did business operations start?  If you are establishing a new business entity, you may list the current month and year.  If you are obtaining an EIN for an existing business, then just enter the month and date the business entity was registered with the Secretary of State.*",
+            "list": [
+              "StartDateMonth",
+              "WhyEIN"
+            ],
+            "class": "static",
+            "id": "27915b49-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "StartDateMonth",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b4a-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "StartDateYear",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "27915b4b-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WhyEIN",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b4c-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "MotorVehicle",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b4d-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "Gambling",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 1,
+            "id": "27915b4e-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "QuarterlyExcise",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 2,
+            "span": 1,
+            "id": "27915b4f-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "RestrictedItems",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 0,
+            "span": 1,
+            "id": "27915b50-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          },
+          {
+            "content": "W2Employees",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "offset": 1,
+            "span": 2,
+            "id": "27915b51-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "WhatDo",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b52-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "OtherWhatDo",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b53-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "OtherWhatDoTX",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b54-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "class": "static",
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}",
+            "id": "65886f40-997c-11f0-8001-797da298c1d2",
+            "list": [
+              "SelectGeauxBusinessDocs"
+            ],
+            "offset": 0
+          }
+        ],
+        [
+          {
+            "content": "##<center>**Signing Letter Document List**</center>",
+            "list": [
+              "SelectGeauxBusinessDocs"
+            ],
+            "class": "static",
+            "id": "27915b55-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "SelectGeauxBusinessDocs",
+            "list": [],
+            "class": "question",
+            "expr": "",
+            "id": "27915b56-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "{[if isTheusTF]}\n<center><img src=\"https://geauxplans.com/wp-content/uploads/2021/12/cropped-fav-300x300.png\" alt=\"Geaux Shield - a blue and silver stylized shield icon\" height=\"30\" width=\"30\"></center>\n{[endif]}\n##<center>**Thank you!**</center>",
+            "list": [],
+            "class": "static",
+            "expr": "",
+            "id": "27915b57-9892-11f0-93b0-1f078aef6548",
+            "isSelected": false
+          }
+        ],
+        [
+          {
+            "content": "HasSelectedBusinessTF",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "df833ff0-998b-11f0-8f30-87bd980b0dad"
+          }
+        ],
+        [
+          {
+            "content": "TheTrustName",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "7f194470-b385-11f0-8082-e303b1e80946"
+          }
+        ],
+        [
+          {
+            "content": "TrustParty",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "7f196b80-b385-11f0-8082-e303b1e80946"
+          }
+        ],
+        [
+          {
+            "content": "NAICSCode",
+            "class": "question",
+            "list": [],
+            "expr": "",
+            "id": "7f196b81-b385-11f0-8082-e303b1e80946"
+          }
+        ]
+      ],
+      "name": "(default)",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T16:49:24.851Z",
+      "_id": "63c01902241c0b33192b0cb3"
+    }
+  ],
+  "apps": [
+    {
+      "templates": [
+        "{[OperatingAgreementFormer]}"
+      ],
+      "generateDocs": true,
+      "extUsers": true,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": true,
+      "showDocs": false,
+      "extCompletionURL": "https://geauxplans.com/design-complete/",
+      "extExitURL": "https://geauxplans.com/save-and-exit/",
+      "_id": "61be0bc939532946d6d00ccf",
+      "name": "LLCRegistration",
+      "screens": [],
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-03T16:58:31.214Z",
+      "label": "Registration Only"
+    },
+    {
+      "templates": [
+        "{[OperatingAgreementFormer]}"
+      ],
+      "generateDocs": true,
+      "extUsers": true,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": true,
+      "showDocs": false,
+      "extCompletionURL": "https://geauxplans.com/design-complete/",
+      "extExitURL": "https://geauxplans.com/save-and-exit/",
+      "_id": "61be0c7a39532946d6d00e2b",
+      "name": "RegistrationOperating",
+      "screens": [],
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-03T16:58:31.214Z",
+      "label": "Registration and Operating Agreement"
+    },
+    {
+      "templates": [
+        "{[OperatingAgreementFormer]}"
+      ],
+      "generateDocs": true,
+      "extUsers": true,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": true,
+      "showDocs": false,
+      "extCompletionURL": "https://geauxplans.com/design-complete/",
+      "extExitURL": "https://geauxplans.com/save-and-exit/",
+      "_id": "61be0c9639532946d6d00e37",
+      "name": "RegistrationOperatingEIN",
+      "screens": [],
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-03T16:58:31.214Z",
+      "label": "Registration and EIN"
+    },
+    {
+      "templates": [
+        "{[OperatingAgreementFormer]}"
+      ],
+      "generateDocs": true,
+      "extUsers": true,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": true,
+      "showDocs": false,
+      "extCompletionURL": "https://geauxplans.com/design-complete/",
+      "extExitURL": "https://geauxplans.com/save-and-exit/",
+      "_id": "61be0c9639532946d6d00e38",
+      "name": "RegistrationOperatingEINLicense",
+      "screens": [],
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-03T16:58:31.214Z",
+      "label": "Registration, EIN, and Licensing"
+    },
+    {
+      "templates": [
+        "{[list LLCMembers]}\n   {[SigningLetterGeaux]}\n{[endlist]}"
+      ],
+      "generateDocs": true,
+      "extUsers": false,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": false,
+      "showDocs": false,
+      "extCompletionURL": "",
+      "extExitURL": "",
+      "_id": "620bc06ccb0ca45f7b82a29f",
+      "name": "SigningLetter",
+      "screens": [],
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-15T15:02:04.858Z"
+    },
+    {
+      "name": "BusinessAEXApp",
+      "screens": [],
+      "templates": [
+        "{[list BusinessParties]}\n   {[NewPerson]}\n{[endlist]}\n\n{[if (DocsToCreate|contains: \"OperatingAgmt\")]}\n   {[OperatingAgmt]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"LLCResolution\")]}\n   {[LLCResolution]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"W9Form\")]}\n   {[W9Form]}\n{[endif]}\n"
+      ],
+      "generateDocs": true,
+      "extUsers": false,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": false,
+      "showDocs": false,
+      "extCompletionURL": "",
+      "extExitURL": "",
+      "_id": "68d207c5d14347e05a38883e",
+      "selectFrom": "BusinessAEX()|map:EPToBusiness",
+      "selectOnce": true,
+      "label": "Business - Select from AEX"
+    },
+    {
+      "name": "BusinessLFTApp",
+      "selectFrom": "BusinessLFT()|map:EPToBusiness",
+      "selectOnce": true,
+      "screens": [],
+      "templates": [
+        "{[list BusinessParties]}\n   {[NewPerson]}\n{[endlist]}\n\n{[if (DocsToCreate|contains: \"OperatingAgmt\")]}\n   {[OperatingAgmt]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"LLCResolution\")]}\n   {[LLCResolution]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"W9Form\")]}\n   {[W9Form]}\n{[endif]}\n"
+      ],
+      "generateDocs": true,
+      "extUsers": false,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": false,
+      "showDocs": false,
+      "extCompletionURL": "",
+      "extExitURL": "",
+      "_id": "68d425bfee3779803ed21523",
+      "label": "Business - Select from LFT"
+    },
+    {
+      "name": "BusinessSHVApp",
+      "selectFrom": "BusinessSHV()|map:EPToBusiness",
+      "selectOnce": true,
+      "screens": [],
+      "templates": [
+        "{[list BusinessParties]}\n   {[NewPerson]}\n{[endlist]}\n\n{[if (DocsToCreate|contains: \"OperatingAgmt\")]}\n   {[OperatingAgmt]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"LLCResolution\")]}\n   {[LLCResolution]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"W9Form\")]}\n   {[W9Form]}\n{[endif]}\n"
+      ],
+      "generateDocs": true,
+      "extUsers": false,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": false,
+      "showDocs": false,
+      "extCompletionURL": "",
+      "extExitURL": "",
+      "_id": "68d4263bee3779803ed21527",
+      "label": "Business - Select from SHV"
+    },
+    {
+      "name": "BusinessMonroeApp",
+      "selectFrom": "BusinessMonroe()|map:EPToBusiness",
+      "selectOnce": true,
+      "screens": [],
+      "templates": [
+        "{[list BusinessParties]}\n   {[NewPerson]}\n{[endlist]}\n\n{[if (DocsToCreate|contains: \"OperatingAgmt\")]}\n   {[OperatingAgmt]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"LLCResolution\")]}\n   {[LLCResolution]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"W9Form\")]}\n   {[W9Form]}\n{[endif]}\n"
+      ],
+      "generateDocs": true,
+      "extUsers": false,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": false,
+      "showDocs": false,
+      "extCompletionURL": "",
+      "extExitURL": "",
+      "_id": "68d42646ee3779803ed21528",
+      "label": "Business - Select from Monroe"
+    },
+    {
+      "name": "ExternalBusinessApp",
+      "screens": [],
+      "templates": [
+        "{[list BusinessParties]}\n   {[NewPerson]}\n{[endlist]}\n\n{[if (DocsToCreate|contains: \"OperatingAgmt\")]}\n   {[OperatingAgmt]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"LLCResolution\")]}\n   {[LLCResolution]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"W9Form\")]}\n   {[W9Form]}\n{[endif]}\n"
+      ],
+      "generateDocs": true,
+      "extUsers": false,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": false,
+      "showDocs": false,
+      "extCompletionURL": "",
+      "extExitURL": "",
+      "_id": "68d42652ee3779803ed21529",
+      "label": "Business Doc Creation"
+    },
+    {
+      "name": "InternalBusinessNoSelect",
+      "screens": [],
+      "templates": [
+        "{[list BusinessParties]}\n   {[NewPerson]}\n{[endlist]}\n\n{[if (DocsToCreate|contains: \"OperatingAgmt\")]}\n   {[OperatingAgmt]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"LLCResolution\")]}\n   {[LLCResolution]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"W9Form\")]}\n   {[W9Form]}\n{[endif]}\n"
+      ],
+      "generateDocs": true,
+      "extUsers": false,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": false,
+      "showDocs": false,
+      "extCompletionURL": "",
+      "extExitURL": "",
+      "_id": "68d5589dbeed2b159cee4c98",
+      "label": "Business - Non-select"
+    },
+    {
+      "name": "BusinessDevApp",
+      "screens": [],
+      "templates": [
+        "{[list BusinessParties]}\n   {[NewPerson]}\n{[endlist]}\n\n{[if (DocsToCreate|contains: \"OperatingAgmt\")]}\n   {[OperatingAgmt]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"LLCResolution\")]}\n   {[LLCResolution]}\n{[endif]}\n\n{[if (DocsToCreate|contains: \"W9Form\")]}\n   {[W9Form]}\n{[endif]}\n"
+      ],
+      "generateDocs": true,
+      "extUsers": false,
+      "extAutoClose": false,
+      "extInstruct": "",
+      "extUseURLs": false,
+      "showDocs": false,
+      "extCompletionURL": "",
+      "extExitURL": "",
+      "_id": "68dc22747bd7b7bfa156b99d",
+      "selectFrom": "BusinessDev()|map:EPToBusiness"
+    }
+  ],
+  "properties": [
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "List all Members: ",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "LLCMembers",
+      "typeName": "party",
+      "typeDef": "5d6813a56db0fe770048a68a",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T16:28:36.924Z",
+      "_id": "63c01902241c0b33192b0c77"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": true,
+      "label": "include \"L.L.C.\" or \"LLC\" at the end, i.e. \"Jones Holdings, LLC\". ",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "LLCNameList",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:10:24.714Z",
+      "_id": "63c01902241c0b33192b0c78"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Permit transfers to members of the famililal line?",
+      "helpText": "*All transfers of Membership interest require approval of the membership, unless limited \"permitted transfers\" are allowed. For example, if permitted transfers are allowed to family members, a family member could automatically become a voting member without the need for the approval of a majority of the remaining members. For single-member LLCs, permitted transfers to family members could avoid difficulties in the event of the death of the single-member.*",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "PermittedFamilyTransfersTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T17:58:38.637Z",
+      "_id": "63c01902241c0b33192b0c79"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Should the familial line include the spouse of a Member?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "SpouseofMemberTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T18:00:41.003Z",
+      "_id": "63c01902241c0b33192b0c7a"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Should the familial line include the spouse of a descendant of a Member?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "SpouseDescendantMemberTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T18:01:33.758Z",
+      "_id": "63c01902241c0b33192b0c7b"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Equal voting\"},{\"Name\":\"Pro rata voting\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Should voting be equal among all Members regardless of the number of Units held by the Member, or should voting be pro rata based on a Member's percentage of ownership in the Company?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "VotingType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T18:12:37.818Z",
+      "_id": "63c01902241c0b33192b0c7c"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Anyone\"},{\"Name\":\"Members\"},{\"Name\":\"Family Members\"},{\"Name\":\"Entities wholly owned by a Member\"},{\"Name\":\"Entity wholly owned by a Family Member\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": true,
+      "label": "Who should be able to serve as a Manager?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "OtherAllowedManagers",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T18:29:30.314Z",
+      "_id": "63c01902241c0b33192b0c7d"
+    },
+    {
+      "style": "radiobuttons",
+      "options": "yesno",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "Should only Members be able to serve as a Manager? Managers have decision-making authority and run the day-to-day affairs of the LLC. A Manager is like a director of a corporation, not an employee like the manager of a store.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "OnlyMemberManagers",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T16:29:02.405Z",
+      "_id": "63c01902241c0b33192b0c7e"
+    },
+    {
+      "style": "",
+      "options": "LLCMembers",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "isList": true,
+      "label": "Select the managers:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "ManagersOnlyMembers",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T18:41:03.007Z",
+      "_id": "63c01902241c0b33192b0c7f"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": true,
+      "label": "Enter the managers:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "LLCManagers",
+      "typeName": "partymanager",
+      "typeDef": "61c22e76cbea6f0852054757",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T19:56:54.520Z",
+      "_id": "63c01902241c0b33192b0c80"
+    },
+    {
+      "style": "popup",
+      "useImport": false,
+      "isList": false,
+      "label": "Designate the tax matters agent, who will have authority to act for the LLC regarding Federal income tax matters. Typically, this is a Member of the LLC.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "TaxMattersAgents",
+      "typeName": "singlebusinessselect",
+      "typeDef": "61c21f58cbea6f0852051f7c",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T16:30:20.201Z",
+      "_id": "63c01902241c0b33192b0c81"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Street address; cannot be a P.O. box:",
+      "helpText": "",
+      "forceRelevance": "!IsRegAddressSameTF",
+      "type": "text",
+      "name": "RegStreet",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:00:51.162Z",
+      "_id": "63c01902241c0b33192b0c82"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Second line of street address, if any:",
+      "helpText": "",
+      "forceRelevance": "!IsRegAddressSameTF",
+      "type": "text",
+      "name": "RegStreet2",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:00:51.162Z",
+      "_id": "63c01902241c0b33192b0c83"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "City:",
+      "helpText": "",
+      "forceRelevance": "!IsRegAddressSameTF",
+      "type": "text",
+      "name": "RegCity",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:00:51.162Z",
+      "_id": "63c01902241c0b33192b0c84"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "State:",
+      "helpText": "",
+      "forceRelevance": "!IsRegAddressSameTF",
+      "type": "selection",
+      "name": "RegState",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:00:51.162Z",
+      "_id": "63c01902241c0b33192b0c85"
+    },
+    {
+      "style": "textbox",
+      "pattern": "99999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Zip:",
+      "helpText": "",
+      "forceRelevance": "!IsRegAddressSameTF",
+      "type": "text",
+      "name": "RegZip",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:00:51.162Z",
+      "_id": "63c01902241c0b33192b0c86"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is the registered office address (physical address) for the business the same as the address of a listed party?",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "true/false",
+      "name": "IsRegAddressSameTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T16:33:58.616Z",
+      "_id": "63c01902241c0b33192b0c87"
+    },
+    {
+      "style": "",
+      "options": "MemberAddresses",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Select the street address to use for {[BusinessNameTX|else: \"the business entity\"]}'s physical address.",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "MemberforAddress",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:00:51.162Z",
+      "_id": "63c01902241c0b33192b0c88"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is the Registered Agent for {[BusinessNameTX|else: \"the business entity\"]} one of the listed parties?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "IsRegAgentMemberTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T21:32:28.233Z",
+      "_id": "63c01902241c0b33192b0c89"
+    },
+    {
+      "style": "",
+      "options": "LLCMembers",
+      "optionTemplate": "",
+      "typeOfVariable": "userData",
+      "isList": false,
+      "label": "Select the Registered Agent:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "RegAgentMember",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T21:33:10.059Z",
+      "_id": "63c01902241c0b33192b0c8a"
+    },
+    {
+      "style": "accordion",
+      "useImport": false,
+      "isList": false,
+      "label": "Enter the Registered Agent's information:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "object",
+      "name": "RegisteredAgent",
+      "typeName": "party",
+      "typeDef": "5d6813a56db0fe770048a68a",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T21:36:10.419Z",
+      "_id": "63c01902241c0b33192b0c8b"
+    },
+    {
+      "style": "radiobuttons",
+      "options": "[{\"Name\":\"sole proprietorship\"},{\"Name\":\"partnership\"},{\"Name\":\"corporation\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select {[BusinessNameTX|else: \"the business entity\"]}'s tax filing status: ",
+      "helpText": "*LLCs are like “tax chameleons” and can elect to be treated as disregarded entities (sole proprietorships), partnerships, or corporations (either S-corporations or C-corporations)*\n\n*Single-member LLCs often elect “sole proprietorship”, in which case the LLC will be “disregarded” for tax purposes. A husband and wife are treated as one person for tax purposes, so the LLC will be “disregarded” for Federal tax purposes if a married couple elects “sole proprietorship.”*\n\n*If there are two or more members who are unmarried, the LLC will be taxed as a “partnership”, unless an election is made on a Federal Tax Form filed with the Internal Revenue Service to be taxed as a corporation. An LLC taxes as a partnership will be required to file a partnership tax return.* \n\n*An LLC may elect to be taxed as a corporation (whether an S-corporation or a C-corporation), whether a single or multi-member LLC. Consult with your tax advisor if you are unsure about the proper election and absolutely before electing to be taxed as a corporation, whether an S-corporation or a C-corporation.*",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "IncomeTaxElection",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2021-12-21T21:36:10.419Z",
+      "_id": "63c01902241c0b33192b0c8c"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Use GeauxPlans as my registered agent\"},{\"Name\":\"One of the members is the registered agent\"},{\"Name\":\"Enter a separate registered agent\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Select an option for your registered agent below. ",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "RegAgentType",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T16:34:41.436Z",
+      "_id": "63c01902241c0b33192b0c8d"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Domestic\",\"Description\":\"Domestic - Louisiana\"},{\"Name\":\"Foreign\",\"Description\":\"Foreign - Non-Louisiana\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Is {[BusinessNameTX|else: \"your business entity\"]} domestic or foreign?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "DomesticForeign",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T16:44:40.756Z",
+      "_id": "63c01902241c0b33192b0c8e"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is the business mailing address different from the physical address above?",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "true/false",
+      "name": "MailingDifferent",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-07-07T16:33:58.617Z",
+      "_id": "63c01902241c0b33192b0c8f"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Mailing street address:",
+      "helpText": "",
+      "forceRelevance": "MailingDifferent",
+      "type": "text",
+      "name": "MailStreet",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:31:36.850Z",
+      "_id": "63c01902241c0b33192b0c90"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Mailing address second line, if any:",
+      "helpText": "",
+      "forceRelevance": "MailingDifferent",
+      "type": "text",
+      "name": "MailStreet2",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:31:36.850Z",
+      "_id": "63c01902241c0b33192b0c91"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Mailing city:",
+      "helpText": "",
+      "forceRelevance": "MailingDifferent",
+      "type": "text",
+      "name": "MailCity",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:31:36.850Z",
+      "_id": "63c01902241c0b33192b0c92"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "Mailing state:",
+      "helpText": "",
+      "forceRelevance": "MailingDifferent",
+      "type": "selection",
+      "name": "MailState",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:31:36.850Z",
+      "_id": "63c01902241c0b33192b0c93"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Mailing zip:",
+      "helpText": "",
+      "forceRelevance": "MailingDifferent",
+      "type": "text",
+      "name": "MailZip",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:31:36.850Z",
+      "_id": "63c01902241c0b33192b0c94"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Does your business own a highway motor vehicle with a taxable gross weight of 55,000 pounds or more?*",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "MotorVehicle",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:53:49.521Z",
+      "_id": "63c01902241c0b33192b0c95"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Does your business involve gambling/wagering?*",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "Gambling",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:54:04.949Z",
+      "_id": "63c01902241c0b33192b0c96"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Does your business need to file Form 720 (Quarterly Federal Excise Tax Return)?*",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "QuarterlyExcise",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:54:21.636Z",
+      "_id": "63c01902241c0b33192b0c97"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Does your business sell or manufacture alcohol, tobacco, or firearms?*",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "RestrictedItems",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:54:37.183Z",
+      "_id": "63c01902241c0b33192b0c98"
+    },
+    {
+      "style": "radiobuttons",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Do you have, or do you expect to have, any employees who will receive Forms W-2 in the next 12 months?* (Forms W-2 require additional filings with the IRS.)",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "W2Employees",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:54:55.190Z",
+      "_id": "63c01902241c0b33192b0c99"
+    },
+    {
+      "style": "radiobuttons",
+      "options": "[{\"Name\":\"Accommodations\",\"Description\":\"Accommodations - Casino hotel, hotel, or motel\"},{\"Name\":\"Construction\",\"Description\":\"Construction - Building houses/residential structures, building industrial/commercial structures, specialty trade contractors, remodelers, heavy construction contractors, land subdivision contractors, or site preparation contractors\"},{\"Name\":\"Finance\",\"Description\":\"Finance - Banks, sales financing, credit card issuing, mortgage company/broker, securities broker, investment advice, or trust administration\"},{\"Name\":\"Food Service\",\"Description\":\"Food Service - Retail fast food, restaurant, bar, coffee shop, catering, or mobile food service\"},{\"Name\":\"Health Care\",\"Description\":\"Health Care - Doctor, mental health specialist, hospital, or outpatient care center\"},{\"Name\":\"Insurance\",\"Description\":\"Insurance - Insurance company or broker\"},{\"Name\":\"Manufacturing\",\"Description\":\"Manufacturing - Mechanical, physical, or chemical transformation of materials/substances/components into new products, including the assembly of components\"},{\"Name\":\"Real Estate\",\"Description\":\"Real Estate - Renting or leasing real estate, managing real estate, real estate agent/broker, selling, buying, or renting real estate for others\"},{\"Name\":\"Rental & Leasing\",\"Description\":\"Rental & Leasing - Rent/lease automobiles, consumer goods, commercial goods, or industrial goods\"},{\"Name\":\"Retail\",\"Description\":\"Retail - Retail store, internet sales (exclusively), direct sales (catalogue, mail-order, door to door), auction house, or selling goods on auction sites\"},{\"Name\":\"Social Assistance\",\"Description\":\"Social Assistance - Youth services, residential care facility, services for the disabled, or community food/housing/ relief services\"},{\"Name\":\"Transportation\",\"Description\":\"Transportation - Air transportation, rail transportation, water transportation, trucking, passenger transportation, support activity for transportation, or delivery/courier service\"},{\"Name\":\"Warehousing\",\"Description\":\"Warehousing - Operating warehousing or storage facilities for general merchandise, refrigerated goods, or other warehouse products; establishments that provide facilities to store goods but do not sell the goods they handle\"},{\"Name\":\"Wholesale\",\"Description\":\"Wholesale - Wholesale agent/broker, importer, exporter, manufacturers’ representative, merchant, distributor, or jobber\"},{\"Name\":\"Other\",\"Description\":\"Other\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Choose one category that best describes your business:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "WhatDo",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:56:51.728Z",
+      "_id": "63c01902241c0b33192b0c9a"
+    },
+    {
+      "style": "radiobuttons",
+      "options": "[{\"Name\":\"Consulting\"},{\"Name\":\"Manufacturing\"},{\"Name\":\"Organization (such as religious, environmental, social or civic, athletic, etc.)\"},{\"Name\":\"Rental\"},{\"Name\":\"Repair\"},{\"Name\":\"Sell goods\"},{\"Name\":\"Service\"},{\"Name\":\"Other – please specify your primary business activity\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Please choose one of the following that best describes your primary business activity:",
+      "helpText": "",
+      "forceRelevance": "WhatDo == \"Other\"",
+      "type": "selection",
+      "name": "OtherWhatDo",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:56:51.728Z",
+      "_id": "63c01902241c0b33192b0c9b"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "WhatDo == \"Other\" && OtherWhatDo == \"Other – please specify your primary business activity\"",
+      "type": "text",
+      "name": "OtherWhatDoTX",
+      "unlabeled": true,
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T17:57:08.395Z",
+      "_id": "63c01902241c0b33192b0c9c"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "If your business has a DBA, enter the DBA: ",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text",
+      "name": "DBA",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:06:09.192Z",
+      "_id": "63c01902241c0b33192b0c9d"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "County or parish:",
+      "helpText": "",
+      "forceRelevance": "!IsRegAddressSameTF",
+      "type": "text",
+      "name": "RegCounty",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:06:09.192Z",
+      "_id": "63c01902241c0b33192b0c9e"
+    },
+    {
+      "style": "",
+      "options": "states",
+      "optionTemplate": "",
+      "typeOfVariable": "aTable",
+      "isList": false,
+      "label": "State filed, if not Lousiana:",
+      "helpText": "",
+      "forceRelevance": "DomesticForeign == \"Foreign\"",
+      "type": "selection",
+      "name": "StateFiled",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:06:09.192Z",
+      "_id": "63c01902241c0b33192b0c9f"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"January\"},{\"Name\":\"February\"},{\"Name\":\"March\"},{\"Name\":\"April\"},{\"Name\":\"May\"},{\"Name\":\"June\"},{\"Name\":\"July\"},{\"Name\":\"August\"},{\"Name\":\"September\"},{\"Name\":\"October\"},{\"Name\":\"November\"},{\"Name\":\"December\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Start date month:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "StartDateMonth",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:02:39.958Z",
+      "_id": "63c01902241c0b33192b0ca0"
+    },
+    {
+      "style": "textbox",
+      "pattern": "9999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Start date year:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "text",
+      "name": "StartDateYear",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:02:39.958Z",
+      "_id": "63c01902241c0b33192b0ca1"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Starting a new business\"},{\"Name\":\"Need to hire employees\"},{\"Name\":\"Banking purposes only\"},{\"Name\":\"Changing type of organization - from a sole proprietorship to a corporation, etc.\"},{\"Name\":\"Purchasing an active business\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": false,
+      "label": "Why are you registering for an EIN?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "WhyEIN",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:24:37.695Z",
+      "_id": "63c01902241c0b33192b0ca2"
+    },
+    {
+      "style": "textbox",
+      "pattern": "(999) 999-9999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Business phone:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text",
+      "name": "RegPhone",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:25:31.745Z",
+      "_id": "63c01902241c0b33192b0ca3"
+    },
+    {
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "Business email:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text",
+      "name": "RegEmail",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-13T18:25:31.745Z",
+      "_id": "63c01902241c0b33192b0ca4"
+    },
+    {
+      "style": "textbox",
+      "pattern": "99-9999999",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]",
+      "isList": false,
+      "label": "EIN:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "type": "text",
+      "name": "SSNforEIN",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-01-20T16:29:36.726Z",
+      "_id": "63c01902241c0b33192b0ca5"
+    },
+    {
+      "style": "radiobutton columns",
+      "isDefault": "none",
+      "isList": false,
+      "label": "Is the address of the business within city limits?",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "true/false",
+      "name": "IsLLCInCityLimitsTF",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-07T21:06:38.955Z",
+      "_id": "63c01902241c0b33192b0ca6"
+    },
+    {
+      "style": "",
+      "options": "[{\"Name\":\"Articles of Organization \"},{\"Name\":\"Operating Agreement for Hall Property Investments, L.L.C.\"},{\"Name\":\"Federal Tax Identification Number (EIN) for Hall Property Investments, L.L.C.\"},{\"Name\":\"Licensing Permit Checklist\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow",
+      "isList": true,
+      "label": "Select the business documents to reference in the signing instruction letter:",
+      "helpText": "",
+      "forceRelevance": "",
+      "type": "selection",
+      "name": "SelectGeauxBusinessDocs",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "lastModified": "2022-02-22T14:30:46.640Z",
+      "_id": "63c01902241c0b33192b0ca8"
+    },
+    {
+      "name": "BusinessParties",
+      "isList": true,
+      "label": "Enter all relevant people or entities:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "_id": "68d207f8d14347e05a38883f",
+      "type": "object",
+      "style": "accordion",
+      "typeDef": "5d6813a56db0fe770048a68a",
+      "useImport": false,
+      "typeName": "party"
+    },
+    {
+      "name": "BusinessNameTX",
+      "isList": false,
+      "label": "Full Name of Business *include \"L.L.C.\" or \"LLC\" (i.e., \"Entity Name, LLC\")*",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d42856b7c82e856f15b74e",
+      "type": "text",
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]"
+    },
+    {
+      "name": "AmendRestateTF",
+      "isList": false,
+      "label": "Select if the Operating Agreement is being amended and restated. ",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d42a0ea46436ea9d769482",
+      "type": "true/false",
+      "style": "switch"
+    },
+    {
+      "name": "OAEffectiveDT",
+      "isList": false,
+      "label": "Effective date for the Operating Agreement, if known:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2020-11-03T19:10:49.635Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "_id": "68d42a21a46436ea9d769483",
+      "type": "date",
+      "style": "datepicker"
+    },
+    {
+      "name": "StateLawSelect",
+      "isList": false,
+      "label": "Select the State of Organization of the Business Entity:",
+      "helpText": "",
+      "forceRelevance": "true",
+      "_id": "68d42a6ca46436ea9d769484",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Louisiana\",\"LLCActTitle\":\"Louisiana Limited Liability Company Law\",\"LLCActStatute\":\"La. R.S. 12:1301, et. seq.\",\"DepartmentReference\":\"Secretary of State\"},{\"Name\":\"Alaska\",\"LLCActTitle\":\"Alaska Revised Limited Liability Act\",\"LLCActStatute\":\"Chapter 50 of Title 10 of the Alaska Code, AS 10.50.010, et seq.\",\"DepartmentReference\":\"Department of Commerce and Economic Development \"},{\"Name\":\"Texas\",\"LLCActTitle\":\"Texas Business Organizations Code\",\"LLCActStatute\":\"Tex. Bus. Org. Code 101.001, et seq.\",\"DepartmentReference\":\"Secretary of State\"}]",
+      "optionTemplate": "",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "OperatingAgreementType",
+      "isList": false,
+      "label": "Select the type of Operating Agreement:",
+      "helpText": "",
+      "forceRelevance": "",
+      "lastModified": "2022-03-17T16:47:32.370Z",
+      "lastModifiedBy": "5fe0c5547241dc6f81146408",
+      "_id": "68d42a93a46436ea9d769485",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"S-Corp\",\"Description\":\"S-Corp\"},{\"Name\":\"Holding Company\",\"Description\":\"Holding Company\"},{\"Name\":\"All Purpose\",\"Description\":\"All-Purpose or General (including Land)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "NonVotingInterestTF",
+      "isList": false,
+      "label": "Select to create two classes of membership for voting and non-voting",
+      "helpText": "If selected, Class A (Voting) and Class B (Non-voting) interest will be created. Creating separate classes may be useful to transfer value without transferring control. ",
+      "forceRelevance": "",
+      "_id": "68d42aaca46436ea9d769486",
+      "type": "true/false",
+      "style": "switch"
+    },
+    {
+      "name": "FamilialLineMarriedTF",
+      "isList": false,
+      "label": "Select if the initial Members are unmarried in order to define the Familial Line as decendents of any members. ",
+      "helpText": "If this members are marrried, the Familial Line would include descendants of the Members born to the Members as husband and wife.  If the Members are not married, the Familial Line includes descendants of any Member.",
+      "forceRelevance": "",
+      "_id": "68d42ae8a46436ea9d769487",
+      "type": "true/false",
+      "style": "switch"
+    },
+    {
+      "name": "FamilyLineMembers",
+      "isList": true,
+      "label": "Select anyone who should be referred to in the \"Familial Line\" definition:",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d42b0401015f1a85704ea8",
+      "type": "selection",
+      "style": "",
+      "options": "PotentialAgentsWithTrust",
+      "optionTemplate": "{[FullName]}",
+      "typeOfVariable": "userData"
+    },
+    {
+      "name": "InvoluntaryWithdrawalDistributionTF",
+      "isList": false,
+      "label": "Select for an Involntary Withdrawal event to include distribution from a Member that is a trust, estate, or entity.",
+      "helpText": "Note Permitted Transfers to members of a Familial Line will be excepted if allowed. ",
+      "forceRelevance": "",
+      "_id": "68d42b7ba46436ea9d769488",
+      "type": "true/false",
+      "style": "switch"
+    },
+    {
+      "name": "InvolWithdrawalDefaultTR",
+      "isList": false,
+      "label": "Select for an Involntary Withdrawal event to include a knowing or willing default of a Member or Manager agreed responsibility to the Company",
+      "helpText": "This provision may be useful for business entities that require performance of an employed Member or Manager. Consider coupling this with a Right of First Refusal to purchase Membership interest upon Involuntary Withdrawal.",
+      "forceRelevance": "",
+      "_id": "68d42b96a46436ea9d769489",
+      "type": "true/false",
+      "style": "switch",
+      "isDefault": "none"
+    },
+    {
+      "name": "RegAgentForAddress",
+      "isList": false,
+      "label": "Member for registered agent's address: ",
+      "helpText": "",
+      "forceRelevance": "IsRegAddressSameTF",
+      "_id": "68d42c96cba2e2e1851c5d08",
+      "type": "selection",
+      "style": "",
+      "options": "PotentialAgentsWithTrust",
+      "optionTemplate": "",
+      "typeOfVariable": "userData"
+    },
+    {
+      "name": "SelectedAgent",
+      "isList": false,
+      "label": "Select the registered agent:",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d42e2fcba2e2e1851c5d09",
+      "type": "selection",
+      "style": "",
+      "options": "PotentialAgentsWithTrust",
+      "optionTemplate": "",
+      "typeOfVariable": "userData"
+    },
+    {
+      "name": "MembersList",
+      "isList": true,
+      "label": "Enter the members and their interests:",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d42f68a46436ea9d76948f",
+      "type": "object",
+      "style": "accordion",
+      "typeDef": "68d42f0fcebfcfd1ab1f4be1",
+      "useImport": false,
+      "typeName": "business_interested_parties"
+    },
+    {
+      "name": "ManagersList",
+      "isList": true,
+      "label": "Select the manager(s):",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d4340d0bd852ef74d9c6ce",
+      "type": "selection",
+      "style": "checkboxes",
+      "options": "PotentialAgentsWithTrust",
+      "optionTemplate": "",
+      "typeOfVariable": "userData"
+    },
+    {
+      "name": "ManagerMemberVote",
+      "isList": false,
+      "label": "Select the Voting Interest when all Members serve as Managers.",
+      "helpText": "This is a \"Manager Managed\" Operating Agreement, but electing for all Members to serve as Managers is equivalent to a \"Member Managed\" entity, in which Managers can either vote \"by head\" or pro rata in accordance with their ownership interest. If the entity becomes fragmented based on family descent, electing \"pro rata\" will ensure the Manager Vote is essentially by root.  ",
+      "forceRelevance": "",
+      "_id": "68d4357073e2d2b76f004108",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Pro Rata\",\"Description\":\"Pro rata in accordance with ownership\"},{\"Name\":\"By Head\",\"Description\":\"By head (one vote per manager)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "ManagerOptions",
+      "isList": false,
+      "label": "Select an option for Manager appointments:",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d4357573e2d2b76f004109",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Manager must be a Member\",\"Description\":\"Elected Managers must be Members\"},{\"Name\":\"Managers not Members\",\"Description\":\"Elected Managers need not be Members\"},{\"Name\":\"All Members are Managers\",\"Description\":\"All Members serve as Managers\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "TotalCapContributions",
+      "isList": false,
+      "label": "Total additional Capital Contributions which the Managers may require any Interest Holder to contribute:",
+      "helpText": "",
+      "forceRelevance": "OperatingAgreementType == \"S-Corp\"",
+      "lastModified": "2020-12-12T17:03:01.753Z",
+      "lastModifiedBy": "5da0ad6ebab5fb328904c506",
+      "_id": "68d4359073e2d2b76f00410a",
+      "type": "number",
+      "style": "textbox",
+      "decimalPlaces": 2,
+      "minimum": "0",
+      "maximum": ""
+    },
+    {
+      "name": "VotingPower",
+      "isList": false,
+      "label": "Select the voting threshold required for Member decisions",
+      "helpText": "Members generally make organizational decisions like amending organizational documents, mergers and liquidation events, while Managers make day to day business decisions.",
+      "forceRelevance": "",
+      "_id": "68d435b473e2d2b76f00410b",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Majority\",\"Description\":\"Majority (51%)\"},{\"Name\":\"Super-Majority\",\"Description\":\"Super-Majority (2/3)\"},{\"Name\":\"Unanimous\",\"Description\":\"Unanimous (100%)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "ExtraordinaryVotingPower",
+      "isList": false,
+      "label": "Select the Member voting threshold required to approve extra-ordinary transactions:",
+      "helpText": "Extra-ordinary transactions include dissolution, merger, consolidation, sale of substantially all assets, etc. ",
+      "forceRelevance": "",
+      "_id": "68d4361573e2d2b76f00410e",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Majority\",\"Description\":\"Majority (51%)\"},{\"Name\":\"Super-Majority\",\"Description\":\"Super-Majority (2/3)\"},{\"Name\":\"Unanimous\",\"Description\":\"Unanimous\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "ExtraordinaryTransactions",
+      "isList": true,
+      "label": "Select the extra-ordinary transactions that should require approval of the Members:",
+      "helpText": "It is very common to require Member approval for Dissolution, Sale of All Assets, and Merger. Also select \"Sale or disposition of real estate\" to require member approval for the sale of immovable property.",
+      "forceRelevance": "",
+      "_id": "68d4361273e2d2b76f00410d",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Dissolution\",\"Description\":\"Dissolution\"},{\"Name\":\"Sale of All Assets\",\"Description\":\"Sale of substantially all assets\"},{\"Name\":\"Sale of Real Estate\",\"Description\":\"Sale or disposition of real estate\"},{\"Name\":\"Merger\",\"Description\":\"Merger or consolidation\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "ManagerVotingPower",
+      "isList": false,
+      "label": "Select the Manager voting threshold for decision making.",
+      "helpText": "Managers generally make day to day business decisions, while Members make organizational decisions like amendments to organizational documents and other matters reserved for Member approval such as mergers and dissolution.",
+      "forceRelevance": "",
+      "_id": "68d4360973e2d2b76f00410c",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Majority\",\"Description\":\"Majority (51%)\"},{\"Name\":\"Super-Majority\",\"Description\":\"Super-Majority (2/3)\"},{\"Name\":\"Unanimous\",\"Description\":\"Unanimous (100%)\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "ROFR",
+      "isList": false,
+      "label": "Include Right of First Refusal in the event of sale or involuntary withdrawal?",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d4363573e2d2b76f00410f",
+      "type": "true/false",
+      "style": "switch",
+      "isDefault": "none"
+    },
+    {
+      "name": "LiquidationEvent",
+      "isList": true,
+      "label": "Select the events that should trigger liquidation:",
+      "helpText": "Generally, always select Member Vote and Judicial Dissolution. Other selections are optional.",
+      "forceRelevance": "",
+      "_id": "68d4363d73e2d2b76f004110",
+      "type": "selection",
+      "style": "checkboxes",
+      "options": "[{\"Name\":\"Member Vote\",\"Description\":\"Member Vote\"},{\"Name\":\"Judicial Dissolution\",\"Description\":\"Entry of Decree of Judicial Dissolution\"},{\"Name\":\"Sale of All Assets\",\"Description\":\"Sale or disposition of substantially all assets\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "firmInfo",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d4387f5671975f6c38bdd6",
+      "type": "global",
+      "style": "popup",
+      "typeDef": "65e0031f0f90d9f0ea614b18",
+      "useImport": false,
+      "typeName": "FirmInfo"
+    },
+    {
+      "name": "DocsToCreate",
+      "isList": true,
+      "label": "Documents to create:",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d4393bff38c6752f1da739",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"OperatingAgmt\",\"Label\":\"Operating Agreement\"},{\"Name\":\"LLCResolution\",\"Label\":\"Resolution for an LLC\"},{\"Name\":\"W9Form\",\"Label\":\"W9 Form\"}]",
+      "optionTemplate": "{[Label]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "BusinessSignDate",
+      "isList": false,
+      "label": "Document signing date, if known:",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d439ad5671975f6c38bdd8",
+      "type": "date",
+      "style": "textbox"
+    },
+    {
+      "name": "W9Select",
+      "isList": false,
+      "label": "Select the person whose name should go on the W9:",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d43c32ff38c6752f1da73a",
+      "type": "selection",
+      "style": "",
+      "options": "PotentialAgentsWithTrust",
+      "optionTemplate": "",
+      "typeOfVariable": "userData"
+    },
+    {
+      "name": "HasSelectedBusinessTF",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68d45236ff38c6752f1da73d",
+      "type": "true/false",
+      "style": "checkbox"
+    },
+    {
+      "name": "TheTrustName",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68dc23a905ca81c882fa3992",
+      "type": "text",
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]"
+    },
+    {
+      "name": "TrustParty",
+      "isList": false,
+      "label": "",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "68dc246b05ca81c882fa3993",
+      "type": "object",
+      "style": "popup",
+      "typeDef": "5d6813a56db0fe770048a68a",
+      "useImport": false,
+      "typeName": "party"
+    },
+    {
+      "name": "NAICSCode",
+      "isList": false,
+      "label": "Select the appropriate NAICS Code for this entity.",
+      "helpText": "A NAICS (pronounced NAKES) code is a six-digit number used by federal statistical agencies in the United States, Canada, and Mexico to classify businesses according to their primary economic activity.\n\nThe primary purpose of NAICS is to collect, analyze, and publish statistical data related to the U.S. business economy, providing a standardized way to categorize industries. It replaced the older Standard Industrial Classification (SIC) system in 1997.",
+      "forceRelevance": "",
+      "_id": "68e5615489cef94742b2564d",
+      "type": "selection",
+      "style": "",
+      "options": "[{\"Name\":\"Holding Company\",\"Description\":\"Holding Company\",\"Code\":\"551112\"},{\"Name\":\"Residential RE Rental\",\"Description\":\"Real Estate Rental (Residential)\",\"Code\":\"531110\"},{\"Name\":\"Commercial RE Rental\",\"Description\":\"Real Estate Rental (Commercial)\",\"Code\":\"531120\"},{\"Name\":\"Equipment Rental (Construction, Mining, Forestry)\",\"Description\":\"Equipment Rental (Construction, Mining, Forestry)\",\"Code\":\"53412\"}]",
+      "optionTemplate": "{[Description]}",
+      "typeOfVariable": "anOptionListedBelow"
+    },
+    {
+      "name": "LLCNameTX",
+      "isList": false,
+      "label": "Full Name of Business *include \"L.L.C.\" or \"LLC\" (i.e., \"Entity Name, LLC\")*",
+      "helpText": "",
+      "forceRelevance": "",
+      "_id": "69309b378f16b945a18d4b48",
+      "type": "text",
+      "style": "textbox",
+      "pattern": "",
+      "height": 1,
+      "allowBreaks": false,
+      "processMarkdown": false,
+      "suggestion": "none",
+      "_options": "[]"
+    }
+  ],
+  "name": "BusinessPlanning",
+  "__v": 175,
+  "lastModifiedBy": "5fe0c5547241dc6f81146408",
+  "kind": "model"
+}
